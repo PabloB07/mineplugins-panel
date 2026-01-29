@@ -3,11 +3,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createFlowPayment } from "@/lib/flow";
+import { createPaykuPayment, generatePaykuOrderNumber } from "@/lib/payku";
 import { nanoid } from "nanoid";
 
 interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
+  paymentMethod?: "FLOW_CL" | "PAYKU";
 }
 
 /**
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body: PaymentCreateRequest = await request.json();
-    const { productSlug, durationDays } = body;
+    const { productSlug, durationDays, paymentMethod = "FLOW_CL" } = body;
 
     if (!productSlug) {
       return NextResponse.json(
@@ -78,7 +80,9 @@ export async function POST(request: NextRequest) {
     const total = Math.round(totalCLP);
 
     // Generate unique order number
-    const orderNumber = `TF-${Date.now().toString(36).toUpperCase()}-${nanoid(6).toUpperCase()}`;
+    const orderNumber = paymentMethod === "PAYKU" 
+      ? generatePaykuOrderNumber()
+      : `TF-${Date.now().toString(36).toUpperCase()}-${nanoid(6).toUpperCase()}`;
 
     // Create order in database
     const order = await prisma.order.create({
@@ -86,7 +90,7 @@ export async function POST(request: NextRequest) {
         orderNumber,
         userId: user.id,
         status: "PENDING",
-        paymentMethod: "FLOW_CL",
+        paymentMethod,
         currency: "CLP",
         // Legacy fields (Int)
         subtotal: total,
