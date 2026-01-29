@@ -1,0 +1,76 @@
+"use client";
+
+import { useState } from "react";
+import { CreditCard, Loader2 } from "lucide-react";
+
+interface CheckoutButtonProps {
+  productSlug: string;
+  durationDays?: number;
+}
+
+export function CheckoutButton({ productSlug, durationDays }: CheckoutButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productSlug,
+          durationDays,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create payment");
+      }
+
+      // Redirect to Flow.cl payment page
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        throw new Error("No payment URL received");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-sm">
+          {error}
+        </div>
+      )}
+
+      <button
+        onClick={handleCheckout}
+        disabled={isLoading}
+        className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all disabled:cursor-not-allowed"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <CreditCard className="w-5 h-5" />
+            Pay Now with Flow.cl
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
