@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Create Flow.cl payment
-    const baseUrl = process.env.NEXTAUTH_URL || "https://blancocl.vercel.app";
+    const baseUrl = process.env.NEXTAUTH_URL || "https://townyfaith.vercel.app";
 
     const flowResponse = await createFlowPayment({
       commerceOrder: orderNumber,
