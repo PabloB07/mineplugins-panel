@@ -1,7 +1,6 @@
 "use server";
 
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { put } from '@vercel/blob';
 
 export async function handleFileUpload(formData: FormData): Promise<{ url: string; size: number; name: string }> {
   const file = formData.get("file") as File;
@@ -21,43 +20,29 @@ export async function handleFileUpload(formData: FormData): Promise<{ url: strin
     throw new Error(`File size must be less than ${Math.round(maxSize / 1024 / 1024)}MB`);
   }
 
-  // Create unique filename with timestamp
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 8);
-  const fileExtension = file.name.split('.').pop() || '';
-  const uniqueFilename = `${timestamp}-${random}.${fileExtension}`;
-  
-  // Create upload directory if it doesn't exist
-  const uploadDir = join(process.cwd(), "public", "plugins");
-  try {
-    await mkdir(uploadDir, { recursive: true });
-  } catch (error) {
-    // Directory already exists, continue
-    console.log("Upload directory already exists");
+  // Check for blob token
+  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!blobToken || blobToken === "your-blob-token-here") {
+    throw new Error("Vercel Blob token not configured. Please set BLOB_READ_WRITE_TOKEN in your environment variables.");
   }
-  
-  // Create full file path
-  const filePath = join(uploadDir, uniqueFilename);
-  
+
   try {
-    // Convert file to buffer and save
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Upload file to Vercel Blob
+    const blob = await put(`plugins/${file.name}`, file, {
+      access: 'public',
+      addRandomSuffix: true,
+      token: blobToken,
+    });
     
-    await writeFile(filePath, buffer);
-    
-    // Return relative URL from public directory
-    const url = `/plugins/${uniqueFilename}`;
-    
-    console.log(`File uploaded successfully: ${file.name} -> ${url} (${file.size} bytes)`);
+    console.log(`File uploaded successfully: ${file.name} -> ${blob.url} (${file.size} bytes)`);
     
     return {
-      url,
+      url: blob.url,
       size: file.size,
       name: file.name
     };
-  } catch (writeError) {
-    console.error("File write error:", writeError);
-    throw new Error("Failed to save file");
+  } catch (uploadError) {
+    console.error("Vercel Blob upload error:", uploadError);
+    throw new Error(`Failed to upload file to Vercel Blob: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`);
   }
 }
