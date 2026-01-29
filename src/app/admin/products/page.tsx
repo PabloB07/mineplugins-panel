@@ -6,6 +6,30 @@ import { Plus, Package, Edit, Eye, EyeOff, DollarSign, Calendar } from "lucide-r
 import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLP } from "@/lib/pricing";
 
+type ProductVersion = {
+  version: string;
+  publishedAt: Date;
+  isBeta: boolean;
+  isLatest: boolean;
+};
+
+type ProductItem = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  priceUSD: number;
+  priceCLP: number;
+  salePriceUSD: number | null;
+  salePriceCLP: number | null;
+  defaultDurationDays: number;
+  maxActivations: number;
+  isActive: boolean;
+  versions: ProductVersion[];
+  licenses: { id: string }[];
+  orders: { id: string }[];
+};
+
 async function deleteProduct(productId: string) {
   "use server";
   await prisma.product.delete({ where: { id: productId } });
@@ -74,7 +98,7 @@ export default async function AdminProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {products.map((product) => {
+                {products.map((product: ProductItem) => {
                   const latestVersion = product.versions[0];
                   const licenseCount = product.licenses.length;
                   const orderCount = product.orders.length;
