@@ -24,8 +24,8 @@ model User {
   sessions      Session[]
   
   // Admin activity relations
-  adminActivities AdminActivityLog[] @relation("AdminActivities")
-  targetActivities AdminActivityLog[] @relation("TargetActivities")
+  adminActivities AdminActivityLog[] @relation("AdminActivityAdmin")
+  targetActivities AdminActivityLog[] @relation("AdminActivityTarget")
 
   @@index([email])
 }
@@ -288,8 +288,8 @@ model AdminActivityLog {
   userAgent  String?
   createdAt  DateTime @default(now())
 
-  admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  targetUser User?    @relation(fields: [targetUserId], references: [id], onDelete: SetNull)
+  admin     User     @relation("AdminActivityAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  targetUser User?    @relation("AdminActivityTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
 
   @@map("admin_activity_logs")
 }
