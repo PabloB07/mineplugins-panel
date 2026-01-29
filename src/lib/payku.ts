@@ -86,12 +86,12 @@ export async function createPaykuPayment(
     }
 
     const requestPayload = {
-      orden: data.order,
-      concepto: data.subject,
-      monto: data.amount,
-      email: data.email,
-      url_retorno: data.payment_url,
-      url_webhook: data.webhook,
+      orden: data.order.trim(),
+      concepto: data.subject.trim(),
+      monto: Math.round(data.amount),
+      email: data.email.trim(),
+      url_retorno: data.payment_url?.trim() || null,
+      url_webhook: data.webhook?.trim() || null,
     };
 
     console.log("Creating Payku payment with payload:", requestPayload);
@@ -171,16 +171,18 @@ export async function getPaykuPaymentStatus(
         if (responseData.message_error?.includes("amount:is empty")) {
           fieldErrors.push("Amount must be at least CLP 1,000");
         }
-        if (responseData.message_error?.includes("amount:is empty")) {
-          fieldErrors.push("Amount must be at least CLP 1,000");
-        }
         if (responseData.message_error?.includes("order:invalid")) {
           fieldErrors.push("Order number is invalid or already exists");
         }
         
         if (fieldErrors.length > 0) {
-          throw new Error(`Validation failed: ${fieldErrors.join(", ")}`);
+          throw new Error(`Validation failed: ${fieldErrors.join(", ")}. Please check: subject (cannot be empty), amount (minimum CLP 1,000), order number must be unique.`);
         }
+      }
+      
+      // Handle "token public is not valid" error specifically
+      if (responseData.message_error?.includes("token public is not valid")) {
+        throw new Error("Payku API token is invalid. Please check your Payku merchant dashboard and ensure you have a valid API token with payment creation permissions.");
       }
       
       const errorMessage = responseData.message || responseData.message_error || responseData.error || "Unknown error";

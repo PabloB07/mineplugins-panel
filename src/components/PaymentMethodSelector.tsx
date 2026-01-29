@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CreditCard, Wallet, Check } from "lucide-react";
+import { CreditCard, Check } from "lucide-react";
 
 interface PaymentMethod {
   id: "FLOW_CL" | "PAYKU";
@@ -9,6 +9,7 @@ interface PaymentMethod {
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
+  available?: boolean | undefined;
 }
 
 interface PaymentMethodSelectorProps {
@@ -22,7 +23,7 @@ const paymentMethods: PaymentMethod[] = [
     id: "FLOW_CL",
     name: "Flow.cl",
     description: "Pay with credit card, debit card, or bank transfer",
-    icon: Wallet,
+    icon: CreditCard,
     color: "#22c55e",
   },
   {
@@ -47,19 +48,21 @@ export function PaymentMethodSelector({
         {paymentMethods.map((method) => {
           const Icon = method.icon;
           const isSelected = selectedMethod === method.id;
+          const isAvailable = method.available ?? true;
+          const isDisabled = disabled || !isAvailable;
 
           return (
             <button
               key={method.id}
-              onClick={() => !disabled && onMethodChange(method.id)}
-              disabled={disabled}
+              onClick={() => !isDisabled && onMethodChange(method.id)}
+              disabled={isDisabled}
               className={`
                 relative p-4 rounded-lg border-2 transition-all text-left
                 ${isSelected 
                   ? 'border-[#22c55e] bg-[#22c55e]/10' 
                   : 'border-[#333333] bg-[#1a1a1a] hover:border-[#404040]'
                 }
-                ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
               `}
             >
               {isSelected && (
@@ -72,13 +75,16 @@ export function PaymentMethodSelector({
 
               <div className="flex items-start gap-3">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`} 
-                     style={{ backgroundColor: method.color === "from-green-600 to-green-700" ? "#22c55e" : "#3b82f6" }}>
+                     style={{ backgroundColor: method.color === "#22c55e" ? "#22c55e" : "#3b82f6" }}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
-                
+
                 <div className="flex-1">
                   <h3 className="font-semibold text-white">{method.name}</h3>
                   <p className="text-sm text-[#737373] mt-1">{method.description}</p>
+                  {!isAvailable && (
+                    <p className="text-xs text-orange-400 mt-1">Temporarily unavailable</p>
+                  )}
                 </div>
               </div>
             </button>
