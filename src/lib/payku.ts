@@ -1,17 +1,9 @@
 import crypto from "crypto";
 
 const PAYKU_API_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://app.payku.cl"
-    : "https://des.payku.cl";
-
-const PAYKU_API_URL =
   (process.env.NODE_ENV === "production"
     ? "https://app.payku.cl"
     : "https://des.payku.cl");
-
-const PAYKU_API_TOKEN = process.env.PAYKU_API_TOKEN || "";
-const PAYKU_SECRET_KEY = process.env.PAYKU_SECRET_KEY || "";
 
 const PAYKU_API_TOKEN = process.env.PAYKU_API_TOKEN!;
 const PAYKU_SECRET_KEY = process.env.PAYKU_SECRET_KEY!;
