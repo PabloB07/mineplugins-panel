@@ -50,24 +50,10 @@ export function PaykuButton({
         throw new Error(data.message || "Failed to create payment");
       }
 
-      // Create Payku payment
-      const paykuResponse = await createPaykuPayment({
-        order: data.orderNumber,
-        subject: `TownyFaiths License - ${durationDays || 'default'} days`,
-        amount: Math.round(data.totalCLP), // Payku expects integer CLP
-        email: data.customerEmail,
-        payment_url: `${window.location.origin}/payment/success`,
-        webhook: `${window.location.origin}/api/payment/payku/webhook`,
-      });
-
       // Redirect to Payku payment page
-      const paymentUrl = paykuResponse.payment_url || paykuResponse.url_pago || paykuResponse.url_redireccion;
-      if (!paymentUrl) {
-        throw new Error("No payment URL received from Payku");
-      }
-      window.location.href = paymentUrl;
+      window.location.href = data.paymentUrl;
 
-      onSuccess?.(paykuResponse);
+      onSuccess?.(data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);

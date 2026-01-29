@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyPaykuWebhookSignature, processPaykuWebhook } from "@/lib/payku";
+import { verifyPaykuWebhookSignature, processPaykuWebhook, PaykuPaymentStatus } from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
 import { generateLicenseKey } from "@/lib/license";
 
@@ -11,6 +11,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const signature = request.headers.get("x-payku-signature");
+    
+    console.log("Payku webhook received:", {
+      signature: signature,
+      body: body
+    });
 
     if (!signature) {
       console.error("Payku webhook: Missing signature");
@@ -62,10 +67,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaykuSuccess(paymentData: any) {
+async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
   console.log("Handling Payku success webhook:", paymentData);
   
-  const { orden: order = paymentData.orden, estado: status = paymentData.estado, monto: amount = paymentData.monto, email = paymentData.email } = paymentData;
+  const { orden: order = paymentData.orden || paymentData.order, estado: status = paymentData.estado || paymentData.status } = paymentData;
 
   if (!order) {
     console.error("No order number found in webhook data:", paymentData);
@@ -104,7 +109,7 @@ async function handlePaykuSuccess(paymentData: any) {
       durationDays: item.durationDays,
     });
 
-        // Calculate expiration date
+    // Calculate expiration date
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 
@@ -143,7 +148,7 @@ async function handlePaykuSuccess(paymentData: any) {
   console.log(`Payku success: Order ${order} processed successfully`);
 }
 
-async function handlePaykuFailed(paymentData: any) {
+async function handlePaykuFailed(paymentData: PaykuPaymentStatus) {
   const { order, status } = paymentData;
 
   // Find and update the order

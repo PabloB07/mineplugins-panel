@@ -1,9 +1,9 @@
 import crypto from "crypto";
 
- const PAYKU_API_URL =
-   process.env.NODE_ENV === "production"
-     ? "https://app.payku.cl"
-     : "https://des.payku.cl";
+const PAYKU_API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://app.payku.cl"
+    : "https://des.payku.cl";
 
 const PAYKU_API_TOKEN = process.env.PAYKU_API_TOKEN!;
 const PAYKU_SECRET_KEY = process.env.PAYKU_SECRET_KEY!;
@@ -19,19 +19,20 @@ export interface PaykuPaymentCreate {
 
 export interface PaykuPaymentResponse {
   id?: string; // ID de la transacción
-  transaccion_id?: string; // Alternative ID field
+  transaccion_id?: string;
   order?: string; // Número de orden
-  orden?: string; // Spanish field for order
+  orden?: string;
   payment_key?: string; // Clave de pago
   transaction_key?: string; // Clave de transacción
-  transaccion_key?: string; // Spanish field for transaction key
+  transaccion_key?: string;
   verification_key?: string; // Clave de verificación
-  verificacion_key?: string; // Spanish field for verification key
+  verificacion_key?: string;
   status?: string; // Estado inicial
-  estado?: string; // Spanish field for status
+  estado?: string;
   payment_url?: string; // URL para redirigir al cliente
-  url_pago?: string; // Spanish field for payment URL
-  url_redireccion?: string; // Spanish field for redirect URL
+  url_pago?: string;
+  url_redireccion?: string;
+  url?: string;
 }
 
 export interface PaykuPaymentStatus {
@@ -78,6 +79,15 @@ export async function createPaykuPayment(
       throw new Error("Email is required");
     }
 
+    console.log("Creating Payku payment with data:", {
+      order: data.order,
+      subject: data.subject,
+      amount: data.amount,
+      email: data.email,
+      payment_url: data.payment_url,
+      webhook: data.webhook,
+    });
+
     const payload = {
       orden: data.order,
       concepto: data.subject,
@@ -87,7 +97,8 @@ export async function createPaykuPayment(
       url_webhook: data.webhook,
     };
 
-    console.log("Creating Payku payment with payload:", payload);
+    console.log("Using Payku API URL:", PAYKU_API_URL);
+    console.log("Payku payload:", payload);
 
     const response = await fetch(`${PAYKU_API_URL}/api/transaction`, {
       method: "POST",
@@ -111,14 +122,22 @@ export async function createPaykuPayment(
       throw new Error(`Payku error: ${responseData.message || responseData.error || responseData.mensaje || "Unknown error"}`);
     }
 
+    // Extract payment URL from various possible field names
+    const paymentUrl = responseData.url_pago || responseData.payment_url || responseData.url_redireccion || responseData.url_pago_redireccion || responseData.url;
+    
+    if (!paymentUrl) {
+      console.error("No payment URL found in response:", responseData);
+      throw new Error(`Payku error: No payment URL received. Response: ${JSON.stringify(responseData)}`);
+    }
+
     return {
-      id: responseData.id || responseData.transaccion_id,
-      order: responseData.orden || data.order,
-      payment_key: responseData.data?.payment_key || responseData.payment_key,
-      transaction_key: responseData.transaccion_key || responseData.transaction_key,
-      verification_key: responseData.verificacion_key || responseData.verification_key,
-      status: responseData.estado || responseData.status,
-      payment_url: responseData.url_pago || responseData.payment_url || responseData.url_redireccion,
+      id: responseData.id || responseData.transaccion_id || responseData.transactionId,
+      order: responseData.orden || responseData.order || data.order,
+      payment_key: responseData.payment_key || responseData.paymentKey,
+      transaction_key: responseData.transaccion_key || responseData.transactionKey,
+      verification_key: responseData.verificacion_key || responseData.verificationKey,
+      status: responseData.estado || responseData.status || "pending",
+      payment_url: paymentUrl,
     };
   } catch (error) {
     console.error("Payku payment creation error:", error);
@@ -144,8 +163,9 @@ export async function getPaykuPaymentStatus(
     const responseData = await response.json();
 
     if (!response.ok) {
-      console.error("Payku status error:", responseData);
-      throw new Error(`Payku error: ${responseData.message || responseData.error || "Unknown error"}`);
+      console.error("Payku error:", responseData);
+      const errorMessage = responseData.message || responseData.message_error || responseData.error || "Unknown error";
+      throw new Error(`Payku error: ${errorMessage}`);
     }
 
     return {
@@ -231,207 +251,6 @@ export function getPaykuStatusLabel(status: string): string {
 }
 
 /**
- * Genera un número de orden único para Payku
- */
-export function generatePaykuOrderNumber(): string {
-  const timestamp = Date.now().toString();
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const orderNumber = `PK-${timestamp}-${random}`;
-  console.log("Generated Payku order number:", orderNumber);
-  return orderNumber;
-}
-
-/**
- * Cancela un pago en Payku
- */
-export async function cancelPaykuPayment(
-  order: string
-): Promise<{ success: boolean; message: string }> {
-  try {
-     const response = await fetch(`${PAYKU_API_URL}/api/transaction/${order}/cancel`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
-      },
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      console.error("Payku cancel error:", responseData);
-      return {
-        success: false,
-        message: responseData.message || responseData.error || "Failed to cancel payment",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Payment cancelled successfully",
-    };
-  } catch (error) {
-    console.error("Payku payment cancel error:", error);
-    return {
-      success: false,
-      message: "Network error while cancelling payment",
-    };
-  }
-}
-
-/**
- * Reembolsa un pago en Payku
- */
-export async function refundPaykuPayment(
-  order: string,
-  amount?: number
-): Promise<{ success: boolean; message: string; refund_id?: string }> {
-  try {
-    const payload = amount ? { amount } : {};
-    
-    const response = await fetch(`${PAYKU_API_URL}/api/transaction/${order}/refund`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      console.error("Payku refund error:", responseData);
-      return {
-        success: false,
-        message: responseData.message || responseData.error || "Failed to refund payment",
-      };
-    }
-
-    return {
-      success: true,
-      message: "Payment refunded successfully",
-      refund_id: responseData.refund_id || responseData.id_reembolso,
-    };
-  } catch (error) {
-    console.error("Payku payment refund error:", error);
-    return {
-      success: false,
-      message: "Network error while refunding payment",
-    };
-  }
-}
-
-/**
- * Obtiene lista de pagos (con paginación)
- */
-export async function getPaykuPayments(
-  page: number = 1,
-  limit: number = 20,
-  status?: string
-): Promise<{
-  payments: PaykuPaymentStatus[];
-  total: number;
-  page: number;
-  totalPages: number;
-}> {
-  try {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
-
-    if (status) {
-      params.append("status", status);
-    }
-
-    const response = await fetch(`${PAYKU_API_URL}/api/transactions?${params}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
-      },
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      console.error("Payku payments list error:", responseData);
-      throw new Error(`Payku error: ${responseData.message || "Unknown error"}`);
-    }
-
-    return responseData;
-  } catch (error) {
-    console.error("Payku payments list error:", error);
-    throw error;
-  }
-}
-
-/**
- * Obtiene detalles completos de una transacción
- */
-export async function getPaykuTransactionDetails(
-  transactionKey: string
-): Promise<PaykuPaymentStatus & {
-  payment_method?: string;
-  card_type?: string;
-  card_last_four?: string;
-  installments?: number;
-  fee?: number;
-  net_amount?: number;
-}> {
-  try {
-    const response = await fetch(`${PAYKU_API_URL}/api/transaction/${transactionKey}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
-      },
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      console.error("Payku transaction details error:", responseData);
-      throw new Error(`Payku error: ${responseData.message || "Unknown error"}`);
-    }
-
-    return responseData;
-  } catch (error) {
-    console.error("Payku transaction details error:", error);
-    throw error;
-  }
-}
-
-/**
- * Valida que el monto sea válido para Payku (mínimo CLP 1,000)
- */
-export function validatePaykuAmount(amount: number): { valid: boolean; error?: string } {
-  if (amount < 1000) {
-    return {
-      valid: false,
-      error: "Minimum amount is CLP 1,000",
-    };
-  }
-  
-  if (amount > 1000000) {
-    return {
-      valid: false,
-      error: "Maximum amount is CLP 1,000,000",
-    };
-  }
-
-  if (!Number.isInteger(amount)) {
-    return {
-      valid: false,
-      error: "Amount must be an integer (no cents)",
-    };
-  }
-
-  return { valid: true };
-}
-
-/**
  * Procesa webhook de Payku
  */
 export async function processPaykuWebhook(
@@ -449,25 +268,25 @@ export async function processPaykuWebhook(
       };
     }
 
-     // Procesar según el tipo de evento
-     const { evento, data } = payload;
+    // Procesar según el tipo de evento
+    const { evento, data } = payload;
 
-     switch (evento) {
-       case "pago.aprobado":
-       case "payment.success":
-         await onPaymentSuccess(data);
-         break;
-       
-       case "pago.rechazado":
-       case "payment.failed":
-         if (onPaymentFailed) {
-           await onPaymentFailed(data);
-         }
-         break;
-       
-       default:
-         console.log(`Unhandled webhook event: ${evento}`);
-     }
+    switch (evento) {
+      case "pago.aprobado":
+      case "payment.success":
+        await onPaymentSuccess(data);
+        break;
+      
+      case "pago.rechazado":
+      case "payment.failed":
+        if (onPaymentFailed) {
+          await onPaymentFailed(data);
+        }
+        break;
+      
+      default:
+        console.log(`Unhandled webhook event: ${evento}`);
+    }
 
     return {
       success: true,
@@ -480,4 +299,15 @@ export async function processPaykuWebhook(
       message: "Error processing webhook",
     };
   }
+}
+
+/**
+ * Genera un número de orden único para Payku
+ */
+export function generatePaykuOrderNumber(): string {
+  const timestamp = Date.now().toString();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const orderNumber = `PK-${timestamp}-${random}`;
+  console.log("Generated Payku order number:", orderNumber);
+  return orderNumber;
 }
