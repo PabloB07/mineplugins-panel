@@ -257,7 +257,7 @@ export default async function AdminAnalyticsPage() {
             <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">Last 7 days</span>
           </div>
           <div className="space-y-3">
-            {dailyValidations.slice(0, 7).reverse().map((day, index) => {
+            {dailyValidations.slice(0, 7).reverse().map((day: { date: string; count: number; success: number; failed: number }) => {
               const rate = day.count > 0 ? ((day.success / day.count) * 100).toFixed(0) : "0";
               const isGood = Number(rate) >= 90;
               
