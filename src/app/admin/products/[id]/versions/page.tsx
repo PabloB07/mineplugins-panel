@@ -9,6 +9,20 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+type PluginVersionItem = {
+  id: string;
+  version: string;
+  fileSize: number;
+  minMcVersion: string | null;
+  minJavaVersion: string | null;
+  changelog: string | null;
+  isLatest: boolean;
+  isBeta: boolean;
+  isMandatory: boolean;
+  publishedAt: Date;
+  downloadUrl: string;
+};
+
 async function deleteVersion(versionId: string, productId: string) {
   "use server";
   await prisma.pluginVersion.delete({ where: { id: versionId } });
@@ -97,7 +111,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {product.versions.map((version) => (
+                {product.versions.map((version: PluginVersionItem) => (
                   <tr key={version.id} className="hover:bg-gray-700/30">
                     <td className="px-6 py-4">
                       <div className="text-white font-medium text-lg">v{version.version}</div>
