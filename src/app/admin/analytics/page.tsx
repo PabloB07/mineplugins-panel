@@ -73,7 +73,7 @@ export default async function AdminAnalyticsPage() {
     LIMIT 30
   `;
 
-  const dailyValidations = rawDailyValidations.map(item => ({
+  const dailyValidations = rawDailyValidations.map((item: { date: string; count: bigint; success: bigint }) => ({
     ...item,
     count: Number(item.count),
     success: Number(item.success),
