@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Package, Shield, Clock, Server } from "lucide-react";
-import { CheckoutButton } from "@/components/CheckoutButton";
+import { CheckoutClient } from "@/app/checkout/CheckoutClient";
 import { formatUSD, formatCLP } from "@/lib/pricing";
 
 interface PageProps {
@@ -145,7 +145,12 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
               </div>
             </div>
 
-            <CheckoutButton productSlug={product.slug} />
+            <CheckoutClient 
+            product={product}
+            displayPriceUSD={displayPriceUSD}
+            displayPriceCLP={displayPriceCLP}
+            user={session.user}
+          />
           </div>
         </div>
 

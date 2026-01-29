@@ -116,35 +116,67 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Create Flow.cl payment
     const baseUrl = process.env.NEXTAUTH_URL || "https://townyfaith.vercel.app";
 
-    const flowResponse = await createFlowPayment({
-      commerceOrder: orderNumber,
-      subject: `TownyFaiths License - ${days} days`,
-      amount: total, // Flow expects CLP pesos
-      email: user.email,
-      urlConfirmation: `${baseUrl}/api/payment/confirm`,
-      urlReturn: `${baseUrl}/api/payment/return`,
-    });
+    if (paymentMethod === "PAYKU") {
+      // Create Payku payment
+      const paykuResponse = await createPaykuPayment({
+        order: orderNumber,
+        subject: `TownyFaiths License - ${days} days`,
+        amount: Math.round(totalCLP), // Payku expects integer CLP
+        email: user.email,
+        payment_url: `${baseUrl}/payment/success`,
+        webhook: `${baseUrl}/api/payment/payku/webhook`,
+      });
 
-    // Update order with Flow data
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        flowToken: flowResponse.token,
-        flowOrderNumber: String(flowResponse.flowOrder),
-        flowPaymentUrl: `${flowResponse.url}?token=${flowResponse.token}`,
-      },
-    });
+      // Update order with Payku data
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          paykuPaymentKey: paykuResponse.payment_key,
+          paykuTransactionKey: paykuResponse.transaction_key,
+          paykuVerificationKey: paykuResponse.verification_key,
+          paykuPaymentUrl: paykuResponse.payment_url,
+        },
+      });
 
-    return NextResponse.json({
-      success: true,
-      orderId: order.id,
-      orderNumber,
-      paymentUrl: `${flowResponse.url}?token=${flowResponse.token}`,
-      token: flowResponse.token,
-    });
+      return NextResponse.json({
+        success: true,
+        orderId: order.id,
+        orderNumber,
+        paymentUrl: paykuResponse.payment_url,
+        paymentKey: paykuResponse.payment_key,
+        transactionKey: paykuResponse.transaction_key,
+      });
+    } else {
+      // Create Flow.cl payment
+      const flowResponse = await createFlowPayment({
+        commerceOrder: orderNumber,
+        subject: `TownyFaiths License - ${days} days`,
+        amount: total, // Flow expects CLP pesos
+        email: user.email,
+        urlConfirmation: `${baseUrl}/api/payment/confirm`,
+        urlReturn: `${baseUrl}/api/payment/return`,
+      });
+
+      // Update order with Flow data
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          flowToken: flowResponse.token,
+          flowOrderNumber: String(flowResponse.flowOrder),
+          flowPaymentUrl: `${flowResponse.url}?token=${flowResponse.token}`,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        orderId: order.id,
+        orderNumber,
+        paymentUrl: `${flowResponse.url}?token=${flowResponse.token}`,
+        token: flowResponse.token,
+      });
+    }
   } catch (error) {
     console.error("Payment creation error:", error);
 

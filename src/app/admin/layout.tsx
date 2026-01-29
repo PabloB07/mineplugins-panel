@@ -82,6 +82,12 @@ export default async function AdminLayout({
               >
                 Analytics
               </Link>
+              <Link
+                href="/admin/payku"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Payku
+              </Link>
               <span className="text-gray-600">|</span>
               <Link
                 href="/dashboard"
