@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { event, data } = body;
+    const { evento: event = body.evento, data = body.data || body } = body;
 
     // Process webhook events
     const result = await processPaykuWebhook(
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function handlePaykuSuccess(paymentData: any) {
-  const { order, status, amount, email } = paymentData;
+  const { orden: order = paymentData.orden, estado: status = paymentData.estado, monto: amount = paymentData.monto, email = paymentData.email } = paymentData;
 
   // Find the order
   const orderRecord = await prisma.order.findUnique({

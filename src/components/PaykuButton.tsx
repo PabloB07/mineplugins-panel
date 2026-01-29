@@ -61,7 +61,11 @@ export function PaykuButton({
       });
 
       // Redirect to Payku payment page
-      window.location.href = paykuResponse.payment_url;
+      const paymentUrl = paykuResponse.payment_url || paykuResponse.url_pago || paykuResponse.url_redireccion;
+      if (!paymentUrl) {
+        throw new Error("No payment URL received from Payku");
+      }
+      window.location.href = paymentUrl;
 
       onSuccess?.(paykuResponse);
     } catch (err) {
