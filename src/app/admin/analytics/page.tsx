@@ -100,7 +100,7 @@ export default async function AdminAnalyticsPage() {
     if (type === 'validations') {
       // Export daily validations data
       const headers = ['Date', 'Total Validations', 'Successful', 'Failed', 'Success Rate (%)'];
-      const csvData = dailyValidations.map(day => [
+      const csvData = dailyValidations.map((day: { date: string; count: number; success: number; failed: number }) => [
         new Date(day.date).toLocaleDateString(),
         day.count.toString(),
         day.success.toString(),
