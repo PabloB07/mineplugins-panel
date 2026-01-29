@@ -129,17 +129,6 @@ export async function POST(request: NextRequest) {
         webhook: `${baseUrl}/api/payment/payku/webhook`,
       });
 
-      // Update order with Payku data
-      await prisma.order.update({
-        where: { id: order.id },
-        data: {
-          paykuPaymentKey: paykuResponse.payment_key,
-          paykuTransactionKey: paykuResponse.transaction_key,
-          paykuVerificationKey: paykuResponse.verification_key,
-          paykuPaymentUrl: paykuResponse.payment_url,
-        },
-      });
-
       return NextResponse.json({
         success: true,
         orderId: order.id,

@@ -22,7 +22,7 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-zinc-950 border-t border-zinc-800">
+    <footer className="bg-[#0a0a0a] border-t border-[#333333]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -31,7 +31,7 @@ export default function Footer() {
               <span className="text-2xl">⛪</span>
               <span className="text-xl font-bold text-white">TownyFaiths</span>
             </Link>
-            <p className="text-zinc-400 text-sm mb-4">
+            <p className="text-[#737373] text-sm mb-4">
               Enhance your Towny server with an immersive religion and faith system.
             </p>
             <div className="flex gap-4">
@@ -39,7 +39,7 @@ export default function Footer() {
                 href="https://github.com/blancocl"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-400 hover:text-white transition-colors"
+                className="text-[#737373] hover:text-white transition-colors"
                 aria-label="GitHub"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ export default function Footer() {
                 href="https://blancocl.vercel.app/minecraft"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-400 hover:text-white transition-colors"
+                className="text-[#737373] hover:text-white transition-colors"
                 aria-label="Portfolio"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-zinc-400 hover:text-white transition-colors text-sm"
+                    className="text-[#737373] hover:text-white transition-colors text-sm"
                   >
                     {link.label}
                   </a>
@@ -87,7 +87,7 @@ export default function Footer() {
                     href={link.href}
                     target={link.href.startsWith("http") ? "_blank" : undefined}
                     rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="text-zinc-400 hover:text-white transition-colors text-sm"
+                    className="text-[#737373] hover:text-white transition-colors text-sm"
                   >
                     {link.label}
                   </a>
@@ -104,7 +104,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-zinc-400 hover:text-white transition-colors text-sm"
+                    className="text-[#737373] hover:text-white transition-colors text-sm"
                   >
                     {link.label}
                   </a>

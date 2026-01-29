@@ -161,10 +161,6 @@ model Order {
   flowToken       String?       @unique
   flowOrderNumber String?
   flowPaymentUrl  String?
-  paykuPaymentKey      String?
-  paykuTransactionKey  String?
-  paykuVerificationKey String?
-  paykuPaymentUrl      String?
   customerEmail   String
   customerName    String?
   createdAt       DateTime      @default(now())

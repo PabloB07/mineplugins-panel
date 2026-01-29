@@ -68,11 +68,11 @@ export function CombinedCheckoutButton({
     return children || `Pay with ${paymentMethod === "FLOW_CL" ? "Flow.cl" : "Payku"}`;
   };
 
-  const getButtonGradient = () => {
+  const getButtonColor = () => {
     if (paymentMethod === "FLOW_CL") {
-      return "from-green-600 to-green-700 hover:from-green-500 hover:to-green-600";
+      return "bg-[#22c55e] hover:bg-[#16a34a]";
     }
-    return "from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600";
+    return "bg-[#3b82f6] hover:bg-[#2563eb]";
   };
 
   return (
@@ -86,7 +86,7 @@ export function CombinedCheckoutButton({
       <button
         onClick={handlePayment}
         disabled={isLoading || disabled}
-        className={`w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r ${getButtonGradient()} disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-emerald-600/25`}
+        className={`w-full inline-flex items-center justify-center gap-2 ${getButtonColor()} disabled:bg-[#6b7280] text-white font-medium py-3 px-6 rounded-lg transition-all disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_12px_rgba(34,197,94,0.3)]`}
       >
         {isLoading ? (
           <>

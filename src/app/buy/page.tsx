@@ -29,10 +29,10 @@ export default async function BuyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[#0f0f0f]">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Buy License</h1>
-        <p className="text-gray-400 mt-1">
+        <h1 className="text-3xl font-bold text-white mb-2">Buy License</h1>
+        <p className="text-[#a3a3a3] mt-1">
           Purchase a TownyFaiths license for your Minecraft server
         </p>
       </div>
@@ -45,10 +45,10 @@ export default async function BuyPage() {
           const isOnSale = product.salePriceUSD && product.salePriceUSD < product.priceUSD;
 
           return (
-            <div key={product.id} className="group relative bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-emerald-600/50 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-600/10">
+            <div key={product.id} className="group relative bg-[#1a1a1a] rounded-lg border border-[#333333] overflow-hidden hover:border-[#22c55e] transition-all duration-300 hover:shadow-[0_8px_30px_-10px_rgba(34,197,94,0.2)] hover:transform hover:-translate-y-1">
               {/* Sale Badge */}
               {isOnSale && (
-                <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-3 right-3 z-10 bg-[#ef4444] text-white text-xs font-bold px-3 py-1 rounded-full border border-[#ef4444]/20">
                   SALE
                 </div>
               )}
@@ -56,10 +56,10 @@ export default async function BuyPage() {
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-[#22c55e] transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">{product.description}</p>
+                    <p className="text-[#737373] text-sm leading-relaxed">{product.description}</p>
                   </div>
                   <div className="ml-3 text-3xl opacity-20 group-hover:opacity-30 transition-opacity">
                     ⛪
@@ -67,61 +67,61 @@ export default async function BuyPage() {
                 </div>
 
                 {latestVersion && (
-                  <div className="bg-gray-700/50 rounded-lg px-3 py-2 text-xs text-gray-300 mb-4 border border-gray-600">
+                  <div className="bg-[#262626] rounded-lg px-4 py-3 text-xs text-[#a3a3a3] mb-4 border border-[#404040]">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400">Latest Version:</span>
-                      <span className="font-mono text-emerald-400">v{latestVersion.version}</span>
+                      <span className="text-[#737373]">Latest Version:</span>
+                      <span className="font-mono text-[#22c55e]">v{latestVersion.version}</span>
                     </div>
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-gray-400">MC Version:</span>
-                      <span className="text-blue-400">{latestVersion.minMcVersion}+</span>
+                      <span className="text-[#737373]">MC Version:</span>
+                      <span className="text-[#3b82f6]">{latestVersion.minMcVersion}+</span>
                     </div>
                   </div>
                 )}
 
                 <div className="mb-6">
                   <div className="flex flex-col gap-2 mb-3">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold text-emerald-400">
-                        {formatUSD(displayPriceUSD)}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-[#22c55e]">
+                      ${displayPriceUSD.toFixed(2)}
+                    </span>
+                    {isOnSale && (
+                      <span className="text-sm text-[#737373] line-through">
+                        ${product.priceUSD.toFixed(2)}
                       </span>
-                      {isOnSale && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {formatUSD(product.priceUSD)}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-300">
-                      {formatCLP(displayPriceCLP)}
-                    </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-gray-400">
-                    <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-emerald-400 rounded-full"></span>
-                      {product.defaultDurationDays} days
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                      {product.maxActivations} server{product.maxActivations > 1 ? 's' : ''}
-                    </div>
+                  <div className="text-sm text-[#a3a3a3]">
+                    ${displayPriceCLP.toLocaleString('es-CL')} CLP
                   </div>
                 </div>
+                <div className="flex items-center gap-4 text-xs text-[#737373]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#22c55e] rounded-full"></div>
+                    <span>{product.defaultDurationDays} days</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#3b82f6] rounded-full"></div>
+                    <span>{product.maxActivations} server{product.maxActivations > 1 ? 's' : ''}</span>
+                  </div>
+                </div>
+              </div>
 
-                {session ? (
-                  <Link
-                    href={`/checkout?productId=${product.id}`}
-                    className="block w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-medium py-3 px-4 rounded-lg text-center transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-emerald-600/25"
-                  >
-                    Buy Now
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/login?callbackUrl=${encodeURIComponent(`/buy?productId=${product.id}`)}`}
-                    className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-medium py-3 px-4 rounded-lg text-center transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-600/25"
-                  >
-                    Login to Buy
-                  </Link>
-                )}
+              {session ? (
+                <Link
+                  href={`/checkout?productId=${product.id}`}
+                  className="block w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-medium py-3 px-4 rounded-lg text-center transition-all transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
+                >
+                  Buy Now
+                </Link>
+              ) : (
+                <Link
+                  href={`/login?callbackUrl=${encodeURIComponent(`/buy?productId=${product.id}`)}`}
+                  className="block w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium py-3 px-4 rounded-lg text-center transition-all transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_12px_rgba(59,130,246,0.3)]"
+                >
+                  Login to Buy
+                </Link>
+              )}
               </div>
             </div>
           );

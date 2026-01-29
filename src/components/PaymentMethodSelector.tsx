@@ -23,14 +23,14 @@ const paymentMethods: PaymentMethod[] = [
     name: "Flow.cl",
     description: "Pay with credit card, debit card, or bank transfer",
     icon: Wallet,
-    color: "from-green-600 to-green-700",
+    color: "#22c55e",
   },
   {
     id: "PAYKU",
     name: "Payku",
     description: "Alternative payment processor with multiple payment options",
     icon: CreditCard,
-    color: "from-blue-600 to-blue-700",
+    color: "#3b82f6",
   },
 ];
 
@@ -56,28 +56,29 @@ export function PaymentMethodSelector({
               className={`
                 relative p-4 rounded-lg border-2 transition-all text-left
                 ${isSelected 
-                  ? 'border-emerald-500 bg-emerald-500/10' 
-                  : 'border-gray-600 bg-gray-800 hover:border-gray-500'
+                  ? 'border-[#22c55e] bg-[#22c55e]/10' 
+                  : 'border-[#333333] bg-[#1a1a1a] hover:border-[#404040]'
                 }
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
               `}
             >
               {isSelected && (
                 <div className="absolute top-2 right-2">
-                  <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 bg-[#22c55e] rounded-full flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
                   </div>
                 </div>
               )}
 
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${method.color} flex items-center justify-center flex-shrink-0`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`} 
+                     style={{ backgroundColor: method.color === "from-green-600 to-green-700" ? "#22c55e" : "#3b82f6" }}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 
                 <div className="flex-1">
                   <h3 className="font-semibold text-white">{method.name}</h3>
-                  <p className="text-sm text-gray-400 mt-1">{method.description}</p>
+                  <p className="text-sm text-[#737373] mt-1">{method.description}</p>
                 </div>
               </div>
             </button>

@@ -76,30 +76,30 @@ export default async function DashboardPage() {
         <h1 className="text-3xl font-bold text-white">
           Welcome back, {session.user.name || "User"}!
         </h1>
-        <p className="text-gray-400 mt-1">
+        <p className="text-[#a3a3a3] mt-1">
           Manage your TownyFaiths licenses and downloads
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-green-400">
+        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#333333] hover:transform hover:-translate-y-1 transition-all">
+          <div className="text-3xl font-bold text-[#10b981]">
             {activeLicenses}
           </div>
-          <div className="text-gray-400 text-sm mt-1">Active Licenses</div>
+          <div className="text-[#737373] text-sm mt-1">Active Licenses</div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-blue-400">
+        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#333333] hover:transform hover:-translate-y-1 transition-all">
+          <div className="text-3xl font-bold text-[#3b82f6]">
             {totalActivations}
           </div>
-          <div className="text-gray-400 text-sm mt-1">Server Activations</div>
+          <div className="text-[#737373] text-sm mt-1">Server Activations</div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-purple-400">
+        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#333333] hover:transform hover:-translate-y-1 transition-all">
+          <div className="text-3xl font-bold text-[#8b5cf6]">
             {orders.length}
           </div>
-          <div className="text-gray-400 text-sm mt-1">Total Orders</div>
+          <div className="text-[#737373] text-sm mt-1">Recent Orders</div>
         </div>
       </div>
 
@@ -107,20 +107,20 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Link
           href="/buy"
-          className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 rounded-lg p-6 text-center transition-all"
+          className="bg-[#22c55e] hover:bg-[#16a34a] rounded-lg p-6 text-center transition-all hover:transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
         >
           <div className="text-xl font-semibold text-white">Buy License</div>
-          <p className="text-green-200 mt-1">
+          <p className="text-[#bbf7d0] mt-1">
             Purchase a new TownyFaiths license
           </p>
         </Link>
         <Link
-          href="/dashboard/downloads"
-          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 rounded-lg p-6 text-center transition-all"
+          href="/downloads"
+          className="bg-[#3b82f6] hover:bg-[#2563eb] rounded-lg p-6 text-center transition-all hover:transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(59,130,246,0.3)]"
         >
-          <div className="text-xl font-semibold text-white">Download Plugin</div>
-          <p className="text-blue-200 mt-1">
-            Get the latest version of TownyFaiths
+          <div className="text-xl font-semibold text-white">Downloads</div>
+          <p className="text-[#bfdbfe] mt-1">
+            Download plugin files and updates
           </p>
         </Link>
       </div>

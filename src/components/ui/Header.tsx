@@ -14,12 +14,12 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#333333]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">⛪</span>
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="text-3xl">⛪</div>
             <span className="text-xl font-bold text-white">TownyFaiths</span>
           </Link>
 
@@ -31,7 +31,7 @@ export default function Header() {
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
-                className="text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+                className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium hover:text-[#22c55e]"
               >
                 {link.label}
               </a>
@@ -42,13 +42,13 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-4">
             <Link
               href="/login"
-              className="text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+              className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2"
             >
               Sign In
             </Link>
             <Link
               href="/login"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-lg text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
             >
               Get Started
             </Link>
