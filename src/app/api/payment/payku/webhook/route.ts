@@ -63,7 +63,14 @@ export async function POST(request: NextRequest) {
 }
 
 async function handlePaykuSuccess(paymentData: any) {
+  console.log("Handling Payku success webhook:", paymentData);
+  
   const { orden: order = paymentData.orden, estado: status = paymentData.estado, monto: amount = paymentData.monto, email = paymentData.email } = paymentData;
+
+  if (!order) {
+    console.error("No order number found in webhook data:", paymentData);
+    return;
+  }
 
   // Find the order
   const orderRecord = await prisma.order.findUnique({
@@ -74,7 +81,7 @@ async function handlePaykuSuccess(paymentData: any) {
           product: true,
         },
       },
-      user: true,
+      user: true, // Include user data for license creation
     },
   });
 
@@ -97,21 +104,21 @@ async function handlePaykuSuccess(paymentData: any) {
       durationDays: item.durationDays,
     });
 
-    // Calculate expiration date
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + item.durationDays);
+        // Calculate expiration date
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 
-    // Create license
-    const license = await prisma.license.create({
-      data: {
-        licenseKey,
-        userId: orderRecord.userId,
-        productId: item.productId,
-        status: "ACTIVE",
-        expiresAt,
-        maxActivations: item.product.maxActivations,
-      },
-    });
+        // Create license
+        const license = await prisma.license.create({
+          data: {
+            licenseKey,
+            userId: orderRecord.userId,
+            productId: item.productId,
+            status: "ACTIVE",
+            expiresAt,
+            maxActivations: item.product.maxActivations,
+          },
+        });
 
     // Link license to order item
     await prisma.orderItem.update({

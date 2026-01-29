@@ -64,6 +64,20 @@ export async function createPaykuPayment(
   data: PaykuPaymentCreate
 ): Promise<PaykuPaymentResponse> {
   try {
+    // Validate input
+    if (!data.order) {
+      throw new Error("Order number is required");
+    }
+    if (!data.subject) {
+      throw new Error("Subject is required");
+    }
+    if (!data.amount || data.amount <= 0) {
+      throw new Error("Valid amount is required");
+    }
+    if (!data.email) {
+      throw new Error("Email is required");
+    }
+
     const payload = {
       orden: data.order,
       concepto: data.subject,
@@ -222,7 +236,9 @@ export function getPaykuStatusLabel(status: string): string {
 export function generatePaykuOrderNumber(): string {
   const timestamp = Date.now().toString();
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `PK-${timestamp}-${random}`;
+  const orderNumber = `PK-${timestamp}-${random}`;
+  console.log("Generated Payku order number:", orderNumber);
+  return orderNumber;
 }
 
 /**

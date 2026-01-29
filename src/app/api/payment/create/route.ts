@@ -119,6 +119,8 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXTAUTH_URL || "https://townyfaith.vercel.app";
 
     if (paymentMethod === "PAYKU") {
+      console.log("Creating Payku payment with orderNumber:", orderNumber);
+      
       // Create Payku payment
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
@@ -129,11 +131,23 @@ export async function POST(request: NextRequest) {
         webhook: `${baseUrl}/api/payment/payku/webhook`,
       });
 
+      console.log("Payku payment response:", paykuResponse);
+
+      const paymentUrl = paykuResponse.payment_url || paykuResponse.url_pago || paykuResponse.url_redireccion;
+      
+      if (!paymentUrl) {
+        console.error("No payment URL in Payku response:", paykuResponse);
+        return NextResponse.json(
+          { error: "NO_PAYMENT_URL", message: "No payment URL received from Payku" },
+          { status: 500 }
+        );
+      }
+
       return NextResponse.json({
         success: true,
         orderId: order.id,
         orderNumber,
-        paymentUrl: paykuResponse.payment_url,
+        paymentUrl,
         paymentKey: paykuResponse.payment_key,
         transactionKey: paykuResponse.transaction_key,
       });
