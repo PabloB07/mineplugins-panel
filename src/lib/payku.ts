@@ -66,29 +66,26 @@ export async function createPaykuPayment(
 ): Promise<PaykuPaymentResponse> {
   try {
     // Validate input
-    if (!data.order) {
-      throw new Error("Order number is required");
+    if (!data.order || data.order.trim().length === 0) {
+      throw new Error("Order number is required and cannot be empty");
     }
-    if (!data.subject) {
-      throw new Error("Subject is required");
+    if (!data.subject || data.subject.trim().length === 0) {
+      throw new Error("Subject is required and cannot be empty");
     }
     if (!data.amount || data.amount <= 0) {
-      throw new Error("Valid amount is required");
+      throw new Error("Valid amount is required (minimum CLP 1,000)");
     }
-    if (!data.email) {
-      throw new Error("Email is required");
+    if (!data.email || data.email.trim().length === 0) {
+      throw new Error("Email is required and cannot be empty");
     }
 
-    console.log("Creating Payku payment with data:", {
-      order: data.order,
-      subject: data.subject,
-      amount: data.amount,
-      email: data.email,
-      payment_url: data.payment_url,
-      webhook: data.webhook,
-    });
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      throw new Error("Invalid email format");
+    }
 
-    const payload = {
+    const requestPayload = {
       orden: data.order,
       concepto: data.subject,
       monto: data.amount,
@@ -97,8 +94,7 @@ export async function createPaykuPayment(
       url_webhook: data.webhook,
     };
 
-    console.log("Using Payku API URL:", PAYKU_API_URL);
-    console.log("Payku payload:", payload);
+    console.log("Creating Payku payment with payload:", requestPayload);
 
     const response = await fetch(`${PAYKU_API_URL}/api/transaction`, {
       method: "POST",
@@ -106,7 +102,7 @@ export async function createPaykuPayment(
         "Content-Type": "application/json",
         "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(requestPayload),
     });
 
     const responseData = await response.json();
@@ -164,6 +160,29 @@ export async function getPaykuPaymentStatus(
 
     if (!response.ok) {
       console.error("Payku error:", responseData);
+      
+      // Handle specific validation errors
+      if (responseData.status === "failed" || responseData.status === "error") {
+        const fieldErrors = [];
+        
+        if (responseData.message_error?.includes("subject:invalid")) {
+          fieldErrors.push("Subject cannot be empty");
+        }
+        if (responseData.message_error?.includes("amount:is empty")) {
+          fieldErrors.push("Amount must be at least CLP 1,000");
+        }
+        if (responseData.message_error?.includes("amount:is empty")) {
+          fieldErrors.push("Amount must be at least CLP 1,000");
+        }
+        if (responseData.message_error?.includes("order:invalid")) {
+          fieldErrors.push("Order number is invalid or already exists");
+        }
+        
+        if (fieldErrors.length > 0) {
+          throw new Error(`Validation failed: ${fieldErrors.join(", ")}`);
+        }
+      }
+      
       const errorMessage = responseData.message || responseData.message_error || responseData.error || "Unknown error";
       throw new Error(`Payku error: ${errorMessage}`);
     }
