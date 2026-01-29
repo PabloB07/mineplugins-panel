@@ -7,6 +7,17 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+type ProductVersionItem = {
+  id: string;
+  version: string;
+  fileSize: number;
+  publishedAt: Date;
+  isBeta: boolean;
+  isLatest: boolean;
+  isMandatory: boolean;
+  downloadUrl: string;
+};
+
 export default async function EditProductPage({ params }: PageProps) {
   const { id } = await params;
   const product = await prisma.product.findUnique({
@@ -322,7 +333,7 @@ export default async function EditProductPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {product.versions.map((version) => (
+            {product.versions.map((version: ProductVersionItem) => (
               <div key={version.id} className="bg-gray-700/50 rounded-lg p-4 flex items-center justify-between">
                 <div>
                   <div className="text-white font-medium">v{version.version}</div>
