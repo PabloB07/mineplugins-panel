@@ -1,6 +1,7 @@
 import crypto from "crypto";
 
 const PAYKU_API_URL =
+  process.env.PAYKU_API_URL ||
   (process.env.NODE_ENV === "production"
     ? "https://app.payku.cl"
     : "https://des.payku.cl");
@@ -15,6 +16,7 @@ export interface PaykuPaymentCreate {
   email: string; // Email del cliente
   payment_url?: string; // URL de retorno después del pago
   webhook?: string; // URL para notificaciones
+  additional_parameters?: Record<string, any>; // Parámetros adicionales opcionales
 }
 
 export interface PaykuPaymentResponse {
@@ -92,6 +94,7 @@ export async function createPaykuPayment(
       email: data.email.trim(),
       url_retorno: data.payment_url?.trim() || null,
       url_webhook: data.webhook?.trim() || null,
+      ...(data.additional_parameters && { additional_parameters: data.additional_parameters }),
     };
 
     console.log("Creating Payku payment with payload:", requestPayload);
@@ -120,7 +123,7 @@ export async function createPaykuPayment(
 
     // Extract payment URL from various possible field names
     const paymentUrl = responseData.url_pago || responseData.payment_url || responseData.url_redireccion || responseData.url_pago_redireccion || responseData.url;
-    
+
     if (!paymentUrl) {
       console.error("No payment URL found in response:", responseData);
       throw new Error(`Payku error: No payment URL received. Response: ${JSON.stringify(responseData)}`);
@@ -160,11 +163,11 @@ export async function getPaykuPaymentStatus(
 
     if (!response.ok) {
       console.error("Payku error:", responseData);
-      
+
       // Handle specific validation errors
       if (responseData.status === "failed" || responseData.status === "error") {
         const fieldErrors = [];
-        
+
         if (responseData.message_error?.includes("subject:invalid")) {
           fieldErrors.push("Subject cannot be empty");
         }
@@ -174,17 +177,17 @@ export async function getPaykuPaymentStatus(
         if (responseData.message_error?.includes("order:invalid")) {
           fieldErrors.push("Order number is invalid or already exists");
         }
-        
+
         if (fieldErrors.length > 0) {
           throw new Error(`Validation failed: ${fieldErrors.join(", ")}. Please check: subject (cannot be empty), amount (minimum CLP 1,000), order number must be unique.`);
         }
       }
-      
+
       // Handle "token public is not valid" error specifically
       if (responseData.message_error?.includes("token public is not valid")) {
         throw new Error("Payku API token is invalid. Please check your Payku merchant dashboard and ensure you have a valid API token with payment creation permissions.");
       }
-      
+
       const errorMessage = responseData.message || responseData.message_error || responseData.error || "Unknown error";
       throw new Error(`Payku error: ${errorMessage}`);
     }
@@ -218,7 +221,7 @@ export function verifyPaykuWebhookSignature(
   try {
     // Try different payload formats for signature verification
     const payloadString = JSON.stringify(payload);
-    
+
     const expectedSignature = crypto
       .createHmac("sha256", PAYKU_SECRET_KEY)
       .update(payloadString)
@@ -297,14 +300,14 @@ export async function processPaykuWebhook(
       case "payment.success":
         await onPaymentSuccess(data);
         break;
-      
+
       case "pago.rechazado":
       case "payment.failed":
         if (onPaymentFailed) {
           await onPaymentFailed(data);
         }
         break;
-      
+
       default:
         console.log(`Unhandled webhook event: ${evento}`);
     }

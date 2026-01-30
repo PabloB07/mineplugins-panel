@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const total = Math.round(totalCLP);
 
     // Generate unique order number
-    const orderNumber = paymentMethod === "PAYKU" 
+    const orderNumber = paymentMethod === "PAYKU"
       ? generatePaykuOrderNumber()
       : `TF-${Date.now().toString(36).toUpperCase()}-${nanoid(6).toUpperCase()}`;
 
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     if (paymentMethod === "PAYKU") {
       console.log("Creating Payku payment with orderNumber:", orderNumber);
-      
+
       // Create Payku payment
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
@@ -128,13 +128,13 @@ export async function POST(request: NextRequest) {
         amount: Math.round(totalCLP), // Payku expects integer CLP
         email: user.email,
         payment_url: `${baseUrl}/payment/success`,
-       // webhook: `${baseUrl}/api/payment/payku/webhook`,
+        webhook: `${baseUrl}/api/payment/payku/webhook`,
       });
 
       console.log("Payku payment response:", paykuResponse);
 
       const paymentUrl = paykuResponse.payment_url || paykuResponse.url_pago || paykuResponse.url_redireccion;
-      
+
       if (!paymentUrl) {
         console.error("No payment URL in Payku response:", paykuResponse);
         return NextResponse.json(
