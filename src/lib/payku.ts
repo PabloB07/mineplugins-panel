@@ -67,37 +67,60 @@ export async function createPaykuPayment(
   data: PaykuPaymentCreate
 ): Promise<PaykuPaymentResponse> {
   try {
-    // Validate input
+    console.log("createPaykuPayment called with data:", JSON.stringify(data, null, 2));
+
+    // Validate input with detailed error messages
     if (!data.order || data.order.trim().length === 0) {
+      console.error("Validation failed: order is empty or undefined", { order: data.order });
       throw new Error("Order number is required and cannot be empty");
     }
     if (!data.subject || data.subject.trim().length === 0) {
+      console.error("Validation failed: subject is empty or undefined", { subject: data.subject });
       throw new Error("Subject is required and cannot be empty");
     }
     if (!data.amount || data.amount <= 0) {
-      throw new Error("Valid amount is required (minimum CLP 1,000)");
+      console.error("Validation failed: amount is invalid", { amount: data.amount });
+      throw new Error(`Valid amount is required (minimum CLP 1,000), received: ${data.amount}`);
     }
     if (!data.email || data.email.trim().length === 0) {
+      console.error("Validation failed: email is empty or undefined", { email: data.email });
       throw new Error("Email is required and cannot be empty");
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
+      console.error("Validation failed: invalid email format", { email: data.email });
       throw new Error("Invalid email format");
     }
 
-    const requestPayload = {
+    // Ensure amount is at least 1000 CLP (Payku minimum)
+    const amount = Math.round(data.amount);
+    if (amount < 1000) {
+      console.error("Validation failed: amount below Payku minimum", { amount });
+      throw new Error(`Amount must be at least CLP 1,000, received: ${amount}`);
+    }
+
+    // Build base payload with required fields only
+    const requestPayload: any = {
       orden: data.order.trim(),
       concepto: data.subject.trim(),
-      monto: Math.round(data.amount),
+      monto: amount,
       email: data.email.trim(),
-      url_retorno: data.payment_url?.trim() || null,
-      url_webhook: data.webhook?.trim() || null,
-      ...(data.additional_parameters && { additional_parameters: data.additional_parameters }),
     };
 
-    console.log("Creating Payku payment with payload:", requestPayload);
+    // Add optional fields only if they have values
+    if (data.payment_url && data.payment_url.trim().length > 0) {
+      requestPayload.url_retorno = data.payment_url.trim();
+    }
+    if (data.webhook && data.webhook.trim().length > 0) {
+      requestPayload.url_webhook = data.webhook.trim();
+    }
+    if (data.additional_parameters) {
+      requestPayload.additional_parameters = data.additional_parameters;
+    }
+
+    console.log("Creating Payku payment with payload:", JSON.stringify(requestPayload, null, 2));
 
     const response = await fetch(`${PAYKU_API_URL}/api/transaction`, {
       method: "POST",

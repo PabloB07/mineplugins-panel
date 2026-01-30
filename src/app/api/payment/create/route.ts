@@ -121,11 +121,45 @@ export async function POST(request: NextRequest) {
     if (paymentMethod === "PAYKU") {
       console.log("Creating Payku payment with orderNumber:", orderNumber);
 
+      // Validate payment data before sending to Payku
+      const paykuAmount = Math.round(totalCLP);
+      const paykuSubject = `TownyFaiths License - ${days} days`;
+
+      console.log("Payku payment data validation:", {
+        orderNumber,
+        subject: paykuSubject,
+        amount: paykuAmount,
+        email: user.email,
+        totalCLP,
+        basePriceCLP,
+        days,
+        product: {
+          id: product.id,
+          slug: product.slug,
+          priceCLP: product.priceCLP,
+          salePriceCLP: product.salePriceCLP,
+        }
+      });
+
+      // Validate required fields
+      if (!orderNumber || orderNumber.trim().length === 0) {
+        throw new Error("Order number is empty");
+      }
+      if (!paykuSubject || paykuSubject.trim().length === 0) {
+        throw new Error("Subject is empty");
+      }
+      if (!paykuAmount || paykuAmount <= 0) {
+        throw new Error(`Invalid amount: ${paykuAmount}. Product price may be 0 or invalid.`);
+      }
+      if (!user.email || user.email.trim().length === 0) {
+        throw new Error("User email is empty");
+      }
+
       // Create Payku payment
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
-        subject: `TownyFaiths License - ${days} days`,
-        amount: Math.round(totalCLP), // Payku expects integer CLP
+        subject: paykuSubject,
+        amount: paykuAmount,
         email: user.email,
         payment_url: `${baseUrl}/payment/success`,
         webhook: `${baseUrl}/api/payment/payku/webhook`,
