@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { displayProductPrice } from "@/lib/pricing";
-import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
+import Header from "@/components/ui/Header";
 import { ShoppingCart, Check, Zap, Server, Shield } from "lucide-react";
 
 export default async function BuyPage() {
@@ -24,9 +24,9 @@ export default async function BuyPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
-      <DashboardNavbar user={session?.user} isAdmin={isAdmin} />
+      <Header />
 
-      <div className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+      <div className="relative overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-28">
         {/* Background Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
