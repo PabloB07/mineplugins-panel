@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function DELETE(
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const orderId = params.id;
+        const { id: orderId } = await params;
 
         // Check if order exists
         const order = await prisma.order.findUnique({
