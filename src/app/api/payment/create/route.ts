@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         amount: Math.round(totalCLP), // Payku expects integer CLP
         email: user.email,
         payment_url: `${baseUrl}/payment/success`,
-        webhook: `${baseUrl}/api/payment/payku/webhook`,
+       // webhook: `${baseUrl}/api/payment/payku/webhook`,
       });
 
       console.log("Payku payment response:", paykuResponse);
