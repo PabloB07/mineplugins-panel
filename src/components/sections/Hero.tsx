@@ -2,65 +2,64 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0f0f0f]">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.05)_0%,transparent_70%)]" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+      {/* Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-      {/* Geometric pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_24%,rgba(255,255,255,0.01)_25%,rgba(255,255,255,0.01)_26%,transparent_27%,transparent_74%,rgba(255,255,255,0.01)_75%,rgba(255,255,255,0.01)_76%,transparent_77%),linear-gradient(-45deg,transparent_24%,rgba(255,255,255,0.01)_25%,rgba(255,255,255,0.01)_26%,transparent_27%,transparent_74%,rgba(255,255,255,0.01)_75%,rgba(255,255,255,0.01)_76%,transparent_77%)] bg-[size:60px_60px]" />
+      {/* Grid Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-[#1a1a1a] border border-[#333333] rounded-full px-6 py-3 mb-8">
-          <div className="w-2 h-2 bg-[#22c55e] rounded-full"></div>
-          <span className="text-[#22c55e] text-sm font-medium">New Release</span>
-          <span className="text-[#a3a3a3] text-sm">v1.0.0 is now available</span>
+        <div className="inline-flex items-center gap-2 bg-[#111] border border-[#222] rounded-full px-4 py-1.5 mb-8 shadow-lg shadow-green-900/10 animate-fade-in-up">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          <span className="text-gray-300 text-sm font-medium">TownyFaiths v1.0 Available</span>
         </div>
 
         {/* Main heading */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-          <span className="text-[#22c55e]">Religion System</span>
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 leading-tight tracking-tight">
+          Create <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Legendary</span>
           <br />
-          for Towny Servers
+          Religions
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg sm:text-xl text-[#a3a3a3] max-w-2xl mx-auto mb-10 leading-relaxed">
-          Bring immersive faith mechanics to your Minecraft server. Create religions,
-          build temples, gain followers, and unlock divine powers with TownyFaiths.
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+          The ultimate faith system for Towny servers. Build temples, gather followers, and unlock divine powers in a fully immersive experience.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
           <Link
-            href="/login"
-            className="w-full sm:w-auto bg-[#22c55e] hover:bg-[#16a34a] text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all hover:transform hover:-translate-y-1 hover:shadow-[0_8px_25px_-8px_rgba(34,197,94,0.3)]"
+            href="/buy"
+            className="w-full sm:w-auto bg-[#22c55e] hover:bg-[#16a34a] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(34,197,94,0.5)] flex items-center justify-center gap-2"
           >
-            Get Started!
+            Get Started Now
+          </Link>
+          <Link
+            href="/documentation"
+            className="w-full sm:w-auto bg-[#1a1a1a] hover:bg-[#222] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all border border-[#333] hover:border-gray-600 flex items-center justify-center gap-2"
+          >
+            Read Documentation
           </Link>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto border-t border-[#222] pt-12">
           {[
-            { value: "1.21+", label: "MC Versions", color: "#22c55e" },
-            { value: "2+", label: "Active Servers", color: "#3b82f6" },
-            { value: "99.9%", label: "Uptime", color: "#10b981" },
-            { value: "24/7", label: "Support", color: "#8b5cf6" },
+            { value: "1.21+", label: "Supported Versions", color: "text-green-500" },
+            { value: "Premium", label: "Quality Code", color: "text-blue-500" },
+            { value: "99.9%", label: "Satisfaction", color: "text-purple-500" },
+            { value: "24/7", label: "Expert Support", color: "text-orange-500" },
           ].map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-[#737373] text-sm font-medium">{stat.label}</div>
-              <div className="w-12 h-1 mx-auto mt-2 rounded-full" style={{ backgroundColor: stat.color }}></div>
+            <div key={index} className="text-center group">
+              <div className={`text-3xl sm:text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300`}>{stat.value}</div>
+              <div className="text-gray-500 text-sm font-medium uppercase tracking-wider">{stat.label}</div>
             </div>
           ))}
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
         </div>
       </div>
     </section>

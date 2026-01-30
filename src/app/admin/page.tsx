@@ -1,5 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import {
+  Users,
+  Key,
+  ShoppingCart,
+  DollarSign,
+  Activity,
+  ArrowUpRight,
+  ArrowRight,
+  Package,
+  Clock
+} from "lucide-react";
 
 type License = {
   id: string;
@@ -19,6 +30,7 @@ type Order = {
   orderNumber: string;
   status: string;
   total: number;
+  createdAt: Date;
   user: {
     email: string;
     name: string | null;
@@ -82,234 +94,266 @@ export default async function AdminDashboardPage() {
 
   // Recent validations
   const validationLogs = await prisma.validationLog.findMany({
-    take: 10,
+    take: 8,
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <div>
+    <div className="space-y-8 animate-fade-in pb-10">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-        <p className="text-gray-400 mt-1">
-          Overview of your TownyFaiths license system
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-blue-400">{totalUsers}</div>
-          <div className="text-gray-400 text-sm mt-1">Total Users</div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Dashboard Overview
+          </h1>
+          <p className="text-gray-400 mt-1">
+            Welcome back, here's what's happening today.
+          </p>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-green-400">
-            {activeLicenses}
-          </div>
-          <div className="text-gray-400 text-sm mt-1">Active Licenses</div>
-        </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-purple-400">
-            {completedOrders}
-          </div>
-          <div className="text-gray-400 text-sm mt-1">Completed Orders</div>
-        </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-3xl font-bold text-yellow-400">
-            ${((totalRevenue._sum.total || 0) / 100).toLocaleString("es-CL")}
-          </div>
-          <div className="text-gray-400 text-sm mt-1">Total Revenue (CLP)</div>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/products/new"
+            className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg shadow-green-900/20 flex items-center gap-2"
+          >
+            <Package className="w-4 h-4" />
+            New Product
+          </Link>
         </div>
       </div>
 
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="text-2xl font-bold text-white">{totalLicenses}</div>
-          <div className="text-gray-400 text-sm">Total Licenses</div>
-        </div>
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="text-2xl font-bold text-white">{totalOrders}</div>
-          <div className="text-gray-400 text-sm">Total Orders</div>
-        </div>
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="text-2xl font-bold text-white">
-            {recentValidations}
+      {/* Primary Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Revenue */}
+        <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <DollarSign className="w-16 h-16 text-green-500" />
           </div>
-          <div className="text-gray-400 text-sm">Validations (24h)</div>
-        </div>
-      </div>
-
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Licenses */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-white">Recent Licenses</h2>
-            <Link
-              href="/admin/licenses"
-              className="text-blue-400 hover:text-blue-300 text-sm"
-            >
-              View all
-            </Link>
-          </div>
-          <div className="divide-y divide-gray-700">
-            {recentLicenses.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-400">
-                No licenses yet
-              </div>
-            ) : (
-              recentLicenses.map((license: License) => (
-                <div
-                  key={license.id}
-                  className="px-6 py-3 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="text-white text-sm">
-                      {license.user.email}
-                    </div>
-                    <div className="text-gray-400 text-xs">
-                      {license.product.name} -{" "}
-                      {new Date(license.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${
-                      license.status === "ACTIVE"
-                        ? "bg-green-900 text-green-300"
-                        : "bg-gray-700 text-gray-300"
-                    }`}
-                  >
-                    {license.status}
-                  </span>
-                </div>
-              ))
-            )}
+          <div className="relative z-10">
+            <div className="text-sm font-medium text-gray-400 mb-1">Total Revenue</div>
+            <div className="text-3xl font-bold text-white">
+              ${((totalRevenue._sum.total || 0) / 100).toLocaleString("es-CL")}
+            </div>
+            <div className="mt-2 flex items-center text-xs text-green-400 bg-green-900/20 w-fit px-2 py-1 rounded-full border border-green-900/30">
+              <Activity className="w-3 h-3 mr-1" />
+              Lifetime Earnings
+            </div>
           </div>
         </div>
 
-        {/* Recent Orders */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-white">Recent Orders</h2>
-            <Link
-              href="/admin/orders"
-              className="text-blue-400 hover:text-blue-300 text-sm"
-            >
-              View all
-            </Link>
+        {/* Active Licenses */}
+        <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Key className="w-16 h-16 text-blue-500" />
           </div>
-          <div className="divide-y divide-gray-700">
-            {recentOrders.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-400">
-                No orders yet
-              </div>
-            ) : (
-              recentOrders.map((order: Order) => (
-                <div
-                  key={order.id}
-                  className="px-6 py-3 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="text-white text-sm font-mono">
-                      {order.orderNumber}
-                    </div>
-                    <div className="text-gray-400 text-xs">
-                      {order.user.email}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        order.status === "COMPLETED"
-                          ? "bg-green-900 text-green-300"
-                          : order.status === "PENDING"
-                          ? "bg-yellow-900 text-yellow-300"
-                          : "bg-red-900 text-red-300"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      ${(order.total / 100).toLocaleString("es-CL")}
-                    </span>
-                  </div>
-                </div>
-              ))
-            )}
+          <div className="relative z-10">
+            <div className="text-sm font-medium text-gray-400 mb-1">Active Licenses</div>
+            <div className="text-3xl font-bold text-white">{activeLicenses}</div>
+            <div className="mt-2 text-xs text-gray-500">
+              out of {totalLicenses} total created
+            </div>
+          </div>
+        </div>
+
+        {/* Users */}
+        <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Users className="w-16 h-16 text-purple-500" />
+          </div>
+          <div className="relative z-10">
+            <div className="text-sm font-medium text-gray-400 mb-1">Total Users</div>
+            <div className="text-3xl font-bold text-white">{totalUsers}</div>
+            <div className="mt-2 text-xs text-gray-500">
+              Registered accounts
+            </div>
+          </div>
+        </div>
+
+        {/* Validations (24h) */}
+        <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Activity className="w-16 h-16 text-orange-500" />
+          </div>
+          <div className="relative z-10">
+            <div className="text-sm font-medium text-gray-400 mb-1">Validations (24h)</div>
+            <div className="text-3xl font-bold text-white">{recentValidations}</div>
+            <div className="mt-2 text-xs text-gray-500">
+              Server checks today
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Recent Validations */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 mt-6">
-        <div className="px-6 py-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold text-white">
-            Recent Validation Attempts
-          </h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-700/50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Server ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Version
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Reason
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {validationLogs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-8 text-center text-gray-400"
-                  >
-                    No validation logs yet
-                  </td>
-                </tr>
+      {/* Main Content Split */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+        {/* Recent Activity Column (Larger) */}
+        <div className="xl:col-span-2 space-y-8">
+
+          {/* Recent Orders Table */}
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+            <div className="p-6 border-b border-[#222] flex justify-between items-center bg-[#151515]">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 text-gray-400" />
+                Recent Orders
+              </h2>
+              <Link href="/admin/orders" className="text-sm text-[#22c55e] hover:text-[#16a34a] flex items-center gap-1 transition-colors">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="max-h-[400px] overflow-auto">
+              {recentOrders.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">No orders found</div>
               ) : (
-                validationLogs.map((log: ValidationLog) => (
-                  <tr key={log.id}>
-                    <td className="px-6 py-3 text-sm text-gray-300">
-                      {new Date(log.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-3 text-sm text-gray-300 font-mono">
-                      {log.serverId.substring(0, 12)}...
-                    </td>
-                    <td className="px-6 py-3 text-sm text-gray-300">
-                      {log.serverVersion || "N/A"}
-                    </td>
-                    <td className="px-6 py-3">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          log.isValid
-                            ? "bg-green-900 text-green-300"
-                            : "bg-red-900 text-red-300"
-                        }`}
-                      >
-                        {log.isValid ? "Valid" : "Failed"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 text-sm text-gray-400">
-                      {log.failureReason || "-"}
-                    </td>
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-[#1a1a1a] text-xs uppercase text-gray-500 font-medium sticky top-0">
+                    <tr>
+                      <th className="px-6 py-3">Order</th>
+                      <th className="px-6 py-3">User</th>
+                      <th className="px-6 py-3">Status</th>
+                      <th className="px-6 py-3 text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#222]">
+                    {recentOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-[#1a1a1a] transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-white">{order.orderNumber}</div>
+                          <div className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-300">
+                          {order.user.email}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border
+                                                ${order.status === 'COMPLETED' ? 'bg-green-900/30 text-green-400 border-green-900/50' :
+                              order.status === 'PENDING' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-900/50' :
+                                'bg-red-900/30 text-red-400 border-red-900/50'}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-white text-right font-medium">
+                          ${(order.total / 100).toLocaleString("es-CL")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* Recent Validations Chart/List */}
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+            <div className="p-6 border-b border-[#222] flex justify-between items-center bg-[#151515]">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Activity className="w-5 h-5 text-gray-400" />
+                Live Validations
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-[#1a1a1a] text-xs uppercase text-gray-500 font-medium">
+                  <tr>
+                    <th className="px-6 py-3">Time</th>
+                    <th className="px-6 py-3">Server Hash</th>
+                    <th className="px-6 py-3">Result</th>
+                    <th className="px-6 py-3">Reason</th>
                   </tr>
+                </thead>
+                <tbody className="divide-y divide-[#222]">
+                  {validationLogs.length === 0 ? (
+                    <tr><td colSpan={4} className="p-6 text-center text-gray-500">No logs recently</td></tr>
+                  ) : (
+                    validationLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-[#1a1a1a] transition-colors">
+                        <td className="px-6 py-3 text-xs text-gray-400 font-mono">
+                          {new Date(log.createdAt).toLocaleTimeString()}
+                        </td>
+                        <td className="px-6 py-3 text-xs text-gray-300 font-mono">
+                          {log.serverId.substring(0, 8)}...
+                        </td>
+                        <td className="px-6 py-3">
+                          {log.isValid ? (
+                            <span className="text-xs text-green-400 flex items-center gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                              Valid
+                            </span>
+                          ) : (
+                            <span className="text-xs text-red-400 flex items-center gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                              Failed
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-3 text-xs text-gray-500">
+                          {log.failureReason || "OK"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Side Column */}
+        <div className="space-y-8">
+          {/* Quick Stats or Status */}
+          <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">System Status</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-300">Database</span>
+                <span className="text-xs bg-green-900/30 text-green-400 px-2 py-0.5 rounded border border-green-900/50">Operational</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-300">License API</span>
+                <span className="text-xs bg-green-900/30 text-green-400 px-2 py-0.5 rounded border border-green-900/50">Online</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-300">Payments</span>
+                <span className="text-xs bg-green-900/30 text-green-400 px-2 py-0.5 rounded border border-green-900/50">Active</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Licenses List */}
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-[#222] flex justify-between items-center bg-[#151515]">
+              <h2 className="text-base font-semibold text-white">Latest Licenses</h2>
+              <Link href="/admin/licenses" className="p-1 hover:bg-[#222] rounded text-gray-400 hover:text-white transition-colors">
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="divide-y divide-[#222]">
+              {recentLicenses.length === 0 ? (
+                <div className="p-4 text-center text-gray-500 text-sm">No licenses yet</div>
+              ) : (
+                recentLicenses.map((lic) => (
+                  <div key={lic.id} className="p-4 hover:bg-[#1a1a1a] transition-colors group">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-sm font-medium text-white group-hover:text-[#22c55e] transition-colors line-clamp-1">
+                        {lic.product.name}
+                      </span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded border ${lic.status === 'ACTIVE' ? 'bg-green-900/20 text-green-400 border-green-900/30' : 'bg-gray-800 text-gray-400 border-gray-700'
+                        }`}>
+                        {lic.status}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500 flex items-center justify-between">
+                      <span>{lic.user.email}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(lic.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
                 ))
               )}
-            </tbody>
-          </table>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
