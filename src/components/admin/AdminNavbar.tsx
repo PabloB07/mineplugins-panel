@@ -71,9 +71,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 group ${active
-                                            ? "text-white bg-[#f59e0b]/10 border border-[#f59e0b]/20"
-                                            : "text-gray-400 hover:text-white hover:bg-white/5"
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
+                                        ? "text-white bg-[#f59e0b]/10 border border-[#f59e0b]/20"
+                                        : "text-gray-400 hover:text-white hover:bg-white/5"
                                         }`}
                                 >
                                     <Icon className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
@@ -86,7 +86,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                         <Link
                             href="/dashboard"
-                            className="text-blue-400 hover:text-blue-300 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-blue-400/10"
+                            className="text-blue-400 hover:text-blue-300 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-blue-400/10 whitespace-nowrap flex-shrink-0"
                             title="Switch to customer dashboard"
                         >
                             Client View
@@ -153,8 +153,8 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                     href={item.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-medium ${active
-                                            ? "bg-[#f59e0b]/10 text-white border-l-2 border-[#f59e0b]"
-                                            : "text-gray-400 hover:text-white hover:bg-white/5"
+                                        ? "bg-[#f59e0b]/10 text-white border-l-2 border-[#f59e0b]"
+                                        : "text-gray-400 hover:text-white hover:bg-white/5"
                                         }`}
                                 >
                                     <Icon className={`w-5 h-5 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
