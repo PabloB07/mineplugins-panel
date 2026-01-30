@@ -36,7 +36,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
         { href: "/admin/licenses", label: "Licenses", icon: Key },
         { href: "/admin/users", label: "Users", icon: Users },
-        { href: "/admin/activity", label: "Activity", icon: Activity },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
         { href: "/admin/payku", label: "Payku", icon: CreditCard },
     ];

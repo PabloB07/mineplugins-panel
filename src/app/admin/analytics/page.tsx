@@ -1,6 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { formatCLP } from "@/lib/pricing";
-import { TrendingUp, TrendingDown, Users, CreditCard, Activity, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Users, 
+  CreditCard, 
+  Activity, 
+  AlertCircle, 
+  CheckCircle, 
+  XCircle,
+  BarChart3,
+  Download,
+  Calendar
+} from "lucide-react";
 
 type LicenseStatusItem = {
   status: string;
@@ -139,33 +151,33 @@ export default async function AdminAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Analytics Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <BarChart3 className="w-8 h-8 text-blue-400" />
+            Analytics Dashboard
+          </h1>
           <p className="text-gray-400 mt-1">Last 30 days performance overview</p>
         </div>
         <div className="flex items-center gap-4">
           <button
             onClick={() => exportData('validations')}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-blue-500/20 flex items-center gap-2"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <Activity className="w-4 h-4" />
             Export Validations
           </button>
           <button
             onClick={() => exportData('revenue')}
-            className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-emerald-500/20 flex items-center gap-2"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <CreditCard className="w-4 h-4" />
             Export Revenue
           </button>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-400 bg-[#111] rounded-lg px-3 py-2 border border-[#222]">
+            <Calendar className="w-4 h-4 inline mr-2" />
             {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 
               year: 'numeric', 
@@ -178,66 +190,66 @@ export default async function AdminAnalyticsPage() {
 
       {/* Main Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 border border-blue-700/30 rounded-lg p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-gradient-to-br from-blue-500/20 to-blue-800/10 border border-blue-500/30 rounded-xl p-6 relative overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
           <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <Activity className="w-5 h-5 text-blue-400" />
-              <span className="text-xs text-blue-400 bg-blue-900/30 px-2 py-1 rounded-full">All time</span>
+            <div className="flex items-center justify-between mb-3">
+              <Activity className="w-6 h-6 text-blue-400" />
+              <span className="text-xs text-blue-400 bg-blue-500/20 px-2 py-1 rounded-full">All time</span>
             </div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-4xl font-bold text-white mb-2">
               {totalValidations.toLocaleString()}
             </div>
             <div className="text-gray-400 text-sm">Total Validations</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-900/20 to-green-800/10 border border-green-700/30 rounded-lg p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-gradient-to-br from-emerald-500/20 to-green-800/10 border border-emerald-500/30 rounded-xl p-6 relative overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
           <div className="relative">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-3">
               {Number(successRate) >= 90 ? (
-                <TrendingUp className="w-5 h-5 text-green-400" />
+                <TrendingUp className="w-6 h-6 text-emerald-400" />
               ) : (
-                <TrendingDown className="w-5 h-5 text-yellow-400" />
+                <TrendingDown className="w-6 h-6 text-yellow-400" />
               )}
-              <span className={`text-xs px-2 py-1 rounded-full ${
+              <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
                 Number(successRate) >= 90 
-                  ? "text-green-400 bg-green-900/30" 
+                  ? "text-emerald-400 bg-emerald-500/20" 
                   : Number(successRate) >= 70
-                  ? "text-yellow-400 bg-yellow-900/30"
-                  : "text-red-400 bg-red-900/30"
+                  ? "text-yellow-400 bg-yellow-500/20" 
+                  : "text-red-400 bg-red-500/20"
               }`}>
                 {Number(successRate) >= 90 ? "Excellent" : Number(successRate) >= 70 ? "Good" : "Needs Attention"}
               </span>
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{successRate}%</div>
+            <div className="text-4xl font-bold text-white mb-2">{successRate}%</div>
             <div className="text-gray-400 text-sm">Success Rate</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 border border-purple-700/30 rounded-lg p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-gradient-to-br from-purple-500/20 to-purple-800/10 border border-purple-500/30 rounded-xl p-6 relative overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
           <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <Users className="w-5 h-5 text-purple-400" />
-              <span className="text-xs text-purple-400 bg-purple-900/30 px-2 py-1 rounded-full">Active</span>
+            <div className="flex items-center justify-between mb-3">
+              <Users className="w-6 h-6 text-purple-400" />
+              <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-1 rounded-full">Active</span>
             </div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-4xl font-bold text-white mb-2">
               {uniqueServers.length}
             </div>
             <div className="text-gray-400 text-sm">Unique Servers</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-yellow-900/20 to-yellow-800/10 border border-yellow-700/30 rounded-lg p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-800/10 border border-yellow-500/30 rounded-xl p-6 relative overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl"></div>
           <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <CreditCard className="w-5 h-5 text-yellow-400" />
-              <span className="text-xs text-yellow-400 bg-yellow-900/30 px-2 py-1 rounded-full">Revenue</span>
+            <div className="flex items-center justify-between mb-3">
+              <CreditCard className="w-6 h-6 text-yellow-400" />
+              <span className="text-xs text-yellow-400 bg-yellow-500/20 px-2 py-1 rounded-full">Revenue</span>
             </div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-4xl font-bold text-white mb-2">
               {formatCLP(revenueStats._sum.total || 0)}
             </div>
             <div className="text-gray-400 text-sm">Total Revenue</div>
@@ -280,8 +292,8 @@ export default async function AdminAnalyticsPage() {
                       )}
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                         isGood 
-                          ? "bg-green-900/30 text-green-400" 
-                          : "bg-yellow-900/30 text-yellow-400"
+                          ? "bg-emerald-500/20 text-emerald-400" 
+                          : "bg-yellow-500/20 text-yellow-400"
                       }`}>
                         {rate}%
                       </span>
@@ -369,45 +381,50 @@ export default async function AdminAnalyticsPage() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-r from-green-900/20 to-green-800/10 border border-green-700/30 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-3">
-            <CheckCircle className="w-8 h-8 text-green-400" />
-            <span className="text-2xl font-bold text-green-400">
-              {successfulValidations.toLocaleString()}
-            </span>
-          </div>
-          <div className="text-gray-300 text-sm font-medium">Successful Validations</div>
-          <div className="text-xs text-gray-500 mt-1">
-            {totalValidations > 0 ? `${((successfulValidations / totalValidations) * 100).toFixed(1)}% of total` : '0%'}
-          </div>
-        </div>
-        
-        <div className="bg-gradient-to-r from-red-900/20 to-red-800/10 border border-red-700/30 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-3">
-            <XCircle className="w-8 h-8 text-red-400" />
-            <span className="text-2xl font-bold text-red-400">
-              {failedValidations.toLocaleString()}
-            </span>
-          </div>
-          <div className="text-gray-300 text-sm font-medium">Failed Validations</div>
-          <div className="text-xs text-gray-500 mt-1">
-            {totalValidations > 0 ? `${((failedValidations / totalValidations) * 100).toFixed(1)}% of total` : '0%'}
+        <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-800/10 border border-emerald-500/30 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <CheckCircle className="w-10 h-10 text-emerald-400" />
+            <div className="flex-1">
+              <span className="text-3xl font-bold text-emerald-400">
+                {successfulValidations.toLocaleString()}
+              </span>
+              <div className="text-gray-300 text-sm font-medium">Successful Validations</div>
+              <div className="text-xs text-gray-500 mt-2">
+                {totalValidations > 0 ? `${((successfulValidations / totalValidations) * 100).toFixed(1)}% of total` : '0%'}
+              </div>
+            </div>
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-blue-900/20 to-blue-800/10 border border-blue-700/30 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-3">
-            <CreditCard className="w-8 h-8 text-blue-400" />
-            <span className="text-2xl font-bold text-blue-400">
-              {revenueStats._count}
-            </span>
-          </div>
-          <div className="text-gray-300 text-sm font-medium">Completed Orders</div>
-          <div className="text-xs text-gray-500 mt-1">
-            Revenue: {formatCLP(revenueStats._sum.total || 0)}
+        <div className="bg-gradient-to-r from-red-500/20 to-red-800/10 border border-red-500/30 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <XCircle className="w-10 h-10 text-red-400" />
+            <div className="flex-1">
+              <span className="text-3xl font-bold text-red-400">
+                {failedValidations.toLocaleString()}
+              </span>
+              <div className="text-gray-300 text-sm font-medium">Failed Validations</div>
+              <div className="text-xs text-gray-500 mt-2">
+                {totalValidations > 0 ? `${((failedValidations / totalValidations) * 100).toFixed(1)}% of total` : '0%'}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+        
+        <div className="bg-gradient-to-r from-blue-500/20 to-blue-800/10 border border-blue-500/30 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <CreditCard className="w-10 h-10 text-blue-400" />
+            <div className="flex-1">
+              <span className="text-3xl font-bold text-blue-400">
+                {revenueStats._count}
+              </span>
+              <div className="text-gray-300 text-sm font-medium">Completed Orders</div>
+              <div className="text-xs text-gray-500 mt-2">
+                Revenue: {formatCLP(revenueStats._sum.total || 0)}
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* Top Failure Reasons */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

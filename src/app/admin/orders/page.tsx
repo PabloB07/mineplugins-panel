@@ -3,8 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatCLP } from "@/lib/pricing";
-
-import { Trash2 } from "lucide-react";
+import { 
+  Trash2, 
+  ShoppingCart, 
+  User, 
+  Package, 
+  Calendar,
+  DollarSign,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  TrendingUp,
+  Search,
+  Filter
+} from "lucide-react";
 
 interface Order {
   id: string;
@@ -201,149 +213,183 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Order Management</h1>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <ShoppingCart className="w-8 h-8 text-amber-400" />
+            Order Management
+          </h1>
           <p className="text-gray-400 mt-1">Manage all customer orders and payments</p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setShowDebugModal(true)}
-            className="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="bg-[#f59e0b]/20 hover:bg-[#f59e0b]/30 text-[#f59e0b] border border-[#f59e0b]/30 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-[#f59e0b]/20"
           >
+            <AlertCircle className="w-4 h-4 mr-2" />
             Debug Tools
           </button>
           <button
             onClick={bulkFixStuckOrders}
             disabled={debugLoading}
-            className="bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-red-500/20 disabled:opacity-50"
           >
+            <TrendingUp className="w-4 h-4 mr-2" />
             {debugLoading ? "Fixing..." : "Fix Stuck Orders"}
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 mb-6">
-        <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">Filter by status:</span>
+      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-400 text-sm font-medium">Status:</span>
+          </div>
           <div className="flex gap-2">
             {["all", "PENDING", "COMPLETED", "FAILED", "CANCELLED"].map(
               (status) => (
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${filter === status
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    filter === status
+                      ? "bg-[#f59e0b] text-white border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
+                      : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
+                  }`}
                 >
-                  {status === "all" ? "All" : status}
+                  {status === "all" ? "All Orders" : status}
                 </button>
               )
             )}
           </div>
-          <div className="flex-1 max-w-sm">
+          <div className="flex-1 max-w-md relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search by order number, email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-white text-sm"
+              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
             />
           </div>
         </div>
       </div>
 
       {/* Orders Table */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+      <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-700/50">
+            <thead className="bg-[#1a1a1a] border-b border-[#222]">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  Order #
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  Order
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Customer
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Items
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Total
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   License
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-[#222]">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
-                    Loading...
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-amber-400 border-t-transparent mx-auto"></div>
+                      <span>Loading orders...</span>
+                    </div>
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
-                    No orders found
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
+                    <div className="flex flex-col items-center gap-4">
+                      <ShoppingCart className="w-12 h-12 text-gray-500" />
+                      <div>
+                        <h3 className="text-lg font-semibold text-white mb-2">No Orders Found</h3>
+                        <p className="text-gray-500">No orders match your current filters.</p>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-700/30">
-                    <td className="px-4 py-3">
+                  <tr key={order.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="font-mono text-sm text-white bg-[#0a0a0a] border border-[#333] px-3 py-2 rounded-lg">
+                            {order.orderNumber}
+                          </div>
+                          {order.flowToken && (
+                            <button
+                              onClick={() => copyToClipboard(order.flowToken!)}
+                              className="text-gray-400 hover:text-amber-400 p-2 rounded-lg hover:bg-[#333] transition-colors"
+                              title="Copy Flow token"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2z" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30">
+                          <User className="w-4 h-4 text-amber-400" />
+                        </div>
+                        <div>
+                          <div className="text-white text-sm font-medium">
+                            {order.customerEmail || order.user.email}
+                          </div>
+                          {order.customerName && (
+                            <div className="text-gray-400 text-xs">
+                              {order.customerName}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="font-mono text-sm text-white bg-gray-700/50 px-2 py-1 rounded">
-                          {order.orderNumber}
+                        <Package className="w-4 h-4 text-gray-400" />
+                        <div>
+                          <div className="text-sm text-gray-300 font-medium">
+                            {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {order.items.map(item => item.product.name).join(', ')}
+                          </div>
                         </div>
-                        {order.flowToken && (
-                          <button
-                            onClick={() => copyToClipboard(order.flowToken!)}
-                            className="text-gray-400 hover:text-white"
-                            title="Copy Flow token"
-                          >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                        )}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-white text-sm">
-                        {order.customerEmail || order.user.email}
-                      </div>
-                      {order.customerName && (
-                        <div className="text-gray-400 text-xs">
-                          {order.customerName}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <DollarSign className="w-4 h-4 text-emerald-400" />
+                        <div className="text-sm font-semibold text-emerald-400">
+                          {formatCLP(order.total)}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm text-gray-300">
-                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {order.items.map(item => item.product.name).join(', ')}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm font-semibold text-emerald-400">
-                        {formatCLP(order.total)}
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -392,12 +438,12 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Link
-                          href={`/dashboard/orders/${order.id}`}
-                          className="text-blue-400 hover:text-blue-300 text-sm"
-                        >
-                          View
-                        </Link>
+                          <Link
+                            href={`/dashboard/orders/${order.id}`}
+                            className="text-blue-400 hover:text-blue-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-400/10 transition-colors"
+                          >
+                            View
+                          </Link>
                         {order.status === "PENDING" && (
                           <button
                             onClick={() => {
@@ -431,22 +477,22 @@ export default function AdminOrdersPage() {
       {/* Pagination */}
       {
         pagination.totalPages > 1 && (
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 mt-6">
+          <div className="bg-[#111] rounded-xl border border-[#222] p-6 mt-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-400">
                 Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                   disabled={pagination.page === 1}
-                  className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   Previous
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
                     const pageNum = i + 1;
                     const isActive = pageNum === pagination.page;
@@ -455,9 +501,10 @@ export default function AdminOrdersPage() {
                       <button
                         key={pageNum}
                         onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-                        className={`px-3 py-1 text-sm rounded ${isActive
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                        className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? "bg-[#f59e0b] text-white border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
+                            : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                           }`}
                       >
                         {pageNum}
@@ -467,12 +514,13 @@ export default function AdminOrdersPage() {
 
                   {pagination.totalPages > 5 && (
                     <>
-                      <span className="text-gray-500">...</span>
+                      <span className="text-gray-500 px-2">...</span>
                       <button
                         onClick={() => setPagination(prev => ({ ...prev, page: pagination.totalPages }))}
-                        className={`px-3 py-1 text-sm rounded ${pagination.page === pagination.totalPages
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                        className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                          pagination.page === pagination.totalPages
+                            ? "bg-[#f59e0b] text-white border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
+                            : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                           }`}
                       >
                         {pagination.totalPages}
@@ -484,7 +532,7 @@ export default function AdminOrdersPage() {
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
                   disabled={pagination.page === pagination.totalPages}
-                  className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   Next
                 </button>
@@ -546,8 +594,8 @@ function DebugModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-[#111] rounded-xl border border-[#222] w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl shadow-black/50">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-white">
             Order Debug: {order?.orderNumber}
@@ -567,8 +615,11 @@ function DebugModal({
         ) : debugInfo ? (
           <div className="space-y-6">
             {/* Order Info */}
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <h3 className="text-white font-semibold mb-3">Order Information</h3>
+            <div className="bg-[#0a0a0a]/50 rounded-xl p-6 border border-[#333]">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 text-amber-400" />
+                Order Information
+              </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-400">Order Number:</span>
@@ -599,8 +650,11 @@ function DebugModal({
 
             {/* Flow Status */}
             {debugInfo.flowStatus && (
-              <div className="bg-gray-700/30 rounded-lg p-4">
-                <h3 className="text-white font-semibold mb-3">Flow Payment Status</h3>
+              <div className="bg-[#0a0a0a]/50 rounded-xl p-6 border border-[#333]">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-blue-400" />
+                  Flow Payment Status
+                </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">Flow Status:</span>
@@ -624,8 +678,11 @@ function DebugModal({
 
             {/* License Info */}
             {debugInfo.order.items && (
-              <div className="bg-gray-700/30 rounded-lg p-4">
-                <h3 className="text-white font-semibold mb-3">License Information</h3>
+              <div className="bg-[#0a0a0a]/50 rounded-xl p-6 border border-[#333]">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-emerald-400" />
+                  License Information
+                </h3>
                 <div className="space-y-2">
                   {debugInfo.order.items.map((item: any, index: number) => (
                     <div key={index} className="text-sm border-b border-gray-600 pb-2 last:border-0">
@@ -640,7 +697,7 @@ function DebugModal({
             )}
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-600">
+            <div className="flex justify-end gap-4 pt-6 border-t border-[#333]">
               <button
                 onClick={onClose}
                 className="px-4 py-2 text-gray-400 hover:text-white"

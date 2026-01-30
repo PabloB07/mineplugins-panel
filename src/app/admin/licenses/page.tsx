@@ -2,6 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  Shield,
+  Key,
+  User,
+  Calendar,
+  Activity,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Search,
+  Filter
+} from "lucide-react";
 
 interface License {
   id: string;
@@ -92,96 +104,113 @@ export default function AdminLicensesPage() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">License Management</h1>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <Key className="w-8 h-8 text-blue-400" />
+            License Management
+          </h1>
           <p className="text-gray-400 mt-1">
             Manage all licenses in the system
           </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-blue-500/20"
         >
+          <Shield className="w-4 h-4 mr-2" />
           Create License
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 mb-6">
-        <div className="flex items-center gap-4 flex-wrap">
-          <span className="text-gray-400 text-sm">Filter by status:</span>
+      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-400 text-sm font-medium">Status:</span>
+          </div>
           <div className="flex gap-2">
             {["all", "ACTIVE", "EXPIRED", "SUSPENDED", "REVOKED"].map(
               (status) => (
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     filter === status
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      ? "bg-blue-500 text-white border border-blue-500/50 shadow-lg shadow-blue-500/20"
+                      : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                   }`}
                 >
-                  {status === "all" ? "All" : status}
+                  {status === "all" ? "All Licenses" : status}
                 </button>
               )
             )}
           </div>
-          <div className="flex-1 min-w-[200px] max-w-sm">
+          <div className="flex-1 max-w-md relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search by license key, email, product..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-white text-sm"
+              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
             />
           </div>
         </div>
       </div>
 
       {/* Licenses Table */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+      <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-700/50">
+            <thead className="bg-[#1a1a1a] border-b border-[#222]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   License Key
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Product
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Activations
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Expires
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-[#222]">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
-                    Loading...
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-400 border-t-transparent mx-auto"></div>
+                      <span>Loading licenses...</span>
+                    </div>
                   </td>
                 </tr>
               ) : licenses.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
-                    No licenses found
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                    <div className="flex flex-col items-center gap-4">
+                      <Key className="w-16 h-16 text-gray-500" />
+                      <div>
+                        <h3 className="text-lg font-semibold text-white mb-2">No Licenses Found</h3>
+                        <p className="text-gray-500">No licenses match your current filters.</p>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -192,31 +221,22 @@ export default function AdminLicensesPage() {
                   ).length;
 
                   return (
-                    <tr key={license.id} className="hover:bg-gray-700/50">
+                    <tr key={license.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <code className="text-green-400 text-sm">
-                            {license.licenseKey.substring(0, 16)}...
-                          </code>
-                          <button
-                            onClick={() => copyToClipboard(license.licenseKey)}
-                            className="text-gray-400 hover:text-white"
-                            title="Copy license key"
-                          >
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
-                          </button>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+                            <User className="w-4 h-4 text-blue-400" />
+                          </div>
+                          <div>
+                            <div className="text-white text-sm font-medium">
+                              {license.user.email}
+                            </div>
+                            {license.user.name && (
+                              <div className="text-gray-400 text-xs">
+                                {license.user.name}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -229,44 +249,66 @@ export default function AdminLicensesPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-gray-300 text-sm">
-                        {license.product.name}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Key className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-300 text-sm font-medium">{license.product.name}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
+                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                             license.status === "ACTIVE" && !isExpired
-                              ? "bg-green-900 text-green-300"
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                               : license.status === "EXPIRED" || isExpired
-                              ? "bg-red-900 text-red-300"
+                              ? "bg-red-500/20 text-red-300 border border-red-500/30"
                               : license.status === "SUSPENDED"
-                              ? "bg-yellow-900 text-yellow-300"
-                              : "bg-gray-700 text-gray-300"
+                              ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                              : "bg-gray-700/50 text-gray-300 border border-gray-600"
                           }`}
                         >
+                          {license.status === "ACTIVE" && !isExpired && (
+                            <CheckCircle className="w-3 h-3" />
+                          )}
+                          {license.status === "EXPIRED" || isExpired && (
+                            <XCircle className="w-3 h-3" />
+                          )}
+                          {license.status === "SUSPENDED" && (
+                            <AlertCircle className="w-3 h-3" />
+                          )}
                           {isExpired && license.status === "ACTIVE"
                             ? "EXPIRED"
                             : license.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-300 text-sm">
-                        {activeActivations} / {license.maxActivations}
-                      </td>
-                      <td className="px-6 py-4 text-gray-300 text-sm">
-                        {new Date(license.expiresAt).toLocaleDateString()}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Activity className="w-4 h-4 text-gray-400" />
+                          <div className="text-gray-300 text-sm font-medium">
+                            {activeActivations} / {license.maxActivations}
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <div className="text-gray-300 text-sm">
+                            {new Date(license.expiresAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
                           <Link
                             href={`/admin/licenses/${license.id}`}
-                            className="text-blue-400 hover:text-blue-300 text-sm"
+                            className="text-blue-400 hover:text-blue-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-400/10 transition-colors border border-transparent hover:border-blue-400/20"
                           >
                             View
                           </Link>
                           {license.status === "ACTIVE" && (
                             <button
                               onClick={() => revokeLicense(license.id)}
-                              className="text-red-400 hover:text-red-300 text-sm"
+                              className="text-red-400 hover:text-red-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-red-400/10 transition-colors border border-transparent hover:border-red-400/20"
                             >
                               Revoke
                             </button>
@@ -284,22 +326,22 @@ export default function AdminLicensesPage() {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 mt-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6 mt-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-400">
               Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
               {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} licenses
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                 disabled={pagination.page === 1}
-                className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Previous
               </button>
               
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
                   const pageNum = i + 1;
                   const isActive = pageNum === pagination.page;
@@ -308,10 +350,10 @@ export default function AdminLicensesPage() {
                     <button
                       key={pageNum}
                       onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-                      className={`px-3 py-1 text-sm rounded ${
+                      className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                         isActive
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                          ? "bg-blue-500 text-white border border-blue-500/50 shadow-lg shadow-blue-500/20"
+                          : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                       }`}
                     >
                       {pageNum}
@@ -321,13 +363,13 @@ export default function AdminLicensesPage() {
                 
                 {pagination.totalPages > 5 && (
                   <>
-                    <span className="text-gray-500">...</span>
+                    <span className="text-gray-500 px-2">...</span>
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: pagination.totalPages }))}
-                      className={`px-3 py-1 text-sm rounded ${
+                      className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                         pagination.page === pagination.totalPages
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                          ? "bg-blue-500 text-white border border-blue-500/50 shadow-lg shadow-blue-500/20"
+                          : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                       }`}
                     >
                       {pagination.totalPages}
@@ -339,7 +381,7 @@ export default function AdminLicensesPage() {
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
                 disabled={pagination.page === pagination.totalPages}
-                className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Next
               </button>
@@ -426,19 +468,20 @@ function CreateLicenseModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg border border-gray-700 w-full max-w-md p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-[#111] rounded-xl border border-[#222] w-full max-w-md p-6 shadow-2xl shadow-black/50">
+        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Shield className="w-5 h-5 text-blue-400" />
           Create New License
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-400 text-sm mb-1">User</label>
+            <label className="block text-gray-400 text-sm font-medium mb-2">User</label>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
               required
             >
               <option value="">Select a user</option>
@@ -451,11 +494,11 @@ function CreateLicenseModal({
           </div>
 
           <div>
-            <label className="block text-gray-400 text-sm mb-1">Product</label>
+            <label className="block text-gray-400 text-sm font-medium mb-2">Product</label>
             <select
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
               required
             >
               {products.map((product) => (
@@ -467,14 +510,14 @@ function CreateLicenseModal({
           </div>
 
           <div>
-            <label className="block text-gray-400 text-sm mb-1">
+            <label className="block text-gray-400 text-sm font-medium mb-2">
               Duration (days)
             </label>
             <input
               type="number"
               value={durationDays}
               onChange={(e) => setDurationDays(parseInt(e.target.value))}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
               min={1}
               max={3650}
               required
@@ -482,23 +525,23 @@ function CreateLicenseModal({
           </div>
 
           {error && (
-            <div className="bg-red-900/50 border border-red-700 text-red-300 px-3 py-2 rounded text-sm">
+            <div className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl text-sm">
               {error}
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-4 pt-6 border-t border-[#333]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-400 hover:text-white"
+              className="px-4 py-2 text-gray-400 hover:text-white font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !selectedUserId || !selectedProductId}
-              className="bg-green-600 hover:bg-green-500 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-blue-500/20 disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create License"}
             </button>
