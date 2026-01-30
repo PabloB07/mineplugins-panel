@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Package, Shield, Clock, Server } from "lucide-react";
+import { ArrowLeft, Package, Shield, Clock, Server, Check, CreditCard, Lock, Zap, Star } from "lucide-react";
 import { CheckoutClient } from "@/app/checkout/CheckoutClient";
 import { formatUSD, formatCLP } from "@/lib/pricing";
 
@@ -44,124 +44,201 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const hasDiscount = !!product.salePriceUSD || !!product.salePriceCLP;
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="mb-8 flex items-center gap-4">
+    <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">
+      {/* Ambient Background */}
+      <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-green-500/5 to-transparent pointer-events-none"></div>
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 relative z-10">
+
+        {/* Back Link */}
         <Link
           href="/buy"
-          className="text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Store</span>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-white">Checkout</h1>
-          <p className="text-gray-400 mt-1">Complete your purchase</p>
-        </div>
-      </div>
 
-      <div className="grid gap-6">
-        {/* Product Summary */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <Package className="w-5 h-5" />
-            Order Summary
-          </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
 
-          <div className="flex items-start justify-between">
+          {/* Left Column: Product Details */}
+          <div className="lg:col-span-7 space-y-8">
+
+            {/* Header */}
             <div>
-              <h3 className="text-lg font-medium text-white">{product.name}</h3>
-              <p className="text-gray-400 text-sm mt-1">{product.description}</p>
+              <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Checkout</h1>
+              <p className="text-gray-400 text-lg">Complete your purchase securely to unlock your license.</p>
+            </div>
 
-              {latestVersion && (
-                <div className="text-xs text-gray-500 mt-2">
-                  Latest: v{latestVersion.version}
-                  {latestVersion.minMcVersion && ` | MC ${latestVersion.minMcVersion}+`}
-                  {latestVersion.minJavaVersion && ` | Java ${latestVersion.minJavaVersion}+`}
+            {/* Product Card */}
+            <div className="bg-[#111] rounded-2xl border border-[#222] overflow-hidden shadow-2xl shadow-black/50">
+              <div className="p-8 border-b border-[#222] bg-gradient-to-r from-[#111] to-[#151515]">
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-4">
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-green-900/40 to-green-900/10 border border-green-500/20 flex items-center justify-center text-green-500 shadow-inner shadow-green-500/10">
+                      <Zap className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white mb-1">{product.name}</h2>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="bg-[#222] text-gray-300 px-2 py-0.5 rounded border border-[#333]">Legacy</span>
+                        {latestVersion && (
+                          <span className="text-green-500 font-mono">v{latestVersion.version}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-white">{formatUSD(displayPriceUSD)}</div>
+                    {hasDiscount && (
+                      <div className="text-sm text-gray-500 line-through">${(product.priceUSD / 100).toFixed(2)} USD</div>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
+              </div>
 
-            <div className="text-right">
-              <div className="text-2xl font-bold text-green-400">
-                {formatUSD(displayPriceUSD)}
-              </div>
-              <div className="text-sm text-gray-300">
-                {formatCLP(displayPriceCLP)}
-              </div>
-              {hasDiscount && (
-                <div className="text-sm text-gray-500 line-through">
-                  {formatUSD(product.priceUSD)}
+              <div className="p-8 bg-[#111]">
+                <div className="prose prose-invert prose-sm max-w-none mb-8 text-gray-400">
+                  <p>{product.description}</p>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
 
-        {/* License Details */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            License Details
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 text-gray-300">
-              <Clock className="w-5 h-5 text-blue-400" />
-              <div>
-                <div className="text-sm text-gray-400">Duration</div>
-                <div className="font-medium">{product.defaultDurationDays} days</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 text-gray-300">
-              <Server className="w-5 h-5 text-purple-400" />
-              <div>
-                <div className="text-sm text-gray-400">Server Activations</div>
-                <div className="font-medium">{product.maxActivations} server(s)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Info */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Payment</h2>
-
-          <div className="text-sm text-gray-400 mb-4">
-            You will be redirected to Flow.cl to complete your payment securely.
-            We accept credit cards, debit cards, and bank transfers.
-          </div>
-
-          <div className="border-t border-gray-700 pt-4 mt-4">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-300">Total</span>
-              <div className="text-right">
-                <div className="text-xl font-bold text-white">
-                  {formatCLP(displayPriceCLP)}
-                </div>
-                <div className="text-sm text-gray-400">
-                  ({formatUSD(displayPriceUSD)})
+                {/* Key Features Grid */}
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Included in this license</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-[#1a1a1a] border border-[#222]">
+                    <Clock className="w-5 h-5 text-blue-400 mt-0.5" />
+                    <div>
+                      <div className="font-medium text-white">{product.defaultDurationDays} Days Access</div>
+                      <div className="text-xs text-gray-500">Full access period</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-[#1a1a1a] border border-[#222]">
+                    <Server className="w-5 h-5 text-purple-400 mt-0.5" />
+                    <div>
+                      <div className="font-medium text-white">{product.maxActivations} Server IP(s)</div>
+                      <div className="text-xs text-gray-500">Simultaneous activations</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-[#1a1a1a] border border-[#222]">
+                    <Shield className="w-5 h-5 text-green-400 mt-0.5" />
+                    <div>
+                      <div className="font-medium text-white">Priority Support</div>
+                      <div className="text-xs text-gray-500">Fast discord support</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-[#1a1a1a] border border-[#222]">
+                    <Package className="w-5 h-5 text-orange-400 mt-0.5" />
+                    <div>
+                      <div className="font-medium text-white">Instant Delivery</div>
+                      <div className="text-xs text-gray-500">Automated processing</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <CheckoutClient 
-            product={product}
-            displayPriceUSD={displayPriceUSD}
-            displayPriceCLP={displayPriceCLP}
-            user={session.user}
-          />
-          </div>
-        </div>
+            {/* Satisfaction / Trust */}
+            <div className="flex flex-col sm:flex-row gap-6 py-6 border-t border-b border-[#222]">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-green-500/10 text-green-500">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-medium text-white text-sm">Secure Payment</div>
+                  <div className="text-xs text-gray-500">256-bit SSL Encrypted</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-blue-500/10 text-blue-500">
+                  <Star className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-medium text-white text-sm">Trusted Quality</div>
+                  <div className="text-xs text-gray-500">Used by 200+ servers</div>
+                </div>
+              </div>
+            </div>
 
-        {/* Account Info */}
-        <div className="bg-gray-700/30 rounded-lg p-4 text-sm text-gray-400">
-          <p>
-            Purchasing as: <span className="text-white">{session.user.email}</span>
-          </p>
-          <p className="mt-1">
-            Your license will be automatically linked to your account after payment.
-          </p>
+          </div>
+
+          {/* Right Column: Payment & Summary */}
+          <div className="lg:col-span-5 relative">
+            <div className="sticky top-8 space-y-6">
+
+              {/* User Info (Mini) */}
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-[#111] border border-[#222]">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-white font-bold text-sm">
+                  {session.user.name?.[0] || "U"}
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500">Purchasing as</div>
+                  <div className="text-sm font-medium text-white truncate max-w-[200px]">{session.user.email}</div>
+                </div>
+              </div>
+
+              {/* Total Summary Card */}
+              <div className="bg-[#111] rounded-2xl border border-[#222] p-6 shadow-xl relative overflow-hidden">
+                {/* Glow effect inside card */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-[50px] rounded-full pointer-events-none"></div>
+
+                <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-gray-400" />
+                  Order Summary
+                </h2>
+
+                <div className="space-y-4 mb-6">
+                  <div className="flex justify-between text-gray-400">
+                    <span>Subtotal</span>
+                    <span>{formatCLP(displayPriceCLP)}</span>
+                  </div>
+                  {hasDiscount && (
+                    <div className="flex justify-between text-green-500">
+                      <span>Discount</span>
+                      <span>Save {formatCLP(product.priceCLP - displayPriceCLP)}</span>
+                    </div>
+                  )}
+                  <div className="h-px bg-[#222] my-2"></div>
+                  <div className="flex justify-between items-end">
+                    <span className="text-white font-medium">Total</span>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-white">{formatCLP(displayPriceCLP)}</div>
+                      <div className="text-xs text-gray-500 mb-1">({formatUSD(displayPriceUSD)})</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-300 flex items-start gap-2">
+                  <div className="mt-0.5"><Check className="w-3 h-3" /></div>
+                  Wait for the redirect to Flow.cl to complete your payment securely.
+                </div>
+
+                <div className="relative z-10">
+                  <CheckoutClient
+                    product={product}
+                    displayPriceUSD={displayPriceUSD}
+                    displayPriceCLP={displayPriceCLP}
+                    user={session.user}
+                  />
+                </div>
+
+                <div className="mt-4 text-center">
+                  <div className="flex items-center justify-center gap-2 grayscale opacity-50">
+                    {/* Payment Icons Placeholder */}
+                    <div className="h-6 w-10 bg-[#333] rounded"></div>
+                    <div className="h-6 w-10 bg-[#333] rounded"></div>
+                    <div className="h-6 w-10 bg-[#333] rounded"></div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-center text-xs text-gray-600">
+                By confirming this purchase, you agree to our Terms of Service and Refund Policy.
+              </p>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
