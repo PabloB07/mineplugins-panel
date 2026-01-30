@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const signature = request.headers.get("x-payku-signature");
-    
+
     console.log("Payku webhook received:", {
       signature: signature,
       body: body
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
 async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
   console.log("Handling Payku success webhook:", paymentData);
-  
+
   const { orden: order = paymentData.orden || paymentData.order, estado: status = paymentData.estado || paymentData.status } = paymentData;
 
   if (!order) {
@@ -110,20 +110,20 @@ async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
     });
 
     // Calculate expiration date
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + item.durationDays);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 
-        // Create license
-        const license = await prisma.license.create({
-          data: {
-            licenseKey,
-            userId: orderRecord.userId,
-            productId: item.productId,
-            status: "ACTIVE",
-            expiresAt,
-            maxActivations: item.product.maxActivations,
-          },
-        });
+    // Create license
+    const license = await prisma.license.create({
+      data: {
+        licenseKey,
+        userId: orderRecord.userId,
+        productId: item.productId,
+        status: "ACTIVE",
+        expiresAt,
+        maxActivations: item.product.maxActivations,
+      },
+    });
 
     // Link license to order item
     await prisma.orderItem.update({

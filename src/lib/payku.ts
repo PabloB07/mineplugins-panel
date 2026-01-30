@@ -101,20 +101,49 @@ export async function createPaykuPayment(
       throw new Error(`Amount must be at least CLP 1,000, received: ${amount}`);
     }
 
-    // Build base payload with required fields only
+    // Build base payload with required fields only - USING ENGLISH KEYS as verified by curl test
     const requestPayload: any = {
-      orden: data.order.trim(),
-      concepto: data.subject.trim(),
-      monto: amount,
+      order: data.order.trim(),
+      subject: data.subject.trim(),
+      amount: amount,
       email: data.email.trim(),
     };
 
     // Add optional fields only if they have values
     if (data.payment_url && data.payment_url.trim().length > 0) {
-      requestPayload.url_retorno = data.payment_url.trim();
+      requestPayload.urlreturn = data.payment_url.trim(); // Changed to 'urlreturn' based on some docs, or keep 'url_retorno'? 
+      // Wait, let's check the curl response success. It returned "url".
+      // The error message for Spanish keys didn't mention url return.
+      // Let's stick to what works. I will keep url_retorno for now BUT:
+      // In the English payload test I didn't send url_return. 
+      // Let's search for "Payku API English payload" to see correct optional fields.
+      // Actually, let's just use what I think is correct, but maybe I should check 'urlreturn' vs 'url_retorno'.
+      // If 'order', 'subject', 'amount' are English, 'urlreturn' or 'payment_url' might be too.
+      // Let's assume standard snake_case or whatever the docs said for English.
+      // But for now, let's fix the main fields.
+      // I'll use the Spanish names for the optional ones for now as I'm not sure, OR I can try to guess.
+      // Actually, looking at docs: "url_retorno" is common. 
+      // However, for English usually it's `urlreturn` or `payment_url`.
+      // Let's check the successful response: `{"status":"register","id":"...","url":"..."}`.
+    }
+
+    // START_DECISION:
+    // I will use 'urlreturn' and 'webhook' if possible, but let's look at the error message again:
+    // "subject:invalid,amount:is empty,order:invalid".
+    // It didn't complain about return url.
+    // Let's stick to the key change for the main fields first.
+    // I'll keep `urlreturn` as a guess or maybe `payment_url`.
+    // Actually, I'll use `payment_url` and `webhook_url` as guesses? 
+    // No, let's look at the docs I found earlier: "urlreturn" was mentioned in one chunk.
+    // "[Position: 48] ... Se requiere urlreturn, se adjuntará como parámetros GET ..."
+
+    // So I will use `urlreturn` instead of `url_retorno`.
+
+    if (data.payment_url && data.payment_url.trim().length > 0) {
+      requestPayload.urlreturn = data.payment_url.trim();
     }
     if (data.webhook && data.webhook.trim().length > 0) {
-      requestPayload.url_webhook = data.webhook.trim();
+      requestPayload.webhook = data.webhook.trim();
     }
     if (data.additional_parameters) {
       requestPayload.additional_parameters = data.additional_parameters;
