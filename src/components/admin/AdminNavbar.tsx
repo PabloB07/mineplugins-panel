@@ -48,12 +48,13 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     };
 
     return (
-        <nav className="bg-[#1a1a1a] border-b border-[#f59e0b]/20 sticky top-0 z-50">
+        <nav className="bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#f59e0b]/20 sticky top-0 z-50 shadow-lg shadow-black/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2">
+                        <div className="text-2xl">⛪</div>
+                        <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
                             TownyFaiths
                         </Link>
                         <span className="bg-[#f59e0b]/10 text-[#f59e0b] text-[10px] px-2 py-0.5 rounded border border-[#f59e0b]/20 font-mono tracking-wide uppercase">
@@ -62,7 +63,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center space-x-1 overflow-x-auto no-scrollbar">
+                    <div className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -71,9 +72,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
-                                        ? "text-white bg-[#f59e0b]/10 border border-[#f59e0b]/20"
-                                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
+                                        ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30 shadow-lg shadow-[#f59e0b]/10"
+                                        : "text-gray-400 hover:text-white hover:bg-[#111] hover:border-[#333] border border-transparent"
                                         }`}
                                 >
                                     <Icon className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
@@ -82,11 +83,11 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             );
                         })}
 
-                        <div className="h-6 w-px bg-white/10 mx-2" />
+                        <div className="h-6 w-px bg-white/10 mx-3" />
 
                         <Link
                             href="/dashboard"
-                            className="text-blue-400 hover:text-blue-300 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-blue-400/10 whitespace-nowrap flex-shrink-0"
+                            className="text-blue-400 hover:text-blue-300 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-blue-400/10 border border-blue-400/20 hover:border-blue-400/30 whitespace-nowrap flex-shrink-0"
                             title="Switch to customer dashboard"
                         >
                             Client View
@@ -95,7 +96,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                     {/* User Menu & Mobile Toggle */}
                     <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-white/10">
+                        <div className="hidden sm:flex items-center gap-4 pl-4 border-l border-white/10">
                             <div className="text-right hidden md:block">
                                 <div className="text-sm font-medium text-white">{user.name || "Admin"}</div>
                                 <div className="text-xs text-gray-500">{user.email}</div>
@@ -105,17 +106,17 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <img
                                     src={user.image}
                                     alt="Profile"
-                                    className="w-8 h-8 rounded-full border border-white/10"
+                                    className="w-9 h-9 rounded-full border-2 border-[#f59e0b]/30 hover:border-[#f59e0b]/50 transition-colors"
                                 />
                             ) : (
-                                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white">
+                                <div className="w-9 h-9 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-gray-400">
                                     <User className="w-4 h-4" />
                                 </div>
                             )}
 
                             <Link
                                 href="/api/auth/signout"
-                                className="text-gray-500 hover:text-red-400 p-2 rounded-full hover:bg-white/5 transition-colors"
+                                className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
                                 title="Sign out"
                             >
                                 <LogOut className="w-4 h-4" />
@@ -126,7 +127,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         <div className="lg:hidden">
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                className="text-gray-400 hover:text-white p-2"
+                                className="text-gray-400 hover:text-[#f59e0b] p-2 rounded-lg hover:bg-[#111] transition-all duration-200"
                             >
                                 {isMobileMenuOpen ? (
                                     <X className="w-6 h-6" />
@@ -141,7 +142,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="lg:hidden border-t border-white/5 bg-[#1a1a1a]">
+                <div className="lg:hidden border-t border-white/5 bg-[#0a0a0a]/95 backdrop-blur-md">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
@@ -152,9 +153,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-medium ${active
-                                        ? "bg-[#f59e0b]/10 text-white border-l-2 border-[#f59e0b]"
-                                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${active
+                                        ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                        : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
                                     <Icon className={`w-5 h-5 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
@@ -167,14 +168,15 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             <Link
                                 href="/dashboard"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="flex items-center gap-3 px-3 py-3 text-blue-400 font-medium"
+                                className="flex items-center gap-3 px-4 py-3 text-blue-400 font-medium hover:bg-blue-400/10 rounded-xl transition-all duration-200"
                             >
                                 <LayoutDashboard className="w-5 h-5" />
                                 Client Dashboard
                             </Link>
                             <Link
                                 href="/api/auth/signout"
-                                className="flex items-center gap-3 px-3 py-3 text-red-400 font-medium"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                             >
                                 <LogOut className="w-5 h-5" />
                                 Sign out

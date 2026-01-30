@@ -48,7 +48,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-1">
+                    <div className="hidden md:flex items-center gap-2">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;

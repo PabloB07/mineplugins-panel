@@ -3,6 +3,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { 
+  Server, 
+  Globe, 
+  Activity, 
+  Calendar, 
+  Shield, 
+  Monitor, 
+  Zap,
+  MapPin,
+  Clock,
+  CheckCircle,
+  XCircle
+} from "lucide-react";
 
 interface License {
   id: string;
@@ -23,7 +36,10 @@ interface License {
     serverId: string;
     macAddress: string | null;
     hardwareHash: string | null;
+    networkSignature: string | null;
+    serverIp: string | null;
     serverVersion: string | null;
+    minecraftVersion: string | null;
     isActive: boolean;
     firstSeenAt: string;
     lastSeenAt: string;
@@ -183,57 +199,169 @@ export default function LicenseDetailPage() {
       </div>
 
       {/* Server Activations */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold text-white">Server Activations</h2>
-          <p className="text-gray-400 text-sm">
-            Servers that have activated this license
-          </p>
+      <div className="bg-[#111] rounded-xl border border-[#222] shadow-xl">
+        <div className="px-6 py-5 border-b border-[#222] bg-gradient-to-r from-[#111] to-[#151515]">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Server className="w-5 h-5 text-green-400" />
+                Server Activations
+              </h2>
+              <p className="text-gray-400 text-sm mt-1">
+                Servers that have activated this license ({license.activations.length} total)
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-1 text-green-400">
+                <CheckCircle className="w-4 h-4" />
+                <span>{license.activations.filter(a => a.isActive).length} Active</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-400">
+                <XCircle className="w-4 h-4" />
+                <span>{license.activations.filter(a => !a.isActive).length} Inactive</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {license.activations.length === 0 ? (
-          <div className="px-6 py-12 text-center text-gray-400">
-            No server activations yet. Use the license key above in your Minecraft
-            server to activate.
+          <div className="px-6 py-16 text-center">
+            <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Server className="w-8 h-8 text-gray-500" />
+            </div>
+            <div className="text-gray-400 mb-2">No server activations yet</div>
+            <p className="text-gray-500 text-sm">
+              Use the license key above in your Minecraft server to activate
+            </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-700">
+          <div className="divide-y divide-[#222]">
             {license.activations.map((activation) => (
-              <div key={activation.id} className="px-6 py-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          activation.isActive ? "bg-green-400" : "bg-gray-500"
-                        }`}
-                      />
-                      <span className="text-white font-mono">
-                        Server ID: {activation.serverId}
-                      </span>
+              <div key={activation.id} className="p-6 hover:bg-[#151515]/50 transition-colors">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      activation.isActive 
+                        ? "bg-green-500/20 border border-green-500/30" 
+                        : "bg-gray-700/50 border border-gray-600"
+                    }`}>
+                      {activation.isActive ? (
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-gray-400" />
+                      )}
                     </div>
-                    <div className="text-sm text-gray-400 space-y-1">
-                      <div>Plugin Version: {activation.serverVersion || "Unknown"}</div>
-                      <div>
-                        First Seen:{" "}
-                        {new Date(activation.firstSeenAt).toLocaleString()}
+                    <div>
+                      <div className="font-semibold text-white">
+                        Server {activation.serverId.substring(0, 12)}...
                       </div>
-                      <div>
-                        Last Seen:{" "}
-                        {new Date(activation.lastSeenAt).toLocaleString()}
+                      <div className="text-sm font-mono text-gray-400">
+                        ID: {activation.serverId}
                       </div>
-                      <div>Validations: {activation.validationCount}</div>
                     </div>
                   </div>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                       activation.isActive
-                        ? "bg-green-900 text-green-300"
-                        : "bg-gray-700 text-gray-300"
+                        ? "bg-green-500/20 text-green-300 border-green-500/30"
+                        : "bg-gray-700/50 text-gray-300 border-gray-600"
                     }`}
                   >
-                    {activation.isActive ? "Active" : "Inactive"}
+                    {activation.isActive ? "ACTIVE" : "INACTIVE"}
                   </span>
+                </div>
+
+                {/* Server Information Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ml-13">
+                  {/* IP Address */}
+                  {activation.serverIp && (
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333]">
+                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                        <Globe className="w-3 h-3" />
+                        IP Address
+                      </div>
+                      <div className="font-mono text-white text-sm">
+                        {activation.serverIp}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Server Version */}
+                  {activation.serverVersion && (
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333]">
+                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                        <Zap className="w-3 h-3" />
+                        Plugin Version
+                      </div>
+                      <div className="text-white text-sm">
+                        v{activation.serverVersion}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Minecraft Version */}
+                  {activation.minecraftVersion && (
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333]">
+                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                        <Monitor className="w-3 h-3" />
+                        Minecraft Version
+                      </div>
+                      <div className="text-white text-sm">
+                        {activation.minecraftVersion}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MAC Address */}
+                  {activation.macAddress && (
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333]">
+                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                        <Shield className="w-3 h-3" />
+                        MAC Address
+                      </div>
+                      <div className="font-mono text-white text-sm">
+                        {activation.macAddress}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hardware Hash */}
+                  {activation.hardwareHash && (
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333]">
+                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                        <Server className="w-3 h-3" />
+                        Hardware ID
+                      </div>
+                      <div className="font-mono text-white text-sm">
+                        {activation.hardwareHash.substring(0, 12)}...
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Validation Count */}
+                  <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333]">
+                    <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                      <Activity className="w-3 h-3" />
+                      Validations
+                    </div>
+                    <div className="text-white text-sm">
+                      {activation.validationCount} times
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timeline */}
+                <div className="mt-4 pt-4 border-t border-[#222]">
+                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>First seen: {new Date(activation.firstSeenAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>Last seen: {new Date(activation.lastSeenAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
