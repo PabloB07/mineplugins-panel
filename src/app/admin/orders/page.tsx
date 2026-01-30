@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatCLP } from "@/lib/pricing";
 
+import { Trash2 } from "lucide-react";
+
 interface Order {
   id: string;
   orderNumber: string;
@@ -68,7 +70,7 @@ export default function AdminOrdersPage() {
       if (search) params.append("search", search);
       params.append("page", pagination.page.toString());
       params.append("limit", pagination.limit.toString());
-      
+
       const res = await fetch(`/api/admin/orders?${params.toString()}`);
       const data = await res.json();
       setOrders(data.orders || []);
@@ -84,20 +86,46 @@ export default function AdminOrdersPage() {
     }
   }
 
+  async function deleteOrder(orderId: string) {
+    if (!confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+      return;
+    }
+
+    setDebugLoading(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        alert("Order deleted successfully");
+        fetchOrders();
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Failed to delete order:", error);
+      alert("Failed to delete order");
+    } finally {
+      setDebugLoading(false);
+    }
+  }
+
   async function fixOrder(orderId: string, force = false) {
     setDebugLoading(true);
     try {
       const res = await fetch("/api/payment/manual-confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          orderId, 
+        body: JSON.stringify({
+          orderId,
           force,
         }),
       });
 
       const data = await res.json();
-      
+
       if (res.ok) {
         alert(`Order ${data.order?.orderNumber} has been ${data.forced ? "forcefully " : ""}completed!`);
         fetchOrders(); // Refresh the list
@@ -123,7 +151,7 @@ export default function AdminOrdersPage() {
       });
 
       const data = await res.json();
-      
+
       if (res.ok) {
         alert(`Fixed ${data.ordersFixed.length} stuck orders!`);
         fetchOrders();
@@ -207,11 +235,10 @@ export default function AdminOrdersPage() {
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                    filter === status
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${filter === status
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    }`}
                 >
                   {status === "all" ? "All" : status}
                 </button>
@@ -342,15 +369,14 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(order.status)}`}>
-                        <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 ${
-                          order.status === "COMPLETED"
-                            ? "bg-green-400"
-                            : order.status === "PENDING"
+                        <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 ${order.status === "COMPLETED"
+                          ? "bg-green-400"
+                          : order.status === "PENDING"
                             ? "bg-yellow-400"
                             : order.status === "FAILED"
-                            ? "bg-red-400"
-                            : "bg-gray-400"
-                        }`}></span>
+                              ? "bg-red-400"
+                              : "bg-gray-400"
+                          }`}></span>
                         {order.status}
                       </span>
                     </td>
@@ -383,6 +409,15 @@ export default function AdminOrdersPage() {
                             Fix
                           </button>
                         )}
+                        {(order.status === "PENDING" || order.status === "FAILED" || order.status === "CANCELLED") && (
+                          <button
+                            onClick={() => deleteOrder(order.id)}
+                            className="text-red-400 hover:text-red-300 ml-2"
+                            title="Delete Order"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -394,95 +429,97 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 mt-6">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-400">
-              Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
-                disabled={pagination.page === 1}
-                className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                  const pageNum = i + 1;
-                  const isActive = pageNum === pagination.page;
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-                      className={`px-3 py-1 text-sm rounded ${
-                        isActive
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-                
-                {pagination.totalPages > 5 && (
-                  <>
-                    <span className="text-gray-500">...</span>
-                    <button
-                      onClick={() => setPagination(prev => ({ ...prev, page: pagination.totalPages }))}
-                      className={`px-3 py-1 text-sm rounded ${
-                        pagination.page === pagination.totalPages
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                      }`}
-                    >
-                      {pagination.totalPages}
-                    </button>
-                  </>
-                )}
+      {
+        pagination.totalPages > 1 && (
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-400">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
               </div>
-              
-              <button
-                onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
-                disabled={pagination.page === pagination.totalPages}
-                className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                  disabled={pagination.page === 1}
+                  className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                    const pageNum = i + 1;
+                    const isActive = pageNum === pagination.page;
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                        className={`px-3 py-1 text-sm rounded ${isActive
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  {pagination.totalPages > 5 && (
+                    <>
+                      <span className="text-gray-500">...</span>
+                      <button
+                        onClick={() => setPagination(prev => ({ ...prev, page: pagination.totalPages }))}
+                        className={`px-3 py-1 text-sm rounded ${pagination.page === pagination.totalPages
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                          }`}
+                      >
+                        {pagination.totalPages}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
+                  disabled={pagination.page === pagination.totalPages}
+                  className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Debug Modal */}
-      {showDebugModal && (
-        <DebugModal
-          order={selectedOrder}
-          onClose={() => {
-            setShowDebugModal(false);
-            setSelectedOrder(null);
-          }}
-          onFix={fixOrder}
-          loading={debugLoading}
-        />
-      )}
-    </div>
+      {
+        showDebugModal && (
+          <DebugModal
+            order={selectedOrder}
+            onClose={() => {
+              setShowDebugModal(false);
+              setSelectedOrder(null);
+            }}
+            onFix={fixOrder}
+            loading={debugLoading}
+          />
+        )
+      }
+    </div >
   );
 }
 
-function DebugModal({ 
-  order, 
-  onClose, 
-  onFix, 
-  loading 
-}: { 
-  order: Order | null; 
-  onClose: () => void; 
+function DebugModal({
+  order,
+  onClose,
+  onFix,
+  loading
+}: {
+  order: Order | null;
+  onClose: () => void;
   onFix: (orderId: string, force?: boolean) => void;
   loading: boolean;
 }) {

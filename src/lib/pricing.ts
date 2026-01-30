@@ -12,6 +12,9 @@ export interface ProductPricing {
 }
 
 export function formatUSD(cents: number): string {
+  if (cents % 100 === 0) {
+    return `$${cents / 100} USD`;
+  }
   return `$${(cents / 100).toFixed(2)} USD`;
 }
 

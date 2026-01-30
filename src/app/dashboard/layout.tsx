@@ -19,7 +19,7 @@ export default async function DashboardLayout({
     session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Navigation */}
       <DashboardNavbar user={session.user} isAdmin={isAdmin} />
 
