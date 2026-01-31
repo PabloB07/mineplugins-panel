@@ -86,9 +86,11 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             serverId: true,
+            serverIp: true,
             isActive: true,
             lastSeenAt: true,
             serverVersion: true,
+            validationCount: true,
           },
         },
         _count: {

@@ -34,6 +34,9 @@ type License = {
     name: string;
     slug: string;
   };
+  _count?: {
+    activations: number;
+  };
   activations: Array<{
     id: string;
     serverId: string;
@@ -67,10 +70,17 @@ export default function LicensesPage() {
       const response = await fetch('/api/licenses');
       if (response.ok) {
         const data = await response.json();
-        setLicenses(data);
+        setLicenses(data.licenses || []);
+      } else if (response.status === 401) {
+        // Redirect to login if unauthorized
+        window.location.href = '/login';
+      } else {
+        console.error('Failed to fetch licenses:', response.statusText);
+        setLicenses([]);
       }
     } catch (error) {
       console.error('Failed to fetch licenses:', error);
+      setLicenses([]);
     } finally {
       setLoading(false);
     }
@@ -84,11 +94,22 @@ export default function LicensesPage() {
 
   const copyToClipboard = async (text: string, id: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        setCopiedId(id);
+        setTimeout(() => setCopiedId(null), 2000);
+      }
     } catch (error) {
       console.error('Failed to copy:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
     }
   };
 
@@ -97,6 +118,10 @@ export default function LicensesPage() {
     setSubmitting(true);
 
     try {
+      if (!renewModal.licenseId) {
+        throw new Error('License ID is required');
+      }
+
       const response = await fetch(`/api/dashboard/licenses/${renewModal.licenseId}/renew`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,7 +138,7 @@ export default function LicensesPage() {
       }
     } catch (error) {
       console.error('Renewal error:', error);
-      alert('Renewal failed');
+      alert('Renewal failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setSubmitting(false);
     }

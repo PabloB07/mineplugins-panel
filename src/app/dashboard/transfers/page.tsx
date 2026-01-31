@@ -69,7 +69,9 @@ export default function TransfersPage() {
           licensesRes.json(),
         ]);
         setTransfers(transfersData.transfers || []);
-        setLicenses(licensesData || []);
+        setLicenses(licensesData.licenses || []);
+      } else {
+        console.error('Failed to fetch data');
       }
     } catch (error) {
       console.error('Failed to fetch data:', error);
