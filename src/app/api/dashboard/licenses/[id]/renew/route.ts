@@ -4,18 +4,22 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateModernLicenseKey, verifyModernLicenseKey } from "@/lib/license";
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { licenseId, durationDays } = await request.json();
+    const { id: licenseId } = await params;
+    const { durationDays } = await request.json();
 
-    if (!licenseId || !durationDays) {
+    if (!durationDays) {
       return NextResponse.json({ 
-        error: "License ID and duration are required" 
+        error: "Duration is required" 
       }, { status: 400 });
     }
 

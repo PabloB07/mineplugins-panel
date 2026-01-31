@@ -6,8 +6,9 @@ import { generateActivationToken, verifyModernLicenseKey } from "@/lib/license";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: licenseId } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -22,7 +23,7 @@ export async function POST(
 
     const license = await prisma.license.findFirst({
       where: {
-        id: params.id,
+        id: licenseId,
         userId: session.user.id,
       },
       include: {
@@ -105,8 +106,9 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: licenseId } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -121,7 +123,7 @@ export async function DELETE(
 
     const license = await prisma.license.findFirst({
       where: {
-        id: params.id,
+        id: licenseId,
         userId: session.user.id,
       },
       include: {
