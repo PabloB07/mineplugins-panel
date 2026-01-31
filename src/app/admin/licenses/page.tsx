@@ -101,6 +101,7 @@ export default function AdminLicensesPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    // You could add a toast notification here
   };
 
   return (
@@ -242,33 +243,41 @@ export default function AdminLicensesPage() {
 
                   return (
                     <tr key={license.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
-                            <User className="w-4 h-4 text-blue-400" />
-                          </div>
-                          <div>
-                            <div className="text-white text-sm font-medium">
-                              {license.user.email}
-                            </div>
-                            {license.user.name && (
-                              <div className="text-gray-400 text-xs">
-                                {license.user.name}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-white text-sm">
-                          {license.user.email}
-                        </div>
-                        {license.user.name && (
-                          <div className="text-gray-400 text-xs">
-                            {license.user.name}
-                          </div>
-                        )}
-                      </td>
+                       <td className="px-6 py-4">
+                         <div 
+                           className="flex items-center gap-3 cursor-pointer hover:bg-[#1a1a1a]/30 -mx-2 px-2 py-1 rounded transition-colors"
+                           onClick={() => copyToClipboard(license.licenseKey)}
+                         >
+                           <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+                             <Key className="w-4 h-4 text-blue-400" />
+                           </div>
+                           <div>
+                             <div className="text-white text-sm font-mono">
+                               {license.licenseKey.substring(0, 20)}...
+                             </div>
+                             <div className="text-gray-400 text-xs">
+                               Click to copy
+                             </div>
+                           </div>
+                         </div>
+                       </td>
+                       <td className="px-6 py-4">
+                         <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30">
+                             <User className="w-4 h-4 text-green-400" />
+                           </div>
+                           <div>
+                             <div className="text-white text-sm font-medium">
+                               {license.user.email}
+                             </div>
+                             {license.user.name && (
+                               <div className="text-gray-400 text-xs">
+                                 {license.user.name}
+                               </div>
+                             )}
+                           </div>
+                         </div>
+                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <Key className="w-4 h-4 text-gray-400" />

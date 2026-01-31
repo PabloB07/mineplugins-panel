@@ -300,14 +300,14 @@ export default function LicenseDetailPage() {
                         <XCircle className="w-5 h-5 text-gray-400" />
                       )}
                     </div>
-                    <div>
-                      <div className="font-semibold text-white">
-                        Server {activation.serverId.substring(0, 12)}...
-                      </div>
-                      <div className="text-sm font-mono text-gray-400">
-                        ID: {activation.serverId}
-                      </div>
-                    </div>
+                     <div>
+                       <div className="font-semibold text-white">
+                         {activation.serverIp ? `Server at ${activation.serverIp}` : `Server ${activation.serverId.substring(0, 8)}...`}
+                       </div>
+                       <div className="text-sm font-mono text-gray-400">
+                         ID: {activation.serverId.substring(0, 16)}...
+                       </div>
+                     </div>
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold border ${
@@ -320,84 +320,85 @@ export default function LicenseDetailPage() {
                   </span>
                 </div>
 
-                {/* Server Information Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ml-13">
-                  {/* IP Address */}
-                  {activation.serverIp && (
-                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                        <Globe className="w-3 h-3" />
-                        IP Address
-                      </div>
-                      <div className="font-mono text-white text-sm">
-                        {activation.serverIp}
-                      </div>
-                    </div>
-                  )}
+                 {/* Server Information Grid */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ml-13">
+                   {/* IP Address */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <Globe className="w-3 h-3" />
+                       IP Address
+                     </div>
+                     <div className="font-mono text-white text-sm">
+                       {activation.serverIp || "Not detected"}
+                     </div>
+                   </div>
 
-                  {/* Server Version */}
-                  {activation.serverVersion && (
-                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                        <Zap className="w-3 h-3" />
-                        Plugin Version
-                      </div>
-                      <div className="text-white text-sm">
-                        v{activation.serverVersion}
-                      </div>
-                    </div>
-                  )}
+                   {/* Server Version */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <Zap className="w-3 h-3" />
+                       Plugin Version
+                     </div>
+                     <div className="text-white text-sm">
+                       {activation.serverVersion || "Unknown"}
+                     </div>
+                   </div>
 
-                  {/* Minecraft Version */}
-                  {activation.minecraftVersion && (
-                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                        <Monitor className="w-3 h-3" />
-                        Minecraft Version
-                      </div>
-                      <div className="text-white text-sm">
-                        {activation.minecraftVersion}
-                      </div>
-                    </div>
-                  )}
+                   {/* Minecraft Version */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <Monitor className="w-3 h-3" />
+                       Minecraft Version
+                     </div>
+                     <div className="text-white text-sm">
+                       {activation.minecraftVersion || "Unknown"}
+                     </div>
+                   </div>
 
-                  {/* MAC Address */}
-                  {activation.macAddress && (
-                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                        <Shield className="w-3 h-3" />
-                        MAC Address
-                      </div>
-                      <div className="font-mono text-white text-sm">
-                        {activation.macAddress}
-                      </div>
-                    </div>
-                  )}
+                   {/* MAC Address */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <Shield className="w-3 h-3" />
+                       MAC Address
+                     </div>
+                     <div className="font-mono text-white text-sm">
+                       {activation.macAddress || "Not detected"}
+                     </div>
+                   </div>
 
-                  {/* Hardware Hash */}
-                  {activation.hardwareHash && (
-                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                        <Server className="w-3 h-3" />
-                        Hardware ID
-                      </div>
-                      <div className="font-mono text-white text-sm">
-                        {activation.hardwareHash.substring(0, 12)}...
-                      </div>
-                    </div>
-                  )}
+                   {/* Hardware Hash */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <Server className="w-3 h-3" />
+                       Hardware ID
+                     </div>
+                     <div className="font-mono text-white text-sm">
+                       {activation.hardwareHash ? `${activation.hardwareHash.substring(0, 12)}...` : "Not detected"}
+                     </div>
+                   </div>
 
-                  {/* Validation Count */}
-                  <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                    <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                      <Activity className="w-3 h-3" />
-                      Validations
-                    </div>
-                    <div className="text-white text-sm">
-                      {activation.validationCount} times
-                    </div>
-                  </div>
-                </div>
+                   {/* Network Signature */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <MapPin className="w-3 h-3" />
+                       Network Signature
+                     </div>
+                     <div className="font-mono text-white text-sm">
+                       {activation.networkSignature ? `${activation.networkSignature.substring(0, 12)}...` : "Not detected"}
+                     </div>
+                   </div>
+
+                   {/* Validation Count */}
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
+                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                       <Activity className="w-3 h-3" />
+                       Validations
+                     </div>
+                     <div className="text-white text-sm">
+                       {activation.validationCount} times
+                     </div>
+                   </div>
+                 </div>
 
                 {/* Timeline */}
                 <div className="mt-4 pt-4 border-t border-[#222]">
@@ -415,84 +416,8 @@ export default function LicenseDetailPage() {
               </div>
             ))}
           </div>
-        )}
-      </div>
-
-      {/* Setup Instructions */}
-      <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-[#22c55e]/20 transition-all duration-300">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
-              <Download className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Setup Instructions</h2>
-              <p className="text-gray-400 text-sm">Follow these steps to activate your license</p>
-            </div>
-          </div>
-          
-          <div className="bg-[#0a0a0a]/50 rounded-lg p-6 border border-[#222]">
-            <ol className="space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full flex items-center justify-center text-[#22c55e] font-bold text-sm">
-                  1
-                </div>
-                <div>
-                  <div className="font-medium text-white mb-1">Download TownyFaiths Plugin</div>
-                  <div className="text-gray-400 text-sm">Get the latest version from the Downloads page</div>
-                </div>
-              </li>
-              
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full flex items-center justify-center text-[#22c55e] font-bold text-sm">
-                  2
-                </div>
-                <div>
-                  <div className="font-medium text-white mb-1">Install Plugin</div>
-                  <div className="text-gray-400 text-sm">Place the .jar file in your server&apos;s plugins folder</div>
-                </div>
-              </li>
-              
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full flex items-center justify-center text-[#22c55e] font-bold text-sm">
-                  3
-                </div>
-                <div>
-                  <div className="font-medium text-white mb-1">Start Server</div>
-                  <div className="text-gray-400 text-sm">Start your server to generate config files</div>
-                </div>
-              </li>
-              
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full flex items-center justify-center text-[#22c55e] font-bold text-sm">
-                  4
-                </div>
-                <div>
-                  <div className="font-medium text-white mb-1">Configure License</div>
-                  <div className="text-gray-400 text-sm">
-                    Open <code className="bg-[#111] px-2 py-1 rounded border border-[#222] font-mono">plugins/TownyFaiths/config.yml</code> and set:
-                  </div>
-                  <div className="bg-[#111] rounded-lg p-3 border border-[#222] mt-2 font-mono text-sm text-gray-300">
-                    license.key: {license.licenseKey.substring(0, 20)}...
-                  </div>
-                </div>
-              </li>
-              
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full flex items-center justify-center text-[#22c55e] font-bold text-sm">
-                  5
-                </div>
-                <div>
-                  <div className="font-medium text-white mb-1">Restart Server</div>
-                  <div className="text-gray-400 text-sm">
-                    Restart your server or run <code className="bg-[#111] px-2 py-1 rounded border border-[#222] font-mono">/license revalidate</code> to activate
-                  </div>
-                </div>
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+         )}
+       </div>
+     </div>
+   );
+ }
