@@ -25,6 +25,10 @@ model User {
   // Admin activity relations
   adminActivities AdminActivityLog[] @relation("AdminActivityAdmin")
   targetActivities AdminActivityLog[] @relation("AdminActivityTarget")
+  
+  // Transfer relations
+  sentTransfers LicenseTransfer[] @relation("TransferFrom")
+  receivedTransfers LicenseTransfer[] @relation("TransferTo")
 
   @@index([email])
 }
@@ -276,6 +280,20 @@ enum PaymentMethod {
   PAYKU
   FREE_LICENSE
   ADMIN_GRANT
+}
+
+model LicenseTransfer {
+  id               String   @id @default(cuid())
+  originalLicenseId String
+  newLicenseId    String
+  fromUserId      String
+  toUserId        String
+  transferredAt   DateTime @default(now())
+  
+  fromUser        User     @relation("TransferFrom", fields: [fromUserId], references: [id])
+  toUser          User     @relation("TransferTo", fields: [toUserId], references: [id])
+
+  @@map("license_transfers")
 }
 
 model AdminActivityLog {

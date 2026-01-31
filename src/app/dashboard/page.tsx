@@ -81,7 +81,7 @@ export default async function DashboardPage() {
   // Stats
   const activeLicenses = licenses.filter((l: License) => l.status === "ACTIVE").length;
   const totalActivations = licenses.reduce(
-    (acc: number, l: any) => acc + l._count.activations,
+    (acc: number, l: License & { _count: { activations: number } }) => acc + l._count.activations,
     0
   );
 
