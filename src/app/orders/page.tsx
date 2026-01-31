@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { formatCLP } from "@/lib/pricing";
+import { ShoppingBag, Package, Calendar, CheckCircle, AlertTriangle, ArrowRight } from "lucide-react";
 
 export default async function OrdersPage() {
   const session = await getServerSession(authOptions);
@@ -40,51 +41,72 @@ export default async function OrdersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Your Orders</h1>
-          <p className="text-gray-400 mt-1">View your purchase history</p>
+    <div className="space-y-8 animate-fade-in pb-10">
+      {/* Welcome Hero - Gradient Background */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
+              Order History
+            </h1>
+            <p className="text-gray-400 max-w-lg text-lg">
+              View your purchase history and track the status of your TownyFaiths licenses.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                {orders.length} Total Orders
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                <Package className="w-4 h-4 mr-2" />
+                {orders.reduce((acc, order) => acc + order.items.length, 0)} Products
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <Link
+              href="/buy"
+              className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
+            >
+              <Package className="w-5 h-5" />
+              Buy New License
+            </Link>
+          </div>
         </div>
-        <Link
-          href="/buy"
-          className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-medium py-2 px-4 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-emerald-600/25"
-        >
-          Buy New License
-        </Link>
       </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-16 bg-gray-800 rounded-lg border border-gray-700">
-          <div className="max-w-md mx-auto">
-            <div className="text-5xl mb-4 opacity-20">📦</div>
+        <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
+          <div className="relative z-10 max-w-md mx-auto">
+            <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingBag className="w-8 h-8 text-gray-500" />
+            </div>
             <h3 className="text-xl font-semibold text-white mb-2">No Orders Yet</h3>
             <p className="text-gray-400 mb-6">You haven't purchased any licenses yet. Start by browsing our available products.</p>
             <Link
               href="/buy"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-medium py-2 px-6 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-emerald-600/25"
+              className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"
             >
               Browse Products
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       ) : (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-700 bg-gray-700/30">
+        <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#222] bg-[#151515]">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+              <ShoppingBag className="w-5 h-5 text-blue-400" />
               Order History
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700 bg-gray-700/20">
+                <tr className="border-b border-[#222] bg-[#111]">
                   <th className="text-left px-6 py-4 text-sm font-medium text-gray-300">Order #</th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-gray-300">Products</th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-gray-300">Total</th>
@@ -93,12 +115,12 @@ export default async function OrdersPage() {
                   <th className="text-left px-6 py-4 text-sm font-medium text-gray-300">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-[#222]">
                 {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-700/30 transition-colors">
+                  <tr key={order.id} className="hover:bg-[#1a1a1a] transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="font-mono text-sm text-white bg-gray-700/50 px-2 py-1 rounded">
+                        <div className="font-mono text-sm text-white bg-[#222] px-2 py-1 rounded">
                           {order.orderNumber}
                         </div>
                       </div>
@@ -107,14 +129,14 @@ export default async function OrdersPage() {
                       <div className="flex flex-col gap-1">
                         {order.items.map((item, index) => (
                           <div key={index} className="flex items-center gap-2">
-                            <span className="w-2 h-2 bg-emerald-400 rounded-full"></span>
+                            <span className="w-2 h-2 bg-[#22c55e] rounded-full"></span>
                             <span className="text-sm text-gray-300">{item.product.name}</span>
                           </div>
                         ))}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                     <div className="text-sm font-semibold text-emerald-400">
+                     <div className="text-sm font-semibold text-[#22c55e]">
                        {formatCLP(order.total || 199900)}
                      </div>
                     </td>
@@ -125,20 +147,18 @@ export default async function OrdersPage() {
                             <div className="flex flex-col gap-1">
                               <Link
                                 href={`/dashboard/licenses/${item.license.id}`}
-                                className="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"
+                                className="text-sm font-medium text-[#22c55e] hover:text-[#16a34a] transition-colors flex items-center gap-1"
                               >
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                </svg>
+                                <ArrowRight className="w-3 h-3" />
                                 View License
                               </Link>
                               <div className="flex items-center gap-2">
                                 <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                                   item.license.status === "ACTIVE"
-                                    ? "bg-green-900/50 text-green-300"
+                                    ? "bg-[#22c55e]/20 text-[#22c55e]"
                                     : item.license.status === "EXPIRED"
-                                    ? "bg-red-900/50 text-red-300"
-                                    : "bg-gray-700 text-gray-300"
+                                    ? "bg-red-500/20 text-red-400"
+                                    : "bg-gray-700 text-gray-400"
                                 }`}>
                                   {item.license.status}
                                 </span>
@@ -159,17 +179,17 @@ export default async function OrdersPage() {
                       <span
                         className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${
                           order.status === "COMPLETED"
-                            ? "bg-green-900/50 text-green-300 border-green-700"
+                            ? "bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
                             : order.status === "PENDING"
-                            ? "bg-yellow-900/50 text-yellow-300 border-yellow-700"
+                            ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                             : order.status === "FAILED"
-                            ? "bg-red-900/50 text-red-300 border-red-700"
-                            : "bg-gray-700 text-gray-300 border-gray-600"
+                            ? "bg-red-500/20 text-red-400 border-red-500/30"
+                            : "bg-gray-700 text-gray-400 border-gray-600"
                         }`}
                       >
                         <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 ${
                           order.status === "COMPLETED"
-                            ? "bg-green-400"
+                            ? "bg-[#22c55e]"
                             : order.status === "PENDING"
                             ? "bg-yellow-400"
                             : order.status === "FAILED"

@@ -100,24 +100,42 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">
-            Dashboard Overview
-          </h1>
-          <p className="text-gray-400 mt-1">
-            Welcome back, here's what's happening today.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Link
-            href="/admin/products/new"
-            className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg shadow-green-900/20 flex items-center gap-2"
-          >
-            <Package className="w-4 h-4" />
-            New Product
-          </Link>
+      {/* Welcome Hero - Gradient Background */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-400 max-w-lg text-lg">
+              Manage your TownyFaiths platform. Monitor sales, licenses, users, and system performance.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
+                <Users className="w-4 h-4 mr-2" />
+                {totalUsers} Total Users
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                <Activity className="w-4 h-4 mr-2" />
+                {recentValidations} Validations Today
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                <DollarSign className="w-4 h-4 mr-2" />
+                ${((totalRevenue._sum.total || 0) / 100).toLocaleString("es-CL")} Revenue
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <Link
+              href="/admin/products/new"
+              className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#f59e0b]/20"
+            >
+              <Package className="w-5 h-5" />
+              New Product
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -336,7 +354,7 @@ export default async function AdminDashboardPage() {
                       <span className="text-sm font-medium text-white group-hover:text-[#22c55e] transition-colors line-clamp-1">
                         {lic.product.name}
                       </span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border ${lic.status === 'ACTIVE' ? 'bg-green-900/20 text-green-400 border-green-900/30' : 'bg-gray-800 text-gray-400 border-gray-700'
+                       <span className={`text-[10px] px-1.5 py-0.5 rounded border ${lic.status === 'ACTIVE' ? 'bg-green-900/20 text-green-400 border-green-900/30' : 'bg-gray-800 text-gray-400 border-[#333]'
                         }`}>
                         {lic.status}
                       </span>

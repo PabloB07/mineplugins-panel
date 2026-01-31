@@ -104,25 +104,45 @@ export default function AdminLicensesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
-      {/* Header */}
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <Key className="w-8 h-8 text-blue-400" />
-            License Management
-          </h1>
-          <p className="text-gray-400 mt-1">
-            Manage all licenses in the system
-          </p>
+    <div className="space-y-8 animate-fade-in pb-10">
+      {/* Welcome Hero - Gradient Background */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
+              <Key className="w-8 h-8 text-[#f59e0b]" />
+              License Management
+            </h1>
+            <p className="text-gray-400 max-w-lg text-lg">
+              Manage all licenses in the system. Monitor status, activations, and user assignments.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
+                <Key className="w-4 h-4 mr-2" />
+                {licenses.length} Total Licenses
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                {licenses.filter(l => l.status === 'ACTIVE').length} Active
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                <User className="w-4 h-4 mr-2" />
+                {new Set(licenses.map(l => l.user.id)).size} Users
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#f59e0b]/20"
+            >
+              <Shield className="w-5 h-5" />
+              Create License
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-blue-500/20"
-        >
-          <Shield className="w-4 h-4 mr-2" />
-          Create License
-        </button>
       </div>
 
       {/* Filters */}
@@ -264,7 +284,7 @@ export default function AdminLicensesPage() {
                               ? "bg-red-500/20 text-red-300 border border-red-500/30"
                               : license.status === "SUSPENDED"
                               ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                              : "bg-gray-700/50 text-gray-300 border border-gray-600"
+                               : "bg-gray-700/50 text-gray-300 border border-[#333]"
                           }`}
                         >
                           {license.status === "ACTIVE" && !isExpired && (

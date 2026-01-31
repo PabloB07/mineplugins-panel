@@ -156,57 +156,67 @@ export default function LicensesPage() {
    }
 
    return (
-     <div>
-       {/* Header */}
-       <div className="mb-8 flex justify-between items-center">
-         <div>
-           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-             Your Licenses
-             <button
-               onClick={handleRefresh}
-               className={`text-gray-400 hover:text-white transition-colors ${refreshing ? 'animate-spin' : ''}`}
-               disabled={refreshing}
-             >
-               <RefreshCw className="w-6 h-6" />
-             </button>
-           </h1>
-           <p className="text-gray-400 mt-1">
-             Manage your TownyFaiths plugin licenses with real-time status updates
-           </p>
-         </div>
-         <div className="flex gap-3">
-           <Link
-             href="/dashboard/transfers"
-             className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-blue-600/20"
-           >
-             Transfer License
-           </Link>
+      <div className="space-y-8 animate-fade-in pb-10">
+        {/* Welcome Hero - Gradient Background */}
+        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+          <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
+                Your Licenses
+                <button
+                  onClick={handleRefresh}
+                  className={`text-gray-400 hover:text-white transition-colors ${refreshing ? 'animate-spin' : ''}`}
+                  disabled={refreshing}
+                >
+                  <RefreshCw className="w-6 h-6" />
+                </button>
+              </h1>
+              <p className="text-gray-400 max-w-lg text-lg">
+                Manage your TownyFaiths plugin licenses with real-time status updates and server activation details.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                  <Shield className="w-4 h-4 mr-2" />
+                  {licenses.filter(l => l.status === "ACTIVE").length} Active Licenses
+                </div>
+                <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                  <Server className="w-4 h-4 mr-2" />
+                  {licenses.reduce((acc, l) => acc + l.activations.filter(a => a.isActive).length, 0)} Active Servers
+                </div>
+              </div>
+            </div>
+
+            <div className="hidden md:block">
+              <Link
+                href="/buy"
+                className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
+              >
+                <Zap className="w-5 h-5" />
+                Buy New License
+              </Link>
+            </div>
+          </div>
+        </div>
+
+       {/* Licenses Grid */}
+       {licenses.length === 0 ? (
+         <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
+           <div className="relative z-10 w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+             <Server className="w-8 h-8 text-gray-500" />
+           </div>
+           <div className="text-gray-400 mb-4 text-lg">
+             You don&apos;t have any licenses yet.
+           </div>
            <Link
              href="/buy"
-             className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/20"
+             className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 inline-block shadow-lg shadow-[#22c55e]/20"
            >
-             Buy New License
+             Purchase Your First License
            </Link>
          </div>
-       </div>
-
-      {/* Licenses Grid */}
-      {licenses.length === 0 ? (
-        <div className="bg-[#111] rounded-xl border border-[#222] p-16 text-center">
-          <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Server className="w-8 h-8 text-gray-500" />
-          </div>
-          <div className="text-gray-400 mb-4 text-lg">
-            You don&apos;t have any licenses yet.
-          </div>
-          <Link
-            href="/buy"
-            className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-green-600/20 inline-block"
-          >
-            Purchase Your First License
-          </Link>
-        </div>
-      ) : (
+       ) : (
         <div className="grid gap-6">
           {licenses.map((license) => {
             const now = new Date();
@@ -220,10 +230,10 @@ export default function LicensesPage() {
             ).length;
 
             return (
-              <div
-                key={license.id}
-                className="bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-green-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 hover:scale-[1.02] transform"
-              >
+               <div
+                 key={license.id}
+                 className="group relative bg-[#111] hover:bg-[#151515] rounded-xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20 hover:scale-[1.02] transform"
+               >
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
@@ -254,7 +264,7 @@ export default function LicensesPage() {
                             ? "bg-red-500/20 text-red-300 border-red-500/30"
                             : license.status === "SUSPENDED"
                             ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                            : "bg-gray-700 text-gray-300 border-gray-600"
+                             : "bg-gray-700 text-gray-300 border-[#333]"
                         }`}
                       >
                         {license.status === "ACTIVE" && !isExpired && <CheckCircle className="w-3 h-3" />}
@@ -270,60 +280,60 @@ export default function LicensesPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333] hover:border-green-500/30 transition-all group">
-                    <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      Created
-                    </div>
-                    <div className="text-white font-medium group-hover:text-green-400 transition-colors">
-                      {new Date(license.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                  <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333] hover:border-green-500/30 transition-all group">
-                    <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      Expires
-                    </div>
-                    <div
-                      className={`font-medium transition-colors ${
-                        isExpired ? "text-red-400" : "text-white group-hover:text-green-400"
-                      }`}
-                    >
-                      {new Date(license.expiresAt).toLocaleDateString()}
-                      {!isExpired && daysLeft <= 30 && (
-                        <span className="text-yellow-400 ml-2 text-sm animate-pulse">
-                          ({daysLeft} days left)
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333] hover:border-green-500/30 transition-all group">
-                    <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                      <Server className="w-3 h-3" />
-                      Activations
-                    </div>
-                    <div className="text-white font-medium group-hover:text-green-400 transition-colors">
-                      {activeActivations} / {license.maxActivations}
-                      {activeActivations === license.maxActivations && (
-                        <span className="text-xs text-yellow-400 ml-1">●</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333] hover:border-green-500/30 transition-all group">
-                    <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                      <Activity className="w-3 h-3" />
-                      Last Validated
-                    </div>
-                    <div className="text-white font-medium group-hover:text-green-400 transition-colors">
-                      {license.lastValidatedAt
-                        ? new Date(
-                            license.lastValidatedAt
-                          ).toLocaleDateString()
-                        : "Never"}
-                    </div>
-                  </div>
-                  </div>
+                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                       <Calendar className="w-3 h-3" />
+                       Created
+                     </div>
+                     <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
+                       {new Date(license.createdAt).toLocaleDateString()}
+                     </div>
+                   </div>
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                       <Clock className="w-3 h-3" />
+                       Expires
+                     </div>
+                     <div
+                       className={`font-medium transition-colors ${
+                         isExpired ? "text-red-400" : "text-white group-hover:text-[#22c55e]"
+                       }`}
+                     >
+                       {new Date(license.expiresAt).toLocaleDateString()}
+                       {!isExpired && daysLeft <= 30 && (
+                         <span className="text-yellow-400 ml-2 text-sm animate-pulse">
+                           ({daysLeft} days left)
+                         </span>
+                       )}
+                     </div>
+                   </div>
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                       <Server className="w-3 h-3" />
+                       Activations
+                     </div>
+                     <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
+                       {activeActivations} / {license.maxActivations}
+                       {activeActivations === license.maxActivations && (
+                         <span className="text-xs text-yellow-400 ml-1">●</span>
+                       )}
+                     </div>
+                   </div>
+                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                       <Activity className="w-3 h-3" />
+                       Last Validated
+                     </div>
+                     <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
+                       {license.lastValidatedAt
+                         ? new Date(
+                             license.lastValidatedAt
+                           ).toLocaleDateString()
+                         : "Never"}
+                     </div>
+                   </div>
+                   </div>
 
                   {/* Server Activations */}
                   {license.activations.length > 0 && (
@@ -334,10 +344,10 @@ export default function LicensesPage() {
                       </div>
                       <div className="space-y-3">
                         {license.activations.slice(0, 3).map((activation) => (
-                           <div
-                             key={activation.id}
-                             className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#333] hover:border-green-500/30 transition-all hover:scale-[1.02] transform"
-                           >
+                            <div
+                              key={activation.id}
+                              className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all hover:scale-[1.02] transform"
+                            >
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-2">
                                 {activation.isActive ? (
@@ -360,7 +370,7 @@ export default function LicensesPage() {
                               <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 activation.isActive
                                   ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                                  : "bg-gray-700/50 text-gray-300 border border-gray-600"
+                                   : "bg-gray-700/50 text-gray-300 border-[#333]"
                               }`}>
                                 {activation.isActive ? "Active" : "Inactive"}
                               </div>
@@ -398,120 +408,120 @@ export default function LicensesPage() {
                   )}
                 </div>
 
-                 <div className="bg-[#0a0a0a]/50 px-6 py-3 flex justify-between items-center border-t border-[#222]">
-                   <div className="flex gap-3">
-                     <Link
-                       href={`/dashboard/licenses/${license.id}`}
-                       className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-all inline-flex items-center gap-1 hover:bg-[#333] px-3 py-1 rounded-lg"
-                     >
-                       View Details →
-                     </Link>
-                     <button
-                       onClick={() => copyToClipboard(license.licenseKey, `footer-${license.id}`)}
-                       className="text-gray-400 hover:text-white text-sm transition-all px-3 py-1 rounded-lg hover:bg-[#333] inline-flex items-center gap-1"
-                     >
-                       {copiedId === `footer-${license.id}` ? (
-                         <>
-                           <Check className="w-3 h-3" />
-                           Copied!
-                         </>
-                       ) : (
-                         <>
-                           <Copy className="w-3 h-3" />
-                           Copy License
-                         </>
-                       )}
-                     </button>
-                     {license.licenseKey.startsWith('eyJ') && (
-                       <button
-                         onClick={() => setRenewModal({ 
-                           open: true, 
-                           licenseId: license.id, 
-                           licenseName: license.product.name 
-                         })}
-                         className="text-green-400 hover:text-green-300 text-sm transition-all px-3 py-1 rounded-lg hover:bg-[#333] inline-flex items-center gap-1"
-                       >
-                         <RotateCcw className="w-3 h-3" />
-                         Renew
-                       </button>
-                     )}
-                   </div>
-                   <div className="flex items-center gap-2">
-                     <span className="text-xs text-gray-500">
-                       {license.licenseKey.startsWith('eyJ') ? 'JWT License' : 'Legacy License'}
-                     </span>
-                     {isExpired && (
-                       <span className="text-xs text-red-400">Expired</span>
-                     )}
-                   </div>
-                 </div>
+                  <div className="bg-[#151515] px-6 py-3 flex justify-between items-center border-t border-[#222]">
+                    <div className="flex gap-3">
+                      <Link
+                        href={`/dashboard/licenses/${license.id}`}
+                        className="text-[#22c55e] hover:text-[#16a34a] text-sm font-medium transition-all inline-flex items-center gap-1 hover:bg-[#22c55e]/10 px-3 py-1 rounded-lg"
+                      >
+                        View Details →
+                      </Link>
+                      <button
+                        onClick={() => copyToClipboard(license.licenseKey, `footer-${license.id}`)}
+                        className="text-gray-400 hover:text-white text-sm transition-all px-3 py-1 rounded-lg hover:bg-[#333] inline-flex items-center gap-1"
+                      >
+                        {copiedId === `footer-${license.id}` ? (
+                          <>
+                            <Check className="w-3 h-3" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            Copy License
+                          </>
+                        )}
+                      </button>
+                      {license.licenseKey.startsWith('eyJ') && (
+                        <button
+                          onClick={() => setRenewModal({ 
+                            open: true, 
+                            licenseId: license.id, 
+                            licenseName: license.product.name 
+                          })}
+                          className="text-[#22c55e] hover:text-[#16a34a] text-sm transition-all px-3 py-1 rounded-lg hover:bg-[#22c55e]/10 inline-flex items-center gap-1"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          Renew
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">
+                        {license.licenseKey.startsWith('eyJ') ? 'JWT License' : 'Legacy License'}
+                      </span>
+                      {isExpired && (
+                        <span className="text-xs text-red-400">Expired</span>
+                      )}
+                    </div>
+                  </div>
               </div>
             );
           })}
          </div>
        )}
 
-       {/* Renewal Modal */}
-       {renewModal.open && (
-         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-           <div className="bg-[#111] rounded-xl border border-[#222] p-6 max-w-md w-full">
-             <h3 className="text-xl font-semibold text-white mb-4">
-               Renew License - {renewModal.licenseName}
-             </h3>
-             
-             <form onSubmit={handleRenewal} className="space-y-4">
-               <div>
-                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                   Renewal Duration
-                 </label>
-                 <select
-                   value={renewForm.durationDays}
-                   onChange={(e) => setRenewForm({ ...renewForm, durationDays: parseInt(e.target.value) })}
-                   className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-green-500"
-                 >
-                   <option value={30}>30 days</option>
-                   <option value={90}>90 days</option>
-                   <option value={180}>6 months</option>
-                   <option value={365}>1 year</option>
-                   <option value={730}>2 years</option>
-                 </select>
-               </div>
+        {/* Renewal Modal */}
+        {renewModal.open && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] rounded-xl border border-[#222] p-6 max-w-md w-full shadow-2xl">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Renew License - {renewModal.licenseName}
+              </h3>
+              
+              <form onSubmit={handleRenewal} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Renewal Duration
+                  </label>
+                  <select
+                    value={renewForm.durationDays}
+                    onChange={(e) => setRenewForm({ ...renewForm, durationDays: parseInt(e.target.value) })}
+                    className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#22c55e] transition-colors"
+                  >
+                    <option value={30}>30 days</option>
+                    <option value={90}>90 days</option>
+                    <option value={180}>6 months</option>
+                    <option value={365}>1 year</option>
+                    <option value={730}>2 years</option>
+                  </select>
+                </div>
 
-               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-                 <div className="flex items-start gap-2">
-                   <AlertTriangle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                   <div className="text-sm text-blue-300">
-                     <p className="font-semibold mb-1">Renewal Information:</p>
-                     <ul className="space-y-1 text-xs">
-                       <li>• Extension will be added to current expiry date</li>
-                       <li>• All activations will remain active</li>
-                       <li>• New license key will be generated</li>
-                       <li>• Only JWT licenses can be renewed</li>
-                     </ul>
-                   </div>
-                 </div>
-               </div>
+                <div className="bg-[#22c55e]/10 border border-[#22c55e]/30 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-[#22c55e] mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-[#22c55e]">
+                      <p className="font-semibold mb-1">Renewal Information:</p>
+                      <ul className="space-y-1 text-xs">
+                        <li>• Extension will be added to current expiry date</li>
+                        <li>• All activations will remain active</li>
+                        <li>• New license key will be generated</li>
+                        <li>• Only JWT licenses can be renewed</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
 
-               <div className="flex gap-3">
-                 <button
-                   type="button"
-                   onClick={() => setRenewModal({ open: false, licenseId: "", licenseName: "" })}
-                   className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-                 >
-                   Cancel
-                 </button>
-                 <button
-                   type="submit"
-                   disabled={submitting}
-                   className="flex-1 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/20"
-                 >
-                   {submitting ? 'Processing...' : `Renew ${renewForm.durationDays} days`}
-                 </button>
-               </div>
-             </form>
-           </div>
-         </div>
-       )}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRenewModal({ open: false, licenseId: "", licenseName: "" })}
+                    className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 bg-[#22c55e] text-black hover:bg-[#16a34a] disabled:bg-gray-700 disabled:cursor-not-allowed py-2 px-4 rounded-lg font-bold transition-all hover:shadow-lg hover:shadow-[#22c55e]/20"
+                  >
+                    {submitting ? 'Processing...' : `Renew ${renewForm.durationDays} days`}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
      </div>
    );
  }

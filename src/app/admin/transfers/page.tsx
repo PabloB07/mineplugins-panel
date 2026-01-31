@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/auth";
-// import { prisma } from "@/lib/prisma";
-// import Link from "next/link";
+import Link from "next/link";
 import { 
   ArrowRight, 
   Mail, 
@@ -13,44 +10,48 @@ import {
   AlertTriangle,
   RefreshCw,
   Search,
-  // Filter
+  Users
 } from "lucide-react";
-
-interface License {
-  id: string;
-  licenseKey: string;
-  status: string;
-  createdAt: Date;
-  expiresAt: Date;
-  lastValidatedAt: Date | null;
-  maxActivations: number;
-  product: {
-    name: string;
-    slug: string;
-  };
-}
 
 interface Transfer {
   id: string;
-  fromUser: { name: string | null; email: string };
-  toUser: { name: string | null; email: string };
-  originalLicense: { product: { name: string } };
-  newLicense: { product: { name: string } };
-  transferredAt: string;
+  from_user_email: string;
+  to_user_email: string;
+  product_name: string;
+  transferred_at: string;
 }
 
-export default function TransfersPage() {
+interface User {
+  id: string;
+  email: string;
+  name: string | null;
+}
+
+export default function AdminTransfersPage() {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [licenses, setLicenses] = useState<License[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [licenses, setLicenses] = useState<Array<{
+    id: string;
+    licenseKey: string;
+    status: string;
+    product: {
+      name: string;
+      slug: string;
+    };
+    user: {
+      email: string;
+      name: string | null;
+    };
+  }>>([]);
   const [loading, setLoading] = useState(true);
   const [transferForm, setTransferForm] = useState({
     licenseId: "",
+    targetUserId: "",
     targetEmail: "",
     durationDays: 365,
   });
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState<"all" | "sent" | "received">("all");
 
   useEffect(() => {
     fetchData();
@@ -59,8 +60,8 @@ export default function TransfersPage() {
   const fetchData = async () => {
     try {
       const [transfersRes, licensesRes] = await Promise.all([
-        fetch('/api/dashboard/transfers'),
-        fetch('/api/licenses'),
+        fetch('/api/admin/transfers'),
+        fetch('/api/licenses?limit=100'),
       ]);
 
       if (transfersRes.ok && licensesRes.ok) {
@@ -70,8 +71,6 @@ export default function TransfersPage() {
         ]);
         setTransfers(transfersData.transfers || []);
         setLicenses(licensesData.licenses || []);
-      } else {
-        console.error('Failed to fetch data');
       }
     } catch (error) {
       console.error('Failed to fetch data:', error);
@@ -80,12 +79,29 @@ export default function TransfersPage() {
     }
   };
 
+  const searchUsers = async (query: string) => {
+    if (!query) {
+      setUsers([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users?search=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.users || []);
+      }
+    } catch (error) {
+      console.error('Failed to search users:', error);
+    }
+  };
+
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      const response = await fetch('/api/dashboard/transfers', {
+      const response = await fetch('/api/admin/transfers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transferForm),
@@ -93,7 +109,8 @@ export default function TransfersPage() {
 
       if (response.ok) {
         await fetchData();
-        setTransferForm({ licenseId: "", targetEmail: "", durationDays: 365 });
+        setTransferForm({ licenseId: "", targetUserId: "", targetEmail: "", durationDays: 365 });
+        setUsers([]);
       } else {
         const error = await response.json();
         alert(error.error || 'Transfer failed');
@@ -108,16 +125,11 @@ export default function TransfersPage() {
 
   const filteredTransfers = transfers.filter(transfer => {
     const matchesSearch = 
-      transfer.fromUser.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transfer.toUser.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transfer.originalLicense.product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      transfer.from_user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transfer.to_user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transfer.product_name.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesFilter = 
-      filter === "all" ||
-      (filter === "sent" && transfer.fromUser.email.includes("current")) ||
-      (filter === "received" && transfer.toUser.email.includes("current"));
-
-    return matchesSearch && matchesFilter;
+    return matchesSearch;
   });
 
   if (loading) {
@@ -135,7 +147,7 @@ export default function TransfersPage() {
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">License Transfers</h1>
-        <p className="text-gray-400">Transfer your licenses to other users securely</p>
+        <p className="text-gray-400">Transfer licenses between users securely</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -143,26 +155,15 @@ export default function TransfersPage() {
           <div className="bg-[#111] rounded-xl border border-[#222] p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-white">Transfer History</h2>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search transfers..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-green-500"
-                  />
-                </div>
-                <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value as "all" | "sent" | "received")}
-                  className="px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white text-sm focus:outline-none focus:border-green-500"
-                >
-                  <option value="all">All Transfers</option>
-                  <option value="sent">Sent</option>
-                  <option value="received">Received</option>
-                </select>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search transfers..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-green-500"
+                />
               </div>
             </div>
 
@@ -184,21 +185,17 @@ export default function TransfersPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-sm font-medium text-white">
-                            {transfer.originalLicense.product.name}
-                          </span>
-                          <ArrowRight className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm font-medium text-green-400">
-                            {transfer.newLicense.product.name}
+                            {transfer.product_name}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-400">
                           <div className="flex items-center gap-1">
                             <Mail className="w-3 h-3" />
-                            {transfer.fromUser.email} → {transfer.toUser.email}
+                            {transfer.from_user_email} → {transfer.to_user_email}
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
-                            {new Date(transfer.transferredAt).toLocaleDateString()}
+                            {new Date(transfer.transferred_at).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
@@ -216,7 +213,10 @@ export default function TransfersPage() {
 
         <div>
           <div className="bg-[#111] rounded-xl border border-[#222] p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">New Transfer</h2>
+            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              New Transfer
+            </h2>
             
             <form onSubmit={handleTransfer} className="space-y-4">
               <div>
@@ -230,9 +230,9 @@ export default function TransfersPage() {
                   required
                 >
                   <option value="">Choose a license...</option>
-                  {licenses.filter(license => license.licenseKey.startsWith('eyJ')).map((license: License) => (
+                  {licenses.filter(license => license.licenseKey.startsWith('eyJ')).map((license) => (
                     <option key={license.id} value={license.id}>
-                      {license.product.name} - {license.status}
+                      {license.product.name} - {license.user?.email} ({license.status})
                     </option>
                   ))}
                 </select>
@@ -240,16 +240,41 @@ export default function TransfersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Recipient Email
+                  Target User
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   value={transferForm.targetEmail}
-                  onChange={(e) => setTransferForm({ ...transferForm, targetEmail: e.target.value })}
+                  onChange={(e) => {
+                    setTransferForm({ ...transferForm, targetEmail: e.target.value, targetUserId: "" });
+                    searchUsers(e.target.value);
+                  }}
                   className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
-                  placeholder="user@example.com"
+                  placeholder="Search by email..."
                   required
                 />
+                
+                {users.length > 0 && (
+                  <div className="mt-2 bg-[#0a0a0a] border border-[#333] rounded-lg max-h-40 overflow-y-auto">
+                    {users.map((user) => (
+                      <button
+                        key={user.id}
+                        type="button"
+                        onClick={() => {
+                          setTransferForm({ 
+                            ...transferForm, 
+                            targetEmail: user.email, 
+                            targetUserId: user.id 
+                          });
+                          setUsers([]);
+                        }}
+                        className="w-full text-left px-3 py-2 hover:bg-[#333] text-white text-sm transition-colors"
+                      >
+                        {user.email} {user.name && `(${user.name})`}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -267,15 +292,16 @@ export default function TransfersPage() {
                 />
               </div>
 
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-yellow-300">
-                    <p className="font-semibold mb-1">Transfer Notice:</p>
+                  <AlertTriangle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-blue-300">
+                    <p className="font-semibold mb-1">Admin Transfer Notice:</p>
                     <ul className="space-y-1 text-xs">
                       <li>• This action cannot be undone</li>
                       <li>• All current activations will be removed</li>
                       <li>• Only JWT licenses can be transferred</li>
+                      <li>• User will receive email notification</li>
                     </ul>
                   </div>
                 </div>

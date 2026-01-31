@@ -191,9 +191,9 @@ export default function AdminOrdersPage() {
       case "FAILED":
         return "bg-red-900/50 text-red-300 border-red-700";
       case "CANCELLED":
-        return "bg-gray-700 text-gray-300 border-gray-600";
+         return "bg-gray-700 text-gray-300 border-[#333]";
       default:
-        return "bg-gray-700 text-gray-300 border-gray-600";
+         return "bg-gray-700 text-gray-300 border-[#333]";
     }
   };
 
@@ -213,32 +213,54 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
-      {/* Header */}
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <ShoppingCart className="w-8 h-8 text-amber-400" />
-            Order Management
-          </h1>
-          <p className="text-gray-400 mt-1">Manage all customer orders and payments</p>
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowDebugModal(true)}
-            className="bg-[#f59e0b]/20 hover:bg-[#f59e0b]/30 text-[#f59e0b] border border-[#f59e0b]/30 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-[#f59e0b]/20"
-          >
-            <AlertCircle className="w-4 h-4 mr-2" />
-            Debug Tools
-          </button>
-          <button
-            onClick={bulkFixStuckOrders}
-            disabled={debugLoading}
-            className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-red-500/20 disabled:opacity-50"
-          >
-            <TrendingUp className="w-4 h-4 mr-2" />
-            {debugLoading ? "Fixing..." : "Fix Stuck Orders"}
-          </button>
+    <div className="space-y-8 animate-fade-in pb-10">
+      {/* Welcome Hero - Gradient Background */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
+              <ShoppingCart className="w-8 h-8 text-[#f59e0b]" />
+              Order Management
+            </h1>
+            <p className="text-gray-400 max-w-lg text-lg">
+              Manage all customer orders and payments. Track sales, process transactions, and handle customer support.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                {orders.length} Total Orders
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                {orders.filter(o => o.status === 'COMPLETED').length} Completed
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
+                <AlertCircle className="w-4 h-4 mr-2" />
+                {orders.filter(o => o.status === 'PENDING').length} Pending
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDebugModal(true)}
+                className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#f59e0b]/20"
+              >
+                <AlertCircle className="w-5 h-5" />
+                Debug Tools
+              </button>
+              <button
+                onClick={bulkFixStuckOrders}
+                disabled={debugLoading}
+                className="bg-red-500 hover:bg-red-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-red-500/20"
+              >
+                <TrendingUp className="w-5 h-5" />
+                {debugLoading ? "Fixing..." : "Fix Orders"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -685,7 +707,7 @@ function DebugModal({
                 </h3>
                 <div className="space-y-2">
                   {debugInfo.order.items.map((item: any, index: number) => (
-                    <div key={index} className="text-sm border-b border-gray-600 pb-2 last:border-0">
+                     <div key={index} className="text-sm border-b border-[#222] pb-2 last:border-0">
                       <div className="text-white">{item.product.name}</div>
                       <div className="text-gray-400">
                         License: {item.license ? `${item.license.licenseKey.substring(0, 20)}... (${item.license.status})` : 'None'}
