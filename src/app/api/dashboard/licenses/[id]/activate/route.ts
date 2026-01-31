@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateActivationToken, verifyModernLicenseKey } from "@/lib/license";
+import { generateActivationToken, verifyModernLicenseKey, hashForPrivacy } from "@/lib/license";
 
 export async function POST(
   request: NextRequest,
@@ -15,7 +15,22 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { serverId, serverIp, serverVersion } = await request.json();
+    const { 
+      serverId, 
+      serverIp, 
+      serverVersion,
+      minecraftVersion,
+      serverName,
+      serverPort,
+      motd,
+      onlineMode,
+      maxPlayers,
+      onlinePlayers,
+      plugins,
+      macAddress,
+      hardwareHash,
+      networkSignature,
+    } = await request.json();
 
     if (!serverId) {
       return NextResponse.json({ error: "Server ID is required" }, { status: 400 });
@@ -55,6 +70,17 @@ export async function POST(
           isActive: true,
           serverIp,
           serverVersion,
+          minecraftVersion,
+          serverName,
+          serverPort,
+          motd,
+          onlineMode,
+          maxPlayers,
+          onlinePlayers,
+          plugins: plugins ? JSON.stringify(plugins) : null,
+          macAddress: macAddress ? hashForPrivacy(macAddress) : null,
+          hardwareHash,
+          networkSignature,
           lastSeenAt: new Date(),
           validationCount: existingActivation.validationCount + 1,
         },
@@ -76,6 +102,17 @@ export async function POST(
         serverId,
         serverIp,
         serverVersion,
+        minecraftVersion,
+        serverName,
+        serverPort,
+        motd,
+        onlineMode,
+        maxPlayers,
+        onlinePlayers,
+        plugins: plugins ? JSON.stringify(plugins) : null,
+        macAddress: macAddress ? hashForPrivacy(macAddress) : null,
+        hardwareHash,
+        networkSignature,
         isActive: true,
         lastSeenAt: new Date(),
         validationCount: 1,

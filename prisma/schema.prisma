@@ -142,6 +142,15 @@ model LicenseActivation {
   serverIp         String?
   serverVersion    String?
   minecraftVersion String?
+  serverName       String?
+  serverPort       Int?
+  motd             String?
+  onlineMode       Boolean?
+  maxPlayers       Int?
+  onlinePlayers    Int?
+  tps              Float?   // Ticks per second
+  memoryUsage      Int?     // Memory usage in MB
+  plugins          String? // JSON string array of plugins
   isActive         Boolean  @default(true)
   firstSeenAt      DateTime @default(now())
   lastSeenAt       DateTime @default(now())

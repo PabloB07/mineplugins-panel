@@ -16,9 +16,17 @@ interface ValidationRequest {
   license: string;
   serverId: string;
   version: string;
+  minecraftVersion?: string;
+  serverName?: string;
+  onlineMode?: boolean;
+  maxPlayers?: number;
+  onlinePlayers?: number;
+  plugins?: string[];
   macAddress?: string;
   hardwareHash?: string;
   networkSignature?: string;
+  serverPort?: number;
+  motd?: string;
 }
 
 interface ValidationResponse {
@@ -85,9 +93,17 @@ export async function POST(request: NextRequest) {
       license: licenseKey,
       serverId,
       version,
+      minecraftVersion,
+      serverName,
+      onlineMode,
+      maxPlayers,
+      onlinePlayers,
+      plugins,
       macAddress,
       hardwareHash,
       networkSignature,
+      serverPort,
+      motd,
     } = body;
 
     // Validate required fields
@@ -239,6 +255,14 @@ export async function POST(request: NextRequest) {
           hardwareHash,
           networkSignature,
           serverVersion: version,
+          minecraftVersion,
+          serverName,
+          serverPort,
+          motd,
+          onlineMode,
+          maxPlayers,
+          onlinePlayers,
+          plugins: plugins ? JSON.stringify(plugins) : null,
           serverIp: hashForPrivacy(clientIp),
           isActive: true,
           validationCount: 1,
@@ -246,20 +270,32 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Update existing activation
+      const updateData: any = {
+        lastSeenAt: now,
+        validationCount: { increment: 1 },
+        serverVersion: version,
+        // Update fingerprints if provided
+        macAddress: macAddress
+          ? hashForPrivacy(macAddress)
+          : existingActivation.macAddress,
+        hardwareHash: hardwareHash || existingActivation.hardwareHash,
+        networkSignature:
+          networkSignature || existingActivation.networkSignature,
+      };
+
+      // Add optional fields if they exist (will work after migration)
+      if (minecraftVersion) updateData.minecraftVersion = minecraftVersion;
+      if (serverName) updateData.serverName = serverName;
+      if (serverPort) updateData.serverPort = serverPort;
+      if (motd) updateData.motd = motd;
+      if (onlineMode !== undefined) updateData.onlineMode = onlineMode;
+      if (maxPlayers !== undefined) updateData.maxPlayers = maxPlayers;
+      if (onlinePlayers !== undefined) updateData.onlinePlayers = onlinePlayers;
+      if (plugins) updateData.plugins = JSON.stringify(plugins);
+
       await prisma.licenseActivation.update({
         where: { id: existingActivation.id },
-        data: {
-          lastSeenAt: now,
-          validationCount: { increment: 1 },
-          serverVersion: version,
-          // Update fingerprints if provided
-          macAddress: macAddress
-            ? hashForPrivacy(macAddress)
-            : existingActivation.macAddress,
-          hardwareHash: hardwareHash || existingActivation.hardwareHash,
-          networkSignature:
-            networkSignature || existingActivation.networkSignature,
-        },
+        data: updateData,
       });
     }
 

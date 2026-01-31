@@ -1,9 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkLicenseValidity, hashForPrivacy } from "@/lib/license";
+import { prisma } from "@/lib/prisma";
+import { checkLicenseValidity, hashForPrivacy, verifyLicenseSignature } from "@/lib/license";
+
+interface ModernValidationRequest {
+  licenseKey: string;
+  serverId: string;
+  serverIp?: string;
+  minecraftVersion?: string;
+  serverVersion?: string;
+  serverName?: string;
+  onlineMode?: boolean;
+  maxPlayers?: number;
+  onlinePlayers?: number;
+  plugins?: string[];
+  macAddress?: string;
+  hardwareHash?: string;
+  networkSignature?: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { licenseKey, serverId, serverIp } = await request.json();
+    const body: ModernValidationRequest = await request.json();
+    const {
+      licenseKey,
+      serverId,
+      serverIp,
+      minecraftVersion,
+      serverVersion,
+      serverName,
+      onlineMode,
+      maxPlayers,
+      onlinePlayers,
+      plugins,
+      macAddress,
+      hardwareHash,
+      networkSignature,
+    } = body;
 
     if (!licenseKey || !serverId) {
       return NextResponse.json({ 
@@ -11,6 +43,15 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Step 1: Verify license signature (offline check)
+    if (!verifyLicenseSignature(licenseKey)) {
+      return NextResponse.json({ 
+        valid: false, 
+        error: "Invalid license format" 
+      }, { status: 400 });
+    }
+
+    // Step 2: Check license validity
     const validity = checkLicenseValidity(licenseKey);
     
     if (!validity.decoded) {
@@ -28,17 +69,101 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const decoded = validity.decoded;
-    const serverMatches = decoded.serverId === "*" || decoded.serverId === serverId;
+    // Step 3: Find license in database
+    const license = await prisma.license.findUnique({
+      where: { licenseKey },
+      include: {
+        product: true,
+        activations: true,
+      },
+    });
 
-    if (!serverMatches) {
+    if (!license) {
       return NextResponse.json({ 
         valid: false, 
-        error: "License not valid for this server" 
+        error: "License not found" 
+      }, { status: 404 });
+    }
+
+    // Step 4: Check license status
+    if (license.status !== "ACTIVE") {
+      return NextResponse.json({ 
+        valid: false, 
+        error: `License is ${license.status.toLowerCase()}` 
       }, { status: 403 });
     }
 
-    const hashedIp = serverIp ? hashForPrivacy(serverIp) : null;
+    const decoded = validity.decoded;
+    const clientIp = serverIp || (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown');
+    const hashedIp = hashForPrivacy(clientIp);
+
+    // Step 5: Handle activation tracking
+    const existingActivation = license.activations.find(
+      (a) => a.serverId === serverId
+    );
+
+    if (!existingActivation) {
+      // This is a new server trying to activate
+      const activeActivations = license.activations.filter(
+        (a) => a.isActive
+      ).length;
+
+      if (activeActivations >= decoded.maxActivations) {
+        return NextResponse.json({ 
+          valid: false, 
+          error: `Maximum activations reached (${decoded.maxActivations})` 
+        }, { status: 403 });
+      }
+
+      // Create new activation
+      await prisma.licenseActivation.create({
+        data: {
+          licenseId: license.id,
+          serverId,
+          macAddress: macAddress ? hashForPrivacy(macAddress) : null,
+          hardwareHash,
+          networkSignature,
+          serverVersion: serverVersion || minecraftVersion,
+          minecraftVersion,
+          serverName,
+          serverIp: hashedIp,
+          onlineMode,
+          maxPlayers,
+          onlinePlayers,
+          plugins: plugins ? JSON.stringify(plugins) : null,
+          isActive: true,
+          validationCount: 1,
+        },
+      });
+    } else {
+      // Update existing activation
+      await prisma.licenseActivation.update({
+        where: { id: existingActivation.id },
+        data: {
+          lastSeenAt: new Date(),
+          validationCount: { increment: 1 },
+          serverVersion: serverVersion || minecraftVersion || existingActivation.serverVersion,
+          minecraftVersion: minecraftVersion || existingActivation.minecraftVersion,
+          serverName: serverName || existingActivation.serverName,
+          onlineMode: onlineMode !== undefined ? onlineMode : existingActivation.onlineMode,
+          maxPlayers: maxPlayers !== undefined ? maxPlayers : existingActivation.maxPlayers,
+          onlinePlayers: onlinePlayers !== undefined ? onlinePlayers : existingActivation.onlinePlayers,
+          plugins: plugins ? JSON.stringify(plugins) : existingActivation.plugins,
+          // Update fingerprints if provided
+          macAddress: macAddress
+            ? hashForPrivacy(macAddress)
+            : existingActivation.macAddress,
+          hardwareHash: hardwareHash || existingActivation.hardwareHash,
+          networkSignature: networkSignature || existingActivation.networkSignature,
+        },
+      });
+    }
+
+    // Step 6: Update license last validated time
+    await prisma.license.update({
+      where: { id: license.id },
+      data: { lastValidatedAt: new Date() },
+    });
 
     const response = {
       valid: true,
