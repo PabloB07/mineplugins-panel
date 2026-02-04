@@ -91,6 +91,12 @@ export async function GET(request: NextRequest) {
         image: true,
         role: true,
         createdAt: true,
+        accounts: {
+          select: {
+            provider: true,
+            providerAccountId: true,
+          },
+        },
         _count: {
           select: {
             licenses: true,

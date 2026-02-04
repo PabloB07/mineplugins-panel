@@ -232,7 +232,7 @@ export default function LicensesPage() {
             return (
                <div
                  key={license.id}
-                 className="group relative bg-[#111] hover:bg-[#151515] rounded-xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20 hover:scale-[1.02] transform"
+                 className="group relative bg-[#111] hover:bg-[#151515] rounded-xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20"
                >
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
@@ -346,7 +346,7 @@ export default function LicensesPage() {
                         {license.activations.slice(0, 3).map((activation) => (
                             <div
                               key={activation.id}
-                              className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all hover:scale-[1.02] transform"
+                              className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all"
                             >
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-2">

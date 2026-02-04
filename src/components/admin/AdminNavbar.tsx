@@ -64,7 +64,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <div className="hidden lg:flex items-center gap-2">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -73,7 +73,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
                                         ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30 shadow-lg shadow-[#f59e0b]/10"
                                         : "text-gray-400 hover:text-white hover:bg-[#111] hover:border-[#333] border border-transparent"
                                         }`}

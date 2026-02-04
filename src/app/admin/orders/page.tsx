@@ -13,7 +13,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  TrendingUp,
   Search,
   Filter
 } from "lucide-react";
@@ -59,10 +58,8 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [excludedStatuses, setExcludedStatuses] = useState<string[]>([]);
   const [search, setSearch] = useState("");
-  const [showDebugModal, setShowDebugModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [debugLoading, setDebugLoading] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 25,
@@ -72,13 +69,14 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [filter, search, pagination.page]);
+  }, [filter, excludedStatuses, search, pagination.page]);
 
   async function fetchOrders() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (filter !== "all") params.append("status", filter);
+      excludedStatuses.forEach((status) => params.append("excludeStatus", status));
       if (search) params.append("search", search);
       params.append("page", pagination.page.toString());
       params.append("limit", pagination.limit.toString());
@@ -103,7 +101,6 @@ export default function AdminOrdersPage() {
       return;
     }
 
-    setDebugLoading(true);
     try {
       const res = await fetch(`/api/admin/orders/${orderId}`, {
         method: "DELETE",
@@ -119,62 +116,6 @@ export default function AdminOrdersPage() {
     } catch (error) {
       console.error("Failed to delete order:", error);
       alert("Failed to delete order");
-    } finally {
-      setDebugLoading(false);
-    }
-  }
-
-  async function fixOrder(orderId: string, force = false) {
-    setDebugLoading(true);
-    try {
-      const res = await fetch("/api/payment/manual-confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          force,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(`Order ${data.order?.orderNumber} has been ${data.forced ? "forcefully " : ""}completed!`);
-        fetchOrders(); // Refresh the list
-        setShowDebugModal(false);
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("Failed to fix order:", error);
-      alert("Failed to fix order. Check console for details.");
-    } finally {
-      setDebugLoading(false);
-    }
-  }
-
-  async function bulkFixStuckOrders() {
-    setDebugLoading(true);
-    try {
-      const res = await fetch("/api/payment/fix-stuck-orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dryRun: false, maxOrders: 20 }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(`Fixed ${data.ordersFixed.length} stuck orders!`);
-        fetchOrders();
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("Failed to fix stuck orders:", error);
-      alert("Failed to fix stuck orders. Check console for details.");
-    } finally {
-      setDebugLoading(false);
     }
   }
 
@@ -242,31 +183,13 @@ export default function AdminOrdersPage() {
             </div>
           </div>
 
-          <div className="hidden md:block">
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDebugModal(true)}
-                className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#f59e0b]/20"
-              >
-                <AlertCircle className="w-5 h-5" />
-                Debug Tools
-              </button>
-              <button
-                onClick={bulkFixStuckOrders}
-                disabled={debugLoading}
-                className="bg-red-500 hover:bg-red-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-red-500/20"
-              >
-                <TrendingUp className="w-5 h-5" />
-                {debugLoading ? "Fixing..." : "Fix Orders"}
-              </button>
-            </div>
-          </div>
+          <div className="hidden md:block" />
         </div>
       </div>
 
       {/* Filters */}
       <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg">
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
           <div className="flex items-center gap-3">
             <Filter className="w-4 h-4 text-gray-400" />
             <span className="text-gray-400 text-sm font-medium">Status:</span>
@@ -287,6 +210,31 @@ export default function AdminOrdersPage() {
                 </button>
               )
             )}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-gray-400 text-sm font-medium">Exclude:</span>
+            <div className="flex flex-wrap gap-2">
+              {["PENDING", "COMPLETED", "FAILED", "CANCELLED"].map((status) => (
+                <button
+                  key={status}
+                  onClick={() =>
+                    setExcludedStatuses((prev) =>
+                      prev.includes(status)
+                        ? prev.filter((value) => value !== status)
+                        : [...prev, status]
+                    )
+                  }
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                    excludedStatuses.includes(status)
+                      ? "bg-red-500/20 text-red-300 border border-red-500/40"
+                      : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
+                  }`}
+                  type="button"
+                >
+                  {status}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex-1 max-w-md relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -466,17 +414,6 @@ export default function AdminOrdersPage() {
                           >
                             View
                           </Link>
-                        {order.status === "PENDING" && (
-                          <button
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setShowDebugModal(true);
-                            }}
-                            className="text-yellow-400 hover:text-yellow-300 text-sm"
-                          >
-                            Fix
-                          </button>
-                        )}
                         {(order.status === "PENDING" || order.status === "FAILED" || order.status === "CANCELLED") && (
                           <button
                             onClick={() => deleteOrder(order.id)}
@@ -564,196 +501,6 @@ export default function AdminOrdersPage() {
         )
       }
 
-      {/* Debug Modal */}
-      {
-        showDebugModal && (
-          <DebugModal
-            order={selectedOrder}
-            onClose={() => {
-              setShowDebugModal(false);
-              setSelectedOrder(null);
-            }}
-            onFix={fixOrder}
-            loading={debugLoading}
-          />
-        )
-      }
     </div >
-  );
-}
-
-function DebugModal({
-  order,
-  onClose,
-  onFix,
-  loading
-}: {
-  order: Order | null;
-  onClose: () => void;
-  onFix: (orderId: string, force?: boolean) => void;
-  loading: boolean;
-}) {
-  const [debugInfo, setDebugInfo] = useState<any>(null);
-  const [debugLoading, setDebugLoading] = useState(false);
-
-  useEffect(() => {
-    if (order?.id) {
-      fetchDebugInfo();
-    }
-  }, [order?.id]);
-
-  async function fetchDebugInfo() {
-    setDebugLoading(true);
-    try {
-      const res = await fetch(`/api/payment/manual-confirm?orderId=${order?.id}`);
-      const data = await res.json();
-      setDebugInfo(data);
-    } catch (error) {
-      console.error("Failed to fetch debug info:", error);
-    } finally {
-      setDebugLoading(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-[#111] rounded-xl border border-[#222] w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl shadow-black/50">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-white">
-            Order Debug: {order?.orderNumber}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {debugLoading ? (
-          <div className="text-center py-8 text-gray-400">Loading debug info...</div>
-        ) : debugInfo ? (
-          <div className="space-y-6">
-            {/* Order Info */}
-            <div className="bg-[#0a0a0a]/50 rounded-xl p-6 border border-[#333]">
-              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-amber-400" />
-                Order Information
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-400">Order Number:</span>
-                  <span className="text-white ml-2">{debugInfo.order.orderNumber}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Status:</span>
-                  <span className="text-white ml-2">{debugInfo.order.status}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Total:</span>
-                  <span className="text-white ml-2">{formatCLP(debugInfo.order.total)}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Created:</span>
-                  <span className="text-white ml-2">{new Date(debugInfo.order.createdAt).toLocaleString()}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Flow Token:</span>
-                  <span className="text-white ml-2 font-mono text-xs">{debugInfo.order.flowToken || 'None'}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Paid At:</span>
-                  <span className="text-white ml-2">{debugInfo.order.paidAt ? new Date(debugInfo.order.paidAt).toLocaleString() : 'Not paid'}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Flow Status */}
-            {debugInfo.flowStatus && (
-              <div className="bg-[#0a0a0a]/50 rounded-xl p-6 border border-[#333]">
-                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-blue-400" />
-                  Flow Payment Status
-                </h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-400">Flow Status:</span>
-                    <span className="text-white ml-2">{debugInfo.flowStatusLabel} ({debugInfo.flowStatus.status})</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Flow Order:</span>
-                    <span className="text-white ml-2">{debugInfo.flowStatus.flowOrder}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Amount:</span>
-                    <span className="text-white ml-2">{formatCLP(debugInfo.flowStatus.amount)}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Currency:</span>
-                    <span className="text-white ml-2">{debugInfo.flowStatus.currency}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* License Info */}
-            {debugInfo.order.items && (
-              <div className="bg-[#0a0a0a]/50 rounded-xl p-6 border border-[#333]">
-                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-emerald-400" />
-                  License Information
-                </h3>
-                <div className="space-y-2">
-                  {debugInfo.order.items.map((item: any, index: number) => (
-                     <div key={index} className="text-sm border-b border-[#222] pb-2 last:border-0">
-                      <div className="text-white">{item.product.name}</div>
-                      <div className="text-gray-400">
-                        License: {item.license ? `${item.license.licenseKey.substring(0, 20)}... (${item.license.status})` : 'None'}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex justify-end gap-4 pt-6 border-t border-[#333]">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-gray-400 hover:text-white"
-              >
-                Close
-              </button>
-              {debugInfo.order.status === "PENDING" && (
-                <>
-                  {debugInfo.flowStatus?.status !== 2 && (
-                    <button
-                      onClick={() => order && onFix(order.id, true)}
-                      disabled={loading}
-                      className="bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                    >
-                      {loading ? "Fixing..." : "Force Complete"}
-                    </button>
-                  )}
-                  {debugInfo.flowStatus?.status === 2 && (
-                    <button
-                      onClick={() => order && onFix(order.id)}
-                      disabled={loading}
-                      className="bg-green-600 hover:bg-green-500 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                    >
-                      {loading ? "Fixing..." : "Complete Order"}
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8 text-red-400">Failed to load debug info</div>
-        )}
-      </div>
-    </div>
   );
 }
