@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Download, ExternalLink, CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
+import { ArrowLeft, Download, CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
 import { formatUSD, formatCLP } from "@/lib/pricing";
 
 interface PageProps {
@@ -72,23 +72,23 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return "bg-green-900/50 text-green-300 border-green-700";
+        return "bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30";
       case "FAILED":
-        return "bg-red-900/50 text-red-300 border-red-700";
+        return "bg-red-500/20 text-red-300 border-red-500/30";
       case "CANCELLED":
-        return "bg-gray-700 text-gray-300 border-gray-600";
+        return "bg-[#1a1a1a] text-gray-300 border-[#333]";
       case "PENDING":
-        return "bg-yellow-900/50 text-yellow-300 border-yellow-700";
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
       default:
-        return "bg-gray-700 text-gray-300 border-gray-600";
+        return "bg-[#1a1a1a] text-gray-300 border-[#333]";
     }
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="space-y-8 animate-fade-in pb-10">
       {/* Success/Error Messages */}
       {success === "true" && (
-        <div className="mb-6 bg-emerald-900/50 border border-emerald-700 rounded-lg p-4">
+        <div className="bg-emerald-900/50 border border-emerald-700 rounded-xl p-4">
           <div className="flex items-center gap-3">
             <CheckCircle className="w-5 h-5 text-emerald-400" />
             <div>
@@ -100,7 +100,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       )}
 
       {error && (
-        <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4">
+        <div className="bg-red-900/50 border border-red-700 rounded-xl p-4">
           <div className="flex items-center gap-3">
             <XCircle className="w-5 h-5 text-red-400" />
             <div>
@@ -118,22 +118,38 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       )}
 
       {/* Header */}
-      <div className="mb-8 flex items-center gap-4">
-        <Link
-          href="/dashboard/orders"
-          className="text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-white">Order Details</h1>
-          <p className="text-gray-400 mt-1">Order #{order.orderNumber}</p>
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <Link
+              href="/dashboard/orders"
+              className="text-gray-400 hover:text-white transition-colors mt-1"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Order Details</h1>
+              <p className="text-gray-400 mt-2">Order #{order.orderNumber}</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <span className={`inline-flex px-4 py-2 text-sm font-semibold rounded-full border ${getStatusColor(order.status)}`}>
+              {order.status}
+            </span>
+            <div className="inline-flex items-center px-3 py-2 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+              {order.items.length} Items
+            </div>
+            <div className="inline-flex items-center px-3 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+              {formatUSD(order.totalUSD || order.items.reduce((sum, item) => sum + (item.unitPriceUSD || 0), 0))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-4xl">
+      <div className="max-w-4xl space-y-6">
         {/* Order Status */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {getStatusIcon(order.status)}
@@ -154,21 +170,21 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
           </div>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
+            <div className="bg-[#0a0a0a] border border-[#222] rounded-lg p-4">
               <p className="text-sm text-gray-400">Order Date</p>
               <p className="text-white font-medium">
                 {new Date(order.createdAt).toLocaleDateString()}
               </p>
             </div>
             {order.paidAt && (
-              <div>
+              <div className="bg-[#0a0a0a] border border-[#222] rounded-lg p-4">
                 <p className="text-sm text-gray-400">Paid Date</p>
                 <p className="text-white font-medium">
                   {new Date(order.paidAt).toLocaleDateString()}
                 </p>
               </div>
             )}
-            <div>
+            <div className="bg-[#0a0a0a] border border-[#222] rounded-lg p-4">
               <p className="text-sm text-gray-400">Payment Method</p>
               <p className="text-white font-medium">Flow.cl</p>
             </div>
@@ -176,12 +192,12 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
         </div>
 
         {/* Order Items */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Items Ordered</h2>
           
           <div className="space-y-4">
-            {order.items.map((item, index) => (
-              <div key={item.id} className="border-b border-gray-700 pb-4 last:border-0">
+            {order.items.map((item) => (
+              <div key={item.id} className="border-b border-[#222] pb-4 last:border-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-medium text-white mb-1">
@@ -190,14 +206,18 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                     <p className="text-gray-400 text-sm mb-2">
                       {item.product.description}
                     </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-300">
-                      <span>Duration: {item.durationDays} days</span>
-                      <span>Activations: {item.product.maxActivations}</span>
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#0a0a0a] border border-[#222]">
+                        Duration: {item.durationDays} days
+                      </span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#0a0a0a] border border-[#222]">
+                        Activations: {item.product.maxActivations}
+                      </span>
                     </div>
                     
                     {/* License Details */}
                     {item.license && (
-                      <div className="mt-4 bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                      <div className="mt-4 bg-[#0a0a0a] rounded-lg p-4 border border-[#222]">
                         <h4 className="text-sm font-semibold text-white mb-2">License Details</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
@@ -228,7 +248,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                         <div className="mt-3">
                           <Link
                             href={`/dashboard/licenses/${item.license.id}`}
-                            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-all"
+                            className="inline-flex items-center gap-2 bg-[#22c55e] hover:bg-[#16a34a] text-black text-sm font-semibold py-2 px-4 rounded-lg transition-all"
                           >
                             <Download className="w-4 h-4" />
                             View License
@@ -253,7 +273,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Order Summary</h2>
           
           {/* Calculate totals from order items */}
@@ -293,7 +313,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                   <span className="text-gray-400">Tax</span>
                   <span className="text-white">{formatCLP(0)}</span>
                 </div>
-                <div className="border-t border-gray-700 pt-3">
+                <div className="border-t border-[#222] pt-3">
                   <div className="flex justify-between">
                     <span className="text-lg font-semibold text-white">Total</span>
                     <div className="text-right">

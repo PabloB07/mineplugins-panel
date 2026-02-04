@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Save, Package, DollarSign, Calendar, Server, Upload, Plus } from "lucide-react";
+import { ArrowLeft, Save, Package, DollarSign, Server, Upload, Plus } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -70,24 +70,29 @@ export default async function EditProductPage({ params }: PageProps) {
   }
 
   return (
-    <div>
+    <div className="space-y-8 animate-fade-in pb-10">
       {/* Header */}
-      <div className="mb-8 flex items-center gap-4">
-        <Link
-          href="/admin/products"
-          className="text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-white">Edit Product</h1>
-          <p className="text-gray-400 mt-1">Update product information</p>
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex items-start md:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <Link
+              href="/admin/products"
+              className="text-gray-400 hover:text-white transition-colors mt-1"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Edit Product</h1>
+              <p className="text-gray-400 mt-2">Update product information</p>
+            </div>
+          </div>
         </div>
       </div>
 
       <form action={updateProduct} className="max-w-2xl">
         <input type="hidden" name="productId" value={id} />
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
           {/* Basic Information */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
@@ -106,7 +111,7 @@ export default async function EditProductPage({ params }: PageProps) {
                   name="name"
                   required
                   defaultValue={product.name}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 />
               </div>
 
@@ -121,7 +126,7 @@ export default async function EditProductPage({ params }: PageProps) {
                   required
                   pattern="[a-z0-9-]+"
                   defaultValue={product.slug}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Lowercase letters, numbers, and hyphens only
@@ -138,7 +143,7 @@ export default async function EditProductPage({ params }: PageProps) {
                 name="description"
                 rows={4}
                 defaultValue={product.description || ""}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
               />
             </div>
           </div>
@@ -165,7 +170,7 @@ export default async function EditProductPage({ params }: PageProps) {
                     required
                     min="1"
                     defaultValue={product.priceUSD}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Enter price in cents (e.g., 999 = $9.99)
@@ -182,7 +187,7 @@ export default async function EditProductPage({ params }: PageProps) {
                     name="salePriceUSD"
                     min="1"
                     defaultValue={product.salePriceUSD || ""}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Optional - leave empty if no sale
@@ -206,7 +211,7 @@ export default async function EditProductPage({ params }: PageProps) {
                     required
                     min="1"
                     defaultValue={product.priceCLP}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Enter price in CLP pesos (e.g., 4990)
@@ -223,7 +228,7 @@ export default async function EditProductPage({ params }: PageProps) {
                     name="salePriceCLP"
                     min="1"
                     defaultValue={product.salePriceCLP || ""}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Optional - leave empty if no sale
@@ -252,7 +257,7 @@ export default async function EditProductPage({ params }: PageProps) {
                   required
                   min="1"
                   defaultValue={product.defaultDurationDays}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 />
               </div>
 
@@ -267,7 +272,7 @@ export default async function EditProductPage({ params }: PageProps) {
                   required
                   min="1"
                   defaultValue={product.maxActivations}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 />
               </div>
             </div>
@@ -283,7 +288,7 @@ export default async function EditProductPage({ params }: PageProps) {
                 id="isActive"
                 name="isActive"
                 defaultChecked={product.isActive}
-                className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-[#f59e0b] bg-[#0a0a0a] border-[#333] rounded focus:ring-[#f59e0b]/40 focus:ring-2"
               />
               <label htmlFor="isActive" className="text-sm font-medium text-gray-300">
                 Active (visible for purchase)
@@ -295,14 +300,14 @@ export default async function EditProductPage({ params }: PageProps) {
           <div className="flex items-center gap-4 mb-8">
             <button
               type="submit"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-medium py-2 px-6 rounded-lg transition-all"
+              className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-bold py-2.5 px-6 rounded-lg transition-all"
             >
               <Save className="w-4 h-4" />
               Update Product
             </button>
             <Link
               href="/admin/products"
-              className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-all"
+              className="inline-flex items-center gap-2 bg-[#1a1a1a] hover:bg-[#222] text-white font-medium py-2.5 px-6 rounded-lg transition-all border border-[#333]"
             >
               Cancel
             </Link>
@@ -311,19 +316,27 @@ export default async function EditProductPage({ params }: PageProps) {
       </form>
 
       {/* Versions Section */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-[#111] rounded-xl border border-[#222] p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
             <Package className="w-5 h-5" />
             Plugin Versions ({product.versions.length})
           </h2>
-          <Link
-            href={`/admin/products/${id}/versions/new`}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Add Version
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={`/admin/products/${id}/versions`}
+              className="inline-flex items-center gap-2 bg-[#1a1a1a] hover:bg-[#222] text-white font-medium py-2 px-4 rounded-lg transition-all border border-[#333]"
+            >
+              Manage Versions
+            </Link>
+            <Link
+              href={`/admin/products/${id}/versions/new`}
+              className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-semibold py-2 px-4 rounded-lg transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Add Version
+            </Link>
+          </div>
         </div>
 
         {product.versions.length === 0 ? (
@@ -332,44 +345,66 @@ export default async function EditProductPage({ params }: PageProps) {
             <p className="text-gray-400">No versions uploaded yet</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {product.versions.map((version: ProductVersionItem) => (
-              <div key={version.id} className="bg-gray-700/50 rounded-lg p-4 flex items-center justify-between">
-                <div>
-                  <div className="text-white font-medium">v{version.version}</div>
-                  <div className="text-sm text-gray-400 mt-1">
-                    {(version.fileSize / 1024 / 1024).toFixed(1)} MB •{" "}
-                    {new Date(version.publishedAt).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    {version.isBeta && (
-                      <span className="px-2 py-1 bg-yellow-900 text-yellow-300 text-xs rounded">
-                        Beta
-                      </span>
-                    )}
-                    {version.isLatest && (
-                      <span className="px-2 py-1 bg-blue-900 text-blue-300 text-xs rounded">
-                        Latest
-                      </span>
-                    )}
-                    {version.isMandatory && (
-                      <span className="px-2 py-1 bg-red-900 text-red-300 text-xs rounded">
-                        Required
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={version.downloadUrl}
-                    className="text-gray-400 hover:text-white p-2 hover:bg-gray-600/50 rounded transition-colors"
-                    title="Download"
-                  >
-                    <Upload className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            ))}
+          <div className="bg-[#0a0a0a] rounded-xl border border-[#222] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-[#111] border-b border-[#222]">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Version</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Published</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#222]">
+                  {product.versions.map((version: ProductVersionItem) => (
+                    <tr key={version.id} className="hover:bg-[#151515] transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="text-white font-semibold">v{version.version}</div>
+                        <div className="text-sm text-gray-400">
+                          {(version.fileSize / 1024 / 1024).toFixed(1)} MB
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          {version.isLatest && (
+                            <span className="px-2 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs rounded">
+                              Latest
+                            </span>
+                          )}
+                          {version.isBeta && (
+                            <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-xs rounded">
+                              Beta
+                            </span>
+                          )}
+                          {version.isMandatory && (
+                            <span className="px-2 py-1 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded">
+                              Required
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-300">
+                          {new Date(version.publishedAt).toLocaleDateString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={version.downloadUrl}
+                            className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-colors border border-transparent hover:border-blue-500/20"
+                            title="Download"
+                          >
+                            <Upload className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
