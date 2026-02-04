@@ -25,7 +25,7 @@ export function DeleteVersionButton({ versionId, productId, deleteAction }: Dele
       type="button"
       onClick={handleClick}
       disabled={isPending}
-      className="text-red-400 hover:text-red-300 p-1 hover:bg-gray-600/50 rounded transition-colors disabled:opacity-50"
+      className="text-red-400 hover:text-red-300 p-2 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/20 disabled:opacity-50"
       title="Delete"
     >
       <Trash2 className="w-4 h-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useId } from "react";
 import { CloudUpload, X } from "lucide-react";
 
 interface FileUploadProps {
@@ -12,6 +12,7 @@ interface FileUploadProps {
   label?: string;
   description?: string;
   disabled?: boolean;
+  inputId?: string;
 }
 
 export default function FileUpload({
@@ -23,11 +24,14 @@ export default function FileUpload({
   label = "Upload File",
   description = "Upload a JAR file",
   disabled = false,
+  inputId,
 }: FileUploadProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const generatedId = useId();
+  const resolvedInputId = inputId ?? `file-input-${generatedId}`;
 
   const validateFiles = useCallback((newFiles: FileList) => {
     const validFiles: File[] = [];
@@ -136,10 +140,10 @@ export default function FileUpload({
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={() => !disabled && document.getElementById("file-input")?.click()}
+        onClick={() => !disabled && document.getElementById(resolvedInputId)?.click()}
       >
         <input
-          id="file-input"
+          id={resolvedInputId}
           type="file"
           accept={accept}
           multiple={multiple}

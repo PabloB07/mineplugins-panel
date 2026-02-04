@@ -1,9 +1,10 @@
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Plus, Package, Download, Trash2, Star, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Plus, Package, Download, Star, AlertTriangle } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import { DeleteVersionButton } from "@/components/DeleteVersionButton";
+import { UpdateVersionJarButton } from "@/components/admin/UpdateVersionJarButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -60,61 +61,73 @@ export default async function ProductVersionsPage({ params }: PageProps) {
   }
 
   return (
-    <div>
+    <div className="space-y-8 animate-fade-in pb-10">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/admin/products/${id}`}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Versions</h1>
-            <p className="text-gray-400 mt-1">{product.name}</p>
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <Link
+              href={`/admin/products/${id}`}
+              className="text-gray-400 hover:text-white transition-colors mt-1"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Versions</h1>
+              <p className="text-gray-400 mt-2">{product.name}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/admin/products/${id}/versions/new`}
+              className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 shadow-lg shadow-[#f59e0b]/20"
+            >
+              <Plus className="w-5 h-5" />
+              Add Version
+            </Link>
           </div>
         </div>
-        <Link
-          href={`/admin/products/${id}/versions/new`}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-medium py-2 px-4 rounded-lg transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          Add Version
-        </Link>
       </div>
 
       {product.versions.length === 0 ? (
-        <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-          <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">No Versions Yet</h3>
-          <p className="text-gray-400 mb-4">Upload your first plugin version.</p>
-          <Link
-            href={`/admin/products/${id}/versions/new`}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add Version
-          </Link>
+        <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#f59e0b]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
+          <div className="relative z-10">
+            <div className="w-20 h-20 bg-[#0a0a0a] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#222]">
+              <Package className="w-10 h-10 text-gray-500" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">No Versions Yet</h3>
+            <p className="text-gray-400 mb-6 text-lg">Upload your first plugin version.</p>
+            <Link
+              href={`/admin/products/${id}/versions/new`}
+              className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#f59e0b]/20"
+            >
+              <Plus className="w-5 h-5" />
+              Add Version
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+        <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-[#f59e0b]/20 transition-all duration-300">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-700/50 border-b border-gray-600">
+              <thead className="bg-[#1a1a1a] border-b border-[#222]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Version</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Details</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Published</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Actions</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Version</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Details</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Published</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-[#222]">
                 {product.versions.map((version: PluginVersionItem) => (
-                  <tr key={version.id} className="hover:bg-gray-700/30">
+                  <tr key={version.id} className="hover:bg-[#151515] transition-colors group">
                     <td className="px-6 py-4">
-                      <div className="text-white font-medium text-lg">v{version.version}</div>
+                      <div className="text-white font-bold text-lg group-hover:text-[#f59e0b] transition-colors">
+                        v{version.version}
+                      </div>
                       <div className="text-sm text-gray-400">
                         {(version.fileSize / 1024 / 1024).toFixed(2)} MB
                       </div>
@@ -135,20 +148,20 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2">
                         {version.isLatest && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-900 text-blue-300 text-xs rounded">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs rounded">
                             <Star className="w-3 h-3" />
                             Latest
                           </span>
                         )}
                         {version.isBeta && (
-                          <span className="px-2 py-1 bg-yellow-900 text-yellow-300 text-xs rounded">
+                          <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-xs rounded">
                             Beta
                           </span>
                         )}
                         {version.isMandatory && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-900 text-red-300 text-xs rounded">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded">
                             <AlertTriangle className="w-3 h-3" />
                             Required
                           </span>
@@ -169,11 +182,16 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                           href={version.downloadUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 p-1 hover:bg-gray-600/50 rounded transition-colors"
+                          className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-colors border border-transparent hover:border-blue-500/20"
                           title="Download"
                         >
                           <Download className="w-4 h-4" />
                         </a>
+                        <UpdateVersionJarButton
+                          versionId={version.id}
+                          productId={id}
+                          versionLabel={version.version}
+                        />
                         {!version.isLatest && (
                           <form
                             action={async () => {
@@ -183,7 +201,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                           >
                             <button
                               type="submit"
-                              className="text-yellow-400 hover:text-yellow-300 p-1 hover:bg-gray-600/50 rounded transition-colors"
+                              className="text-yellow-400 hover:text-yellow-300 p-2 hover:bg-yellow-500/10 rounded-lg transition-colors border border-transparent hover:border-yellow-500/20"
                               title="Set as Latest"
                             >
                               <Star className="w-4 h-4" />
