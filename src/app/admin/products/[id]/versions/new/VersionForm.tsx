@@ -74,7 +74,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
   return (
     <form action={handleSubmit} className="max-w-2xl">
       <input type="hidden" name="productId" value={productId} />
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+      <div className="bg-[#111] rounded-xl border border-[#222] p-6">
         {/* Version Info */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
@@ -93,7 +93,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 name="version"
                 required
                 pattern="[0-9]+\.[0-9]+\.[0-9]+"
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 placeholder="1.0.0"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -125,14 +125,14 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 <label htmlFor="downloadUrl" className="block text-sm font-medium text-gray-300 mb-2">
                   Download URL *
                 </label>
-                <input
-                  type="url"
-                  id="downloadUrl"
-                  name="downloadUrl"
-                  required
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://storage.example.com/plugin-1.0.0.jar"
-                />
+              <input
+                type="url"
+                id="downloadUrl"
+                name="downloadUrl"
+                required
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
+                placeholder="https://storage.example.com/plugin-1.0.0.jar"
+              />
                 <p className="text-xs text-gray-500 mt-1">
                   Direct download link to JAR file
                 </p>
@@ -142,15 +142,15 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 <label htmlFor="fileSize" className="block text-sm font-medium text-gray-300 mb-2">
                   File Size (bytes) *
                 </label>
-                <input
-                  type="number"
-                  id="fileSize"
-                  name="fileSize"
-                  required
-                  min="1"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="1048576"
-                />
+              <input
+                type="number"
+                id="fileSize"
+                name="fileSize"
+                required
+                min="1"
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
+                placeholder="1048576"
+              />
                 <p className="text-xs text-gray-500 mt-1">
                   Size in bytes (1 MB = 1048576)
                 </p>
@@ -166,7 +166,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
               id="changelog"
               name="changelog"
               rows={4}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
               placeholder="- Added new features&#10;- Fixed bugs&#10;- Improved performance"
             />
           </div>
@@ -185,7 +185,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 type="text"
                 id="minMcVersion"
                 name="minMcVersion"
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 placeholder="1.21.3"
               />
             </div>
@@ -198,7 +198,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 type="text"
                 id="minJavaVersion"
                 name="minJavaVersion"
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                 placeholder="21"
               />
             </div>
@@ -216,7 +216,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 id="isLatest"
                 name="isLatest"
                 defaultChecked
-                className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-[#f59e0b] bg-[#0a0a0a] border-[#333] rounded focus:ring-[#f59e0b]/40 focus:ring-2"
               />
               <label htmlFor="isLatest" className="text-sm font-medium text-gray-300">
                 Mark as Latest Version
@@ -228,7 +228,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 type="checkbox"
                 id="isBeta"
                 name="isBeta"
-                className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-[#f59e0b] bg-[#0a0a0a] border-[#333] rounded focus:ring-[#f59e0b]/40 focus:ring-2"
               />
               <label htmlFor="isBeta" className="text-sm font-medium text-gray-300">
                 Beta Version (not recommended for production)
@@ -240,7 +240,7 @@ export default function VersionForm({ productId }: VersionFormProps) {
                 type="checkbox"
                 id="isMandatory"
                 name="isMandatory"
-                className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-[#f59e0b] bg-[#0a0a0a] border-[#333] rounded focus:ring-[#f59e0b]/40 focus:ring-2"
               />
               <label htmlFor="isMandatory" className="text-sm font-medium text-gray-300">
                 Mandatory Update (force users to update)
@@ -254,14 +254,14 @@ export default function VersionForm({ productId }: VersionFormProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2 px-6 rounded-lg transition-all"
+            className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] disabled:opacity-50 disabled:cursor-not-allowed font-semibold py-2.5 px-6 rounded-lg transition-all"
           >
             <Save className="w-4 h-4" />
             {isSubmitting ? "Creating..." : "Create Version"}
           </button>
           <Link
             href={`/admin/products/${productId}/versions`}
-            className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-all"
+            className="inline-flex items-center gap-2 bg-[#1a1a1a] hover:bg-[#222] text-white font-medium py-2.5 px-6 rounded-lg transition-all border border-[#333]"
           >
             Cancel
           </Link>

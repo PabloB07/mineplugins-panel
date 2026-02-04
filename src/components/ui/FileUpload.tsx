@@ -132,7 +132,7 @@ export default function FileUpload({
           relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
           ${dragActive 
             ? "border-emerald-500 bg-emerald-500/10" 
-            : "border-gray-600 hover:border-gray-500 bg-gray-800/50"
+            : "border-[#333] hover:border-[#444] bg-[#0a0a0a]"
           }
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
@@ -184,7 +184,7 @@ export default function FileUpload({
           {files.map((file, index) => (
             <div
               key={`${file.name}-${index}`}
-              className="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg p-3"
+              className="flex items-center justify-between bg-[#0a0a0a] border border-[#222] rounded-lg p-3"
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
