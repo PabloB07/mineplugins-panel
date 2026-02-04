@@ -111,13 +111,13 @@ export default async function DownloadsPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className={`grid grid-cols-1 gap-8 ${licenses.length > 1 ? "lg:grid-cols-2" : ""}`}>
             {licenses.map((license) => {
               const latestVersion = license.product.versions[0];
               const isActive = license.status === "ACTIVE";
 
               return (
-                <div key={license.id} className="group bg-[#111] hover:bg-[#151515] rounded-xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20 hover:scale-[1.02] transform">
+                <div key={license.id} className="group bg-[#111] hover:bg-[#151515] rounded-xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20">
                   {/* License Header */}
                   <div className="bg-[#151515] px-8 py-6 border-b border-[#222]">
                     <div className="flex items-center justify-between">
