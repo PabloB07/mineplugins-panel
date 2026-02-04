@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get("status");
+    const excludedStatuses = searchParams.getAll("excludeStatus");
     const search = searchParams.get("search");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "25");
@@ -41,6 +42,8 @@ export async function GET(request: NextRequest) {
 
     if (status && status !== "all") {
       where.status = status;
+    } else if (excludedStatuses.length > 0) {
+      where.status = { notIn: excludedStatuses };
     }
 
     if (search) {

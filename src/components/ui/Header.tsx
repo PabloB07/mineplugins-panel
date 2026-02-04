@@ -24,7 +24,11 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="text-3xl">⛪</div>
+            <img
+              src="/townyfaith-logo.svg"
+              alt="TownyFaiths logo"
+              className="h-9 w-9 rounded-full object-cover border border-[#22c55e]/20"
+            />
             <span className="text-xl font-bold text-white">TownyFaiths</span>
           </Link>
 
