@@ -131,6 +131,9 @@ export default function AdminTransfersPage() {
 
     return matchesSearch;
   });
+  const eligibleLicenses = licenses.filter(
+    (license) => license.licenseKey.startsWith("eyJ") && license.status === "ACTIVE"
+  );
 
   if (loading) {
     return (
@@ -221,25 +224,6 @@ export default function AdminTransfersPage() {
             <form onSubmit={handleTransfer} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Select License
-                </label>
-                <select
-                  value={transferForm.licenseId}
-                  onChange={(e) => setTransferForm({ ...transferForm, licenseId: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-green-500"
-                  required
-                >
-                  <option value="">Choose a license...</option>
-                  {licenses.filter(license => license.licenseKey.startsWith('eyJ')).map((license) => (
-                    <option key={license.id} value={license.id}>
-                      {license.product.name} - {license.user?.email} ({license.status})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Target User
                 </label>
                 <input
@@ -275,6 +259,28 @@ export default function AdminTransfersPage() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Select License (Active only)
+                </label>
+                <select
+                  value={transferForm.licenseId}
+                  onChange={(e) => setTransferForm({ ...transferForm, licenseId: e.target.value })}
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-green-500"
+                  required
+                >
+                  <option value="">Choose a license...</option>
+                  {eligibleLicenses.map((license) => (
+                    <option key={license.id} value={license.id}>
+                      {license.product.name} • {license.licenseKey.substring(0, 8)}… • {license.user?.email}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-2 text-xs text-gray-500">
+                  {eligibleLicenses.length} active JWT license{eligibleLicenses.length === 1 ? "" : "s"} available.
+                </p>
               </div>
 
               <div>

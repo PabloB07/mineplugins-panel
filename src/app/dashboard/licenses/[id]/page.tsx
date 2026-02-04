@@ -366,17 +366,6 @@ export default function LicenseDetailPage() {
                      </div>
                    </div>
 
-                   {/* Hardware Hash */}
-                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
-                     <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                       <Server className="w-3 h-3" />
-                       Hardware ID
-                     </div>
-                     <div className="font-mono text-white text-sm">
-                       {activation.hardwareHash ? `${activation.hardwareHash.substring(0, 12)}...` : "Not detected"}
-                     </div>
-                   </div>
-
                    {/* Network Signature */}
                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">

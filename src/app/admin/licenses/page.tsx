@@ -148,12 +148,12 @@ export default function AdminLicensesPage() {
 
       {/* Filters */}
       <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg">
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
           <div className="flex items-center gap-3">
             <Filter className="w-4 h-4 text-gray-400" />
             <span className="text-gray-400 text-sm font-medium">Status:</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {["all", "ACTIVE", "EXPIRED", "SUSPENDED", "REVOKED"].map(
               (status) => (
                 <button
@@ -161,7 +161,7 @@ export default function AdminLicensesPage() {
                   onClick={() => setFilter(status)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     filter === status
-                      ? "bg-blue-500 text-white border border-blue-500/50 shadow-lg shadow-blue-500/20"
+                      ? "bg-[#f59e0b] text-black border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
                       : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                   }`}
                 >
@@ -177,7 +177,7 @@ export default function AdminLicensesPage() {
               placeholder="Search by license key, email, product..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/50 transition-colors"
             />
           </div>
         </div>
