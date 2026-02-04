@@ -32,7 +32,13 @@ export default function LoginPage() {
 
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">⛪</div>
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-green-500/20 shadow-lg shadow-green-900/20">
+            <img
+              src="/townyfaith-logo.svg"
+              alt="TownyFaiths logo"
+              className="h-16 w-16 rounded-full object-cover"
+            />
+          </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 leading-tight tracking-tight">
             Welcome Back to <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">TownyFaiths</span>
           </h1>
