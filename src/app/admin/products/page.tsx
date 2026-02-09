@@ -76,7 +76,7 @@ export default async function AdminProductsPage() {
               Products
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage your plugin products and versions. Control pricing, availability, and distribution.
+              Manage your store products and versions. Control pricing, availability, and downloads.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
@@ -114,7 +114,7 @@ export default async function AdminProductsPage() {
               <Package className="w-10 h-10 text-gray-500" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-3">No Products Yet</h3>
-            <p className="text-gray-400 mb-6 text-lg">Start by creating your first plugin product.</p>
+            <p className="text-gray-400 mb-6 text-lg">Start by creating your first store product.</p>
             <Link
               href="/admin/products/new"
               className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#f59e0b]/20"

@@ -224,7 +224,7 @@ export default function AdminTransfersPage() {
             <form onSubmit={handleTransfer} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Target User
+                  Target Customer
                 </label>
                 <input
                   type="text"
@@ -302,12 +302,12 @@ export default function AdminTransfersPage() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                   <div className="text-sm text-blue-300">
-                    <p className="font-semibold mb-1">Admin Transfer Notice:</p>
+                    <p className="font-semibold mb-1">Store Transfer Notice:</p>
                     <ul className="space-y-1 text-xs">
                       <li>• This action cannot be undone</li>
                       <li>• All current activations will be removed</li>
                       <li>• Only JWT licenses can be transferred</li>
-                      <li>• User will receive email notification</li>
+                      <li>• Customer will receive email notification</li>
                     </ul>
                   </div>
                 </div>

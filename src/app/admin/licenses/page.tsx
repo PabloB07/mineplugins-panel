@@ -113,10 +113,10 @@ export default function AdminLicensesPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
               <Key className="w-8 h-8 text-[#f59e0b]" />
-              License Management
+              Licenses
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage all licenses in the system. Monitor status, activations, and user assignments.
+              Manage customer licenses. Monitor status, activations, and assignments.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
@@ -129,7 +129,7 @@ export default function AdminLicensesPage() {
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
                 <User className="w-4 h-4 mr-2" />
-                {new Set(licenses.map(l => l.user.id)).size} Users
+                {new Set(licenses.map(l => l.user.id)).size} Customers
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function AdminLicensesPage() {
                   License Key
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  User
+                  Customer
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Product
@@ -506,7 +506,7 @@ function CreateLicenseModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-400 text-sm font-medium mb-2">User</label>
+            <label className="block text-gray-400 text-sm font-medium mb-2">Customer</label>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}

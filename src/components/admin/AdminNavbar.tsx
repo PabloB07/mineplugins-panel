@@ -37,7 +37,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
         { href: "/admin/licenses", label: "Licenses", icon: Key },
         { href: "/admin/transfers", label: "Transfers", icon: ArrowRight },
-        { href: "/admin/users", label: "Users", icon: Users },
+        { href: "/admin/users", label: "Customers", icon: Users },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
         { href: "/admin/payku", label: "Payku", icon: CreditCard },
     ];
@@ -54,12 +54,12 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <div className="text-2xl">⛪</div>
+                        <div className="text-2xl">⛏️</div>
                         <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
                             MinePlugins
                         </Link>
                         <span className="bg-[#f59e0b]/10 text-[#f59e0b] text-[10px] px-2 py-0.5 rounded border border-[#f59e0b]/20 font-mono tracking-wide uppercase">
-                            Admin
+                            Store Admin
                         </span>
                     </div>
 
@@ -91,7 +91,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             className="text-blue-400 hover:text-blue-300 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-blue-400/10 border border-blue-400/20 hover:border-blue-400/30 whitespace-nowrap flex-shrink-0"
                             title="Switch to customer dashboard"
                         >
-                            Client View
+                            Customer View
                         </Link>
                     </div>
 

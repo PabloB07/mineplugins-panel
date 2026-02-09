@@ -162,10 +162,10 @@ export default function AdminOrdersPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
               <ShoppingCart className="w-8 h-8 text-[#f59e0b]" />
-              Order Management
+              Orders
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage all customer orders and payments. Track sales, process transactions, and handle customer support.
+              Manage customer orders and payments. Track transactions and support requests.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">

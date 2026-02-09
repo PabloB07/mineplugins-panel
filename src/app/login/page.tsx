@@ -27,7 +27,7 @@ export default function LoginPage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          <span className="text-gray-300 text-sm font-medium">Secure Authentication</span>
+          <span className="text-gray-300 text-sm font-medium">Customer Access</span>
         </div>
 
         {/* Logo/Brand */}
@@ -43,7 +43,7 @@ export default function LoginPage() {
             Welcome Back to <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">MinePlugins</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-md mx-auto">
-            Sign in to manage your licenses, downloads, and access your premium plugins.
+            Sign in to view your purchases, manage licenses, and download updates.
           </p>
         </div>
 
@@ -76,9 +76,9 @@ export default function LoginPage() {
 
           <div className="mt-6 p-4 bg-[#0a0a0a] rounded-lg border border-[#222]">
             <p className="text-sm text-gray-400 text-center">
-              <span className="text-green-400">✓</span> Instant access to your dashboard<br/>
+              <span className="text-green-400">✓</span> Instant access to your downloads<br/>
               <span className="text-green-400">✓</span> Manage all your licenses in one place<br/>
-              <span className="text-green-400">✓</span> Download updates instantly
+              <span className="text-green-400">✓</span> Get updates instantly
             </p>
           </div>
 

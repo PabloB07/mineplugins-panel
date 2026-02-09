@@ -117,17 +117,17 @@ export default function AdminUsersPage() {
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
             <Users className="w-8 h-8 text-[#f59e0b]" />
-            User Management
+            Customer Management
           </h1>
-          <p className="text-gray-400 mt-1">View and manage all users</p>
+          <p className="text-gray-400 mt-1">View and manage all customers</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-sm text-gray-400 bg-[#1a1a1a] px-3 py-2 rounded-lg border border-[#333]">
-            Total: {pagination.total} users
+            Total: {pagination.total} customers
           </div>
           <button className="bg-[#f59e0b] hover:bg-[#d97706] text-black px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
             <UserPlus className="w-4 h-4" />
-            Add User
+            Add Customer
           </button>
         </div>
         </div>
@@ -182,14 +182,14 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-       {/* Users Table */}
+      {/* Customers Table */}
       <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-[#1a1a1a] border-b border-[#222]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
-                  User
+                  Customer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                   Role

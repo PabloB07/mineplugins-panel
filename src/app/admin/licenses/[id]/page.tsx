@@ -116,9 +116,9 @@ export default function AdminLicenseDetailPage() {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">{license.product.name}</h1>
-            <p className="text-gray-400 mt-1">License Details - Admin View</p>
+            <p className="text-gray-400 mt-1">License Details - Store Admin</p>
             <div className="text-gray-400 text-sm mt-1">
-              User: {license.user.email}
+              Customer: {license.user.email}
             </div>
           </div>
           <span

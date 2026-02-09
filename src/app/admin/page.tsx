@@ -106,15 +106,15 @@ export default async function AdminDashboardPage() {
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
-              Admin Dashboard
+              Store Admin
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage your MinePlugins store. Monitor sales, licenses, users, and system performance.
+              Manage your MinePlugins store. Monitor sales, licenses, customers, and system performance.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
                 <Users className="w-4 h-4 mr-2" />
-                {totalUsers} Total Users
+                {totalUsers} Total Customers
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
                 <Activity className="w-4 h-4 mr-2" />
@@ -172,13 +172,13 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Users */}
+        {/* Customers */}
         <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Users className="w-16 h-16 text-purple-500" />
           </div>
           <div className="relative z-10">
-            <div className="text-sm font-medium text-gray-400 mb-1">Total Users</div>
+            <div className="text-sm font-medium text-gray-400 mb-1">Total Customers</div>
             <div className="text-3xl font-bold text-white">{totalUsers}</div>
             <div className="mt-2 text-xs text-gray-500">
               Registered accounts
@@ -226,7 +226,7 @@ export default async function AdminDashboardPage() {
                   <thead className="bg-[#1a1a1a] text-xs uppercase text-gray-500 font-medium sticky top-0">
                     <tr>
                       <th className="px-6 py-3">Order</th>
-                      <th className="px-6 py-3">User</th>
+                      <th className="px-6 py-3">Customer</th>
                       <th className="px-6 py-3">Status</th>
                       <th className="px-6 py-3 text-right">Amount</th>
                     </tr>

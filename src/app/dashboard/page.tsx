@@ -96,7 +96,7 @@ export default async function DashboardPage() {
               Welcome back, {session.user.name?.split(' ')[0] || "User"}!
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Your command center for plugin sales. Manage licenses, orders, and downloads all in one place.
+              Your customer dashboard. Manage licenses, orders, and downloads all in one place.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
           <div className="hidden md:block">
             <Link href="/downloads" className="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-white/5">
               <Download className="w-5 h-5" />
-              Download Plugin
+              Go to Downloads
             </Link>
           </div>
         </div>
