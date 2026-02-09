@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="170" viewBox="0 0 480 170" role="img" aria-label="Payku">
+  <rect width="480" height="170" fill="transparent"/>
+  <text
+    x="20"
+    y="118"
+    font-size="110"
+    font-family="Arial Rounded MT Bold, Helvetica Rounded, Arial, sans-serif"
+    font-weight="700"
+    fill="#ffffff"
+    letter-spacing="1"
+  >payku</text>
+</svg>

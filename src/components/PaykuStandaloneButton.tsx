@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CreditCard, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface PaykuStandaloneButtonProps {
   productSlug: string;
@@ -111,7 +111,11 @@ export function PaykuStandaloneButton({
           </>
         ) : (
           <>
-            <CreditCard className="w-5 h-5" />
+            <img
+              src="/payku-logo.svg"
+              alt="Payku"
+              className="h-5 w-auto"
+            />
             {children || "Pay with Payku"}
           </>
         )}
