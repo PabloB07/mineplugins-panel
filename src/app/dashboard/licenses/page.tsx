@@ -173,7 +173,7 @@ export default function LicensesPage() {
                 </button>
               </h1>
               <p className="text-gray-400 max-w-lg text-lg">
-                Manage your TownyFaiths plugin licenses with real-time status updates and server activation details.
+                Manage your licenses with real-time status updates and server activation details.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">

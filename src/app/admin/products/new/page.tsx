@@ -64,7 +64,7 @@ export default async function NewProductPage() {
               New Product
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Create a new plugin product for TownyFaiths. Set pricing, availability, and features.
+              Create a new product for the MinePlugins store. Set pricing, availability, and features.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
@@ -113,7 +113,7 @@ export default async function NewProductPage() {
                     name="name"
                     required
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                    placeholder="TownyFaiths Premium"
+                    placeholder="Paper Essentials"
                   />
                 </div>
 
@@ -128,7 +128,7 @@ export default async function NewProductPage() {
                     required
                     pattern="[a-z0-9-]+"
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                    placeholder="townyfaiths-premium"
+                    placeholder="paper-essentials"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Lowercase letters, numbers, and hyphens only

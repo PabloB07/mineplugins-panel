@@ -28,11 +28,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">⛪</span>
-              <span className="text-xl font-bold text-white">TownyFaiths</span>
+              <span className="text-2xl">⛏️</span>
+              <span className="text-xl font-bold text-white">MinePlugins</span>
             </Link>
             <p className="text-[#737373] text-sm mb-4">
-              Enhance your Towny server with an immersive religion and faith system.
+              Official store for Paper 1.21 plugins with secure licensing and instant updates.
             </p>
             <div className="flex gap-4">
               <a
@@ -117,7 +117,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-zinc-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-zinc-500 text-sm">
-            © {new Date().getFullYear()} TownyFaiths. All rights reserved.
+            © {new Date().getFullYear()} MinePlugins. All rights reserved.
           </p>
           <p className="text-zinc-500 text-sm">
             Made with ❤️ by{" "}

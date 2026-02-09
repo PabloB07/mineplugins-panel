@@ -56,7 +56,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                     <div className="flex items-center gap-3">
                         <div className="text-2xl">⛪</div>
                         <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
-                            TownyFaiths
+                            MinePlugins
                         </Link>
                         <span className="bg-[#f59e0b]/10 text-[#f59e0b] text-[10px] px-2 py-0.5 rounded border border-[#f59e0b]/20 font-mono tracking-wide uppercase">
                             Admin

@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status: "ok",
-    service: "TownyFaiths Update Check",
+    service: "MinePlugins Update Check",
     timestamp: new Date().toISOString(),
   });
 }

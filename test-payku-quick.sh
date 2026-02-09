@@ -27,11 +27,11 @@ RESPONSE=$(curl -s -X POST "${PAYKU_API_URL}/api/transaction" \
   -H "Authorization: Bearer ${PAYKU_API_TOKEN}" \
   -d "{
     \"orden\": \"$ORDER_NUM\",
-    \"concepto\": \"TownyFaiths Test Payment\",
+    \"concepto\": \"MinePlugins Test Payment\",
     \"monto\": 1000,
-    \"email\": \"test@townyfaith.com\",
-    \"url_retorno\": \"https://townyfaith.vercel.app/payment/success\",
-    \"url_webhook\": \"https://townyfaith.vercel.app/api/payment/payku/webhook\"
+    \"email\": \"test@mineplugins.com\",
+    \"url_retorno\": \"https://mineplugins.vercel.app/payment/success\",
+    \"url_webhook\": \"https://mineplugins.vercel.app/api/payment/payku/webhook\"
   }")
 
 echo ""

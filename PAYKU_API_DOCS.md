@@ -1,4 +1,4 @@
-# Payku API Documentation - TownyFaiths Integration
+# Payku API Documentation - MinePlugins Integration
 
 ## Overview
 Payku is a Chilean payment processor that accepts multiple payment methods. This documentation is based on reverse engineering the API responses and error patterns.

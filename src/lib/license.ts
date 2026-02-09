@@ -149,8 +149,8 @@ export function generateModernLicenseKey(payload: LicensePayload): string {
     maxActivations: payload.maxActivations || 1,
     features: payload.features || [],
     version: "2.0",
-    iss: "townyfaiths-panel",
-    aud: "townyfaiths-plugin"
+    iss: "mineplugins",
+    aud: "mineplugins-plugin"
   };
 
   return jwt.sign(jwtPayload, JWT_SECRET, { algorithm: 'HS256' });
@@ -163,8 +163,8 @@ export function verifyModernLicenseKey(licenseKey: string): DecodedLicense | nul
   try {
     const decoded = jwt.verify(licenseKey, JWT_SECRET, { 
       algorithms: ['HS256'],
-      issuer: 'townyfaiths-panel',
-      audience: 'townyfaiths-plugin'
+      issuer: 'mineplugins',
+      audience: 'mineplugins-plugin'
     }) as jwt.JwtPayload & {
       productId: string;
       serverId: string;
@@ -281,7 +281,7 @@ export function encryptData(data: string): string {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-gcm', crypto.scryptSync(LICENSE_SECRET, 'salt', 32), iv);
   
-  cipher.setAAD(Buffer.from('townyfaiths', 'utf8'));
+  cipher.setAAD(Buffer.from('mineplugins', 'utf8'));
   
   let encrypted = cipher.update(data, 'utf8', 'hex');
   encrypted += cipher.final('hex');
@@ -303,7 +303,7 @@ export function decryptData(encryptedData: string): string | null {
     const encrypted = parts[2];
     
     const decipher = crypto.createDecipheriv('aes-256-gcm', crypto.scryptSync(LICENSE_SECRET, 'salt', 32), Buffer.from(parts[0], 'hex'));
-    decipher.setAAD(Buffer.from('townyfaiths', 'utf8'));
+    decipher.setAAD(Buffer.from('mineplugins', 'utf8'));
     decipher.setAuthTag(authTag);
     
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');

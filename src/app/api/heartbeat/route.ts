@@ -24,7 +24,7 @@ interface HeartbeatResponse {
 }
 
 /**
- * Server heartbeat endpoint for TownyFaiths plugin
+ * Server heartbeat endpoint for MinePlugins plugins
  * Updates server status and player counts
  * POST /api/heartbeat
  */
@@ -209,7 +209,7 @@ export async function GET() {
 
     return NextResponse.json({
       status: "ok",
-      service: "TownyFaiths Server Heartbeat",
+      service: "MinePlugins Server Heartbeat",
       timestamp: new Date().toISOString(),
     });
   } catch {

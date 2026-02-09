@@ -76,7 +76,7 @@ export default async function DashboardPage() {
           Welcome back, {session.user.name || "User"}!
         </h1>
         <p className="text-gray-400 mt-1">
-          Manage your TownyFaiths licenses and downloads
+          Manage your licenses, downloads, and updates
         </p>
       </div>
 
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
         >
           <div className="text-xl font-semibold text-white">Buy License</div>
           <p className="text-green-200 mt-1">
-            Purchase a new TownyFaiths license
+            Purchase a new license
           </p>
         </Link>
         <Link
@@ -119,7 +119,7 @@ export default async function DashboardPage() {
         >
           <div className="text-xl font-semibold text-white">Download Plugin</div>
           <p className="text-blue-200 mt-1">
-            Get the latest version of TownyFaiths
+            Get the latest versions of your plugins
           </p>
         </Link>
       </div>

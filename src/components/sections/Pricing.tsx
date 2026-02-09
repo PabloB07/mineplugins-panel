@@ -2,16 +2,16 @@ import Link from "next/link";
 
 const plans = [
   {
-    name: "TownyFaith Premium",
+    name: "MinePlugins License",
     price: "$5.00",
     period: "/1year",
-    description: "For established servers with active communities",
+    description: "For servers using Paper 1.21 plugins",
     features: [
-      "1 license per Server",
-      "All Religion Features",
-      "24/7 Support",
-      "All future updates",
-      "100% plugin Costumization",
+      "License per server",
+      "Latest versions & downloads",
+      "Order history",
+      "Customer portal access",
+      "Fast support",
     ],
     cta: "Buy Now",
     ctaLink: "/login",
@@ -30,7 +30,7 @@ export default function Pricing() {
             Simple, transparent pricing
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Purchase license, lifetime updates. No subscriptions, no hidden fees.
+            Buy licenses and download updates. No subscriptions, no hidden fees.
           </p>
         </div>
 

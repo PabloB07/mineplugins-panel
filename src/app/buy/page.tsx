@@ -32,10 +32,10 @@ export default async function BuyPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6">
-            Premium <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Minecraft</span> Solutions
+            Premium <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Paper 1.21</span> Plugins
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-            Enhance your server with TownyFaiths. Secure, reliable, and feature-rich plugins designed for modern communities.
+            Discover high-quality plugins, purchase securely, and get instant downloads with MinePlugins.
           </p>
         </div>
 

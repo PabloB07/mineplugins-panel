@@ -10,11 +10,11 @@ async function testPaykuAPI() {
     
     const paymentData = {
       order: orderNumber,
-      subject: 'Test payment from TownyFaiths',
+      subject: 'Test payment from MinePlugins',
       amount: 1000,
       email: 'test@example.com',
-      payment_url: 'https://townyfaiths.test/success',
-      webhook: 'https://townyfaiths.test/webhook',
+      payment_url: 'https://mineplugins.test/success',
+      webhook: 'https://mineplugins.test/webhook',
     };
 
     console.log('Testing Payku API with:', paymentData);

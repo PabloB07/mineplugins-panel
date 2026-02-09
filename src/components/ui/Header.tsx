@@ -25,11 +25,11 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <img
-              src="/townyfaith-logo.svg"
-              alt="TownyFaiths logo"
+              src="/mineplugins-logo.svg"
+              alt="MinePlugins logo"
               className="h-9 w-9 rounded-full object-cover border border-[#22c55e]/20"
             />
-            <span className="text-xl font-bold text-white">TownyFaiths</span>
+            <span className="text-xl font-bold text-white">MinePlugins</span>
           </Link>
 
           {/* Desktop Navigation */}

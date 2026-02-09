@@ -126,11 +126,11 @@ response=$(curl -s -X POST "$API_URL/api/transaction" \
   -H "Authorization: Bearer $API_TOKEN" \
   -d '{
     "orden": "TEST-' + date +%s",
-    "concepto": "Test payment from TownyFaiths",
+    "concepto": "Test payment from MinePlugins",
     "monto": 1000,
     "email": "test@example.com",
-    "url_retorno": "https://townyfaiths.test/success",
-    "url_webhook": "https://townyfaiths.test/webhook"
+    "url_retorno": "https://mineplugins.test/success",
+    "url_webhook": "https://mineplugins.test/webhook"
   }' \
   -w "\nHTTP Status: %{http_code}\nResponse:\n%s\n" \
   -o test_valid_request.json)

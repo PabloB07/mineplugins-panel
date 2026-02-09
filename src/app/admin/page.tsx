@@ -109,7 +109,7 @@ export default async function AdminDashboardPage() {
               Admin Dashboard
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage your TownyFaiths platform. Monitor sales, licenses, users, and system performance.
+              Manage your MinePlugins store. Monitor sales, licenses, users, and system performance.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">

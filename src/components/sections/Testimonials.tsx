@@ -1,6 +1,6 @@
 const testimonials = [
 {
-    content: "TownyFaiths has transformed the way we manage our Towny servers. The faith system adds a unique layer of engagement for our players, and the support from the team has been outstanding.",
+    content: "MinePlugins made it easy to buy and keep Paper 1.21 plugins updated. Downloads and license management are painless.",
     avatar: "A",
     author: "Alex Johnson",
     role: "Server Owner at MineWorld"
@@ -18,7 +18,7 @@ export default function Testimonials() {
             Loved by server owners
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            See what our community has to say about TownyFaiths
+            See what our community has to say about MinePlugins
           </p>
         </div>
 

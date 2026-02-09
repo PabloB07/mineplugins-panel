@@ -1,5 +1,5 @@
 -- Run this as postgres superuser:
--- sudo -u postgres psql -d townyfaiths -f fix-db-permissions.sql
+-- sudo -u postgres psql -d mineplugins -f fix-db-permissions.sql
 
 -- Grant ownership of all tables to faithadmin
 ALTER TABLE "Product" OWNER TO faithadmin;

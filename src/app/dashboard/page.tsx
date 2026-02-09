@@ -96,7 +96,7 @@ export default async function DashboardPage() {
               Welcome back, {session.user.name?.split(' ')[0] || "User"}!
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Your command center for TownyFaiths. Manage your servers, licenses, and downloads all in one place.
+              Your command center for plugin sales. Manage licenses, orders, and downloads all in one place.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
             </div>
             <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Downloads & Updates</h2>
             <p className="text-gray-400 mb-6 max-w-sm group-hover:text-gray-300">
-              Get the latest version of TownyFaiths plugin. Access archived versions and documentation.
+              Get the latest versions of your plugins. Access archived releases and documentation.
             </p>
             <span className="inline-flex items-center text-sm font-medium text-blue-400 group-hover:translate-x-1 transition-transform">
               Go to Downloads <ArrowRight className="w-4 h-4 ml-1" />

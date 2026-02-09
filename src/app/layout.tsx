@@ -14,20 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TownyFaiths - Religion System for Towny Servers",
-  description: "Bring immersive faith mechanics to your Minecraft server. Create religions, build temples, gain followers, and unlock divine powers with TownyFaiths.",
-  keywords: ["Minecraft", "Towny", "Plugin", "Religion", "Faith", "Spigot", "Paper"],
+  title: "MinePlugins - Paper 1.21 Plugin Store",
+  description: "Official store for Minecraft Paper 1.21 plugins with secure licensing, instant downloads, and updates.",
+  keywords: ["Minecraft", "Paper 1.21", "Plugin", "Store", "Licenses", "Spigot", "Paper"],
   authors: [{ name: "Pablo Blanco", url: "https://blancocl.vercel.app" }],
   openGraph: {
-    title: "TownyFaiths - Religion System for Towny Servers",
-    description: "Bring immersive faith mechanics to your Minecraft server. Create religions, build temples, gain followers, and unlock divine powers.",
+    title: "MinePlugins - Paper 1.21 Plugin Store",
+    description: "Official store for Minecraft Paper 1.21 plugins with secure licensing, instant downloads, and updates.",
     type: "website",
-    url: "https://townyfaiths.vercel.app",
+    url: "https://mineplugins.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "TownyFaiths - Religion System for Towny Servers",
-    description: "Bring immersive faith mechanics to your Minecraft server.",
+    title: "MinePlugins - Paper 1.21 Plugin Store",
+    description: "Official store for Minecraft Paper 1.21 plugins with secure licensing and instant downloads.",
   },
 };
 

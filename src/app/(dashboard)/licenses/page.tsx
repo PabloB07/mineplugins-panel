@@ -58,7 +58,7 @@ export default async function LicensesPage() {
         <div>
           <h1 className="text-3xl font-bold text-white">Your Licenses</h1>
           <p className="text-gray-400 mt-1">
-            Manage your TownyFaiths plugin licenses
+            Manage your licenses
           </p>
         </div>
         <Link

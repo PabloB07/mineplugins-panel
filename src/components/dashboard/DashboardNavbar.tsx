@@ -43,7 +43,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                     <div className="flex items-center gap-3">
                         <div className="text-2xl">⛪</div>
                         <Link href="/dashboard" className="text-xl font-bold text-white tracking-tight hover:text-green-400 transition-colors">
-                            TownyFaiths
+                            MinePlugins
                         </Link>
                     </div>
 

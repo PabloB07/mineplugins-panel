@@ -16,19 +16,19 @@ export default function Hero() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          <span className="text-gray-300 text-sm font-medium">TownyFaiths v1.0 Available</span>
+          <span className="text-gray-300 text-sm font-medium">MinePlugins for Paper 1.21</span>
         </div>
 
         {/* Main heading */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 leading-tight tracking-tight">
-          Create <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Legendary</span>
+          Download <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Premium</span>
           <br />
-          Religions
+          Paper Plugins
         </h1>
 
         {/* Subtitle */}
         <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          The ultimate faith system for Towny servers. Build temples, gather followers, and unlock divine powers in a fully immersive experience.
+          The official MinePlugins store for Minecraft Paper 1.21 plugins with instant downloads and update tracking.
         </p>
 
         {/* CTA Buttons */}

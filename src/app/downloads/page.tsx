@@ -59,7 +59,7 @@ export default async function DownloadsPage() {
               Downloads & Updates
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Access your TownyFaiths plugins and updates. Download the latest versions and archived releases.
+              Access your purchases and updates. Download the latest versions and archived releases.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
@@ -91,7 +91,7 @@ export default async function DownloadsPage() {
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">No Active Licenses</h3>
               <p className="text-gray-400 mb-8 max-w-md mx-auto text-lg leading-relaxed">
-                Purchase a TownyFaiths license to access plugin downloads, updates, and premium support.
+                Purchase a license to access downloads, updates, and premium support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link

@@ -34,13 +34,13 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-green-500/20 shadow-lg shadow-green-900/20">
             <img
-              src="/townyfaith-logo.svg"
-              alt="TownyFaiths logo"
+              src="/mineplugins-logo.svg"
+              alt="MinePlugins logo"
               className="h-16 w-16 rounded-full object-cover"
             />
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 leading-tight tracking-tight">
-            Welcome Back to <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">TownyFaiths</span>
+            Welcome Back to <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">MinePlugins</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-md mx-auto">
             Sign in to manage your licenses, downloads, and access your premium plugins.

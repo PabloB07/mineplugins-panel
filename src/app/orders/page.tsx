@@ -51,7 +51,7 @@ export default async function OrdersPage() {
               Order History
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              View your purchase history and track the status of your TownyFaiths licenses.
+              View your purchase history and track your licenses and downloads.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
@@ -71,7 +71,7 @@ export default async function OrdersPage() {
               className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
             >
               <Package className="w-5 h-5" />
-              Buy New License
+              Buy New Plugin
             </Link>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default async function OrdersPage() {
               <ShoppingBag className="w-8 h-8 text-gray-500" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">No Orders Yet</h3>
-            <p className="text-gray-400 mb-6">You haven't purchased any licenses yet. Start by browsing our available products.</p>
+            <p className="text-gray-400 mb-6">You haven't purchased any plugins yet. Start by browsing our available products.</p>
             <Link
               href="/buy"
               className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"

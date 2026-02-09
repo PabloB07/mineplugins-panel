@@ -359,7 +359,7 @@ export async function GET() {
 
     return NextResponse.json({
       status: "ok",
-      service: "TownyFaiths License Validation",
+      service: "MinePlugins License Validation",
       timestamp: new Date().toISOString(),
     });
   } catch {

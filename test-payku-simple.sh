@@ -12,7 +12,7 @@ curl -X POST "$API_URL/api/transaction" \
   -H "Authorization: Bearer test_123" \
   -d '{
     "orden": "TEST-123",
-    "concepto": "Test payment from TownyFaiths",
+    "concepto": "Test payment from MinePlugins",
     "monto": 1000,
     "email": "test@example.com"
   }' \

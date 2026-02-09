@@ -24,11 +24,11 @@ curl -X POST "$API_URL/api/transaction" \
   -H "Authorization: Bearer $API_TOKEN" \
   -d '{
     "orden": "TEST-'$(date +%s)",
-    "concepto": "Test payment from TownyFaiths",
+    "concepto": "Test payment from MinePlugins",
     "monto": 1000,
     "email": "test@example.com",
-    "url_retorno": "https://townyfaiths.test/success",
-    "url_webhook": "https://townyfaiths.test/webhook"
+    "url_retorno": "https://mineplugins.test/success",
+    "url_webhook": "https://mineplugins.test/webhook"
   }' \
   -w "\nHTTP Status: %{http_code}\nResponse Time: %{time_total}\nResponse:\n%{response_data}\n\n" \
   -o test1_response.json
@@ -39,11 +39,11 @@ curl -X POST "$API_URL/api/transaction" \
   -H "Authorization: Bearer $API_TOKEN" \
   -d '{
     "order": "TEST-' + date +%s",
-    "subject": "Test payment from TownyFaiths",
+    "subject": "Test payment from MinePlugins",
     "amount": 1000,
     "email": "test@example.com",
-    "payment_url": "https://townyfaiths.test/success",
-    "webhook": "https://townyfaiths.test/webhook"
+    "payment_url": "https://mineplugins.test/success",
+    "webhook": "https://mineplugins.test/webhook"
   }' \
   -w "\nHTTP Status: %{http_code}\nResponse Time: %{time_total}\nResponse:\n%{response_data}\n\n" \
   -o test2_response.json
@@ -54,11 +54,11 @@ curl -X POST "$API_URL/api/transaction" \
   -H "Authorization: Bearer $API_TOKEN" \
   -d "{
     \"orden\": \"TEST-$(date +%s)\",
-    \"concepto\": \"Test payment from TownyFaiths\",
+    \"concepto\": \"Test payment from MinePlugins\",
     \"monto\": 1000,
     \"email\": \"test@example.com\",
-    \"url_retorno\": \"https://townyfaiths.test/success\",
-    \"url_webhook\": \"https://townyfaiths.test/webhook\"
+    \"url_retorno\": \"https://mineplugins.test/success\",
+    \"url_webhook\": \"https://mineplugins.test/webhook\"
   }" \
   -w "\nHTTP Status: %{http_code}\nResponse Time: %{time_total}\nResponse:\n%{response_data}\n\n" \
   -o test3_response.json

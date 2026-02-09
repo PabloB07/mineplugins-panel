@@ -1,5 +1,5 @@
 -- Grant permissions to faithadmin user
-GRANT ALL PRIVILEGES ON DATABASE townyfaiths TO faithadmin;
+GRANT ALL PRIVILEGES ON DATABASE mineplugins TO faithadmin;
 GRANT CREATE ON SCHEMA public TO faithadmin;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO faithadmin;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO faithadmin;

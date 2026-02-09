@@ -37,8 +37,8 @@ if [ "$PAYKU_API_TOKEN" = "test_token" ] && [ "$PAYKU_SECRET_KEY" = "test_key" ]
         "concepto": "Test payment with valid credentials",
         "monto": 1000,
         "email": "test@example.com",
-        "url_retorno": "https://townyfaiths.test/success",
-        "url_webhook": "https://townyfaiths.test/webhook"
+        "url_retorno": "https://mineplugins.test/success",
+        "url_webhook": "https://mineplugins.test/webhook"
       }' \
       -w "\nHTTP Status: %{http_code}\n")
 

@@ -14,7 +14,7 @@ async function testPaymentFlow() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        productSlug: 'townyfaiths-basic', // Use slug instead of ID
+        productSlug: 'mineplugins-basic', // Use slug instead of ID
         paymentMethod: 'PAYKU'
       })
     });

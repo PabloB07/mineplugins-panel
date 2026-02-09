@@ -116,14 +116,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const baseUrl = process.env.NEXTAUTH_URL || "https://townyfaith.vercel.app";
+    const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
 
     if (paymentMethod === "PAYKU") {
       console.log("Creating Payku payment with orderNumber:", orderNumber);
 
       // Validate payment data before sending to Payku
       const paykuAmount = Math.round(totalCLP);
-      const paykuSubject = `TownyFaiths License - ${days} days`;
+      const paykuSubject = `MinePlugins License - ${days} days`;
 
       console.log("Payku payment data validation:", {
         orderNumber,
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
       // Create Flow.cl payment
       const flowResponse = await createFlowPayment({
         commerceOrder: orderNumber,
-        subject: `TownyFaiths License - ${days} days`,
+        subject: `MinePlugins License - ${days} days`,
         amount: total, // Flow expects CLP pesos
         email: user.email,
         urlConfirmation: `${baseUrl}/api/payment/confirm`,

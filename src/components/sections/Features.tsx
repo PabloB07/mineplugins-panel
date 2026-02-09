@@ -1,43 +1,43 @@
 const features = [
   {
-    icon: "⛪",
-    title: "Religion Creation",
-    description: "Create unique religions with custom beliefs, rituals, and hierarchies. Each faith can have its own identity and culture.",
+    icon: "📦",
+    title: "Official Plugins",
+    description: "Browse official plugins with versions, changelogs, and details optimized for Paper 1.21.",
   },
   {
-    icon: "🏛️",
-    title: "Sacred Buildings",
-    description: "Build temples, shrines, and holy sites. Define sacred regions where followers can worship and gain buffs.",
+    icon: "🔐",
+    title: "Licenses",
+    description: "Receive a license per server with activation tracking and status controls.",
   },
   {
-    icon: "👥",
-    title: "Follower System",
-    description: "Attract and manage followers with a reputation system. The more devoted your followers, the stronger your religion.",
+    icon: "⚡",
+    title: "Instant Delivery",
+    description: "Get immediate downloads after purchase with version history and secure access.",
   },
   {
-    icon: "✨",
-    title: "Divine Powers",
-    description: "Unlock special abilities and buffs for your followers. From healing auras to combat bonuses, faith has its rewards.",
+    icon: "📈",
+    title: "Order Tracking",
+    description: "Track orders, receipts, and active licenses in a streamlined dashboard.",
   },
   {
-    icon: "📜",
-    title: "Religious Events",
-    description: "Host ceremonies, festivals, and holy days. Create custom events that bring your community together.",
+    icon: "🧾",
+    title: "Secure Checkout",
+    description: "Pay securely with a clean purchase flow built for digital goods.",
   },
   {
-    icon: "⚔️",
-    title: "Holy Wars",
-    description: "Defend your faith or wage crusades. Religious conflicts add depth and drama to your server politics.",
+    icon: "🧩",
+    title: "Paper 1.21 Focus",
+    description: "Everything is tailored for Minecraft Paper 1.21 compatibility and support.",
   },
   {
-    icon: "🔧",
-    title: "Towny Integration",
-    description: "Seamlessly integrates with Towny. Religions can span multiple towns or be tied to specific nations.",
+    icon: "🤝",
+    title: "Customer Portal",
+    description: "Access your plugins, updates, and license details in one place.",
   },
   {
     icon: "🎨",
-    title: "Full Customization",
-    description: "Configure everything via YAML. Customize messages, permissions, cooldowns, and mechanics to fit your server.",
+    title: "Clear Details",
+    description: "Transparent product pages with pricing, version notes, and requirements.",
   },
 ];
 
@@ -49,12 +49,12 @@ export default function Features() {
         <div className="text-center mb-16">
           <span className="text-emerald-400 text-sm font-semibold uppercase tracking-wider">Features</span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
-            Everything you need for
+            Everything you need to
             <br />
-            <span className="text-emerald-400">immersive faith gameplay</span>
+            <span className="text-emerald-400">buy Paper 1.21 plugins</span>
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            TownyFaiths provides a complete religion system that integrates perfectly with your existing Towny setup.
+            MinePlugins is the official store to buy, license, and download Minecraft Paper 1.21 plugins.
           </p>
         </div>
 

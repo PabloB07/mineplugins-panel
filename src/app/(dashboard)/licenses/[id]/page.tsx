@@ -327,7 +327,7 @@ export default function LicenseDetailPage() {
                   1
                 </div>
                 <div>
-                  <div className="font-medium text-white mb-1">Download TownyFaiths Plugin</div>
+                  <div className="font-medium text-white mb-1">Download Your Plugin</div>
                   <div className="text-gray-400 text-sm">Get the latest version from the Downloads page</div>
                 </div>
               </li>
@@ -359,7 +359,7 @@ export default function LicenseDetailPage() {
                 <div>
                   <div className="font-medium text-white mb-1">Configure License</div>
                   <div className="text-gray-400 text-sm">
-                    Open <code className="bg-[#111] px-2 py-1 rounded border border-[#222] font-mono">plugins/TownyFaiths/config.yml</code> and set your license key
+                    Open <code className="bg-[#111] px-2 py-1 rounded border border-[#222] font-mono">plugins/YourPlugin/config.yml</code> and set your license key
                   </div>
                 </div>
               </li>
