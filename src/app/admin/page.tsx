@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { formatCLP } from "@/lib/pricing";
 import Link from "next/link";
 import {
   Users,
@@ -250,7 +251,7 @@ export default async function AdminDashboardPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-white text-right font-medium">
-                          ${(order.total / 100).toLocaleString("es-CL")}
+                          {formatCLP(order.total)}
                         </td>
                       </tr>
                     ))}
