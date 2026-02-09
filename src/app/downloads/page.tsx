@@ -51,31 +51,33 @@ export default async function DownloadsPage() {
       <DashboardNavbar user={session.user} isAdmin={isAdmin} />
 
       {/* Welcome Hero - Gradient Background */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222] mx-4 mt-4">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
-              Downloads & Updates
-            </h1>
-            <p className="text-gray-400 max-w-lg text-lg">
-              Access your purchases and updates. Download the latest versions and archived releases.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-                <Package className="w-4 h-4 mr-2" />
-                {licenses.length} Licensed Products
-              </div>
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
-                <Download className="w-4 h-4 mr-2" />
-                Ready to Download
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+          <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
+                Downloads & Updates
+              </h1>
+              <p className="text-gray-400 max-w-lg text-lg">
+                Access your purchases and updates. Download the latest versions and archived releases.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                  <Package className="w-4 h-4 mr-2" />
+                  {licenses.length} Licensed Products
+                </div>
+                <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Ready to Download
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="hidden md:block">
-            <div className="w-12 h-12 bg-[#22c55e]/10 rounded-xl flex items-center justify-center border border-[#22c55e]/20 group-hover:scale-110 transition-transform">
-              <Download className="w-6 h-6 text-[#22c55e]" />
+            <div className="hidden md:block">
+              <div className="w-12 h-12 bg-[#22c55e]/10 rounded-xl flex items-center justify-center border border-[#22c55e]/20 group-hover:scale-110 transition-transform">
+                <Download className="w-6 h-6 text-[#22c55e]" />
+              </div>
             </div>
           </div>
         </div>
