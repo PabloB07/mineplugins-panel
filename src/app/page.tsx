@@ -2,8 +2,6 @@ import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import Hero from "@/components/sections/Hero";
 import Features from "@/components/sections/Features";
-import Pricing from "@/components/sections/Pricing";
-import Testimonials from "@/components/sections/Testimonials";
 import HostedBy from "@/components/sections/HostedBy";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -23,8 +21,6 @@ export default async function Home() {
       <main>
         <Hero />
         <Features />
-        <Pricing />
-        <Testimonials />
         <HostedBy />
       </main>
       <Footer />

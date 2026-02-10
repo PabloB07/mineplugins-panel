@@ -12,7 +12,7 @@ interface CheckoutClientProps {
 }
 
 export function CheckoutClient({ product, displayPriceUSD, displayPriceCLP, user }: CheckoutClientProps) {
-  const [selectedMethod, setSelectedMethod] = useState<"FLOW_CL" | "PAYKU">("FLOW_CL");
+  const [selectedMethod, setSelectedMethod] = useState<"FLOW_CL" | "PAYKU">("PAYKU");
 
   return (
     <div className="space-y-4">

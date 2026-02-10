@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { CreditCard, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface PaymentMethod {
   id: "FLOW_CL" | "PAYKU";
   name: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  logo?: string;
   color: string;
   available?: boolean | undefined;
 }
@@ -21,16 +20,16 @@ interface PaymentMethodSelectorProps {
 const paymentMethods: PaymentMethod[] = [
   {
     id: "FLOW_CL",
-    name: "Flow.cl",
+    name: "Flow.cl (Webpay Plus)",
     description: "Pay with credit card, debit card, or bank transfer",
-    icon: CreditCard,
+    logo: "/webpayplus-logo.svg",
     color: "#22c55e",
   },
   {
     id: "PAYKU",
     name: "Payku",
     description: "Alternative payment processor with multiple payment options",
-    icon: CreditCard,
+    logo: "/payku-logo.svg",
     color: "#3b82f6",
   },
 ];
@@ -46,7 +45,6 @@ export function PaymentMethodSelector({
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {paymentMethods.map((method) => {
-          const Icon = method.icon;
           const isSelected = selectedMethod === method.id;
           const isAvailable = method.available ?? true;
           const isDisabled = disabled || !isAvailable;
@@ -74,9 +72,10 @@ export function PaymentMethodSelector({
               )}
 
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`} 
-                     style={{ backgroundColor: method.color === "#22c55e" ? "#22c55e" : "#3b82f6" }}>
-                  <Icon className="w-5 h-5 text-white" />
+                <div className={`w-12 h-10 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#333] bg-[#0a0a0a]`}>
+                  {method.logo ? (
+                    <img src={method.logo} alt={method.name} className="h-5 w-auto" />
+                  ) : null}
                 </div>
 
                 <div className="flex-1">

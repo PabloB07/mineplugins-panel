@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Package, Shield, Clock, Server, Check, CreditCard, Lock, Zap, Star } from "lucide-react";
 import { CheckoutClient } from "@/app/checkout/CheckoutClient";
 import { formatUSD, formatCLP } from "@/lib/pricing";
+import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 interface PageProps {
   searchParams: Promise<{ productId?: string }>;
@@ -43,8 +44,11 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const displayPriceCLP = product.salePriceCLP || product.priceCLP;
   const hasDiscount = !!product.salePriceUSD || !!product.salePriceCLP;
 
+  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">
+      <DashboardNavbar user={session.user} isAdmin={isAdmin} />
       {/* Ambient Background */}
       <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-green-500/5 to-transparent pointer-events-none"></div>
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
@@ -168,12 +172,20 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
 
               {/* User Info (Mini) */}
               <div className="flex items-center gap-3 p-4 rounded-xl bg-[#111] border border-[#222]">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-white font-bold text-sm">
-                  {session.user.name?.[0] || "U"}
-                </div>
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="Discord avatar"
+                    className="w-10 h-10 rounded-full border border-[#333]"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-white font-bold text-sm">
+                    {session.user.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                )}
                 <div>
                   <div className="text-xs text-gray-500">Purchasing as</div>
-                  <div className="text-sm font-medium text-white truncate max-w-[200px]">{session.user.email}</div>
+                  <div className="text-sm font-medium text-white truncate max-w-[220px]">{session.user.email}</div>
                 </div>
               </div>
 
@@ -210,7 +222,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
 
                 <div className="mb-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-300 flex items-start gap-2">
                   <div className="mt-0.5"><Check className="w-3 h-3" /></div>
-                  Wait for the redirect to Flow.cl to complete your payment securely.
+                  You will be redirected to the payment provider to complete your purchase securely.
                 </div>
 
                 <div className="relative z-10">
@@ -223,11 +235,9 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
                 </div>
 
                 <div className="mt-4 text-center">
-                  <div className="flex items-center justify-center gap-2 grayscale opacity-50">
-                    {/* Payment Icons Placeholder */}
-                    <div className="h-6 w-10 bg-[#333] rounded"></div>
-                    <div className="h-6 w-10 bg-[#333] rounded"></div>
-                    <div className="h-6 w-10 bg-[#333] rounded"></div>
+                  <div className="flex items-center justify-center gap-4 opacity-80">
+                    <img src="/webpayplus-logo.svg" alt="Webpay Plus" className="h-6 w-auto" />
+                    <img src="/payku-logo.svg" alt="Payku" className="h-6 w-auto" />
                   </div>
                 </div>
               </div>

@@ -6,9 +6,8 @@ import { useSession, signOut } from "next-auth/react";
 import { User, LogOut } from "lucide-react";
 
 const navLinks = [
+  { href: "/buy", label: "Store" },
   { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#testimonials", label: "Testimonials" },
   { href: "https://zgaming.host/", label: " ¿You want a MC Host?", external: true },
 ];
 
