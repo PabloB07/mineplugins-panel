@@ -236,8 +236,8 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
 
                 <div className="mt-4 text-center">
                   <div className="flex items-center justify-center gap-4 opacity-80">
-                    <img src="/webpayplus-logo.svg" alt="Webpay Plus" className="h-6 w-auto" />
-                    <img src="/payku-logo.svg" alt="Payku" className="h-6 w-auto" />
+                    <img src="/webpay-logo.png" alt="Webpay Plus" className="h-6 w-auto" />
+                    <img src="/payku-logo.png" alt="Payku" className="h-6 w-auto" />
                   </div>
                 </div>
               </div>

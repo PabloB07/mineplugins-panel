@@ -83,7 +83,7 @@ export function PaykuButton({
         ) : (
           <>
             <img
-              src="/payku-logo.svg"
+              src="/payku-logo.png"
               alt="Payku"
               className="h-5 w-auto"
             />

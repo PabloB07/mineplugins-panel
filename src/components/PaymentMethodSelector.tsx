@@ -22,14 +22,14 @@ const paymentMethods: PaymentMethod[] = [
     id: "FLOW_CL",
     name: "Flow.cl (Webpay Plus)",
     description: "Pay with credit card, debit card, or bank transfer",
-    logo: "/webpayplus-logo.svg",
+    logo: "/webpay-logo.png",
     color: "#22c55e",
   },
   {
     id: "PAYKU",
     name: "Payku",
     description: "Alternative payment processor with multiple payment options",
-    logo: "/payku-logo.svg",
+    logo: "/payku-logo.png",
     color: "#3b82f6",
   },
 ];
