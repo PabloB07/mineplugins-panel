@@ -11,6 +11,9 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  AlertTriangle,
+  Loader2,
+  ShieldX,
   Search,
   Filter
 } from "lucide-react";
@@ -47,6 +50,10 @@ export default function AdminLicensesPage() {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [revokeTarget, setRevokeTarget] = useState<License | null>(null);
+  const [revokeConfirmText, setRevokeConfirmText] = useState("");
+  const [revoking, setRevoking] = useState(false);
+  const [revokeError, setRevokeError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 25,
@@ -84,18 +91,29 @@ export default function AdminLicensesPage() {
   }
 
   async function revokeLicense(id: string) {
-    if (!confirm("Are you sure you want to revoke this license?")) return;
-
     try {
+      setRevoking(true);
+      setRevokeError(null);
       const res = await fetch(`/api/licenses/${id}`, {
         method: "DELETE",
       });
 
-      if (res.ok) {
-        fetchLicenses();
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to revoke license");
       }
+
+      setRevokeTarget(null);
+      setRevokeConfirmText("");
+      fetchLicenses();
     } catch (error) {
       console.error("Failed to revoke license:", error);
+      setRevokeError(
+        error instanceof Error ? error.message : "Failed to revoke license"
+      );
+    } finally {
+      setRevoking(false);
     }
   }
 
@@ -336,7 +354,11 @@ export default function AdminLicensesPage() {
                           </Link>
                           {license.status === "ACTIVE" && (
                             <button
-                              onClick={() => revokeLicense(license.id)}
+                              onClick={() => {
+                                setRevokeTarget(license);
+                                setRevokeConfirmText("");
+                                setRevokeError(null);
+                              }}
                               className="text-red-400 hover:text-red-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-red-400/10 transition-colors border border-transparent hover:border-red-400/20"
                             >
                               Revoke
@@ -428,6 +450,69 @@ export default function AdminLicensesPage() {
             fetchLicenses();
           }}
         />
+      )}
+
+      {revokeTarget && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-[#121212] border border-red-900/70 rounded-xl shadow-2xl shadow-black/50 overflow-hidden">
+            <div className="px-6 py-4 border-b border-red-900/70 bg-red-950/20">
+              <h3 className="text-lg font-semibold text-red-300 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                Revoke License
+              </h3>
+              <p className="text-sm text-red-200/70 mt-1">
+                This action will disable all current and future activations.
+              </p>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              <div className="text-sm text-gray-300">
+                <div>License: <span className="font-mono text-white">{revokeTarget.licenseKey.slice(0, 24)}...</span></div>
+                <div>Customer: <span className="text-white">{revokeTarget.user.email}</span></div>
+              </div>
+
+              <div className="text-sm text-red-100/80">
+                Type <code className="bg-black/30 px-1.5 py-0.5 rounded">REVOKE</code> to confirm.
+              </div>
+
+              <input
+                value={revokeConfirmText}
+                onChange={(e) => setRevokeConfirmText(e.target.value)}
+                placeholder="REVOKE"
+                disabled={revoking}
+                className="w-full bg-[#0d0d0d] border border-red-900/70 rounded-lg px-3 py-2 text-white placeholder-red-300/40 focus:outline-none focus:border-red-500 disabled:opacity-60"
+              />
+
+              {revokeError && (
+                <div className="text-sm text-red-300 bg-red-950/40 border border-red-900/70 rounded-lg px-3 py-2">
+                  {revokeError}
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    if (revoking) return;
+                    setRevokeTarget(null);
+                    setRevokeConfirmText("");
+                    setRevokeError(null);
+                  }}
+                  className="px-4 py-2 text-sm text-gray-300 border border-[#333] rounded-lg hover:bg-[#1a1a1a] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => revokeLicense(revokeTarget.id)}
+                  disabled={revoking || revokeConfirmText !== "REVOKE"}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-700 hover:bg-red-600 rounded-lg disabled:bg-red-900/50 disabled:text-red-300/60 transition-colors"
+                >
+                  {revoking ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldX className="w-4 h-4" />}
+                  {revoking ? "Revoking..." : "Confirm Revoke"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
