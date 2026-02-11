@@ -1,38 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { Check } from "lucide-react";
-
-interface PaymentMethod {
-  id: "FLOW_CL" | "PAYKU";
-  name: string;
-  description: string;
-  logo?: string;
-  color: string;
-  available?: boolean | undefined;
-}
+import { PAYMENT_METHODS, type PaymentMethodId } from "@/lib/payment-methods";
 
 interface PaymentMethodSelectorProps {
-  selectedMethod: "FLOW_CL" | "PAYKU";
-  onMethodChange: (method: "FLOW_CL" | "PAYKU") => void;
+  selectedMethod: PaymentMethodId;
+  onMethodChange: (method: PaymentMethodId) => void;
   disabled?: boolean;
 }
-
-const paymentMethods: PaymentMethod[] = [
-  {
-    id: "FLOW_CL",
-    name: "Flow.cl (Webpay Plus)",
-    description: "Pay with credit card, debit card, or bank transfer",
-    logo: "/webpay-logo.png",
-    color: "#22c55e",
-  },
-  {
-    id: "PAYKU",
-    name: "Payku",
-    description: "Alternative payment processor with multiple payment options",
-    logo: "/payku-logo.png",
-    color: "#3b82f6",
-  },
-];
 
 export function PaymentMethodSelector({
   selectedMethod,
@@ -40,56 +16,55 @@ export function PaymentMethodSelector({
   disabled = false,
 }: PaymentMethodSelectorProps) {
   return (
-    <div className="space-y-3">
-      <label className="text-lg font-medium text-white">Select Payment Method</label>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {paymentMethods.map((method) => {
-          const isSelected = selectedMethod === method.id;
-          const isAvailable = method.available ?? true;
-          const isDisabled = disabled || !isAvailable;
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {PAYMENT_METHODS.map((method) => {
+        const isSelected = selectedMethod === method.id;
+        const isAvailable = method.available ?? true;
+        const isDisabled = disabled || !isAvailable;
 
-          return (
-            <button
-              key={method.id}
-              onClick={() => !isDisabled && onMethodChange(method.id)}
-              disabled={isDisabled}
-              className={`
-                relative p-4 rounded-lg border-2 transition-all text-left
-                ${isSelected 
-                  ? 'border-[#22c55e] bg-[#22c55e]/10' 
-                  : 'border-[#333333] bg-[#1a1a1a] hover:border-[#404040]'
-                }
-                ${isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-              `}
-            >
-              {isSelected && (
-                <div className="absolute top-2 right-2">
-                  <div className="w-6 h-6 bg-[#22c55e] rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-              )}
+        return (
+          <button
+            key={method.id}
+            type="button"
+            onClick={() => !isDisabled && onMethodChange(method.id)}
+            disabled={isDisabled}
+            className={[
+              "relative rounded-xl border p-4 text-left transition-all",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60",
+              isSelected
+                ? "border-emerald-500/70 bg-emerald-500/10 shadow-[0_0_0_1px_rgba(34,197,94,0.25)]"
+                : "border-[#2a2a2a] bg-[#151515] hover:border-[#3a3a3a]",
+              isDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+            ].join(" ")}
+          >
+            {isSelected && (
+              <span className="absolute right-3 top-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white">
+                <Check className="h-3.5 w-3.5" />
+              </span>
+            )}
 
-              <div className="flex items-start gap-3">
-                <div className={`w-12 h-10 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#333] bg-[#0a0a0a]`}>
-                  {method.logo ? (
-                    <img src={method.logo} alt={method.name} className="h-5 w-auto" />
-                  ) : null}
-                </div>
-
-                <div className="flex-1">
-                  <h3 className="font-semibold text-white">{method.name}</h3>
-                  <p className="text-sm text-[#737373] mt-1">{method.description}</p>
-                  {!isAvailable && (
-                    <p className="text-xs text-orange-400 mt-1">Temporarily unavailable</p>
-                  )}
-                </div>
+            <div className="flex items-start gap-3 pr-7">
+              <div className="flex h-11 w-14 shrink-0 items-center justify-center rounded-lg border border-[#2f2f2f] bg-[#0d0d0d]">
+                <Image
+                  src={method.logo}
+                  alt={method.name}
+                  width={96}
+                  height={28}
+                  className="h-5 w-auto object-contain"
+                />
               </div>
-            </button>
-          );
-        })}
-      </div>
+
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white">{method.name}</p>
+                <p className="mt-1 text-xs leading-relaxed text-gray-400">{method.description}</p>
+                {!isAvailable && (
+                  <p className="mt-1 text-xs text-orange-400">Temporarily unavailable</p>
+                )}
+              </div>
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }

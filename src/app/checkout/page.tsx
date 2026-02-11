@@ -228,17 +228,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
                 <div className="relative z-10">
                   <CheckoutClient
                     product={product}
-                    displayPriceUSD={displayPriceUSD}
-                    displayPriceCLP={displayPriceCLP}
-                    user={session.user}
                   />
-                </div>
-
-                <div className="mt-4 text-center">
-                  <div className="flex items-center justify-center gap-4 opacity-80">
-                    <img src="/webpay-logo.png" alt="Webpay Plus" className="h-6 w-auto" />
-                    <img src="/payku-logo.png" alt="Payku" className="h-6 w-auto" />
-                  </div>
                 </div>
               </div>
 

@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { CreditCard, Loader2 } from "lucide-react";
+import { type PaymentMethodId } from "@/lib/payment-methods";
 
 interface CombinedCheckoutButtonProps {
   productSlug: string;
   durationDays?: number;
-  paymentMethod: "FLOW_CL" | "PAYKU";
+  paymentMethod: PaymentMethodId;
   className?: string;
   children?: React.ReactNode;
   disabled?: boolean;
-  onSuccess?: (paymentData: any) => void;
+  onSuccess?: (paymentData: Record<string, unknown>) => void;
   onError?: (error: string) => void;
 }
 
