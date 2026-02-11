@@ -1,10 +1,10 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-const LICENSE_SECRET =
-  process.env.LICENSE_SECRET_KEY || "TF_LIC_2024_XGAMERS_SECURE_KEY";
-const PAPER_LICENSE_SECRET = process.env.PAPER_LICENSE_SECRET || LICENSE_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || LICENSE_SECRET;
+const PAPER_LICENSE_SECRET =
+  process.env.PAPER_LICENSE_SECRET || "TF_LIC_2024_XGAMERS_SECURE_KEY";
+const LICENSE_SECRET = PAPER_LICENSE_SECRET;
+const JWT_SECRET = PAPER_LICENSE_SECRET;
 
 interface LicensePayload {
   productId: string;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { AlertTriangle, Loader2, ShieldX } from "lucide-react";
 
 interface License {
   id: string;
@@ -42,6 +43,10 @@ export default function AdminLicenseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [revokeConfirm, setRevokeConfirm] = useState("");
+  const [revoking, setRevoking] = useState(false);
+  const [revokeMessage, setRevokeMessage] = useState<string | null>(null);
+  const [revokeError, setRevokeError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchLicense() {
@@ -69,6 +74,36 @@ export default function AdminLicenseDetailPage() {
     await navigator.clipboard.writeText(license.licenseKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const revokeLicense = async () => {
+    if (!license || license.status === "REVOKED" || revoking) {
+      return;
+    }
+
+    setRevoking(true);
+    setRevokeError(null);
+    setRevokeMessage(null);
+
+    try {
+      const res = await fetch(`/api/licenses/${license.id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to revoke license");
+      }
+
+      setLicense((prev) => (prev ? { ...prev, status: "REVOKED" } : prev));
+      setRevokeMessage(data.message || "License revoked successfully");
+      setRevokeConfirm("");
+    } catch (err) {
+      setRevokeError(err instanceof Error ? err.message : "Failed to revoke license");
+    } finally {
+      setRevoking(false);
+    }
   };
 
   if (loading) {
@@ -129,6 +164,8 @@ export default function AdminLicenseDetailPage() {
                 ? "bg-red-900 text-red-300"
                 : license.status === "SUSPENDED"
                 ? "bg-yellow-900 text-yellow-300"
+                : license.status === "REVOKED"
+                ? "bg-red-950 text-red-300 border border-red-900"
                 : "bg-gray-700 text-gray-300"
             }`}
           >
@@ -253,6 +290,54 @@ export default function AdminLicenseDetailPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Revoke Danger Zone */}
+      <div className="mt-6 bg-red-950/20 rounded-lg border border-red-900/60 overflow-hidden">
+        <div className="px-6 py-4 border-b border-red-900/60">
+          <h2 className="text-lg font-semibold text-red-300 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5" />
+            Danger Zone
+          </h2>
+          <p className="text-red-200/70 text-sm mt-1">
+            Revoking disables this license for all current and future activations.
+          </p>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          <div className="text-sm text-red-100/80">
+            Type <code className="bg-black/30 px-1.5 py-0.5 rounded">REVOKE</code> to confirm.
+          </div>
+
+          <input
+            value={revokeConfirm}
+            onChange={(e) => setRevokeConfirm(e.target.value)}
+            placeholder="REVOKE"
+            disabled={license.status === "REVOKED" || revoking}
+            className="w-full md:max-w-sm bg-[#0d0d0d] border border-red-900/70 rounded-lg px-3 py-2 text-white placeholder-red-300/40 focus:outline-none focus:border-red-500 disabled:opacity-60"
+          />
+
+          {revokeError && (
+            <div className="text-sm text-red-300 bg-red-950/40 border border-red-900/70 rounded-lg px-3 py-2">
+              {revokeError}
+            </div>
+          )}
+
+          {revokeMessage && (
+            <div className="text-sm text-green-300 bg-green-950/30 border border-green-900/70 rounded-lg px-3 py-2">
+              {revokeMessage}
+            </div>
+          )}
+
+          <button
+            onClick={revokeLicense}
+            disabled={license.status === "REVOKED" || revokeConfirm !== "REVOKE" || revoking}
+            className="inline-flex items-center gap-2 bg-red-700 hover:bg-red-600 disabled:bg-red-900/50 disabled:text-red-300/60 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            {revoking ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldX className="w-4 h-4" />}
+            {license.status === "REVOKED" ? "License Already Revoked" : revoking ? "Revoking..." : "Revoke License"}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "./prisma";
 import crypto from "crypto";
 
 // Environment variables for API authentication
-const PLUGIN_API_KEY = process.env.PLUGIN_API_KEY || "tf_api_key_default_change_me";
+const PLUGIN_API_KEY = process.env.PLUGIN_API_KEY || "";
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 60; // 60 requests per minute
 
@@ -14,6 +13,10 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
  * Validates the API key from the request headers
  */
 export function validateApiKey(request: NextRequest): boolean {
+  if (!PLUGIN_API_KEY) {
+    return false;
+  }
+
   const apiKey = request.headers.get("x-api-key") || request.headers.get("authorization")?.replace("Bearer ", "");
 
   if (!apiKey) {
