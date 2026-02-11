@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateModernLicenseKey, verifyModernLicenseKey } from "@/lib/license";
 
 export async function POST(
   request: NextRequest,
@@ -18,9 +17,7 @@ export async function POST(
     const { durationDays } = await request.json();
 
     if (!durationDays) {
-      return NextResponse.json({ 
-        error: "Duration is required" 
-      }, { status: 400 });
+      return NextResponse.json({ error: "Duration is required" }, { status: 400 });
     }
 
     const license = await prisma.license.findFirst({
@@ -28,39 +25,21 @@ export async function POST(
         id: licenseId,
         userId: session.user.id,
       },
-      include: {
-        product: true,
-      },
     });
 
     if (!license) {
       return NextResponse.json({ error: "License not found" }, { status: 404 });
     }
 
-    const decodedLicense = verifyModernLicenseKey(license.licenseKey);
-    if (!decodedLicense) {
-      return NextResponse.json({ 
-        error: "Cannot renew legacy licenses" 
-      }, { status: 400 });
-    }
-
-    const currentExpiry = Math.max(decodedLicense.expiresAt, Math.floor(Date.now() / 1000));
-    const newExpiry = currentExpiry + (durationDays * 24 * 60 * 60);
-
-    const newLicenseKey = generateModernLicenseKey({
-      productId: license.product.id,
-      email: session.user.email || "",
-      durationDays: Math.ceil((newExpiry - decodedLicense.createdAt) / (24 * 60 * 60)),
-      maxActivations: decodedLicense.maxActivations,
-      features: decodedLicense.features,
-      serverId: "*",
-    });
+    const now = new Date();
+    const base = license.expiresAt > now ? new Date(license.expiresAt) : now;
+    const newExpiry = new Date(base);
+    newExpiry.setUTCDate(newExpiry.getUTCDate() + Number(durationDays));
 
     const updatedLicense = await prisma.license.update({
       where: { id: licenseId },
       data: {
-        licenseKey: newLicenseKey,
-        expiresAt: new Date(newExpiry * 1000),
+        expiresAt: newExpiry,
         status: "ACTIVE",
       },
     });
@@ -69,14 +48,10 @@ export async function POST(
       success: true,
       license: updatedLicense,
       message: `License renewed successfully for ${durationDays} days`,
-      newExpiryDate: new Date(newExpiry * 1000).toISOString(),
+      newExpiryDate: newExpiry.toISOString(),
     });
-
   } catch (error) {
     console.error("License renewal error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

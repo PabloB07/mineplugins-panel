@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getFlowPaymentStatus, FlowPaymentStatusCodes } from "@/lib/flow";
-import { generateLicenseKey } from "@/lib/license";
+import { generatePaperLicenseKey } from "@/lib/license";
 
 /**
  * Helper function to get readable status label
@@ -82,11 +82,7 @@ export async function POST(request: NextRequest) {
 
       for (const item of order.items) {
         // Generate license key
-        const licenseKey = generateLicenseKey({
-          productId: item.product.id,
-          email: order.customerEmail,
-          durationDays: item.durationDays,
-        });
+        const licenseKey = generatePaperLicenseKey(item.product.slug);
 
         // Calculate expiration date
         const expiresAt = new Date();

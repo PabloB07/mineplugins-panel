@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateLicenseKey } from "@/lib/license";
+import { generatePaperLicenseKey } from "@/lib/license";
 import { UserRole } from "@prisma/client";
 
 /**
@@ -183,11 +183,7 @@ export async function POST(request: NextRequest) {
 
     // Generate license key
     const days = durationDays || product.defaultDurationDays;
-    const licenseKey = generateLicenseKey({
-      productId: product.id,
-      email: user.email,
-      durationDays: days,
-    });
+    const licenseKey = generatePaperLicenseKey(product.slug);
 
     // Calculate expiration
     const expiresAt = new Date();

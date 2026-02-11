@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateActivationToken, verifyModernLicenseKey, hashForPrivacy } from "@/lib/license";
+import { generateActivationToken, hashForPrivacy } from "@/lib/license";
 
 export async function POST(
   request: NextRequest,
@@ -15,9 +15,9 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { 
-      serverId, 
-      serverIp, 
+    const {
+      serverId,
+      serverIp,
       serverVersion,
       minecraftVersion,
       serverName,
@@ -50,19 +50,15 @@ export async function POST(
       return NextResponse.json({ error: "License not found" }, { status: 404 });
     }
 
-    const decodedLicense = verifyModernLicenseKey(license.licenseKey);
-    if (!decodedLicense) {
-      return NextResponse.json({ error: "Invalid license" }, { status: 400 });
+    const activeActivations = license.activations.filter((a) => a.isActive);
+    if (activeActivations.length >= license.maxActivations) {
+      return NextResponse.json(
+        { error: `Maximum activations reached (${license.maxActivations})` },
+        { status: 400 }
+      );
     }
 
-    const activeActivations = license.activations.filter(a => a.isActive);
-    if (activeActivations.length >= decodedLicense.maxActivations) {
-      return NextResponse.json({ 
-        error: `Maximum activations reached (${decodedLicense.maxActivations})` 
-      }, { status: 400 });
-    }
-
-    const existingActivation = license.activations.find(a => a.serverId === serverId);
+    const existingActivation = license.activations.find((a) => a.serverId === serverId);
     if (existingActivation) {
       const updatedActivation = await prisma.licenseActivation.update({
         where: { id: existingActivation.id },
@@ -134,10 +130,7 @@ export async function POST(
     });
   } catch (error) {
     console.error("License activation error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -172,7 +165,7 @@ export async function DELETE(
       return NextResponse.json({ error: "License not found" }, { status: 404 });
     }
 
-    const activation = license.activations.find(a => a.serverId === serverId);
+    const activation = license.activations.find((a) => a.serverId === serverId);
     if (!activation) {
       return NextResponse.json({ error: "Activation not found" }, { status: 404 });
     }
@@ -188,9 +181,6 @@ export async function DELETE(
     });
   } catch (error) {
     console.error("License deactivation error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

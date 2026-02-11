@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hashForPrivacy } from "@/lib/license";
 import { prisma } from "@/lib/prisma";
-import { checkLicenseValidity, hashForPrivacy, verifyLicenseSignature } from "@/lib/license";
+import { loadRuntimeLicense, touchLicenseActivation } from "@/lib/paper/license-runtime";
 
 interface ModernValidationRequest {
+  pluginId?: string;
   licenseKey: string;
   serverId: string;
   serverIp?: string;
@@ -21,174 +23,70 @@ interface ModernValidationRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: ModernValidationRequest = await request.json();
-    const {
-      licenseKey,
-      serverId,
-      serverIp,
-      minecraftVersion,
-      serverVersion,
-      serverName,
-      onlineMode,
-      maxPlayers,
-      onlinePlayers,
-      plugins,
-      macAddress,
-      hardwareHash,
-      networkSignature,
-    } = body;
+    const licenseKey = (body.licenseKey || "").trim();
+    const serverId = (body.serverId || "").trim();
 
     if (!licenseKey || !serverId) {
-      return NextResponse.json({ 
-        error: "License key and server ID are required" 
-      }, { status: 400 });
+      return NextResponse.json(
+        { valid: false, error: "MISSING_FIELDS", message: "License key and server ID are required" },
+        { status: 400 }
+      );
     }
 
-    // Step 1: Verify license signature (offline check)
-    if (!verifyLicenseSignature(licenseKey)) {
-      return NextResponse.json({ 
-        valid: false, 
-        error: "Invalid license format" 
-      }, { status: 400 });
+    const runtime = await loadRuntimeLicense(licenseKey, body.pluginId);
+    if (!runtime.ok) {
+      return NextResponse.json(
+        { valid: false, result: runtime.error.result, error: runtime.error.message },
+        { status: runtime.error.status }
+      );
     }
 
-    // Step 2: Check license validity
-    const validity = checkLicenseValidity(licenseKey);
-    
-    if (!validity.decoded) {
-      return NextResponse.json({ 
-        valid: false, 
-        error: "Invalid license format" 
-      }, { status: 400 });
-    }
+    const clientIp =
+      body.serverIp ||
+      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
 
-    if (!validity.valid && !validity.inGracePeriod) {
-      return NextResponse.json({ 
-        valid: false, 
-        expired: true,
-        error: "License has expired" 
-      });
-    }
-
-    // Step 3: Find license in database
-    const license = await prisma.license.findUnique({
-      where: { licenseKey },
-      include: {
-        product: true,
-        activations: true,
-      },
+    const activation = await touchLicenseActivation(runtime.data.license, serverId, {
+      serverIp: hashForPrivacy(clientIp),
+      serverVersion: body.serverVersion || body.minecraftVersion,
+      minecraftVersion: body.minecraftVersion,
+      serverName: body.serverName,
+      onlineMode: body.onlineMode,
+      maxPlayers: body.maxPlayers,
+      onlinePlayers: body.onlinePlayers,
+      plugins: body.plugins,
+      macAddress: body.macAddress ? hashForPrivacy(body.macAddress) : undefined,
+      hardwareHash: body.hardwareHash,
+      networkSignature: body.networkSignature,
     });
 
-    if (!license) {
-      return NextResponse.json({ 
-        valid: false, 
-        error: "License not found" 
-      }, { status: 404 });
+    if (!activation.ok) {
+      return NextResponse.json(
+        { valid: false, result: activation.error, error: activation.message },
+        { status: activation.status }
+      );
     }
 
-    // Step 4: Check license status
-    if (license.status !== "ACTIVE") {
-      return NextResponse.json({ 
-        valid: false, 
-        error: `License is ${license.status.toLowerCase()}` 
-      }, { status: 403 });
-    }
-
-    const decoded = validity.decoded;
-    const clientIp = serverIp || (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown');
-    const hashedIp = hashForPrivacy(clientIp);
-
-    // Step 5: Handle activation tracking
-    const existingActivation = license.activations.find(
-      (a) => a.serverId === serverId
-    );
-
-    if (!existingActivation) {
-      // This is a new server trying to activate
-      const activeActivations = license.activations.filter(
-        (a) => a.isActive
-      ).length;
-
-      if (activeActivations >= decoded.maxActivations) {
-        return NextResponse.json({ 
-          valid: false, 
-          error: `Maximum activations reached (${decoded.maxActivations})` 
-        }, { status: 403 });
-      }
-
-      // Create new activation
-      await prisma.licenseActivation.create({
-        data: {
-          licenseId: license.id,
-          serverId,
-          macAddress: macAddress ? hashForPrivacy(macAddress) : null,
-          hardwareHash,
-          networkSignature,
-          serverVersion: serverVersion || minecraftVersion,
-          minecraftVersion,
-          serverName,
-          serverIp: hashedIp,
-          onlineMode,
-          maxPlayers,
-          onlinePlayers,
-          plugins: plugins ? JSON.stringify(plugins) : null,
-          isActive: true,
-          validationCount: 1,
-        },
-      });
-    } else {
-      // Update existing activation
-      await prisma.licenseActivation.update({
-        where: { id: existingActivation.id },
-        data: {
-          lastSeenAt: new Date(),
-          validationCount: { increment: 1 },
-          serverVersion: serverVersion || minecraftVersion || existingActivation.serverVersion,
-          minecraftVersion: minecraftVersion || existingActivation.minecraftVersion,
-          serverName: serverName || existingActivation.serverName,
-          onlineMode: onlineMode !== undefined ? onlineMode : existingActivation.onlineMode,
-          maxPlayers: maxPlayers !== undefined ? maxPlayers : existingActivation.maxPlayers,
-          onlinePlayers: onlinePlayers !== undefined ? onlinePlayers : existingActivation.onlinePlayers,
-          plugins: plugins ? JSON.stringify(plugins) : existingActivation.plugins,
-          // Update fingerprints if provided
-          macAddress: macAddress
-            ? hashForPrivacy(macAddress)
-            : existingActivation.macAddress,
-          hardwareHash: hardwareHash || existingActivation.hardwareHash,
-          networkSignature: networkSignature || existingActivation.networkSignature,
-        },
-      });
-    }
-
-    // Step 6: Update license last validated time
     await prisma.license.update({
-      where: { id: license.id },
+      where: { id: runtime.data.license.id },
       data: { lastValidatedAt: new Date() },
     });
 
-    const response = {
-      valid: true,
-      expired: validity.expired,
-      inGracePeriod: validity.inGracePeriod,
-      productId: decoded.productId,
-      expiresAt: new Date(decoded.expiresAt * 1000).toISOString(),
-      maxActivations: decoded.maxActivations,
-      features: decoded.features,
-      version: decoded.version,
-      serverId: hashedIp ? `${serverId.substring(0, 8)}...` : serverId,
-    };
-
-    const responseSignature = Buffer.from(JSON.stringify(response)).toString('base64');
-    
     return NextResponse.json({
-      ...response,
-      signature: responseSignature,
+      valid: true,
+      result: "VALID",
+      pluginId: runtime.data.pluginId,
+      productId: runtime.data.license.productId,
+      expiresAt: runtime.data.license.expiresAt.toISOString(),
+      maxActivations: runtime.data.license.maxActivations,
+      currentActivations: activation.currentActivations,
       timestamp: Math.floor(Date.now() / 1000),
     });
-
   } catch (error) {
     console.error("License validation error:", error);
     return NextResponse.json(
-      { valid: false, error: "Internal server error" },
+      { valid: false, result: "REMOTE_ERROR", error: "Internal server error" },
       { status: 500 }
     );
   }

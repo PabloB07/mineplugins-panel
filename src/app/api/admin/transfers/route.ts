@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateModernLicenseKey, verifyModernLicenseKey } from "@/lib/license";
+import { generatePaperLicenseKey } from "@/lib/license";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,16 +18,16 @@ export async function POST(request: NextRequest) {
     const { licenseId, targetUserId, targetEmail, durationDays } = await request.json();
 
     if (!licenseId || (!targetUserId && !targetEmail) || !durationDays) {
-      return NextResponse.json({ 
-        error: "License ID, target user/email, and duration are required" 
-      }, { status: 400 });
+      return NextResponse.json(
+        { error: "License ID, target user/email, and duration are required" },
+        { status: 400 }
+      );
     }
 
     const license = await prisma.license.findFirst({
       where: { id: licenseId },
       include: {
         product: true,
-        activations: true,
       },
     });
 
@@ -37,54 +37,31 @@ export async function POST(request: NextRequest) {
 
     let targetUser;
     if (targetUserId) {
-      targetUser = await prisma.user.findUnique({
-        where: { id: targetUserId },
-      });
+      targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
     } else if (targetEmail) {
-      targetUser = await prisma.user.findUnique({
-        where: { email: targetEmail },
-      });
+      targetUser = await prisma.user.findUnique({ where: { email: targetEmail } });
     }
 
     if (!targetUser) {
       return NextResponse.json({ error: "Target user not found" }, { status: 404 });
     }
 
-    const decodedLicense = verifyModernLicenseKey(license.licenseKey);
-    if (!decodedLicense) {
-      return NextResponse.json({ 
-        error: "Cannot transfer legacy licenses" 
-      }, { status: 400 });
-    }
-
-    const newLicenseKey = generateModernLicenseKey({
-      productId: license.product.id,
-      email: targetUser.email,
-      durationDays: durationDays || Math.ceil(
-        (decodedLicense.expiresAt - Math.floor(Date.now() / 1000)) / (24 * 60 * 60)
-      ),
-      maxActivations: decodedLicense.maxActivations,
-      features: decodedLicense.features,
-      serverId: "*",
-    });
+    const newExpiresAt = new Date();
+    newExpiresAt.setUTCDate(newExpiresAt.getUTCDate() + Number(durationDays));
+    const newLicenseKey = generatePaperLicenseKey(license.product.slug);
 
     const transferRecord = await prisma.$transaction(async (tx) => {
-      await tx.licenseActivation.deleteMany({
-        where: { licenseId: license.id },
-      });
-
-      await tx.license.delete({
-        where: { id: license.id },
-      });
+      await tx.licenseActivation.deleteMany({ where: { licenseId: license.id } });
+      await tx.license.delete({ where: { id: license.id } });
 
       const newLicense = await tx.license.create({
         data: {
           licenseKey: newLicenseKey,
           status: "ACTIVE",
-          maxActivations: decodedLicense.maxActivations,
+          maxActivations: license.maxActivations,
           userId: targetUser.id,
           productId: license.product.id,
-          expiresAt: new Date(decodedLicense.expiresAt * 1000),
+          expiresAt: newExpiresAt,
         },
       });
 
@@ -101,13 +78,9 @@ export async function POST(request: NextRequest) {
         name: targetUser.name,
       },
     });
-
   } catch (error) {
     console.error("License transfer error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -146,12 +119,8 @@ export async function GET(request: NextRequest) {
     `;
 
     return NextResponse.json({ transfers });
-
   } catch (error) {
     console.error("Get transfers error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

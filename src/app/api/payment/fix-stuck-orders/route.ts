@@ -80,18 +80,14 @@ export async function POST(request: NextRequest) {
 
           if (!dryRun) {
             // Create licenses for this order
-            const { generateLicenseKey } = await import("@/lib/license");
+            const { generatePaperLicenseKey } = await import("@/lib/license");
             
             for (const item of order.items) {
               // Skip if license already exists
               if (item.licenseId) continue;
 
               // Generate license key
-              const licenseKey = generateLicenseKey({
-                productId: item.product.id,
-                email: order.customerEmail,
-                durationDays: item.durationDays,
-              });
+              const licenseKey = generatePaperLicenseKey(item.product.slug);
 
               // Calculate expiration date
               const expiresAt = new Date();

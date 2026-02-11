@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyPaykuWebhookSignature, processPaykuWebhook, PaykuPaymentStatus } from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
-import { generateLicenseKey } from "@/lib/license";
+import { generatePaperLicenseKey } from "@/lib/license";
 
 /**
  * Webhook endpoint for Payku payment notifications
@@ -103,11 +103,7 @@ async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
   // Create licenses for all order items
   for (const item of orderRecord.items) {
     // Generate license key
-    const licenseKey = generateLicenseKey({
-      productId: item.productId,
-      email: orderRecord.user.email,
-      durationDays: item.durationDays,
-    });
+    const licenseKey = generatePaperLicenseKey(item.product.slug);
 
     // Calculate expiration date
     const expiresAt = new Date();

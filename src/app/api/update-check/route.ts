@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyLicenseSignature } from "@/lib/license";
 import {
   validateApiKey,
   checkRateLimit,
   getClientIp,
   errorResponse,
 } from "@/lib/api-auth";
+import { loadRuntimeLicense } from "@/lib/paper/license-runtime";
 
 interface UpdateCheckRequest {
   currentVersion: string;
   license: string;
   productId?: string;
+  pluginId?: string;
   serverId?: string;
 }
 
@@ -28,20 +29,14 @@ interface UpdateCheckResponse {
   message?: string;
 }
 
-/**
- * Compares two semantic versions
- * Returns: -1 if v1 < v2, 0 if equal, 1 if v1 > v2
- */
 function compareVersions(v1: string, v2: string): number {
   const parts1 = v1.split(".").map((x) => parseInt(x, 10) || 0);
   const parts2 = v2.split(".").map((x) => parseInt(x, 10) || 0);
-
   const maxLength = Math.max(parts1.length, parts2.length);
 
   for (let i = 0; i < maxLength; i++) {
     const p1 = parts1[i] || 0;
     const p2 = parts2[i] || 0;
-
     if (p1 < p2) return -1;
     if (p1 > p2) return 1;
   }
@@ -49,29 +44,23 @@ function compareVersions(v1: string, v2: string): number {
   return 0;
 }
 
-/**
- * Update check endpoint for the Minecraft plugin
- * POST /api/update-check
- */
 export async function POST(request: NextRequest) {
   const clientIp = getClientIp(request);
 
-  // Rate limiting
   const rateLimitResponse = checkRateLimit(clientIp);
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
 
-  // API key validation
   if (!validateApiKey(request)) {
     return errorResponse("UNAUTHORIZED", "Invalid or missing API key", 401);
   }
 
   try {
     const body: UpdateCheckRequest = await request.json();
-    const { currentVersion, license: licenseKey, productId } = body;
+    const currentVersion = (body.currentVersion || "").trim();
+    const licenseKey = (body.license || "").trim();
 
-    // Validate required fields
     if (!currentVersion || !licenseKey) {
       return NextResponse.json(
         {
@@ -84,72 +73,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify license signature
-    if (!verifyLicenseSignature(licenseKey)) {
+    const runtime = await loadRuntimeLicense(licenseKey, body.pluginId);
+    if (!runtime.ok) {
       return NextResponse.json(
         {
           updateAvailable: false,
           currentVersion,
-          error: "INVALID_LICENSE",
-          message: "Invalid license format",
+          error: runtime.error.result,
+          message: runtime.error.message,
+        },
+        { status: runtime.error.status }
+      );
+    }
+
+    if (body.productId && body.productId !== runtime.data.license.productId) {
+      return NextResponse.json(
+        {
+          updateAvailable: false,
+          currentVersion,
+          error: "WRONG_PLUGIN",
+          message: "License product mismatch",
         },
         { status: 403 }
       );
     }
-
-    // Find license and check validity
-    const license = await prisma.license.findUnique({
-      where: { licenseKey },
-      select: {
-        id: true,
-        status: true,
-        expiresAt: true,
-        productId: true,
-      },
-    });
-
-    if (!license) {
-      return NextResponse.json(
-        {
-          updateAvailable: false,
-          currentVersion,
-          error: "LICENSE_NOT_FOUND",
-          message: "License not found",
-        },
-        { status: 404 }
-      );
-    }
-
-    if (license.status !== "ACTIVE") {
-      return NextResponse.json(
-        {
-          updateAvailable: false,
-          currentVersion,
-          error: `LICENSE_${license.status}`,
-          message: `License is ${license.status.toLowerCase()}`,
-        },
-        { status: 403 }
-      );
-    }
-
-    if (new Date() > license.expiresAt) {
-      return NextResponse.json(
-        {
-          updateAvailable: false,
-          currentVersion,
-          error: "LICENSE_EXPIRED",
-          message: "License has expired - renew to receive updates",
-        },
-        { status: 402 }
-      );
-    }
-
-    // Get latest version for the product
-    const targetProductId = productId || license.productId;
 
     const latestVersion = await prisma.pluginVersion.findFirst({
       where: {
-        productId: targetProductId,
+        productId: runtime.data.license.productId,
         isLatest: true,
         isBeta: false,
       },
@@ -172,14 +123,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Compare versions
-    const versionComparison = compareVersions(
-      currentVersion,
-      latestVersion.version
-    );
-
-    if (versionComparison >= 0) {
-      // Current version is equal or newer
+    if (compareVersions(currentVersion, latestVersion.version) >= 0) {
       return NextResponse.json({
         updateAvailable: false,
         currentVersion,
@@ -187,7 +131,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Update is available
     const response: UpdateCheckResponse = {
       updateAvailable: true,
       currentVersion,
@@ -195,18 +138,12 @@ export async function POST(request: NextRequest) {
       releaseDate: latestVersion.publishedAt.toISOString().split("T")[0],
       changelog: latestVersion.changelog || undefined,
       mandatory: latestVersion.isMandatory,
+      downloadUrl: `/api/download?version=${latestVersion.version}`,
     };
-
-    // Include download URL (the actual download will require license validation)
-    if (latestVersion.downloadUrl) {
-      // Don't expose the raw download URL, use our secure download endpoint
-      response.downloadUrl = `/api/download?version=${latestVersion.version}`;
-    }
 
     return NextResponse.json(response);
   } catch (error) {
     console.error("Update check error:", error);
-
     return NextResponse.json(
       {
         updateAvailable: false,
@@ -219,10 +156,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Health check endpoint
- * GET /api/update-check
- */
 export async function GET() {
   return NextResponse.json({
     status: "ok",

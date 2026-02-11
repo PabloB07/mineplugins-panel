@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashForPrivacy } from "@/lib/license";
 import { validateApiKey, checkRateLimit, getClientIp } from "@/lib/api-auth";
+import { loadRuntimeLicense, touchLicenseActivation } from "@/lib/paper/license-runtime";
 
 interface HeartbeatRequest {
   licenseKey: string;
+  pluginId?: string;
   serverId: string;
   onlinePlayers: number;
   maxPlayers: number;
@@ -19,26 +21,18 @@ interface HeartbeatRequest {
 interface HeartbeatResponse {
   success: boolean;
   message?: string;
-  activationId?: string;
   lastSeen?: string;
 }
 
-/**
- * Server heartbeat endpoint for MinePlugins plugins
- * Updates server status and player counts
- * POST /api/heartbeat
- */
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const clientIp = getClientIp(request);
 
-  // Rate limiting
-  const rateLimitResponse = checkRateLimit(clientIp, 30); // 30 requests per minute
+  const rateLimitResponse = checkRateLimit(clientIp, 30);
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
 
-  // API key validation
   if (!validateApiKey(request)) {
     return NextResponse.json(
       { success: false, error: "UNAUTHORIZED", message: "Invalid or missing API key" },
@@ -48,89 +42,26 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: HeartbeatRequest = await request.json();
-    const {
-      licenseKey,
-      serverId,
-      onlinePlayers,
-      maxPlayers,
-      tps,
-      memoryUsage,
-      plugins,
-      motd,
-      version,
-      minecraftVersion,
-    } = body;
+    const licenseKey = (body.licenseKey || "").trim();
+    const serverId = (body.serverId || "").trim();
 
-    // Validate required fields
     if (!licenseKey || !serverId) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "MISSING_FIELDS",
-          message: "License key and server ID are required",
-        },
+        { success: false, error: "MISSING_FIELDS", message: "License key and server ID are required" },
         { status: 400 }
       );
     }
 
-    // Find license in database
-    const license = await prisma.license.findUnique({
-      where: { licenseKey },
-      include: {
-        activations: true,
-      },
-    });
-
-    if (!license) {
+    const runtime = await loadRuntimeLicense(licenseKey, body.pluginId);
+    if (!runtime.ok) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "LICENSE_NOT_FOUND",
-          message: "License not found in database",
-        },
-        { status: 404 }
+        { success: false, error: runtime.error.result, message: runtime.error.message },
+        { status: runtime.error.status }
       );
     }
 
-    // Check license status
-    if (license.status !== "ACTIVE") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `LICENSE_${license.status}`,
-          message: `License is ${license.status.toLowerCase()}`,
-        },
-        { status: 403 }
-      );
-    }
-
-    // Check expiration
-    const now = new Date();
-    if (now > license.expiresAt) {
-      // Update status to expired
-      await prisma.license.update({
-        where: { id: license.id },
-        data: { status: "EXPIRED" },
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: "LICENSE_EXPIRED",
-          message: "License has expired",
-          expiresAt: license.expiresAt.toISOString(),
-        },
-        { status: 403 }
-      );
-    }
-
-    // Find existing activation
-    const existingActivation = license.activations.find(
-      (a) => a.serverId === serverId
-    );
-
-    if (!existingActivation) {
-      // No activation exists for this server
+    const existing = runtime.data.license.activations.find((a) => a.serverId === serverId);
+    if (!existing) {
       return NextResponse.json(
         {
           success: false,
@@ -141,70 +72,64 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update activation with heartbeat data
-    const updateData: any = {
-      lastSeenAt: now,
-      onlinePlayers,
-      maxPlayers,
-      validationCount: { increment: 1 },
-    };
-
-    // Optional fields
-    if (tps !== undefined) updateData.tps = tps;
-    if (memoryUsage !== undefined) updateData.memoryUsage = memoryUsage;
-    if (plugins) updateData.plugins = JSON.stringify(plugins);
-    if (motd) updateData.motd = motd;
-    if (version) updateData.serverVersion = version;
-    if (minecraftVersion) updateData.minecraftVersion = minecraftVersion;
-
-    const updatedActivation = await prisma.licenseActivation.update({
-      where: { id: existingActivation.id },
-      data: updateData,
+    const activation = await touchLicenseActivation(runtime.data.license, serverId, {
+      serverIp: hashForPrivacy(clientIp),
+      serverVersion: body.version,
+      minecraftVersion: body.minecraftVersion,
+      motd: body.motd,
+      maxPlayers: body.maxPlayers,
+      onlinePlayers: body.onlinePlayers,
+      plugins: body.plugins,
     });
 
-    // Update license last validated time
+    if (!activation.ok) {
+      return NextResponse.json(
+        { success: false, error: activation.error, message: activation.message },
+        { status: activation.status }
+      );
+    }
+
+    if (body.tps !== undefined || body.memoryUsage !== undefined) {
+      await prisma.licenseActivation.updateMany({
+        where: {
+          licenseId: runtime.data.license.id,
+          serverId,
+        },
+        data: {
+          tps: body.tps,
+          memoryUsage: body.memoryUsage,
+        },
+      });
+    }
+
     await prisma.license.update({
-      where: { id: license.id },
-      data: { lastValidatedAt: now },
+      where: { id: runtime.data.license.id },
+      data: { lastValidatedAt: new Date() },
     });
 
     const responseData: HeartbeatResponse = {
       success: true,
       message: "Heartbeat received successfully",
-      activationId: updatedActivation.id,
-      lastSeen: updatedActivation.lastSeenAt.toISOString(),
+      lastSeen: new Date().toISOString(),
     };
 
-    // Add processing time header
     const processingTime = Date.now() - startTime;
-
     return NextResponse.json(responseData, {
       headers: {
         "X-Processing-Time": `${processingTime}ms`,
       },
     });
-
   } catch (error) {
     console.error("Heartbeat error:", error);
-
     return NextResponse.json(
-      {
-        success: false,
-        error: "INTERNAL_ERROR",
-        message: "Heartbeat service error",
-      },
+      { success: false, error: "INTERNAL_ERROR", message: "Heartbeat service error" },
       { status: 500 }
     );
   }
 }
 
-/**
- * Health check endpoint
- * GET /api/heartbeat
- */
 export async function GET() {
   try {
-    // Quick database connectivity check
     await prisma.$queryRaw`SELECT 1`;
 
     return NextResponse.json({
