@@ -123,7 +123,7 @@ export default async function DashboardPage() {
       {/* Main Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link
-          href="/buy"
+          href="/store"
           className="group relative bg-[#111] hover:bg-[#151515] rounded-xl p-8 border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden"
         >
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -187,7 +187,7 @@ export default async function DashboardPage() {
                 </div>
                 <h3 className="text-white font-medium mb-1">No licenses yet</h3>
                 <p className="text-gray-500 text-sm mb-4">Start by purchasing a license for your server.</p>
-                <Link href="/buy" className="text-sm bg-[#22c55e] text-white px-4 py-2 rounded-lg hover:bg-[#16a34a] transition-colors">
+                <Link href="/store" className="text-sm bg-[#22c55e] text-white px-4 py-2 rounded-lg hover:bg-[#16a34a] transition-colors">
                   Buy Now
                 </Link>
               </div>

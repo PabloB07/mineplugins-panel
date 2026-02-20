@@ -97,7 +97,7 @@ export default async function DownloadsPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/buy"
+                  href="/store"
                   className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20 inline-block"
                 >
                   <Package className="w-5 h-5" />

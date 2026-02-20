@@ -50,21 +50,21 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
     return (
         <nav className="bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#f59e0b]/20 sticky top-0 z-50 shadow-lg shadow-black/20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+            <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-[4.5rem]">
                     {/* Logo */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                         <div className="text-2xl">⛏️</div>
                         <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
                             MinePlugins
                         </Link>
-                        <span className="bg-[#f59e0b]/10 text-[#f59e0b] text-[10px] px-2 py-0.5 rounded border border-[#f59e0b]/20 font-mono tracking-wide uppercase">
+                        <span className="hidden xl:inline-flex bg-[#f59e0b]/10 text-[#f59e0b] text-[10px] px-2 py-0.5 rounded border border-[#f59e0b]/20 font-mono tracking-wide uppercase">
                             Store Admin
                         </span>
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center gap-2">
+                    <div className="hidden xl:flex items-center gap-1.5 px-3">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -73,7 +73,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
+                                    className={`flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 group whitespace-nowrap flex-shrink-0 ${active
                                         ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30 shadow-lg shadow-[#f59e0b]/10"
                                         : "text-gray-400 hover:text-white hover:bg-[#111] hover:border-[#333] border border-transparent"
                                         }`}
@@ -84,7 +84,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             );
                         })}
 
-                        <div className="h-6 w-px bg-white/10 mx-3" />
+                        <div className="h-6 w-px bg-white/10 mx-2" />
 
                         <Link
                             href="/dashboard"
@@ -96,8 +96,8 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                     </div>
 
                     {/* User Menu & Mobile Toggle */}
-                    <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex items-center gap-4 pl-4 border-l border-white/10">
+                    <div className="flex items-center gap-3">
+                        <div className="hidden md:flex items-center gap-3 pl-3 border-l border-white/10">
                             <div className="text-right hidden md:block">
                                 <div className="text-sm font-medium text-white">{user.name || "Admin"}</div>
                                 <div className="text-xs text-gray-500">{user.email}</div>
@@ -125,7 +125,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         </div>
 
                         {/* Mobile Menu Button */}
-                        <div className="lg:hidden">
+                        <div className="xl:hidden">
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                                 className="text-gray-400 hover:text-[#f59e0b] p-2 rounded-lg hover:bg-[#111] transition-all duration-200"

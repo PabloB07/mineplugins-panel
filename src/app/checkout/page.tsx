@@ -16,13 +16,13 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    redirect("/login?callbackUrl=/buy");
+    redirect("/login?callbackUrl=/store");
   }
 
   const { productId } = await searchParams;
 
   if (!productId) {
-    redirect("/buy");
+    redirect("/store");
   }
 
   const product = await prisma.product.findUnique({
@@ -57,7 +57,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
 
         {/* Back Link */}
         <Link
-          href="/buy"
+          href="/store"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

@@ -74,7 +74,7 @@ export default async function OrdersPage() {
 
               <div className="hidden md:block">
                 <Link
-                  href="/buy"
+                  href="/store"
                   className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
                 >
                   <Package className="w-5 h-5" />
@@ -96,7 +96,7 @@ export default async function OrdersPage() {
                 <h3 className="text-xl font-semibold text-white mb-2">No Orders Yet</h3>
                 <p className="text-gray-400 mb-6">You haven't purchased any plugins yet. Start by browsing our available products.</p>
                 <Link
-                  href="/buy"
+                  href="/store"
                   className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"
                 >
                   Browse Products

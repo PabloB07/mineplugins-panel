@@ -62,7 +62,7 @@ export default async function LicensesPage() {
           </p>
         </div>
         <Link
-          href="/buy"
+          href="/store"
           className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
           Buy New License
@@ -76,7 +76,7 @@ export default async function LicensesPage() {
             You don&apos;t have any licenses yet.
           </div>
           <Link
-            href="/buy"
+            href="/store"
             className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-block"
           >
             Purchase Your First License

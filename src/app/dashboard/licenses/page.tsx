@@ -189,7 +189,7 @@ export default function LicensesPage() {
 
             <div className="hidden md:block">
               <Link
-                href="/buy"
+                href="/store"
                 className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
               >
                 <Zap className="w-5 h-5" />
@@ -210,7 +210,7 @@ export default function LicensesPage() {
              You don&apos;t have any licenses yet.
            </div>
            <Link
-             href="/buy"
+             href="/store"
              className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 inline-block shadow-lg shadow-[#22c55e]/20"
            >
              Purchase Your First License

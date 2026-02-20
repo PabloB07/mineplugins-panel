@@ -105,7 +105,7 @@ export default async function DashboardPage() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Link
-          href="/buy"
+          href="/store"
           className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 rounded-lg p-6 text-center transition-all"
         >
           <div className="text-xl font-semibold text-white">Buy License</div>
@@ -139,7 +139,7 @@ export default async function DashboardPage() {
           {licenses.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-400">
               No licenses yet.{" "}
-              <Link href="/buy" className="text-blue-400 hover:text-blue-300">
+              <Link href="/store" className="text-blue-400 hover:text-blue-300">
                 Purchase your first license
               </Link>
             </div>

@@ -127,7 +127,7 @@ export default async function BuyPage() {
                         </Link>
                       ) : (
                         <Link
-                          href={`/login?callbackUrl=${encodeURIComponent(`/buy?productId=${product.id}`)}`}
+                          href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`}
                           className="block w-full bg-[#222] hover:bg-[#333] text-gray-300 hover:text-white font-semibold py-3.5 rounded-xl text-center transition-all border border-[#333] hover:border-gray-600"
                         >
                           Login to Purchase
