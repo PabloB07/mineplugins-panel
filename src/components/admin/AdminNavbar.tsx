@@ -8,9 +8,7 @@ import {
     ShoppingCart,
     Key,
     Users,
-    Activity,
     BarChart3,
-    CreditCard,
     ArrowRight,
     LogOut,
     Menu,
@@ -39,7 +37,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/transfers", label: "Transfers", icon: ArrowRight },
         { href: "/admin/users", label: "Customers", icon: Users },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-        { href: "/admin/payku", label: "Payku", icon: CreditCard },
     ];
 
     const isActive = (path: string) => {

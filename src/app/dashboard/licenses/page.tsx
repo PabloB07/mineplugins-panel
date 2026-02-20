@@ -203,7 +203,7 @@ export default function LicensesPage() {
        {licenses.length === 0 ? (
          <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
-           <div className="relative z-10 w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+           <div className="relative z-10 w-16 h-16 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
              <Server className="w-8 h-8 text-gray-500" />
            </div>
            <div className="text-gray-400 mb-4 text-lg">
@@ -264,7 +264,7 @@ export default function LicensesPage() {
                             ? "bg-red-500/20 text-red-300 border-red-500/30"
                             : license.status === "SUSPENDED"
                             ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                             : "bg-gray-700 text-gray-300 border-[#333]"
+                             : "bg-[#181818] text-gray-300 border-[#333]"
                         }`}
                       >
                         {license.status === "ACTIVE" && !isExpired && <CheckCircle className="w-3 h-3" />}
@@ -370,7 +370,7 @@ export default function LicensesPage() {
                               <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 activation.isActive
                                   ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                                   : "bg-gray-700/50 text-gray-300 border-[#333]"
+                                   : "bg-[#181818] text-gray-300 border-[#333]"
                               }`}>
                                 {activation.isActive ? "Active" : "Inactive"}
                               </div>
@@ -506,14 +506,14 @@ export default function LicensesPage() {
                   <button
                     type="button"
                     onClick={() => setRenewModal({ open: false, licenseId: "", licenseName: "" })}
-                    className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-2 bg-[#181818] hover:bg-[#222] text-white rounded-xl border border-[#333] font-medium transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-[#22c55e] text-black hover:bg-[#16a34a] disabled:bg-gray-700 disabled:cursor-not-allowed py-2 px-4 rounded-lg font-bold transition-all hover:shadow-lg hover:shadow-[#22c55e]/20"
+                    className="flex-1 bg-[#22c55e] text-black hover:bg-[#16a34a] disabled:bg-[#333] disabled:text-gray-500 disabled:cursor-not-allowed py-2 px-4 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-[#22c55e]/20"
                   >
                     {submitting ? 'Processing...' : `Renew ${renewForm.durationDays} days`}
                   </button>

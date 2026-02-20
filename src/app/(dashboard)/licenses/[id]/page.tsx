@@ -94,9 +94,6 @@ export default function LicenseDetailPage() {
   }
 
   const isExpired = new Date() > new Date(license.expiresAt);
-  const daysLeft = Math.ceil(
-    (new Date(license.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
   const activeActivations = license.activations.filter((a) => a.isActive).length;
 
   return (
@@ -195,11 +192,6 @@ export default function LicenseDetailPage() {
             isExpired ? "text-red-400" : "text-white group-hover:text-[#22c55e]"
           }`}>
             {new Date(license.expiresAt).toLocaleDateString()}
-            {!isExpired && daysLeft <= 30 && (
-              <span className="text-yellow-400 ml-2 text-sm animate-pulse">
-                ({daysLeft} days left)
-              </span>
-            )}
           </div>
         </div>
         
@@ -248,7 +240,7 @@ export default function LicenseDetailPage() {
                 <span>{license.activations.filter(a => a.isActive).length} Active</span>
               </div>
               <div className="flex items-center gap-1 text-gray-400">
-                <div className="w-4 h-4 rounded-full bg-gray-600"></div>
+                <div className="w-4 h-4 rounded-full bg-gray-500"></div>
                 <span>{license.activations.filter(a => !a.isActive).length} Inactive</span>
               </div>
             </div>
@@ -257,7 +249,7 @@ export default function LicenseDetailPage() {
 
         {license.activations.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
               <Server className="w-8 h-8 text-gray-500" />
             </div>
             <div className="text-gray-400 mb-2">No server activations yet</div>
@@ -274,12 +266,12 @@ export default function LicenseDetailPage() {
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       activation.isActive 
                         ? "bg-[#22c55e]/20 border border-[#22c55e]/30" 
-                        : "bg-gray-700/50 border border-[#333]"
+                        : "bg-[#181818] border border-[#333]"
                     }`}>
                       {activation.isActive ? (
                         <div className="w-5 h-5 rounded-full bg-[#22c55e]"></div>
                       ) : (
-                        <div className="w-5 h-5 rounded-full bg-gray-600"></div>
+                        <div className="w-5 h-5 rounded-full bg-gray-500"></div>
                       )}
                     </div>
                     <div>
@@ -295,7 +287,7 @@ export default function LicenseDetailPage() {
                     className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                       activation.isActive
                         ? "bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
-                        : "bg-gray-700/50 text-gray-400 border-[#333]"
+                        : "bg-[#181818] text-gray-400 border-[#333]"
                     }`}
                   >
                     {activation.isActive ? "ACTIVE" : "INACTIVE"}

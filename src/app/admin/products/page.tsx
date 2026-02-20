@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { 
   Plus, 
@@ -9,10 +8,8 @@ import {
   Eye, 
   EyeOff, 
   DollarSign, 
-  Calendar,
   Server,
-  TrendingUp,
-  Search
+  TrendingUp
 } from "lucide-react";
 import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLP } from "@/lib/pricing";
@@ -110,7 +107,7 @@ export default async function AdminProductsPage() {
         <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#f59e0b]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
           <div className="relative z-10">
-            <div className="w-20 h-20 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-6">
               <Package className="w-10 h-10 text-gray-500" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-3">No Products Yet</h3>
@@ -186,7 +183,7 @@ export default async function AdminProductsPage() {
                          )}
                        </td>
                        <td className="px-6 py-4">
-                         <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#f59e0b]/30 transition-all min-w-[220px]">
+                         <div className="bg-[#0a0a0a]/50 rounded-xl p-3 border border-[#222] hover:border-[#f59e0b]/30 transition-all min-w-[220px]">
                            <div className="flex items-center gap-2 mb-2">
                              <DollarSign className="w-4 h-4 text-[#f59e0b]" />
                              <span className="text-sm text-gray-400">Price</span>
@@ -241,7 +238,7 @@ export default async function AdminProductsPage() {
                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                              product.isActive
                                ? "bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30"
-                                : "bg-gray-700/50 text-gray-400 border border-[#333]"
+                                : "bg-[#181818] text-gray-400 border border-[#333]"
                            }`}
                          >
                            {product.isActive ? (
@@ -261,14 +258,14 @@ export default async function AdminProductsPage() {
                          <div className="flex items-center gap-3">
                            <Link
                              href={`/admin/products/${product.id}`}
-                             className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-colors border border-transparent hover:border-blue-500/20"
+                             className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-500/20"
                              title="Edit"
                            >
                              <Edit className="w-4 h-4" />
                            </Link>
                            <Link
                              href={`/admin/products/${product.id}/versions`}
-                             className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-colors border border-transparent hover:border-[#f59e0b]/20"
+                             className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-all duration-200 border border-transparent hover:border-[#f59e0b]/20"
                              title="Manage Versions"
                            >
                              <Package className="w-4 h-4" />

@@ -29,7 +29,7 @@ export default function FileUpload({
   const [files, setFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const uploadProgress: string | null = null;
   const generatedId = useId();
   const resolvedInputId = inputId ?? `file-input-${generatedId}`;
 
@@ -129,7 +129,7 @@ export default function FileUpload({
       {/* Upload Area */}
       <div
         className={`
-          relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
+          relative border-2 border-dashed rounded-xl p-6 text-center transition-colors
           ${dragActive 
             ? "border-emerald-500 bg-emerald-500/10" 
             : "border-[#333] hover:border-[#444] bg-[#0a0a0a]"
@@ -165,14 +165,14 @@ export default function FileUpload({
 
       {/* Upload Progress */}
       {uploadProgress && (
-        <div className="bg-blue-900/50 border border-blue-700 rounded-lg p-3">
+        <div className="bg-blue-900/50 border border-blue-700 rounded-xl p-3">
           <p className="text-sm text-blue-300">{uploadProgress}</p>
         </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900/50 border border-red-700 rounded-lg p-3">
+        <div className="bg-red-900/50 border border-red-700 rounded-xl p-3">
           <p className="text-sm text-red-300">{error}</p>
         </div>
       )}
@@ -184,7 +184,7 @@ export default function FileUpload({
           {files.map((file, index) => (
             <div
               key={`${file.name}-${index}`}
-              className="flex items-center justify-between bg-[#0a0a0a] border border-[#222] rounded-lg p-3"
+              className="flex items-center justify-between bg-[#0a0a0a] border border-[#222] rounded-xl p-3"
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">

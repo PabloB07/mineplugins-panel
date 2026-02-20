@@ -116,7 +116,7 @@ export default function AdminLicenseDetailPage() {
 
   if (error || !license) {
     return (
-      <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 text-center">
+      <div className="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
         <div className="text-red-400 mb-4">{error || "License not found"}</div>
         <Link
           href="/admin/licenses"
@@ -129,9 +129,6 @@ export default function AdminLicenseDetailPage() {
   }
 
   const isExpired = new Date() > new Date(license.expiresAt);
-  const daysLeft = Math.ceil(
-    (new Date(license.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
   const activeActivations = license.activations.filter((a) => a.isActive).length;
 
   return (
@@ -140,14 +137,14 @@ export default function AdminLicenseDetailPage() {
       <div className="mb-6">
         <Link
           href="/admin/licenses"
-          className="text-gray-400 hover:text-white"
+          className="text-gray-400 hover:text-white transition-colors"
         >
           &larr; Back to Licenses
         </Link>
       </div>
 
       {/* License Header */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-6">
+      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6">
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">{license.product.name}</h1>
@@ -159,14 +156,14 @@ export default function AdminLicenseDetailPage() {
           <span
             className={`px-4 py-2 rounded-full text-sm font-medium ${
               license.status === "ACTIVE" && !isExpired
-                ? "bg-green-900 text-green-300"
+                ? "bg-green-500/15 text-green-400 border border-green-500/20"
                 : license.status === "EXPIRED" || isExpired
-                ? "bg-red-900 text-red-300"
+                ? "bg-red-500/15 text-red-400 border border-red-500/20"
                 : license.status === "SUSPENDED"
-                ? "bg-yellow-900 text-yellow-300"
+                ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20"
                 : license.status === "REVOKED"
-                ? "bg-red-950 text-red-300 border border-red-900"
-                : "bg-gray-700 text-gray-300"
+                ? "bg-red-950/40 text-red-300 border border-red-900"
+                : "bg-[#181818] text-gray-300 border border-[#333]"
             }`}
           >
             {isExpired ? "EXPIRED" : license.status}
@@ -174,7 +171,7 @@ export default function AdminLicenseDetailPage() {
         </div>
 
         {/* License Key */}
-        <div className="bg-gray-900 rounded-lg p-4 mb-6">
+        <div className="bg-[#0a0a0a] rounded-xl p-4 mb-6 border border-[#222]">
           <div className="flex justify-between items-center">
             <div>
               <div className="text-gray-400 text-sm mb-1">License Key</div>
@@ -184,7 +181,7 @@ export default function AdminLicenseDetailPage() {
             </div>
             <button
               onClick={copyLicenseKey}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+              className="bg-[#181818] hover:bg-[#222] text-white px-4 py-2 rounded-xl text-sm transition-colors border border-[#333]"
             >
               {copied ? "Copied!" : "Copy"}
             </button>
@@ -203,11 +200,6 @@ export default function AdminLicenseDetailPage() {
             <div className="text-gray-400 text-sm">Expires</div>
             <div className={isExpired ? "text-red-400 text-lg" : "text-white text-lg"}>
               {new Date(license.expiresAt).toLocaleDateString()}
-              {!isExpired && daysLeft <= 30 && (
-                <span className="text-yellow-400 text-sm ml-2">
-                  ({daysLeft} days left)
-                </span>
-              )}
             </div>
           </div>
           <div>
@@ -228,8 +220,8 @@ export default function AdminLicenseDetailPage() {
       </div>
 
       {/* Server Activations */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-700">
+      <div className="bg-[#111] rounded-xl border border-[#222]">
+        <div className="px-6 py-4 border-b border-[#222]">
           <h2 className="text-lg font-semibold text-white">Server Activations</h2>
           <p className="text-gray-400 text-sm">
             Servers that have activated this license
@@ -242,9 +234,9 @@ export default function AdminLicenseDetailPage() {
             server to activate.
           </div>
         ) : (
-          <div className="divide-y divide-gray-700">
+          <div className="divide-y divide-[#222]">
             {license.activations.map((activation) => (
-              <div key={activation.id} className="px-6 py-4">
+              <div key={activation.id} className="px-6 py-4 hover:bg-[#151515] transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
@@ -279,8 +271,8 @@ export default function AdminLicenseDetailPage() {
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       activation.isActive
-                        ? "bg-green-900 text-green-300"
-                        : "bg-gray-700 text-gray-300"
+                        ? "bg-green-500/15 text-green-400 border border-green-500/20"
+                        : "bg-[#181818] text-gray-300 border border-[#333]"
                     }`}
                   >
                     {activation.isActive ? "Active" : "Inactive"}
@@ -293,7 +285,7 @@ export default function AdminLicenseDetailPage() {
       </div>
 
       {/* Revoke Danger Zone */}
-      <div className="mt-6 bg-red-950/20 rounded-lg border border-red-900/60 overflow-hidden">
+      <div className="mt-6 bg-red-950/20 rounded-xl border border-red-900/60 overflow-hidden">
         <div className="px-6 py-4 border-b border-red-900/60">
           <h2 className="text-lg font-semibold text-red-300 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
@@ -314,17 +306,17 @@ export default function AdminLicenseDetailPage() {
             onChange={(e) => setRevokeConfirm(e.target.value)}
             placeholder="REVOKE"
             disabled={license.status === "REVOKED" || revoking}
-            className="w-full md:max-w-sm bg-[#0d0d0d] border border-red-900/70 rounded-lg px-3 py-2 text-white placeholder-red-300/40 focus:outline-none focus:border-red-500 disabled:opacity-60"
+            className="w-full md:max-w-sm bg-[#0d0d0d] border border-red-900/70 rounded-xl px-3 py-2 text-white placeholder-red-300/40 focus:outline-none focus:border-red-500 disabled:opacity-60"
           />
 
           {revokeError && (
-            <div className="text-sm text-red-300 bg-red-950/40 border border-red-900/70 rounded-lg px-3 py-2">
+            <div className="text-sm text-red-300 bg-red-950/40 border border-red-900/70 rounded-xl px-3 py-2">
               {revokeError}
             </div>
           )}
 
           {revokeMessage && (
-            <div className="text-sm text-green-300 bg-green-950/30 border border-green-900/70 rounded-lg px-3 py-2">
+            <div className="text-sm text-green-300 bg-green-950/30 border border-green-900/70 rounded-xl px-3 py-2">
               {revokeMessage}
             </div>
           )}
@@ -332,7 +324,7 @@ export default function AdminLicenseDetailPage() {
           <button
             onClick={revokeLicense}
             disabled={license.status === "REVOKED" || revokeConfirm !== "REVOKE" || revoking}
-            className="inline-flex items-center gap-2 bg-red-700 hover:bg-red-600 disabled:bg-red-900/50 disabled:text-red-300/60 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-red-700 hover:bg-red-600 disabled:bg-red-900/50 disabled:text-red-300/60 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
             {revoking ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldX className="w-4 h-4" />}
             {license.status === "REVOKED" ? "License Already Revoked" : revoking ? "Revoking..." : "Revoke License"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Shield,
@@ -61,11 +61,7 @@ export default function AdminLicensesPage() {
     totalPages: 0,
   });
 
-  useEffect(() => {
-    fetchLicenses();
-  }, [filter, search, pagination.page]);
-
-  async function fetchLicenses() {
+  const fetchLicenses = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -88,7 +84,11 @@ export default function AdminLicensesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [filter, pagination.limit, pagination.page, search]);
+
+  useEffect(() => {
+    fetchLicenses();
+  }, [fetchLicenses]);
 
   async function revokeLicense(id: string) {
     try {
@@ -311,7 +311,7 @@ export default function AdminLicensesPage() {
                               ? "bg-red-500/20 text-red-300 border border-red-500/30"
                               : license.status === "SUSPENDED"
                               ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                               : "bg-gray-700/50 text-gray-300 border border-[#333]"
+                               : "bg-[#181818] text-gray-300 border border-[#333]"
                           }`}
                         >
                           {license.status === "ACTIVE" && !isExpired && (
@@ -387,7 +387,7 @@ export default function AdminLicensesPage() {
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                 disabled={pagination.page === 1}
-                className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-xl hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Previous
               </button>
@@ -401,9 +401,9 @@ export default function AdminLicensesPage() {
                     <button
                       key={pageNum}
                       onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-                      className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                      className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${
                         isActive
-                          ? "bg-blue-500 text-white border border-blue-500/50 shadow-lg shadow-blue-500/20"
+                          ? "bg-[#f59e0b] text-black border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
                           : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                       }`}
                     >
@@ -417,9 +417,9 @@ export default function AdminLicensesPage() {
                     <span className="text-gray-500 px-2">...</span>
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: pagination.totalPages }))}
-                      className={`px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                      className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${
                         pagination.page === pagination.totalPages
-                          ? "bg-blue-500 text-white border border-blue-500/50 shadow-lg shadow-blue-500/20"
+                          ? "bg-[#f59e0b] text-black border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
                           : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                       }`}
                     >
@@ -432,7 +432,7 @@ export default function AdminLicensesPage() {
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
                 disabled={pagination.page === pagination.totalPages}
-                className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-xl hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Next
               </button>
@@ -480,11 +480,11 @@ export default function AdminLicensesPage() {
                 onChange={(e) => setRevokeConfirmText(e.target.value)}
                 placeholder="REVOKE"
                 disabled={revoking}
-                className="w-full bg-[#0d0d0d] border border-red-900/70 rounded-lg px-3 py-2 text-white placeholder-red-300/40 focus:outline-none focus:border-red-500 disabled:opacity-60"
+                className="w-full bg-[#0d0d0d] border border-red-900/70 rounded-xl px-3 py-2 text-white placeholder-red-300/40 focus:outline-none focus:border-red-500 disabled:opacity-60"
               />
 
               {revokeError && (
-                <div className="text-sm text-red-300 bg-red-950/40 border border-red-900/70 rounded-lg px-3 py-2">
+                <div className="text-sm text-red-300 bg-red-950/40 border border-red-900/70 rounded-xl px-3 py-2">
                   {revokeError}
                 </div>
               )}
@@ -497,14 +497,14 @@ export default function AdminLicensesPage() {
                     setRevokeConfirmText("");
                     setRevokeError(null);
                   }}
-                  className="px-4 py-2 text-sm text-gray-300 border border-[#333] rounded-lg hover:bg-[#1a1a1a] transition-colors"
+                  className="px-4 py-2 text-sm text-gray-300 border border-[#333] rounded-xl hover:bg-[#1a1a1a] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => revokeLicense(revokeTarget.id)}
                   disabled={revoking || revokeConfirmText !== "REVOKE"}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-700 hover:bg-red-600 rounded-lg disabled:bg-red-900/50 disabled:text-red-300/60 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-700 hover:bg-red-600 rounded-xl disabled:bg-red-900/50 disabled:text-red-300/60 transition-colors"
                 >
                   {revoking ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldX className="w-4 h-4" />}
                   {revoking ? "Revoking..." : "Confirm Revoke"}
@@ -525,7 +525,6 @@ function CreateLicenseModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [email, setEmail] = useState("");
   const [durationDays, setDurationDays] = useState(365);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

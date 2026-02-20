@@ -6,6 +6,10 @@ import Link from "next/link";
 type License = {
   id: string;
   status: string;
+  expiresAt: Date;
+  product: {
+    name: string;
+  };
   _count: {
     activations: number;
   };
@@ -82,19 +86,19 @@ export default async function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="bg-[#111] rounded-xl p-6 border border-[#222]">
           <div className="text-3xl font-bold text-green-400">
             {activeLicenses}
           </div>
           <div className="text-gray-400 text-sm mt-1">Active Licenses</div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="bg-[#111] rounded-xl p-6 border border-[#222]">
           <div className="text-3xl font-bold text-blue-400">
             {totalActivations}
           </div>
           <div className="text-gray-400 text-sm mt-1">Server Activations</div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="bg-[#111] rounded-xl p-6 border border-[#222]">
           <div className="text-3xl font-bold text-purple-400">
             {orders.length}
           </div>
@@ -106,7 +110,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Link
           href="/store"
-          className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 rounded-lg p-6 text-center transition-all"
+          className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 rounded-xl p-6 text-center transition-all"
         >
           <div className="text-xl font-semibold text-white">Buy License</div>
           <p className="text-green-200 mt-1">
@@ -115,7 +119,7 @@ export default async function DashboardPage() {
         </Link>
         <Link
           href="/dashboard/downloads"
-          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 rounded-lg p-6 text-center transition-all"
+          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 rounded-xl p-6 text-center transition-all"
         >
           <div className="text-xl font-semibold text-white">Download Plugin</div>
           <p className="text-blue-200 mt-1">
@@ -125,8 +129,8 @@ export default async function DashboardPage() {
       </div>
 
       {/* Recent Licenses */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 mb-8">
-        <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+      <div className="bg-[#111] rounded-xl border border-[#222] mb-8">
+        <div className="px-6 py-4 border-b border-[#222] flex justify-between items-center">
           <h2 className="text-lg font-semibold text-white">Your Licenses</h2>
           <Link
             href="/dashboard/licenses"
@@ -135,7 +139,7 @@ export default async function DashboardPage() {
             View all
           </Link>
         </div>
-        <div className="divide-y divide-gray-700">
+        <div className="divide-y divide-[#222]">
           {licenses.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-400">
               No licenses yet.{" "}
@@ -144,7 +148,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           ) : (
-            licenses.map((license: any) => (
+            licenses.map((license: License) => (
               <div
                 key={license.id}
                 className="px-6 py-4 flex items-center justify-between"
@@ -162,10 +166,10 @@ export default async function DashboardPage() {
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       license.status === "ACTIVE"
-                        ? "bg-green-900 text-green-300"
+                        ? "bg-green-500/15 text-green-400 border border-green-500/20"
                         : license.status === "EXPIRED"
-                        ? "bg-red-900 text-red-300"
-                        : "bg-gray-700 text-gray-300"
+                        ? "bg-red-500/15 text-red-400 border border-red-500/20"
+                        : "bg-[#181818] text-gray-300 border border-[#333]"
                     }`}
                   >
                     {license.status}
@@ -184,8 +188,8 @@ export default async function DashboardPage() {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+      <div className="bg-[#111] rounded-xl border border-[#222]">
+        <div className="px-6 py-4 border-b border-[#222] flex justify-between items-center">
           <h2 className="text-lg font-semibold text-white">Recent Orders</h2>
           <Link
             href="/dashboard/orders"
@@ -194,7 +198,7 @@ export default async function DashboardPage() {
             View all
           </Link>
         </div>
-        <div className="divide-y divide-gray-700">
+        <div className="divide-y divide-[#222]">
           {orders.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-400">
               No orders yet.
@@ -217,10 +221,10 @@ export default async function DashboardPage() {
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       order.status === "COMPLETED"
-                        ? "bg-green-900 text-green-300"
+                        ? "bg-green-500/15 text-green-400 border border-green-500/20"
                         : order.status === "PENDING"
-                        ? "bg-yellow-900 text-yellow-300"
-                        : "bg-red-900 text-red-300"
+                        ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20"
+                        : "bg-red-500/15 text-red-400 border border-red-500/20"
                     }`}
                   >
                     {order.status}

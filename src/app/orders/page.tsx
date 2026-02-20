@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { formatCLP } from "@/lib/pricing";
-import { ShoppingBag, Package, Calendar, CheckCircle, AlertTriangle, ArrowRight } from "lucide-react";
+import { ShoppingBag, Package, ArrowRight } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 export default async function OrdersPage() {
@@ -90,11 +90,11 @@ export default async function OrdersPage() {
             <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-[#181818] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#2a2a2a]">
                   <ShoppingBag className="w-8 h-8 text-gray-500" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">No Orders Yet</h3>
-                <p className="text-gray-400 mb-6">You haven't purchased any plugins yet. Start by browsing our available products.</p>
+                <p className="text-gray-400 mb-6">You haven&apos;t purchased any plugins yet. Start by browsing our available products.</p>
                 <Link
                   href="/store"
                   className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"
@@ -164,10 +164,10 @@ export default async function OrdersPage() {
                                   <div className="flex items-center gap-2">
                                     <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                                       item.license.status === "ACTIVE"
-                                        ? "bg-[#22c55e]/20 text-[#22c55e]"
+                                        ? "bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30"
                                         : item.license.status === "EXPIRED"
-                                        ? "bg-red-500/20 text-red-400"
-                                        : "bg-gray-700 text-gray-400"
+                                        ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                                        : "bg-[#181818] text-gray-400 border border-[#333]"
                                     }`}>
                                       {item.license.status}
                                     </span>
@@ -191,9 +191,9 @@ export default async function OrdersPage() {
                                 ? "bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
                                 : order.status === "PENDING"
                                 ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                                : order.status === "FAILED"
+                              : order.status === "FAILED"
                                 ? "bg-red-500/20 text-red-400 border-red-500/30"
-                                : "bg-gray-700 text-gray-400 border-gray-600"
+                                : "bg-[#181818] text-gray-400 border-[#333]"
                             }`}
                           >
                             <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 ${
@@ -201,9 +201,9 @@ export default async function OrdersPage() {
                                 ? "bg-[#22c55e]"
                                 : order.status === "PENDING"
                                 ? "bg-yellow-400"
-                                : order.status === "FAILED"
+                              : order.status === "FAILED"
                                 ? "bg-red-400"
-                                : "bg-gray-400"
+                                : "bg-gray-500"
                             }`}></span>
                             {order.status}
                           </span>

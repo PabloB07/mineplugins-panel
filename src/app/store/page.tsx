@@ -8,7 +8,6 @@ import { ShoppingCart, Check, Zap, Server, Shield } from "lucide-react";
 
 export default async function BuyPage() {
   const session = await getServerSession(authOptions);
-  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
 
   // Get products
   const products = await prisma.product.findMany({
@@ -42,7 +41,7 @@ export default async function BuyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {products.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 bg-[#111] rounded-2xl border border-[#222]">
-              <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mb-4">
                 <ShoppingCart className="w-8 h-8 text-gray-500" />
               </div>
               <h2 className="text-xl font-bold text-white mb-2">Store Empty</h2>
@@ -128,7 +127,7 @@ export default async function BuyPage() {
                       ) : (
                         <Link
                           href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`}
-                          className="block w-full bg-[#222] hover:bg-[#333] text-gray-300 hover:text-white font-semibold py-3.5 rounded-xl text-center transition-all border border-[#333] hover:border-gray-600"
+                          className="block w-full bg-[#181818] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3.5 rounded-xl text-center transition-all border border-[#333] hover:border-[#444]"
                         >
                           Login to Purchase
                         </Link>

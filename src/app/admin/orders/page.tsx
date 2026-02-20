@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { formatCLP } from "@/lib/pricing";
 import { 
@@ -8,10 +8,8 @@ import {
   ShoppingCart, 
   User, 
   Package, 
-  Calendar,
   DollarSign,
   CheckCircle,
-  XCircle,
   AlertCircle,
   Search,
   Filter
@@ -67,11 +65,7 @@ export default function AdminOrdersPage() {
     totalPages: 0,
   });
 
-  useEffect(() => {
-    fetchOrders();
-  }, [filter, excludedStatuses, search, pagination.page]);
-
-  async function fetchOrders() {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -94,7 +88,11 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [excludedStatuses, filter, pagination.limit, pagination.page, search]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   async function deleteOrder(orderId: string) {
     if (!confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
@@ -126,30 +124,30 @@ export default function AdminOrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return "bg-green-900/50 text-green-300 border-green-700";
+        return "bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30";
       case "PENDING":
-        return "bg-yellow-900/50 text-yellow-300 border-yellow-700";
+        return "bg-yellow-500/15 text-yellow-400 border-yellow-500/30";
       case "FAILED":
-        return "bg-red-900/50 text-red-300 border-red-700";
+        return "bg-red-500/15 text-red-400 border-red-500/30";
       case "CANCELLED":
-         return "bg-gray-700 text-gray-300 border-[#333]";
+         return "bg-[#181818] text-gray-300 border-[#333]";
       default:
-         return "bg-gray-700 text-gray-300 border-[#333]";
+         return "bg-[#181818] text-gray-300 border-[#333]";
     }
   };
 
   const getLicenseStatusColor = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-green-900/50 text-green-300";
+        return "bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30";
       case "EXPIRED":
-        return "bg-red-900/50 text-red-300";
+        return "bg-red-500/15 text-red-400 border border-red-500/30";
       case "SUSPENDED":
-        return "bg-yellow-900/50 text-yellow-300";
+        return "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30";
       case "REVOKED":
-        return "bg-gray-700 text-gray-300";
+        return "bg-[#181818] text-gray-300 border border-[#333]";
       default:
-        return "bg-gray-700 text-gray-300";
+        return "bg-[#181818] text-gray-300 border border-[#333]";
     }
   };
 
@@ -391,7 +389,7 @@ export default function AdminOrdersPage() {
                             ? "bg-yellow-400"
                             : order.status === "FAILED"
                               ? "bg-red-400"
-                              : "bg-gray-400"
+                              : "bg-gray-500"
                           }`}></span>
                         {order.status}
                       </span>

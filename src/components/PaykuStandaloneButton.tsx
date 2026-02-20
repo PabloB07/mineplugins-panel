@@ -10,7 +10,7 @@ interface PaykuStandaloneButtonProps {
   children?: React.ReactNode;
   variant?: "default" | "outline" | "ghost";
   size?: "sm" | "md" | "lg";
-  onSuccess?: (paymentData: any) => void;
+  onSuccess?: (paymentData: Record<string, unknown>) => void;
   onError?: (error: string) => void;
 }
 
@@ -88,7 +88,7 @@ export function PaykuStandaloneButton({
   return (
     <div className={className}>
       {error && (
-        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-sm">
+        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-xl text-red-300 text-sm">
           {error}
         </div>
       )}
@@ -97,11 +97,10 @@ export function PaykuStandaloneButton({
         onClick={handlePayment}
         disabled={isLoading}
         className={`
-          inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all
+          inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all
           ${getVariantStyles()}
           ${getSizeStyles()}
           ${isLoading ? 'cursor-not-allowed opacity-50' : 'transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-600/25'}
-          ${className}
         `}
       >
         {isLoading ? (

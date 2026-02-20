@@ -49,7 +49,7 @@ export function CheckoutButton({ productSlug, durationDays }: CheckoutButtonProp
   return (
     <div>
       {error && (
-        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-sm">
+        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-xl text-red-300 text-sm">
           {error}
         </div>
       )}
@@ -57,7 +57,7 @@ export function CheckoutButton({ productSlug, durationDays }: CheckoutButtonProp
       <button
         onClick={handleCheckout}
         disabled={isLoading}
-        className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all disabled:cursor-not-allowed"
+        className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#22c55e] to-[#16a34a] hover:from-[#16a34a] hover:to-[#15803d] disabled:from-[#3f3f46] disabled:to-[#3f3f46] text-white font-medium py-3 px-6 rounded-xl transition-all disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>

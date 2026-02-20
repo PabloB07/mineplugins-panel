@@ -46,7 +46,7 @@ export default function AnalyticsCharts({ dailyValidations, licensesByStatus, ra
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Validation Trend Chart */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
           <h2 className="text-lg font-semibold text-white mb-4">Validation Trend ({rangeDays} Days)</h2>
           {hasValidationData ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -71,14 +71,14 @@ export default function AnalyticsCharts({ dailyValidations, licensesByStatus, ra
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[250px] rounded-lg border border-dashed border-gray-600 flex items-center justify-center text-sm text-gray-400">
+            <div className="h-[250px] rounded-xl border border-dashed border-[#333] flex items-center justify-center text-sm text-gray-400">
               No validation data in the last 30 days
             </div>
           )}
         </div>
 
         {/* Validation Volume Chart */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
           <h2 className="text-lg font-semibold text-white mb-4">Validation Volume</h2>
           {hasValidationData ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -102,7 +102,7 @@ export default function AnalyticsCharts({ dailyValidations, licensesByStatus, ra
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[250px] rounded-lg border border-dashed border-gray-600 flex items-center justify-center text-sm text-gray-400">
+            <div className="h-[250px] rounded-xl border border-dashed border-[#333] flex items-center justify-center text-sm text-gray-400">
               No volume to chart yet
             </div>
           )}
@@ -111,7 +111,7 @@ export default function AnalyticsCharts({ dailyValidations, licensesByStatus, ra
 
       <div className="grid grid-cols-1 gap-6 mb-6">
         {/* License Status Pie Chart */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 max-w-3xl">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-6 max-w-3xl">
           <h2 className="text-lg font-semibold text-white mb-4">License Distribution</h2>
           {hasLicenseStatusData ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -141,7 +141,7 @@ export default function AnalyticsCharts({ dailyValidations, licensesByStatus, ra
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] rounded-lg border border-dashed border-gray-600 flex items-center justify-center text-sm text-gray-400">
+            <div className="h-[280px] rounded-xl border border-dashed border-[#333] flex items-center justify-center text-sm text-gray-400">
               No license status data available
             </div>
           )}

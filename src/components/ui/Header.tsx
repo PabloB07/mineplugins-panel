@@ -50,7 +50,7 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-4">
             {isLoading ? (
               // Loading state
-              <div className="w-20 h-10 bg-gray-700 rounded-lg animate-pulse"></div>
+              <div className="w-20 h-10 bg-[#181818] border border-[#333] rounded-xl animate-pulse"></div>
             ) : session ? (
               // User is logged in - show user menu
               <div className="flex items-center gap-4">
@@ -98,7 +98,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/login"
-                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-lg text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
+                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
                 >
                   Get Started
                 </Link>
@@ -126,7 +126,7 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-zinc-800">
+          <div className="md:hidden py-4 border-t border-[#222]">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <a
@@ -134,21 +134,21 @@ export default function Header() {
                   href={link.href}
                   target={link.external ? "_blank" : undefined}
                   rel={link.external ? "noopener noreferrer" : undefined}
-                  className="text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
                 </a>
               ))}
-              <div className="flex flex-col gap-2 pt-4 border-t border-zinc-800">
+              <div className="flex flex-col gap-2 pt-4 border-t border-[#222]">
                 {isLoading ? (
-                  <div className="w-full h-20 bg-gray-700 rounded-lg animate-pulse mb-3"></div>
+                  <div className="w-full h-20 bg-[#181818] border border-[#333] rounded-xl animate-pulse mb-3"></div>
                 ) : session ? (
                   // Mobile user menu
                   <>
                     <div className="flex items-center gap-3 mb-3 px-2">
                       {session.user?.image ? (
-                        <img src={session.user.image} className="w-10 h-10 rounded-full border-2 border-green-500/30" />
+                        <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full border-2 border-green-500/30" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-[#111] border border-[#333] flex items-center justify-center">
                           <User className="w-5 h-5 text-gray-400" />
@@ -161,7 +161,7 @@ export default function Header() {
                     </div>
                     <Link
                       href="/dashboard"
-                      className="text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+                      className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Dashboard
@@ -178,14 +178,14 @@ export default function Header() {
                   <>
                     <Link
                       href="/login"
-                      className="text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+                      className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Sign In
                     </Link>
                     <Link
                       href="/login"
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+                      className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors text-center"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Get Started

@@ -63,7 +63,7 @@ export default async function LicensesPage() {
         </div>
         <Link
           href="/store"
-          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200"
         >
           Buy New License
         </Link>
@@ -71,13 +71,13 @@ export default async function LicensesPage() {
 
       {/* Licenses Grid */}
       {licenses.length === 0 ? (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-12 text-center">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-12 text-center">
           <div className="text-gray-400 mb-4">
             You don&apos;t have any licenses yet.
           </div>
           <Link
             href="/store"
-            className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-block"
+            className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 inline-block"
           >
             Purchase Your First License
           </Link>
@@ -86,10 +86,6 @@ export default async function LicensesPage() {
         <div className="grid gap-6">
           {licenses.map((license: License) => {
             const isExpired = new Date() > new Date(license.expiresAt);
-            const daysLeft = Math.ceil(
-              (new Date(license.expiresAt).getTime() - Date.now()) /
-                (1000 * 60 * 60 * 24)
-            );
             const activeActivations = license.activations.filter(
               (a: { isActive: boolean }) => a.isActive
             ).length;
@@ -97,7 +93,7 @@ export default async function LicensesPage() {
             return (
               <div
                 key={license.id}
-                className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden"
+                className="bg-[#111] rounded-xl border border-[#222] overflow-hidden"
               >
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
@@ -112,12 +108,12 @@ export default async function LicensesPage() {
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         license.status === "ACTIVE" && !isExpired
-                          ? "bg-green-900 text-green-300"
+                          ? "bg-green-500/15 text-green-400 border border-green-500/20"
                           : license.status === "EXPIRED" || isExpired
-                          ? "bg-red-900 text-red-300"
+                          ? "bg-red-500/15 text-red-400 border border-red-500/20"
                           : license.status === "SUSPENDED"
-                          ? "bg-yellow-900 text-yellow-300"
-                          : "bg-gray-700 text-gray-300"
+                          ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20"
+                          : "bg-[#181818] text-gray-300 border border-[#333]"
                       }`}
                     >
                       {isExpired ? "EXPIRED" : license.status}
@@ -139,11 +135,6 @@ export default async function LicensesPage() {
                         }
                       >
                         {new Date(license.expiresAt).toLocaleDateString()}
-                        {!isExpired && daysLeft <= 30 && (
-                          <span className="text-yellow-400 ml-2">
-                            ({daysLeft} days left)
-                          </span>
-                        )}
                       </div>
                     </div>
                     <div>
@@ -166,7 +157,7 @@ export default async function LicensesPage() {
 
                   {/* Server Activations */}
                   {license.activations.length > 0 && (
-                    <div className="border-t border-gray-700 pt-4 mt-4">
+                    <div className="border-t border-[#222] pt-4 mt-4">
                       <div className="text-gray-400 text-sm mb-2">
                         Active Servers
                       </div>
@@ -174,7 +165,7 @@ export default async function LicensesPage() {
                         {license.activations.slice(0, 3).map((activation: License['activations'][0]) => (
                           <div
                             key={activation.id}
-                            className="flex items-center justify-between text-sm bg-gray-700/50 rounded px-3 py-2"
+                            className="flex items-center justify-between text-sm bg-[#181818] rounded px-3 py-2"
                           >
                             <div className="flex items-center gap-2">
                               <span
@@ -207,7 +198,7 @@ export default async function LicensesPage() {
                   )}
                 </div>
 
-                <div className="bg-gray-700/30 px-6 py-3 flex justify-between items-center">
+                <div className="bg-[#181818] px-6 py-3 flex justify-between items-center">
                   <Link
                     href={`/dashboard/licenses/${license.id}`}
                     className="text-blue-400 hover:text-blue-300 text-sm font-medium"

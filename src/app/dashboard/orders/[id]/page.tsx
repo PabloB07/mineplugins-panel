@@ -18,7 +18,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
 
   if (!session?.user?.id) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-center py-12">
+      <div className="min-h-screen bg-[#0a0a0a] text-center py-12">
         <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
         <p className="text-gray-400">Please login to view your order details.</p>
       </div>
@@ -227,9 +227,9 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                           <div className="flex justify-between">
                             <span className="text-gray-400">Status:</span>
                             <span className={`px-2 py-1 text-xs rounded-full ${
-                              item.license.status === "ACTIVE" ? "bg-green-900/50 text-green-300" :
-                              item.license.status === "EXPIRED" ? "bg-red-900/50 text-red-300" :
-                              "bg-gray-700 text-gray-300"
+                              item.license.status === "ACTIVE" ? "bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30" :
+                              item.license.status === "EXPIRED" ? "bg-red-500/15 text-red-400 border border-red-500/30" :
+                              "bg-[#181818] text-gray-300 border border-[#333]"
                             }`}>
                               {item.license.status}
                             </span>

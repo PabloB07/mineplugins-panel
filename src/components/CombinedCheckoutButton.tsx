@@ -79,7 +79,7 @@ export function CombinedCheckoutButton({
   return (
     <div className={className}>
       {error && (
-        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-sm">
+        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-xl text-red-300 text-sm">
           {error}
         </div>
       )}
@@ -87,7 +87,7 @@ export function CombinedCheckoutButton({
       <button
         onClick={handlePayment}
         disabled={isLoading || disabled}
-        className={`w-full inline-flex items-center justify-center gap-2 ${getButtonColor()} disabled:bg-[#6b7280] text-white font-medium py-3 px-6 rounded-lg transition-all disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_12px_rgba(34,197,94,0.3)]`}
+        className={`w-full inline-flex items-center justify-center gap-2 ${getButtonColor()} disabled:bg-[#3f3f46] text-white font-medium py-3 px-6 rounded-xl transition-all disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_12px_rgba(34,197,94,0.3)]`}
       >
         {isLoading ? (
           <>

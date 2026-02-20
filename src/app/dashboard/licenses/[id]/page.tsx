@@ -16,8 +16,6 @@ import {
   CheckCircle,
   XCircle,
   Copy,
-  ArrowRight,
-  Download
 } from "lucide-react";
 
 interface License {
@@ -108,9 +106,6 @@ export default function LicenseDetailPage() {
   }
 
   const isExpired = new Date() > new Date(license.expiresAt);
-  const daysLeft = Math.ceil(
-    (new Date(license.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
   const activeActivations = license.activations.filter((a) => a.isActive).length;
 
   return (
@@ -145,7 +140,7 @@ export default function LicenseDetailPage() {
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
                 <Calendar className="w-4 h-4 mr-2" />
-                {!isExpired && daysLeft <= 30 ? `${daysLeft} days left` : "Active"}
+                Expires {new Date(license.expiresAt).toLocaleDateString()}
               </div>
             </div>
           </div>
@@ -213,11 +208,6 @@ export default function LicenseDetailPage() {
             isExpired ? "text-red-400" : "text-white group-hover:text-[#22c55e]"
           }`}>
             {new Date(license.expiresAt).toLocaleDateString()}
-            {!isExpired && daysLeft <= 30 && (
-              <span className="text-yellow-400 ml-2 text-sm animate-pulse">
-                ({daysLeft} days left)
-              </span>
-            )}
           </div>
         </div>
         
@@ -275,7 +265,7 @@ export default function LicenseDetailPage() {
 
         {license.activations.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
               <Server className="w-8 h-8 text-gray-500" />
             </div>
             <div className="text-gray-400 mb-2">No server activations yet</div>
@@ -292,7 +282,7 @@ export default function LicenseDetailPage() {
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       activation.isActive 
                         ? "bg-[#22c55e]/20 border border-[#22c55e]/30" 
-                        : "bg-gray-700/50 border border-[#333]"
+                        : "bg-[#181818] border border-[#333]"
                     }`}>
                       {activation.isActive ? (
                         <CheckCircle className="w-5 h-5 text-[#22c55e]" />
@@ -313,7 +303,7 @@ export default function LicenseDetailPage() {
                     className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                       activation.isActive
                         ? "bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
-                        : "bg-gray-700/50 text-gray-400 border-[#333]"
+                        : "bg-[#181818] text-gray-400 border-[#333]"
                     }`}
                   >
                     {activation.isActive ? "ACTIVE" : "INACTIVE"}
@@ -321,7 +311,7 @@ export default function LicenseDetailPage() {
                 </div>
 
                  {/* Server Information Grid */}
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ml-13">
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:ml-12">
                    {/* IP Address */}
                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all">
                      <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">

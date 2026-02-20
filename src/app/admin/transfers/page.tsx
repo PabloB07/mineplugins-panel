@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { 
   ArrowRight, 
   Mail, 
@@ -147,10 +146,25 @@ export default function AdminTransfersPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">License Transfers</h1>
-        <p className="text-gray-400">Transfer licenses between users securely</p>
+    <div className="space-y-8 animate-fade-in pb-10">
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">License Transfers</h1>
+            <p className="text-gray-400 max-w-lg text-lg">Transfer licenses between users securely and keep a full transfer history.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
+                <ArrowRight className="w-4 h-4 mr-2" />
+                {filteredTransfers.length} Transfers
+              </div>
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                {eligibleLicenses.length} Transfer-ready Licenses
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -165,14 +179,14 @@ export default function AdminTransfersPage() {
                   placeholder="Search transfers..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-green-500"
+                  className="pl-10 pr-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#22c55e]/50"
                 />
               </div>
             </div>
 
             {filteredTransfers.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-12 h-12 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-12 h-12 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
                   <ArrowRight className="w-6 h-6 text-gray-500" />
                 </div>
                 <p className="text-gray-400">No transfers found</p>
@@ -182,7 +196,7 @@ export default function AdminTransfersPage() {
                 {filteredTransfers.map((transfer) => (
                   <div
                     key={transfer.id}
-                    className="bg-[#0a0a0a]/50 rounded-lg p-4 border border-[#333] hover:border-green-500/30 transition-all"
+                    className="bg-[#0a0a0a]/50 rounded-xl p-4 border border-[#333] hover:border-[#22c55e]/30 transition-all"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
@@ -233,13 +247,13 @@ export default function AdminTransfersPage() {
                     setTransferForm({ ...transferForm, targetEmail: e.target.value, targetUserId: "" });
                     searchUsers(e.target.value);
                   }}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#22c55e]/50"
                   placeholder="Search by email..."
                   required
                 />
                 
                 {users.length > 0 && (
-                  <div className="mt-2 bg-[#0a0a0a] border border-[#333] rounded-lg max-h-40 overflow-y-auto">
+                  <div className="mt-2 bg-[#0a0a0a] border border-[#333] rounded-xl max-h-40 overflow-y-auto">
                     {users.map((user) => (
                       <button
                         key={user.id}
@@ -252,7 +266,7 @@ export default function AdminTransfersPage() {
                           });
                           setUsers([]);
                         }}
-                        className="w-full text-left px-3 py-2 hover:bg-[#333] text-white text-sm transition-colors"
+                        className="w-full text-left px-3 py-2 hover:bg-[#181818] text-white text-sm transition-colors"
                       >
                         {user.email} {user.name && `(${user.name})`}
                       </button>
@@ -268,7 +282,7 @@ export default function AdminTransfersPage() {
                 <select
                   value={transferForm.licenseId}
                   onChange={(e) => setTransferForm({ ...transferForm, licenseId: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white focus:outline-none focus:border-[#22c55e]/50"
                   required
                 >
                   <option value="">Choose a license...</option>
@@ -291,14 +305,14 @@ export default function AdminTransfersPage() {
                   type="number"
                   value={transferForm.durationDays}
                   onChange={(e) => setTransferForm({ ...transferForm, durationDays: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-green-500"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white focus:outline-none focus:border-[#22c55e]/50"
                   min="1"
                   max="1095"
                   required
                 />
               </div>
 
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                   <div className="text-sm text-blue-300">
@@ -316,7 +330,7 @@ export default function AdminTransfersPage() {
               <button
                 type="submit"
                 disabled={submitting || !transferForm.licenseId || !transferForm.targetEmail}
-                className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/20"
+                className="w-full bg-[#22c55e] text-black hover:bg-[#16a34a] disabled:bg-[#333] disabled:text-gray-500 disabled:cursor-not-allowed py-2.5 px-4 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-[#22c55e]/20"
               >
                 {submitting ? 'Transferring...' : 'Transfer License'}
               </button>

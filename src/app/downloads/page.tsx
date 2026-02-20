@@ -19,7 +19,7 @@ export default async function DownloadsPage() {
             <p className="text-gray-400 mb-6">Please login to access your downloads.</p>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-all duration-200"
             >
               Sign In
             </Link>
@@ -88,7 +88,7 @@ export default async function DownloadsPage() {
           <div className="relative bg-[#111] rounded-xl border border-[#222] p-12 text-center overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
-              <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-[#181818] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#2a2a2a]">
                 <Package className="w-8 h-8 text-gray-500" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">No Active Licenses</h3>
@@ -98,7 +98,7 @@ export default async function DownloadsPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/store"
-                  className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20 inline-block"
+                  className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"
                 >
                   <Package className="w-5 h-5" />
                   Browse Products
@@ -139,7 +139,7 @@ export default async function DownloadsPage() {
                                     ? "bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20"
                                     : license.status === "EXPIRED"
                                       ? "bg-red-500/10 text-red-400 border-red-500/20"
-                                      : "bg-gray-700 text-gray-400 border-gray-600"
+                                      : "bg-[#181818] text-gray-400 border-[#333]"
                                 }`}
                               >
                                 {isActive ? (
@@ -242,7 +242,7 @@ export default async function DownloadsPage() {
                                 Download Plugin
                               </a>
                             ) : (
-                              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-center gap-3">
+                              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center gap-3">
                                 <XCircle className="w-5 h-5 text-red-400" />
                                 <p className="text-red-300 text-sm font-medium">Renew license to download</p>
                               </div>
