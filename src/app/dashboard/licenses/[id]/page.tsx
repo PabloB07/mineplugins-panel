@@ -144,15 +144,6 @@ export default function LicenseDetailPage() {
               </div>
             </div>
           </div>
-
-          <div className="hidden md:block">
-            <button
-              onClick={copyLicenseKey}
-              className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
-            >
-              {copied ? "✓ Copied" : <><Copy className="w-4 h-4" /> Copy License Key</>}
-            </button>
-          </div>
         </div>
       </div>
 
