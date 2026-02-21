@@ -134,9 +134,9 @@ export default async function DashboardPage() {
             <div className="w-12 h-12 rounded-lg bg-[#22c55e]/10 mb-6 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20 group-hover:scale-110 transition-transform">
               <Zap className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-[#22c55e] transition-colors">Purchase License</h2>
+            <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-[#22c55e] transition-colors">Purchase a Plugin</h2>
             <p className="text-gray-400 mb-6 max-w-sm group-hover:text-gray-300">
-              Get a new license key for your Minecraft server. Instant delivery and activation.
+              And get a plugin with license key for your Minecraft server. Instant delivery and activation.
             </p>
             <span className="inline-flex items-center text-sm font-medium text-[#22c55e] group-hover:translate-x-1 transition-transform">
               Browse Store <ArrowRight className="w-4 h-4 ml-1" />

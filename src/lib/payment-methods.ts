@@ -1,4 +1,4 @@
-export type PaymentMethodId = "FLOW_CL" | "PAYKU";
+export type PaymentMethodId = "PAYKU";
 
 export interface PaymentMethodConfig {
   id: PaymentMethodId;
@@ -11,14 +11,6 @@ export interface PaymentMethodConfig {
 }
 
 export const PAYMENT_METHODS: PaymentMethodConfig[] = [
-  {
-    id: "FLOW_CL",
-    name: "Flow.cl (Webpay Plus)",
-    checkoutLabel: "Flow.cl",
-    description: "Pay with credit card, debit card, or bank transfer",
-    logo: "/webpay-logo.png",
-    accentClass: "text-emerald-400",
-  },
   {
     id: "PAYKU",
     name: "Payku",

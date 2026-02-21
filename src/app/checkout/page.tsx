@@ -190,16 +190,16 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
               </div>
 
               {/* Total Summary Card */}
-              <div className="bg-[#111] rounded-2xl border border-[#222] p-6 shadow-xl relative overflow-hidden">
+              <div className="bg-[#111] rounded-2xl border border-[#222] p-7 sm:p-8 shadow-xl relative overflow-hidden">
                 {/* Glow effect inside card */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-[50px] rounded-full pointer-events-none"></div>
 
-                <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-white mb-7 flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-gray-400" />
                   Order Summary
                 </h2>
 
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4 mb-7">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
                     <span>{formatCLP(displayPriceCLP)}</span>
@@ -210,7 +210,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
                       <span>Save {formatCLP(product.priceCLP - displayPriceCLP)}</span>
                     </div>
                   )}
-                  <div className="h-px bg-[#222] my-2"></div>
+                  <div className="h-px bg-[#222] my-3"></div>
                   <div className="flex justify-between items-end">
                     <span className="text-white font-medium">Total</span>
                     <div className="text-right">
@@ -220,12 +220,12 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
                   </div>
                 </div>
 
-                <div className="mb-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-300 flex items-start gap-2">
+                <div className="mb-7 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-xs text-blue-300 flex items-start gap-2">
                   <div className="mt-0.5"><Check className="w-3 h-3" /></div>
                   You will be redirected to the payment provider to complete your purchase securely.
                 </div>
 
-                <div className="relative z-10">
+                <div className="relative z-10 pt-1">
                   <CheckoutClient
                     product={product}
                   />

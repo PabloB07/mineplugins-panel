@@ -66,13 +66,10 @@ export function CombinedCheckoutButton({
 
   const getButtonText = () => {
     if (isLoading) return "Processing...";
-    return children || `Pay with ${paymentMethod === "FLOW_CL" ? "Flow.cl" : "Payku"}`;
+    return children || "Pay with Payku";
   };
 
   const getButtonColor = () => {
-    if (paymentMethod === "FLOW_CL") {
-      return "bg-[#22c55e] hover:bg-[#16a34a]";
-    }
     return "bg-[#3b82f6] hover:bg-[#2563eb]";
   };
 

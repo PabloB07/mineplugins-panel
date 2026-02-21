@@ -122,14 +122,14 @@ export default async function BuyPage() {
                           href={`/checkout?productId=${product.id}`}
                           className="block w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold py-3.5 rounded-xl text-center transition-all shadow-lg shadow-green-900/20 hover:shadow-green-900/40"
                         >
-                          Purchase License
+                          Purchase a Plugin
                         </Link>
                       ) : (
                         <Link
                           href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`}
                           className="block w-full bg-[#181818] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3.5 rounded-xl text-center transition-all border border-[#333] hover:border-[#444]"
                         >
-                          Login to Purchase
+                          Login to Purchase a Plugin
                         </Link>
                       )}
                     </div>
