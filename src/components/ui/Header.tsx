@@ -11,6 +11,34 @@ const navLinks = [
   { href: "https://zgaming.host/", label: " ¿You want a MC Host?", external: true },
 ];
 
+function CreeperVoxelIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      className="drop-shadow-[0_0_6px_rgba(124,252,0,0.9)]"
+    >
+      {/* Creeper head base */}
+      <rect x="0" y="0" width="16" height="16" fill="#1f7a2e" />
+      <rect x="1" y="1" width="14" height="14" fill="#2fbf3f" />
+      <rect x="2" y="2" width="12" height="12" fill="#7CFC00" />
+      {/* Voxel noise */}
+      <rect x="2" y="3" width="2" height="2" fill="#56d84e" />
+      <rect x="10" y="2" width="3" height="2" fill="#56d84e" />
+      <rect x="5" y="5" width="3" height="2" fill="#56d84e" />
+      <rect x="11" y="9" width="2" height="3" fill="#56d84e" />
+      {/* Creeper face */}
+      <rect x="3" y="4" width="3" height="3" fill="#0f2112" />
+      <rect x="10" y="4" width="3" height="3" fill="#0f2112" />
+      <rect x="6" y="7" width="4" height="3" fill="#0f2112" />
+      <rect x="5" y="9" width="2" height="4" fill="#0f2112" />
+      <rect x="9" y="9" width="2" height="4" fill="#0f2112" />
+    </svg>
+  );
+}
+
 export default function Header() {
   const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -98,9 +126,12 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/login"
-                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
+                  className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] inline-flex items-center gap-2"
                 >
-                  Get Started
+                  <span>Get Started</span>
+                  <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">
+                    <CreeperVoxelIcon />
+                  </span>
                 </Link>
               </>
             )}
@@ -185,10 +216,13 @@ export default function Header() {
                     </Link>
                     <Link
                       href="/login"
-                      className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors text-center"
+                      className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors text-center inline-flex items-center justify-center gap-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Get Started
+                      <span>Get Started</span>
+                      <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">
+                        <CreeperVoxelIcon />
+                      </span>
                     </Link>
                   </>
                 )}

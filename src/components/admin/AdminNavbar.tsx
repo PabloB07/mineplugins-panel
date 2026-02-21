@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
     LayoutDashboard,
     Package,
@@ -112,13 +113,14 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 </div>
                             )}
 
-                            <Link
-                                href="/api/auth/signout"
+                            <button
+                                type="button"
+                                onClick={() => signOut({ callbackUrl: "/" })}
                                 className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
                                 title="Sign out"
                             >
                                 <LogOut className="w-4 h-4" />
-                            </Link>
+                            </button>
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -171,14 +173,17 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <LayoutDashboard className="w-5 h-5" />
                                 Client Dashboard
                             </Link>
-                            <Link
-                                href="/api/auth/signout"
-                                onClick={() => setIsMobileMenuOpen(false)}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    signOut({ callbackUrl: "/" });
+                                }}
                                 className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                             >
                                 <LogOut className="w-5 h-5" />
                                 Sign out
-                            </Link>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
     LayoutDashboard,
     Key,
@@ -29,7 +30,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
 
     const navItems = [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/licenses", label: "My Licenses", icon: Key },
+        { href: "/dashboard/licenses", label: "My Plugins", icon: Key },
         { href: "/dashboard/downloads", label: "Downloads", icon: Download },
     ];
 
@@ -41,7 +42,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <div className="text-2xl">⛪</div>
+                        <div className="text-2xl">⛏️</div>
                         <Link href="/dashboard" className="text-xl font-bold text-white tracking-tight hover:text-green-400 transition-colors">
                             MinePlugins
                         </Link>
@@ -101,13 +102,14 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                         <User className="w-4 h-4" />
                                     </div>
                                 )}
-                                <Link
-                                    href="/api/auth/signout"
+                                <button
+                                    type="button"
+                                    onClick={() => signOut({ callbackUrl: "/" })}
                                     className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
                                     title="Sign out"
                                 >
                                     <LogOut className="w-4 h-4" />
-                                </Link>
+                                </button>
                             </div>
                         ) : (
                             <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[#222]">
@@ -177,7 +179,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                 <>
                                     <div className="px-4 flex items-center gap-3 mb-3">
                                         {user.image ? (
-                                            <img src={user.image} className="w-10 h-10 rounded-full border-2 border-green-500/30" />
+                                            <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full border-2 border-green-500/30" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-[#111] border border-[#333] flex items-center justify-center">
                                                 <User className="w-5 h-5 text-gray-400" />
@@ -188,14 +190,17 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                             <div className="text-xs text-gray-500">{user.email}</div>
                                         </div>
                                     </div>
-                                    <Link
-                                        href="/api/auth/signout"
-                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsMobileMenuOpen(false);
+                                            signOut({ callbackUrl: "/" });
+                                        }}
                                         className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                                     >
                                         <LogOut className="w-5 h-5" />
                                         Sign out
-                                    </Link>
+                                    </button>
                                 </>
                             ) : (
                                 <Link

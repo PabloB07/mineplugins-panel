@@ -16,7 +16,7 @@ export default function Hero() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          <span className="text-gray-300 text-sm font-medium">MinePlugins for Paper 1.21</span>
+          <span className="text-gray-300 text-sm font-medium">Premium plugins for minecraft</span>
         </div>
 
         {/* Main heading */}
@@ -28,7 +28,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          The official MinePlugins store for Minecraft Paper 1.21 plugins with instant downloads and update tracking.
+          The official private Premiums plugins store by AeroSama, for your Minecraft Paper 1.21 plugins with instant downloads and update tracking.
         </p>
 
         {/* CTA Buttons */}
@@ -38,12 +38,6 @@ export default function Hero() {
             className="w-full sm:w-auto bg-[#22c55e] hover:bg-[#16a34a] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(34,197,94,0.5)] flex items-center justify-center gap-2"
           >
             Get Started Now
-          </Link>
-          <Link
-            href="/documentation"
-            className="w-full sm:w-auto bg-[#1a1a1a] hover:bg-[#222] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all border border-[#333] hover:border-gray-600 flex items-center justify-center gap-2"
-          >
-            Read Documentation
           </Link>
         </div>
 

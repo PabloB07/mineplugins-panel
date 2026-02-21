@@ -1,12 +1,12 @@
 const features = [
   {
     icon: "📦",
-    title: "Official Plugins",
+    title: "Official Premium plugins",
     description: "Browse official plugins with versions, changelogs, and details optimized for Paper 1.21.",
   },
   {
     icon: "🔐",
-    title: "Licenses",
+    title: "With private license for your server",
     description: "Receive a license per server with activation tracking and status controls.",
   },
   {
@@ -15,18 +15,13 @@ const features = [
     description: "Get immediate downloads after purchase with version history and secure access.",
   },
   {
-    icon: "📈",
-    title: "Order Tracking",
-    description: "Track orders, receipts, and active licenses in a streamlined dashboard.",
-  },
-  {
     icon: "🧾",
     title: "Secure Checkout",
-    description: "Pay securely with a clean purchase flow built for digital goods.",
+    description: "Pay securely with a clean purchase flow built for digital goods. All payments are processed by Payku.cl a Chilean payment processor with WebPay support",
   },
   {
     icon: "🧩",
-    title: "Paper 1.21 Focus",
+    title: "Paper 1.21+ Focus",
     description: "Everything is tailored for Minecraft Paper 1.21 compatibility and support.",
   },
   {
@@ -51,10 +46,10 @@ export default function Features() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
             Everything you need to
             <br />
-            <span className="text-emerald-400">buy Paper 1.21 plugins</span>
+            <span className="text-emerald-400">buy Paper 1.21+ plugins</span>
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            MinePlugins is the official store to buy, license, and download Minecraft Paper 1.21 plugins.
+            MinePlugins is the official store to buy, plugins with licenses, and download Minecraft Paper 1.21 plugins.
           </p>
         </div>
 
@@ -74,19 +69,6 @@ export default function Features() {
               </p>
             </div>
           ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <a
-            href="#pricing"
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
-          >
-            See pricing options
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
         </div>
       </div>
     </section>
