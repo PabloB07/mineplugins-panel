@@ -225,3 +225,78 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+/**
+ * Hard delete revoked licenses (admin only)
+ * DELETE /api/licenses
+ * body: { status: "REVOKED" }
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "UNAUTHORIZED", message: "Please log in" },
+        { status: 401 }
+      );
+    }
+
+    const isAdmin =
+      session.user.role === UserRole.ADMIN ||
+      session.user.role === UserRole.SUPER_ADMIN;
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "FORBIDDEN", message: "Admin access required" },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json().catch(() => ({}));
+    if (body?.status !== "REVOKED") {
+      return NextResponse.json(
+        { error: "INVALID_REQUEST", message: "Only status REVOKED is supported for bulk deletion" },
+        { status: 400 }
+      );
+    }
+
+    const revokedLicenses = await prisma.license.findMany({
+      where: { status: "REVOKED" },
+      select: { id: true },
+    });
+
+    const revokedIds = revokedLicenses.map((license) => license.id);
+    if (revokedIds.length === 0) {
+      return NextResponse.json({
+        success: true,
+        deletedCount: 0,
+        message: "No revoked licenses found",
+      });
+    }
+
+    const deletedCount = await prisma.$transaction(async (tx) => {
+      await tx.orderItem.updateMany({
+        where: { licenseId: { in: revokedIds } },
+        data: { licenseId: null },
+      });
+
+      const deleted = await tx.license.deleteMany({
+        where: { id: { in: revokedIds } },
+      });
+
+      return deleted.count;
+    });
+
+    return NextResponse.json({
+      success: true,
+      deletedCount,
+      message: `Deleted ${deletedCount} revoked license(s)`,
+    });
+  } catch (error) {
+    console.error("Bulk delete revoked licenses error:", error);
+    return NextResponse.json(
+      { error: "INTERNAL_ERROR", message: "Failed to delete revoked licenses" },
+      { status: 500 }
+    );
+  }
+}

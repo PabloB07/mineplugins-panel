@@ -64,6 +64,7 @@ export default function AdminOrdersPage() {
     total: 0,
     totalPages: 0,
   });
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -80,8 +81,8 @@ export default function AdminOrdersPage() {
       setOrders(data.orders || []);
       setPagination(prev => ({
         ...prev,
-        total: data.total || 0,
-        totalPages: data.totalPages || 0,
+        total: data.pagination?.total || 0,
+        totalPages: data.pagination?.totalPages || 0,
       }));
     } catch (error) {
       console.error("Failed to fetch orders:", error);
@@ -114,6 +115,35 @@ export default function AdminOrdersPage() {
     } catch (error) {
       console.error("Failed to delete order:", error);
       alert("Failed to delete order");
+    }
+  }
+
+  async function bulkDeletePendingAndCancelled() {
+    const ok = confirm(
+      "This will permanently delete all PENDING and CANCELLED orders. Continue?"
+    );
+    if (!ok) return;
+
+    try {
+      setBulkDeleting(true);
+      const res = await fetch("/api/admin/orders", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ statuses: ["PENDING", "CANCELLED"] }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to bulk delete orders");
+      }
+
+      alert(data.message || "Orders deleted successfully");
+      fetchOrders();
+    } catch (error) {
+      console.error("Failed to bulk delete orders:", error);
+      alert(error instanceof Error ? error.message : "Failed to bulk delete orders");
+    } finally {
+      setBulkDeleting(false);
     }
   }
 
@@ -244,6 +274,16 @@ export default function AdminOrdersPage() {
               className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
             />
           </div>
+          <button
+            onClick={bulkDeletePendingAndCancelled}
+            disabled={bulkDeleting}
+            className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-[#3f3f46] disabled:text-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+            type="button"
+            title="Delete all pending/cancelled orders"
+          >
+            <Trash2 className="w-4 h-4" />
+            {bulkDeleting ? "Deleting..." : "Delete Pending + Cancelled"}
+          </button>
         </div>
       </div>
 

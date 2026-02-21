@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   Loader2,
   ShieldX,
+  Trash2,
   Search,
   Filter
 } from "lucide-react";
@@ -60,6 +61,7 @@ export default function AdminLicensesPage() {
     total: 0,
     totalPages: 0,
   });
+  const [deletingRevoked, setDeletingRevoked] = useState(false);
 
   const fetchLicenses = useCallback(async () => {
     setLoading(true);
@@ -76,8 +78,8 @@ export default function AdminLicensesPage() {
       setLicenses(data.licenses || []);
       setPagination(prev => ({
         ...prev,
-        total: data.total || 0,
-        totalPages: data.totalPages || 0,
+        total: data.pagination?.total || 0,
+        totalPages: data.pagination?.totalPages || 0,
       }));
     } catch (error) {
       console.error("Failed to fetch licenses:", error);
@@ -114,6 +116,35 @@ export default function AdminLicensesPage() {
       );
     } finally {
       setRevoking(false);
+    }
+  }
+
+  async function deleteRevokedLicenses() {
+    const ok = confirm(
+      "This will permanently delete all REVOKED licenses. Continue?"
+    );
+    if (!ok) return;
+
+    try {
+      setDeletingRevoked(true);
+      const res = await fetch("/api/licenses", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "REVOKED" }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete revoked licenses");
+      }
+
+      alert(data.message || "Revoked licenses deleted");
+      fetchLicenses();
+    } catch (error) {
+      console.error("Failed to delete revoked licenses:", error);
+      alert(error instanceof Error ? error.message : "Failed to delete revoked licenses");
+    } finally {
+      setDeletingRevoked(false);
     }
   }
 
@@ -198,6 +229,16 @@ export default function AdminLicensesPage() {
               className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/50 transition-colors"
             />
           </div>
+          <button
+            onClick={deleteRevokedLicenses}
+            disabled={deletingRevoked}
+            className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-[#3f3f46] disabled:text-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+            type="button"
+            title="Delete all revoked licenses"
+          >
+            <Trash2 className="w-4 h-4" />
+            {deletingRevoked ? "Deleting..." : "Delete Revoked"}
+          </button>
         </div>
       </div>
 
