@@ -20,7 +20,7 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     description: "Chile's favorite payment processor - Pay with debit, credit or crypto",
     logo: "/payku-logo.png",
     accentClass: "text-blue-400",
-    available: isDev || !!(process.env.PAYKU_API_TOKEN && process.env.PAYKU_API_TOKEN !== "placeholder"),
+    available: true,
   },
   {
     id: "TEBEX",
@@ -29,11 +29,11 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     description: "Global payment processor - Pay with credit card, PayPal and more",
     logo: "/tebex-logo.svg",
     accentClass: "text-purple-400",
-    available: isDev || !!(process.env.TEBEX_SECRET_KEY && process.env.TEBEX_SECRET_KEY !== "placeholder"),
+    available: true,
   },
 ];
 
-export const DEFAULT_PAYMENT_METHOD: PaymentMethodId = "PAYKU";
+export const DEFAULT_PAYMENT_METHOD: PaymentMethodId = "TEBEX";
 
 export function getAvailablePaymentMethods(): PaymentMethodConfig[] {
   return PAYMENT_METHODS.filter(method => method.available !== false);
