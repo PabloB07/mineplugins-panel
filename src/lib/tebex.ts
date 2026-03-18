@@ -1,9 +1,12 @@
 import crypto from "crypto";
-import { getRequiredEnv } from "./security";
 
 const TEBEX_API_URL = "https://api.tebex.io/api/v2";
-const TEBEX_SECRET_KEY = getRequiredEnv("TEBEX_SECRET_KEY");
-const TEBEX_STORE_ID = getRequiredEnv("TEBEX_STORE_ID");
+const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY || "";
+const TEBEX_STORE_ID = process.env.TEBEX_STORE_ID || "";
+
+function isTebexConfigured(): boolean {
+  return !!TEBEX_SECRET_KEY && TEBEX_SECRET_KEY !== "placeholder";
+}
 
 export interface TebexPaymentCreate {
   order: string;
@@ -53,6 +56,10 @@ async function tebexRequest<T>(
   method: string,
   body?: Record<string, unknown>
 ): Promise<T> {
+  if (!isTebexConfigured()) {
+    throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY environment variable.");
+  }
+
   const response = await fetch(`${TEBEX_API_URL}${endpoint}`, {
     method,
     headers: {

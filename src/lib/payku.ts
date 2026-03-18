@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { getRequiredEnv } from "./security";
 
 const PAYKU_API_URL =
   process.env.PAYKU_API_URL ||
@@ -7,8 +6,12 @@ const PAYKU_API_URL =
     ? "https://app.payku.cl"
     : "https://des.payku.cl");
 
-const PAYKU_API_TOKEN = getRequiredEnv("PAYKU_API_TOKEN");
-const PAYKU_SECRET_KEY = getRequiredEnv("PAYKU_SECRET_KEY");
+const PAYKU_API_TOKEN = process.env.PAYKU_API_TOKEN || "";
+const PAYKU_SECRET_KEY = process.env.PAYKU_SECRET_KEY || "";
+
+function isPaykuConfigured(): boolean {
+  return !!PAYKU_API_TOKEN && PAYKU_API_TOKEN !== "placeholder";
+}
 
 export interface PaykuPaymentCreate {
   order: string; // Número de orden único
@@ -68,6 +71,10 @@ export async function createPaykuPayment(
   data: PaykuPaymentCreate
 ): Promise<PaykuPaymentResponse> {
   try {
+    if (!isPaykuConfigured()) {
+      throw new Error("Payku is not configured. Please set PAYKU_API_TOKEN environment variable.");
+    }
+
     // Validate input with detailed error messages
     if (!data.order || data.order.trim().length === 0) {
       throw new Error("Order number is required and cannot be empty");
@@ -227,6 +234,11 @@ export function verifyPaykuWebhookSignature(
   receivedSignature: string
 ): boolean {
   try {
+    if (!isPaykuConfigured()) {
+      console.warn("Payku is not configured, skipping webhook verification");
+      return false;
+    }
+
     const expectedSignature = crypto
       .createHmac("sha256", PAYKU_SECRET_KEY)
       .update(payload)
