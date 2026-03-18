@@ -115,24 +115,51 @@ export default async function NewProductPage() {
                     id="name"
                     name="name"
                     required
+                    onInput={(e) => {
+                      const name = e.currentTarget.value;
+                      const slugField = document.getElementById('slug') as HTMLInputElement;
+                      const autoCheck = document.getElementById('autoSlug') as HTMLInputElement;
+                      if (autoCheck?.checked && name) {
+                        const slug = name.toLowerCase()
+                          .replace(/[^a-z0-9\s-]/g, '')
+                          .replace(/\s+/g, '-')
+                          .replace(/-+/g, '-')
+                          .trim();
+                        slugField.value = slug;
+                      }
+                    }}
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
                     placeholder="Paper Essentials"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="slug" className="block text-sm font-medium text-gray-300 mb-2">
-                    URL Slug *
-                  </label>
-                  <input
-                    type="text"
-                    id="slug"
-                    name="slug"
-                    required
-                    pattern="[a-z0-9-]+"
-                    className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                    placeholder="paper-essentials"
-                  />
+                  <div className="flex items-center justify-between mb-2">
+                    <label htmlFor="slug" className="block text-sm font-medium text-gray-300">
+                      URL Slug *
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id="autoSlug"
+                        defaultChecked
+                        className="rounded border-[#333] bg-[#0a0a0a] text-[#f59e0b] focus:ring-[#f59e0b]"
+                      />
+                      Auto
+                    </label>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">/</div>
+                    <input
+                      type="text"
+                      id="slug"
+                      name="slug"
+                      required
+                      pattern="[a-z0-9-]+"
+                      className="w-full px-3 py-2 pl-7 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
+                      placeholder="paper-essentials"
+                    />
+                  </div>
                   <p className="text-xs text-gray-500 mt-1">
                     Lowercase letters, numbers, and hyphens only
                   </p>

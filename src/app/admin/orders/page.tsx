@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { formatCLP } from "@/lib/pricing";
+import { useTranslation } from "@/i18n/useTranslation";
 import { 
   Trash2, 
   ShoppingCart, 
@@ -53,6 +54,7 @@ interface Order {
 }
 
 export default function AdminOrdersPage() {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
@@ -190,23 +192,23 @@ export default function AdminOrdersPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
               <ShoppingCart className="w-8 h-8 text-[#f59e0b]" />
-              Orders
+              {t("admin.orders")}
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage customer orders and payments. Track transactions and support requests.
+              {t("admin.ordersDesc") || "Manage customer orders and payments. Track transactions and support requests."}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                {orders.length} Total Orders
+                {orders.length} {t("admin.totalOrders") || "Total Orders"}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
                 <CheckCircle className="w-4 h-4 mr-2" />
-                {orders.filter(o => o.status === 'COMPLETED').length} Completed
+                {orders.filter(o => o.status === 'COMPLETED').length} {t("admin.completed") || "Completed"}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
                 <AlertCircle className="w-4 h-4 mr-2" />
-                {orders.filter(o => o.status === 'PENDING').length} Pending
+                {orders.filter(o => o.status === 'PENDING').length} {t("admin.pending") || "Pending"}
               </div>
             </div>
           </div>
@@ -216,31 +218,38 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
-          <div className="flex items-center gap-3">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-400 text-sm font-medium">Status:</span>
+      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg space-y-4">
+        <div className="flex items-center gap-3 mb-2">
+          <Filter className="w-5 h-5 text-gray-400" />
+          <span className="text-white font-semibold">{t("admin.filters") || "Filters"}</span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Status Filter */}
+          <div className="space-y-2">
+            <span className="text-gray-400 text-sm font-medium block">{t("admin.status") || "Status"}:</span>
+            <div className="flex flex-wrap gap-2">
+              {["all", "PENDING", "COMPLETED", "FAILED", "CANCELLED"].map(
+                (status) => (
+                  <button
+                    key={status}
+                    onClick={() => setFilter(status)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      filter === status
+                        ? "bg-[#f59e0b] text-white border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
+                        : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
+                    }`}
+                  >
+                    {status === "all" ? (t("admin.all") || "All") : status}
+                  </button>
+                )
+              )}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {["all", "PENDING", "COMPLETED", "FAILED", "CANCELLED"].map(
-              (status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilter(status)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    filter === status
-                      ? "bg-[#f59e0b] text-white border border-[#f59e0b]/50 shadow-lg shadow-[#f59e0b]/20"
-                      : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
-                  }`}
-                >
-                  {status === "all" ? "All Orders" : status}
-                </button>
-              )
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-gray-400 text-sm font-medium">Exclude:</span>
+
+          {/* Exclude Filter */}
+          <div className="space-y-2">
+            <span className="text-gray-400 text-sm font-medium block">{t("admin.exclude") || "Exclude"}:</span>
             <div className="flex flex-wrap gap-2">
               {["PENDING", "COMPLETED", "FAILED", "CANCELLED"].map((status) => (
                 <button
@@ -264,16 +273,24 @@ export default function AdminOrdersPage() {
               ))}
             </div>
           </div>
-          <div className="flex-1 max-w-md relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by order number, email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
-            />
+
+          {/* Search */}
+          <div className="space-y-2 lg:col-span-2">
+            <span className="text-gray-400 text-sm font-medium block">{t("admin.search") || "Search"}:</span>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder={t("admin.searchPlaceholder") || "Search by order number, email..."}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+              />
+            </div>
           </div>
+        </div>
+
+        <div className="flex justify-end pt-2 border-t border-[#222]">
           <button
             onClick={bulkDeletePendingAndCancelled}
             disabled={bulkDeleting}

@@ -80,7 +80,12 @@ export async function POST(request: NextRequest) {
     if (!runtime.ok) {
       await logValidation(licenseKey, serverId, body.version, false, runtime.error.result, clientIp);
       return NextResponse.json(
-        { valid: false, error: runtime.error.result, message: runtime.error.message },
+        { 
+          valid: false, 
+          error: runtime.error.result, 
+          message: runtime.error.message,
+          hint: getErrorHint(runtime.error.result),
+        },
         { status: runtime.error.status }
       );
     }
@@ -104,7 +109,12 @@ export async function POST(request: NextRequest) {
     if (!activation.ok) {
       await logValidation(licenseKey, serverId, body.version, false, activation.error, clientIp);
       return NextResponse.json(
-        { valid: false, error: activation.error, message: activation.message },
+        { 
+          valid: false, 
+          error: activation.error, 
+          message: activation.message,
+          hint: getActivationErrorHint(activation.error),
+        },
         { status: activation.status }
       );
     }
@@ -117,18 +127,33 @@ export async function POST(request: NextRequest) {
     await logValidation(licenseKey, serverId, body.version, true, null, clientIp);
 
     const processingTime = Date.now() - startTime;
+    const license = runtime.data.license;
+
     return NextResponse.json(
       {
         valid: true,
         result: "VALID",
-        licenseId: runtime.data.license.id,
-        productId: runtime.data.license.productId,
+        licenseId: license.id,
+        productId: license.productId,
         pluginId: runtime.data.pluginId,
-        expiresAt: runtime.data.license.expiresAt.toISOString(),
-        maxActivations: runtime.data.license.maxActivations,
+        productName: license.product.name,
+        productSlug: license.product.slug,
+        expiresAt: license.expiresAt.toISOString(),
+        expiresIn: Math.floor((new Date(license.expiresAt).getTime() - Date.now()) / 1000),
+        maxActivations: license.maxActivations,
         currentActivations: activation.currentActivations,
+        remainingActivations: license.maxActivations - activation.currentActivations,
+        status: license.status,
+        serverName: body.serverName,
+        serverVersion: body.version,
+        minecraftVersion: body.minecraftVersion,
       },
-      { headers: { "X-Processing-Time": `${processingTime}ms` } }
+      { 
+        headers: { 
+          "X-Processing-Time": `${processingTime}ms`,
+          "Cache-Control": "no-store, must-revalidate",
+        } 
+      }
     );
   } catch (error) {
     console.error("Validation error:", error);
@@ -137,4 +162,24 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+function getErrorHint(error: string): string {
+  const hints: Record<string, string> = {
+    NOT_FOUND: "Please check your license key and try again.",
+    WRONG_PLUGIN: "This license is for a different plugin. Check the pluginId parameter.",
+    EXPIRED: "Your license has expired. Renew it to continue using the plugin.",
+    REVOKED: "This license has been revoked. Contact support for assistance.",
+    SIGNATURE_INVALID: "License key signature verification failed.",
+  };
+  return hints[error] || "Please contact support if this issue persists.";
+}
+
+function getActivationErrorHint(error: string): string {
+  const hints: Record<string, string> = {
+    MAX_ACTIVATIONS: "You have reached the maximum number of server activations. Deactivate a server or upgrade your license.",
+    NO_ACTIVATION: "Please validate your license first before sending heartbeats.",
+    SERVER_NOT_FOUND: "This server has not been activated yet. Run validation first.",
+  };
+  return hints[error] || "Please contact support if this issue persists.";
 }

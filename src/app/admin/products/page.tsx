@@ -15,10 +15,13 @@ import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLP } from "@/lib/pricing";
 
 type ProductVersion = {
+  id: string;
   version: string;
   publishedAt: Date;
   isBeta: boolean;
   isLatest: boolean;
+  isMandatory: boolean;
+  downloadUrl: string;
 };
 
 type ProductItem = {
@@ -26,6 +29,7 @@ type ProductItem = {
   name: string;
   slug: string;
   description: string | null;
+  image: string | null;
   priceUSD: number;
   priceCLP: number;
   salePriceUSD: number | null;
@@ -49,7 +53,7 @@ export default async function AdminProductsPage() {
     include: {
       versions: {
         orderBy: { publishedAt: "desc" },
-        take: 1,
+        take: 5,
       },
       licenses: {
         select: { id: true },
@@ -144,44 +148,86 @@ export default async function AdminProductsPage() {
                   return (
                      <tr key={product.id} className="hover:bg-[#151515] transition-colors group">
                        <td className="px-6 py-4">
-                         <div>
-                           <div className="text-white font-bold text-lg mb-1 group-hover:text-[#f59e0b] transition-colors">
-                             {product.name}
-                           </div>
-                           <div className="text-sm text-gray-400 mb-2 max-w-xs truncate">
-                             {product.description}
-                           </div>
-                           <div className="text-xs text-gray-500">
-                             Slug: {product.slug}
-                           </div>
-                         </div>
-                       </td>
+                          <div>
+                            <div className="text-white font-bold text-lg mb-1 group-hover:text-[#f59e0b] transition-colors">
+                              {product.name}
+                            </div>
+                            <div className="text-sm text-gray-400 mb-2 max-w-xs truncate">
+                              {product.description}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-xs text-gray-500 bg-[#0a0a0a] px-2 py-1 rounded border border-[#222]">
+                                /{product.slug}
+                              </div>
+                              <button
+                                onClick={() => navigator.clipboard.writeText(product.slug)}
+                                className="text-gray-500 hover:text-[#f59e0b] text-xs"
+                                title="Copy slug"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                        </td>
                        <td className="px-6 py-4">
-                         {latestVersion ? (
-                           <div>
-                             <div className="text-white text-sm font-medium group-hover:text-[#f59e0b] transition-colors">
-                               v{latestVersion.version}
-                             </div>
-                             <div className="text-xs text-gray-400">
-                               {new Date(latestVersion.publishedAt).toLocaleDateString()}
-                             </div>
-                             <div className="flex items-center gap-1 mt-1">
-                               {latestVersion.isBeta && (
-                                 <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-xs rounded">
-                                   Beta
-                                 </span>
-                               )}
-                               {latestVersion.isLatest && (
-                                 <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs rounded">
-                                   Latest
-                                 </span>
-                               )}
-                             </div>
-                           </div>
-                         ) : (
-                           <span className="text-gray-500 text-sm">No versions</span>
-                         )}
-                       </td>
+                          <div className="relative">
+                            {product.versions.length > 0 ? (
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <select 
+                                    className="bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50"
+                                    onChange={(e) => {
+                                      const version = product.versions.find(v => v.id === e.target.value);
+                                      if (version) {
+                                        window.open(version.downloadUrl, '_blank');
+                                      }
+                                    }}
+                                    defaultValue=""
+                                  >
+                                    <option value="" disabled>Select version</option>
+                                    {product.versions.map((v: ProductVersion) => (
+                                      <option key={v.id} value={v.id}>
+                                        v{v.version} {v.isLatest ? '(Latest)' : ''} {v.isBeta ? '(Beta)' : ''}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <Link
+                                    href={`/admin/products/${product.id}/versions`}
+                                    className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-all border border-transparent hover:border-[#f59e0b]/20"
+                                    title="Manage Versions"
+                                  >
+                                    <Package className="w-4 h-4" />
+                                  </Link>
+                                </div>
+                                <div className="flex items-center gap-1 flex-wrap">
+                                  {product.versions[0]?.isBeta && (
+                                    <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-xs rounded">
+                                      Beta
+                                    </span>
+                                  )}
+                                  {product.versions[0]?.isMandatory && (
+                                    <span className="px-1.5 py-0.5 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded">
+                                      Required
+                                    </span>
+                                  )}
+                                  <span className="text-xs text-gray-500">
+                                    {product.versions.length} version{product.versions.length !== 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-500 text-sm">No versions</span>
+                                <Link
+                                  href={`/admin/products/${product.id}/versions/new`}
+                                  className="text-[#f59e0b] hover:text-[#d97706] text-sm font-medium"
+                                >
+                                  + Add
+                                </Link>
+                              </div>
+                            )}
+                          </div>
+                        </td>
                        <td className="px-6 py-4">
                          <div className="bg-[#0a0a0a]/50 rounded-xl p-3 border border-[#222] hover:border-[#f59e0b]/30 transition-all min-w-[220px]">
                            <div className="flex items-center gap-2 mb-2">

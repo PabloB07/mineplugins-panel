@@ -125,10 +125,6 @@ export default function AdminUsersPage() {
           <div className="text-sm text-gray-400 bg-[#1a1a1a] px-3 py-2 rounded-lg border border-[#333]">
             Total: {pagination.total} customers
           </div>
-          <button className="bg-[#f59e0b] hover:bg-[#d97706] text-black px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
-            <UserPlus className="w-4 h-4" />
-            Add Customer
-          </button>
         </div>
         </div>
       </div>
