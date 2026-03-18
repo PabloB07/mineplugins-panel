@@ -1,55 +1,72 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Save, Package, DollarSign, Calendar, Server } from "lucide-react";
 import ProductImageField from "@/components/admin/ProductImageField";
 
-export default async function NewProductPage() {
-  async function createProduct(formData: FormData) {
-    "use server";
+export default function NewProductPage() {
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [autoGenerate, setAutoGenerate] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const name = formData.get("name") as string;
-    const slug = formData.get("slug") as string;
-    const description = formData.get("description") as string;
-    const image = formData.get("image") as string;
-    const priceUSD = parseInt(formData.get("priceUSD") as string);
-    const priceCLP = parseInt(formData.get("priceCLP") as string);
-    const salePriceUSD = formData.get("salePriceUSD") ? parseInt(formData.get("salePriceUSD") as string) : null;
-    const salePriceCLP = formData.get("salePriceCLP") ? parseInt(formData.get("salePriceCLP") as string) : null;
-    const defaultDurationDays = parseInt(formData.get("defaultDurationDays") as string);
-    const maxActivations = parseInt(formData.get("maxActivations") as string);
-    const isActive = formData.get("isActive") === "on";
-
-    // Check if slug already exists
-    const existing = await prisma.product.findUnique({ where: { slug } });
-    if (existing) {
-      throw new Error(`A product with slug "${slug}" already exists. Please use a different slug.`);
+  useEffect(() => {
+    if (autoGenerate && name) {
+      const generatedSlug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim();
+      setSlug(generatedSlug);
     }
+  }, [name, autoGenerate]);
 
-    await prisma.product.create({
-      data: {
-        name,
-        slug,
-        description,
-        image: image || null,
-        price: priceCLP, // Legacy field - mirrors CLP price
-        salePrice: salePriceCLP, // Legacy field
-        priceUSD,
-        priceCLP,
-        salePriceUSD,
-        salePriceCLP,
-        defaultDurationDays,
-        maxActivations,
-        isActive,
-      },
-    });
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setName(newName);
+    if (autoGenerate && newName) {
+      const generatedSlug = newName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim();
+      setSlug(generatedSlug);
+    }
+  };
 
-    redirect("/admin/products");
-  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      const response = await fetch("/api/admin/products", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        redirect("/admin/products");
+      } else {
+        const error = await response.json();
+        alert(error.message || "Error creating product");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error creating product");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      {/* Welcome Hero - Gradient Background */}
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -93,10 +110,9 @@ export default async function NewProductPage() {
         </div>
       </div>
 
-      <form action={createProduct} className="max-w-2xl">
+      <form onSubmit={handleSubmit} className="max-w-2xl">
         <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-[#f59e0b]/20 transition-all duration-300">
           <div className="p-6">
-            {/* Basic Information */}
             <div className="mb-8">
               <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-[#f59e0b]/10 flex items-center justify-center text-[#f59e0b] border border-[#f59e0b]/20">
@@ -115,19 +131,8 @@ export default async function NewProductPage() {
                     id="name"
                     name="name"
                     required
-                    onInput={(e) => {
-                      const name = e.currentTarget.value;
-                      const slugField = document.getElementById('slug') as HTMLInputElement;
-                      const autoCheck = document.getElementById('autoSlug') as HTMLInputElement;
-                      if (autoCheck?.checked && name) {
-                        const slug = name.toLowerCase()
-                          .replace(/[^a-z0-9\s-]/g, '')
-                          .replace(/\s+/g, '-')
-                          .replace(/-+/g, '-')
-                          .trim();
-                        slugField.value = slug;
-                      }
-                    }}
+                    value={name}
+                    onChange={handleNameChange}
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
                     placeholder="Paper Essentials"
                   />
@@ -141,8 +146,8 @@ export default async function NewProductPage() {
                     <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
                       <input
                         type="checkbox"
-                        id="autoSlug"
-                        defaultChecked
+                        checked={autoGenerate}
+                        onChange={(e) => setAutoGenerate(e.target.checked)}
                         className="rounded border-[#333] bg-[#0a0a0a] text-[#f59e0b] focus:ring-[#f59e0b]"
                       />
                       Auto
@@ -156,6 +161,11 @@ export default async function NewProductPage() {
                       name="slug"
                       required
                       pattern="[a-z0-9-]+"
+                      value={slug}
+                      onChange={(e) => {
+                        setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-"));
+                        setAutoGenerate(false);
+                      }}
                       className="w-full px-3 py-2 pl-7 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
                       placeholder="paper-essentials"
                     />
@@ -184,7 +194,6 @@ export default async function NewProductPage() {
               </div>
             </div>
 
-            {/* Pricing */}
             <div className="mb-8">
               <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
@@ -193,7 +202,6 @@ export default async function NewProductPage() {
                 Pricing
               </h2>
 
-              {/* USD Pricing */}
               <div className="mb-6">
                 <h3 className="text-sm font-medium text-gray-400 mb-3">USD Pricing</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -234,7 +242,6 @@ export default async function NewProductPage() {
                 </div>
               </div>
 
-              {/* CLP Pricing */}
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-3">CLP Pricing</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -273,7 +280,6 @@ export default async function NewProductPage() {
               </div>
             </div>
 
-            {/* License Configuration */}
             <div className="mb-8">
               <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-[#22c55e]/10 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20">
@@ -315,7 +321,6 @@ export default async function NewProductPage() {
               </div>
             </div>
 
-            {/* Product Status */}
             <div>
               <h2 className="text-xl font-bold text-white mb-6">Product Status</h2>
               
@@ -336,7 +341,6 @@ export default async function NewProductPage() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="flex justify-end gap-4 mt-8">
               <Link
                 href="/admin/products"
@@ -346,10 +350,11 @@ export default async function NewProductPage() {
               </Link>
               <button
                 type="submit"
-                className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-8 py-3 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-[#f59e0b]/20 flex items-center gap-2"
+                disabled={isSubmitting}
+                className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-8 py-3 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-[#f59e0b]/20 flex items-center gap-2 disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                Create Product
+                {isSubmitting ? "Creating..." : "Create Product"}
               </button>
             </div>
           </div>
