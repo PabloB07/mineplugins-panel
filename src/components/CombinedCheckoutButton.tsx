@@ -66,10 +66,11 @@ export function CombinedCheckoutButton({
 
   const getButtonText = () => {
     if (isLoading) return "Processing...";
-    return children || "Pay with Payku";
+    return children || `Pay with ${paymentMethod === "TEBEX" ? "Tebex" : "Payku"}`;
   };
 
   const getButtonColor = () => {
+    if (paymentMethod === "TEBEX") return "bg-[#8b5cf6] hover:bg-[#7c3aed]";
     return "bg-[#3b82f6] hover:bg-[#2563eb]";
   };
 

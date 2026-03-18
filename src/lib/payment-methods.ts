@@ -10,6 +10,8 @@ export interface PaymentMethodConfig {
   available?: boolean;
 }
 
+const isDev = process.env.NODE_ENV !== "production";
+
 export const PAYMENT_METHODS: PaymentMethodConfig[] = [
   {
     id: "PAYKU",
@@ -18,9 +20,7 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     description: "Chile's favorite payment processor - Pay with debit, credit or crypto",
     logo: "/payku-logo.png",
     accentClass: "text-blue-400",
-    available: process.env.PAYKU_API_TOKEN && process.env.PAYKU_API_TOKEN !== "placeholder" 
-      ? true 
-      : process.env.NODE_ENV !== "production",
+    available: isDev || !!(process.env.PAYKU_API_TOKEN && process.env.PAYKU_API_TOKEN !== "placeholder"),
   },
   {
     id: "TEBEX",
@@ -29,7 +29,7 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     description: "Global payment processor - Pay with credit card, PayPal and more",
     logo: "/tebex-logo.svg",
     accentClass: "text-purple-400",
-    available: !!(process.env.TEBEX_SECRET_KEY && process.env.TEBEX_SECRET_KEY !== "placeholder"),
+    available: isDev || !!(process.env.TEBEX_SECRET_KEY && process.env.TEBEX_SECRET_KEY !== "placeholder"),
   },
 ];
 
