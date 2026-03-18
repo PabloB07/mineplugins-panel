@@ -29,11 +29,11 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     description: "Global payment processor - Pay with credit card, PayPal and more",
     logo: "/tebex-logo.svg",
     accentClass: "text-purple-400",
-    available: true,
+    available: true, // Requires prior approval from Tebex
   },
 ];
 
-export const DEFAULT_PAYMENT_METHOD: PaymentMethodId = "TEBEX";
+export const DEFAULT_PAYMENT_METHOD: PaymentMethodId = "PAYKU";
 
 export function getAvailablePaymentMethods(): PaymentMethodConfig[] {
   return PAYMENT_METHODS.filter(method => method.available !== false);

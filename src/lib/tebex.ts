@@ -66,22 +66,33 @@ async function tebexRequest<T>(
     throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY and TEBEX_STORE_ID environment variables.");
   }
 
+  const authHeader = `Basic ${Buffer.from(`${TEBEX_STORE_ID}:${TEBEX_SECRET_KEY}`).toString("base64")}`;
+  
+  console.log("Tebex request:", method, TEBEX_API_URL + endpoint);
+  console.log("Tebex auth:", authHeader.substring(0, 20) + "...");
+
   const response = await fetch(`${TEBEX_API_URL}${endpoint}`, {
     method,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": getBasicAuthHeader(),
+      "Authorization": authHeader,
+      "Accept": "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  const responseText = await response.text();
+  
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Tebex API error:", response.status, errorText);
-    throw new Error(`Tebex API error: ${response.status} - ${errorText}`);
+    console.error("Tebex API error:", response.status, responseText);
+    throw new Error(`Tebex API error: ${response.status} - ${responseText}`);
   }
 
-  return response.json();
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    throw new Error(`Tebex invalid JSON response: ${responseText}`);
+  }
 }
 
 export async function createTebexPayment(
@@ -106,19 +117,18 @@ export async function createTebexPayment(
       complete_url: data.redirectUrl || `${process.env.NEXTAUTH_URL}/payment/success`,
       cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
       email: data.email.trim(),
-      username: data.username || data.email.split("@")[0],
+      first_name: data.username || data.email.split("@")[0],
+      last_name: "Customer",
       items: [
         {
-          name: data.productName,
-          price: Math.round(data.amount * 100) / 100,
-          quantity: 1,
+          product_name: data.productName,
+          price: Number((Math.round(data.amount * 100) / 100).toFixed(2)),
+          qty: 1,
         },
       ],
     };
 
-    if (data.customFields) {
-      payload.custom = data.customFields;
-    }
+    console.log("Tebex payload:", JSON.stringify(payload, null, 2));
 
     const result = await tebexRequest<{
       data: {
@@ -128,7 +138,7 @@ export async function createTebexPayment(
           payment?: string;
         };
       };
-    }>("/baskets", "POST", payload);
+    }>("/checkout", "POST", payload);
 
     return {
       id: result.data.ident,
