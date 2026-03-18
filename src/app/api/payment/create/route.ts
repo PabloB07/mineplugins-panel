@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
         orderNumber,
         paymentUrl: tebexResponse.checkoutUrl,
-        transactionId: tebexResponse.id,
+        transactionId: tebexResponse.ident || tebexResponse.id,
       });
     }
 

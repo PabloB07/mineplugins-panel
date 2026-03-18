@@ -1,11 +1,16 @@
 import crypto from "crypto";
 
-const TEBEX_API_URL = "https://api.tebex.io/api/v2";
+const TEBEX_API_URL = "https://checkout.tebex.io/api";
 const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY || "";
 const TEBEX_STORE_ID = process.env.TEBEX_STORE_ID || "";
 
 function isTebexConfigured(): boolean {
-  return !!TEBEX_SECRET_KEY && TEBEX_SECRET_KEY !== "placeholder";
+  return !!(TEBEX_SECRET_KEY && TEBEX_STORE_ID && TEBEX_SECRET_KEY !== "placeholder");
+}
+
+function getBasicAuthHeader(): string {
+  const credentials = Buffer.from(`${TEBEX_STORE_ID}:${TEBEX_SECRET_KEY}`).toString("base64");
+  return `Basic ${credentials}`;
 }
 
 export interface TebexPaymentCreate {
@@ -23,6 +28,7 @@ export interface TebexPaymentResponse {
   id: string;
   checkoutUrl: string;
   status: string;
+  ident?: string;
 }
 
 export interface TebexTransaction {
@@ -57,22 +63,22 @@ async function tebexRequest<T>(
   body?: Record<string, unknown>
 ): Promise<T> {
   if (!isTebexConfigured()) {
-    throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY environment variable.");
+    throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY and TEBEX_STORE_ID environment variables.");
   }
 
   const response = await fetch(`${TEBEX_API_URL}${endpoint}`, {
     method,
     headers: {
       "Content-Type": "application/json",
-      Authorization: TEBEX_SECRET_KEY,
+      "Authorization": getBasicAuthHeader(),
     },
     body: body ? JSON.stringify(body) : undefined,
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    console.error("Tebex API error:", error);
-    throw new Error(`Tebex API error: ${error.message || response.statusText}`);
+    const errorText = await response.text();
+    console.error("Tebex API error:", response.status, errorText);
+    throw new Error(`Tebex API error: ${response.status} - ${errorText}`);
   }
 
   return response.json();
@@ -82,11 +88,12 @@ export async function createTebexPayment(
   data: TebexPaymentCreate
 ): Promise<TebexPaymentResponse> {
   try {
+    if (!isTebexConfigured()) {
+      throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY and TEBEX_STORE_ID environment variables.");
+    }
+
     if (!data.order || data.order.trim().length === 0) {
       throw new Error("Order number is required");
-    }
-    if (!data.productName || data.productName.trim().length === 0) {
-      throw new Error("Product name is required");
     }
     if (!data.amount || data.amount <= 0) {
       throw new Error("Valid amount is required");
@@ -96,15 +103,12 @@ export async function createTebexPayment(
     }
 
     const payload: Record<string, unknown> = {
-      checkout: {
-        complete_redirect_url: data.redirectUrl || `${process.env.NEXTAUTH_URL}/orders?success=true`,
-        incomplete_redirect_url: `${process.env.NEXTAUTH_URL}/orders?pending=true`,
-      },
+      complete_url: data.redirectUrl || `${process.env.NEXTAUTH_URL}/payment/success`,
+      cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
       email: data.email.trim(),
       username: data.username || data.email.split("@")[0],
-      products: [
+      items: [
         {
-          id: data.order,
           name: data.productName,
           price: Math.round(data.amount * 100) / 100,
           quantity: 1,
@@ -112,28 +116,25 @@ export async function createTebexPayment(
       ],
     };
 
-    if (data.webhookUrl) {
-      payload.webhook = data.webhookUrl;
-    }
-
     if (data.customFields) {
-      payload.fields = Object.entries(data.customFields).map(([key, value]) => ({
-        name: key,
-        value: String(value),
-      }));
+      payload.custom = data.customFields;
     }
 
     const result = await tebexRequest<{
       data: {
-        id: string;
-        url: string;
+        ident: string;
+        links: {
+          checkout: string;
+          payment?: string;
+        };
       };
-    }>("/checkout/transaction", "POST", payload);
+    }>("/baskets", "POST", payload);
 
     return {
-      id: result.data.id,
-      checkoutUrl: result.data.url,
+      id: result.data.ident,
+      checkoutUrl: result.data.links.checkout,
       status: "pending",
+      ident: result.data.ident,
     };
   } catch (error) {
     console.error("Tebex payment creation error:", error);
@@ -147,33 +148,22 @@ export async function getTebexPaymentStatus(
   try {
     const result = await tebexRequest<{
       data: {
-        id: string;
+        ident: string;
         status: string;
-        email: string;
-        username?: string;
-        price: {
-          total: number;
-          currency: string;
+        buyer: {
+          email: string;
         };
-        products: Array<{
-          id: number;
-          name: string;
-          quantity: number;
-          price: number;
-        }>;
-        date: {
-          created: string;
-        };
-        completed_date?: string;
+        total: number;
+        currency: string;
       };
-    }>(`/transactions/${transactionId}`, "GET");
+    }>(`/baskets/${transactionId}`, "GET");
 
     return {
       status: mapTebexStatus(result.data.status),
-      transactionId: result.data.id,
-      email: result.data.email,
-      amount: result.data.price.total,
-      currency: result.data.price.currency,
+      transactionId: result.data.ident,
+      email: result.data.buyer.email,
+      amount: result.data.total,
+      currency: result.data.currency,
     };
   } catch (error) {
     console.error("Tebex status check error:", error);
@@ -206,20 +196,25 @@ export function verifyTebexWebhookSignature(
 }
 
 function mapTebexStatus(status: string): TebexPaymentStatus["status"] {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case "completed":
     case "paid":
+    case "Complete":
       return "completed";
     case "pending":
     case "waiting":
+    case "Pending":
       return "pending";
     case "refunded":
+    case "Refunded":
       return "refunded";
     case "chargeback":
+    case "Chargeback":
       return "chargeback";
     case "failed":
     case "cancelled":
     case "canceled":
+    case "Failed":
       return "failed";
     default:
       return "pending";
@@ -264,30 +259,28 @@ export async function processTebexWebhook(
       return { success: false, message: "No data in webhook" };
     }
 
-    const priceData = data.price as { total?: number; currency?: string } | undefined;
     const paymentStatus: TebexPaymentStatus = {
-      status: mapTebexStatus(String(data.status || "pending")),
-      transactionId: String(data.id || ""),
+      status: mapTebexStatus(String(data.status || data.payment_status || "pending")),
+      transactionId: String(data.ident || data.id || ""),
       email: String(data.email || ""),
-      amount: Number(priceData?.total || data.amount || 0),
-      currency: String(priceData?.currency || data.currency || "USD"),
+      amount: Number(data.total || data.amount || 0),
+      currency: String(data.currency || "USD"),
     };
 
     switch (eventType) {
-      case "sale.complete":
-      case "payment.success":
+      case "payment_success":
+      case "payment.complete":
         await onPaymentSuccess(paymentStatus);
         break;
 
-      case "sale.refunded":
-      case "refund.created":
+      case "payment_refunded":
         if (onPaymentFailed) {
           paymentStatus.status = "refunded";
           await onPaymentFailed(paymentStatus);
         }
         break;
 
-      case "sale.chargeback":
+      case "payment_chargeback":
         if (onPaymentFailed) {
           paymentStatus.status = "chargeback";
           await onPaymentFailed(paymentStatus);
