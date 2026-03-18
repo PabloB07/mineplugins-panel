@@ -72,6 +72,7 @@ model Product {
   name                String
   slug                String          @unique
   description         String?
+  image               String?
   price               Int
   salePrice           Int?
   defaultDurationDays Int             @default(365)

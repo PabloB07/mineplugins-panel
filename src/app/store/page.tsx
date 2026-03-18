@@ -6,6 +6,31 @@ import { displayProductPrice } from "@/lib/pricing";
 import Header from "@/components/ui/Header";
 import { ShoppingCart, Check, Zap, Server, Shield } from "lucide-react";
 
+function CreeperVoxelIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      className="drop-shadow-[0_0_6px_rgba(124,252,0,0.9)]"
+    >
+      <rect x="0" y="0" width="16" height="16" fill="#1f7a2e" />
+      <rect x="1" y="1" width="14" height="14" fill="#2fbf3f" />
+      <rect x="2" y="2" width="12" height="12" fill="#7CFC00" />
+      <rect x="2" y="3" width="2" height="2" fill="#56d84e" />
+      <rect x="10" y="2" width="3" height="2" fill="#56d84e" />
+      <rect x="5" y="5" width="3" height="2" fill="#56d84e" />
+      <rect x="11" y="9" width="2" height="3" fill="#56d84e" />
+      <rect x="3" y="4" width="3" height="3" fill="#0f2112" />
+      <rect x="10" y="4" width="3" height="3" fill="#0f2112" />
+      <rect x="6" y="7" width="4" height="3" fill="#0f2112" />
+      <rect x="5" y="9" width="2" height="4" fill="#0f2112" />
+      <rect x="9" y="9" width="2" height="4" fill="#0f2112" />
+    </svg>
+  );
+}
+
 export default async function BuyPage() {
   const session = await getServerSession(authOptions);
 
@@ -56,13 +81,25 @@ export default async function BuyPage() {
 
                 return (
                   <div key={product.id} className="group relative bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-green-500/50 overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_-10px_rgba(34,197,94,0.2)] flex flex-col hover:-translate-y-1">
-
-                    {/* Header Image/Icon Section can go here if we had images */}
-                    <div className="p-8 pb-0">
-                      <div className="flex justify-between items-start mb-6">
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500/20 to-green-900/20 border border-green-500/30 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform duration-300">
-                          <Zap className="w-7 h-7" />
+                    
+                    {/* Header Image Section */}
+                    <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]">
+                      {product.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Zap className="w-16 h-16 text-green-500/30" />
                         </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
+                    </div>
+
+                    <div className="p-6 pb-0">
+                      <div className="flex justify-between items-start mb-4">
                         {isOnSale && (
                           <span className="bg-red-500/20 text-red-400 text-xs font-bold px-3 py-1 rounded-full border border-red-500/30">
                             SALE
@@ -70,16 +107,16 @@ export default async function BuyPage() {
                         )}
                       </div>
 
-                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">
                         {product.name}
                       </h3>
-                      <p className="text-gray-400 text-sm leading-relaxed mb-6 h-10 line-clamp-2">
+                      <p className="text-gray-400 text-sm leading-relaxed mb-4 h-10 line-clamp-2">
                         {product.description}
                       </p>
                     </div>
 
                     {/* Features / Details */}
-                    <div className="px-8 space-y-3 mb-8">
+                    <div className="px-6 space-y-2 mb-6">
                       {latestVersion && (
                         <div className="flex items-center text-sm text-gray-300">
                           <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
@@ -100,8 +137,8 @@ export default async function BuyPage() {
                     <div className="flex-1"></div>
 
                     {/* Footer / Price / Button */}
-                    <div className="p-8 pt-0 mt-4">
-                      <div className="mb-6">
+                    <div className="p-6 pt-0 mt-2">
+                      <div className="mb-4">
                         <div className="flex items-baseline gap-2">
                           <span className="text-3xl font-bold text-white">
                             {priceDisplay.USD}
@@ -120,14 +157,17 @@ export default async function BuyPage() {
                       {session ? (
                         <Link
                           href={`/checkout?productId=${product.id}`}
-                          className="block w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold py-3.5 rounded-xl text-center transition-all shadow-lg shadow-green-900/20 hover:shadow-green-900/40"
+                          className="group block w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold py-3 rounded-xl text-center transition-all shadow-lg shadow-green-900/20 hover:shadow-green-900/40 inline-flex items-center justify-center gap-2"
                         >
-                          Purchase a Plugin
+                          <span>Purchase a Plugin</span>
+                          <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">
+                            <CreeperVoxelIcon />
+                          </span>
                         </Link>
                       ) : (
                         <Link
                           href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`}
-                          className="block w-full bg-[#181818] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3.5 rounded-xl text-center transition-all border border-[#333] hover:border-[#444]"
+                          className="block w-full bg-[#181818] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3 rounded-xl text-center transition-all border border-[#333] hover:border-[#444]"
                         >
                           Login to Purchase a Plugin
                         </Link>
