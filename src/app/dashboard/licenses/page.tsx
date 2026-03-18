@@ -163,7 +163,7 @@ export default function LicensesPage() {
           <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
-                Your Licenses
+                Your Plugins
                 <button
                   onClick={handleRefresh}
                   className={`text-gray-400 hover:text-white transition-colors ${refreshing ? 'animate-spin' : ''}`}
@@ -173,12 +173,12 @@ export default function LicensesPage() {
                 </button>
               </h1>
               <p className="text-gray-400 max-w-lg text-lg">
-                Manage your licenses with real-time status updates and server activation details.
+                Manage your plugins and licenses with real-time status updates and server activation details.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
                   <Shield className="w-4 h-4 mr-2" />
-                  {licenses.filter(l => l.status === "ACTIVE").length} Active Licenses
+                  {licenses.filter(l => l.status === "ACTIVE").length} Active Plugins
                 </div>
                 <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
                   <Server className="w-4 h-4 mr-2" />
@@ -193,7 +193,7 @@ export default function LicensesPage() {
                 className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
               >
                 <Zap className="w-5 h-5" />
-                Buy New License
+                Buy New Plugin
               </Link>
             </div>
           </div>
@@ -207,13 +207,13 @@ export default function LicensesPage() {
              <Server className="w-8 h-8 text-gray-500" />
            </div>
            <div className="text-gray-400 mb-4 text-lg">
-             You don&apos;t have any licenses yet.
+             You don&apos;t have any plugins yet.
            </div>
            <Link
              href="/store"
              className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 inline-block shadow-lg shadow-[#22c55e]/20"
            >
-             Purchase Your First License
+             Purchase Your First Plugin
            </Link>
          </div>
        ) : (
