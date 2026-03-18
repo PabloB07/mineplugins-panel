@@ -2,24 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createFlowPayment } from "@/lib/flow";
 import { createPaykuPayment, generatePaykuOrderNumber } from "@/lib/payku";
+import { createTebexPayment, generateTebexOrderNumber } from "@/lib/tebex";
 import { nanoid } from "nanoid";
 import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
+import { PaymentMethod } from "@prisma/client";
 
 interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
-  paymentMethod?: "FLOW_CL" | "PAYKU";
+  paymentMethod?: "FLOW_CL" | "PAYKU" | "TEBEX";
 }
 
-/**
- * Creates a payment order and redirects to Flow.cl
- * POST /api/payment/create
- */
 export async function POST(request: NextRequest) {
   try {
-    // Require authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -30,15 +26,11 @@ export async function POST(request: NextRequest) {
 
     const body: PaymentCreateRequest = await request.json();
     const productSlug = toOptionalTrimmedString(body?.productSlug, 120);
-    const durationDays =
-      body?.durationDays === undefined
-        ? undefined
-        : toSafeInt(body?.durationDays, {
-            defaultValue: 365,
-            min: 1,
-            max: 730,
-          });
-    const paymentMethod = body?.paymentMethod === "PAYKU" ? "PAYKU" : "FLOW_CL";
+    const durationDays = body?.durationDays === undefined
+      ? undefined
+      : toSafeInt(body?.durationDays, { defaultValue: 365, min: 1, max: 730 });
+    const paymentMethodRaw = body?.paymentMethod === "TEBEX" ? "TEBEX" : "PAYKU";
+    const paymentMethod: PaymentMethod = paymentMethodRaw as PaymentMethod;
 
     if (!productSlug) {
       return NextResponse.json(
@@ -47,7 +39,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get product
     const product = await prisma.product.findFirst({
       where: { slug: productSlug, isActive: true },
     });
@@ -59,7 +50,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
@@ -71,30 +61,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate prices for both currencies
     const days = durationDays ?? product.defaultDurationDays;
     const basePriceCLP = product.salePriceCLP || product.priceCLP;
     const basePriceUSD = product.salePriceUSD || product.priceUSD;
 
-    // Pro-rate for duration (if not default 365 days)
-    const totalCLP =
-      days === product.defaultDurationDays
-        ? basePriceCLP
-        : Math.round(basePriceCLP * (days / 365));
-    const totalUSD =
-      days === product.defaultDurationDays
-        ? basePriceUSD
-        : Math.round(basePriceUSD * (days / 365) * 100) / 100;
+    const totalCLP = days === product.defaultDurationDays
+      ? basePriceCLP
+      : Math.round(basePriceCLP * (days / 365));
+    const totalUSD = days === product.defaultDurationDays
+      ? basePriceUSD
+      : Math.round(basePriceUSD * (days / 365) * 100) / 100;
 
-    // Legacy total field (Int, in CLP)
     const total = Math.round(totalCLP);
+    const subtotalCLP = totalCLP;
+    const subtotalUSD = totalUSD;
 
-    // Generate unique order number
-    const orderNumber = paymentMethod === "PAYKU"
-      ? generatePaykuOrderNumber()
-      : `TF-${Date.now().toString(36).toUpperCase()}-${nanoid(6).toUpperCase()}`;
+    const orderNumber = paymentMethod === "TEBEX"
+      ? generateTebexOrderNumber()
+      : paymentMethod === "PAYKU"
+        ? generatePaykuOrderNumber()
+        : `TF-${Date.now().toString(36).toUpperCase()}-${nanoid(6).toUpperCase()}`;
 
-    // Create order in database
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -102,12 +89,10 @@ export async function POST(request: NextRequest) {
         status: "PENDING",
         paymentMethod,
         currency: "CLP",
-        // Legacy fields (Int)
         subtotal: total,
         total,
-        // New dual-currency fields (Float)
-        subtotalCLP: totalCLP,
-        subtotalUSD: totalUSD,
+        subtotalCLP,
+        subtotalUSD,
         totalCLP,
         totalUSD,
         customerEmail: user.email,
@@ -116,7 +101,7 @@ export async function POST(request: NextRequest) {
           create: {
             productId: product.id,
             currency: "CLP",
-            unitPrice: total, // Legacy field
+            unitPrice: total,
             unitPriceCLP: totalCLP,
             unitPriceUSD: totalUSD,
             quantity: 1,
@@ -128,12 +113,30 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
 
+    if (paymentMethod === "TEBEX") {
+      const tebexResponse = await createTebexPayment({
+        order: orderNumber,
+        productName: `${product.name} - ${days} days license`,
+        amount: totalUSD,
+        email: user.email,
+        username: user.name || user.email.split("@")[0],
+        redirectUrl: `${baseUrl}/payment/success`,
+        webhookUrl: `${baseUrl}/api/payment/tebex/webhook`,
+      });
+
+      return NextResponse.json({
+        success: true,
+        orderId: order.id,
+        orderNumber,
+        paymentUrl: tebexResponse.checkoutUrl,
+        transactionId: tebexResponse.id,
+      });
+    }
+
     if (paymentMethod === "PAYKU") {
-      // Validate payment data before sending to Payku
       const paykuAmount = Math.round(totalCLP);
       const paykuSubject = `MinePlugins License - ${days} days`;
 
-      // Validate required fields
       if (!orderNumber || orderNumber.trim().length === 0) {
         throw new Error("Order number is empty");
       }
@@ -141,13 +144,12 @@ export async function POST(request: NextRequest) {
         throw new Error("Subject is empty");
       }
       if (!paykuAmount || paykuAmount <= 0) {
-        throw new Error(`Invalid amount: ${paykuAmount}. Product price may be 0 or invalid.`);
+        throw new Error(`Invalid amount: ${paykuAmount}`);
       }
       if (!user.email || user.email.trim().length === 0) {
         throw new Error("User email is empty");
       }
 
-      // Create Payku payment
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
         subject: paykuSubject,
@@ -175,46 +177,16 @@ export async function POST(request: NextRequest) {
         paymentKey: paykuResponse.payment_key,
         transactionKey: paykuResponse.transaction_key,
       });
-    } else {
-      // Create Flow.cl payment
-      const flowResponse = await createFlowPayment({
-        commerceOrder: orderNumber,
-        subject: `MinePlugins License - ${days} days`,
-        amount: total, // Flow expects CLP pesos
-        email: user.email,
-        urlConfirmation: `${baseUrl}/api/payment/confirm`,
-        urlReturn: `${baseUrl}/api/payment/return`,
-      });
-
-      // Update order with Flow data
-      await prisma.order.update({
-        where: { id: order.id },
-        data: {
-          flowToken: flowResponse.token,
-          flowOrderNumber: String(flowResponse.flowOrder),
-          flowPaymentUrl: `${flowResponse.url}?token=${flowResponse.token}`,
-        },
-      });
-
-      return NextResponse.json({
-        success: true,
-        orderId: order.id,
-        orderNumber,
-        paymentUrl: `${flowResponse.url}?token=${flowResponse.token}`,
-        token: flowResponse.token,
-      });
     }
-  } catch (error) {
-    console.error("Payment creation error:", error);
 
     return NextResponse.json(
-      {
-        error: "PAYMENT_ERROR",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to create payment",
-      },
+      { error: "PAYMENT_METHOD_NOT_SUPPORTED", message: "Payment method not supported" },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error("Payment creation error:", error);
+    return NextResponse.json(
+      { error: "PAYMENT_ERROR", message: error instanceof Error ? error.message : "Payment failed" },
       { status: 500 }
     );
   }

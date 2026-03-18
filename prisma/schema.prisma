@@ -288,6 +288,7 @@ enum OrderStatus {
 enum PaymentMethod {
   FLOW_CL
   PAYKU
+  TEBEX
   FREE_LICENSE
   ADMIN_GRANT
 }
