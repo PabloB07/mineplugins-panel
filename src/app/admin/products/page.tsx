@@ -14,6 +14,7 @@ import {
 import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLP } from "@/lib/pricing";
 import ProductVersionSelector from "@/components/admin/ProductVersionSelector";
+import CopyButton from "@/components/admin/CopyButton";
 
 type ProductVersion = {
   id: string;
