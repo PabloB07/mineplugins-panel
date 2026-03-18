@@ -161,13 +161,7 @@ export default async function AdminProductsPage() {
                               <div className="text-xs text-gray-500 bg-[#0a0a0a] px-2 py-1 rounded border border-[#222]">
                                 /{product.slug}
                               </div>
-                              <button
-                                onClick={() => navigator.clipboard.writeText(product.slug)}
-                                className="text-gray-500 hover:text-[#f59e0b] text-xs"
-                                title="Copy slug"
-                              >
-                                Copy
-                              </button>
+                              <CopyButton text={product.slug} />
                             </div>
                           </div>
                         </td>
