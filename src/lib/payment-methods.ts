@@ -18,7 +18,9 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     description: "Chile's favorite payment processor - Pay with debit, credit or crypto",
     logo: "/payku-logo.png",
     accentClass: "text-blue-400",
-    available: !!(process.env.PAYKU_API_TOKEN && process.env.PAYKU_API_TOKEN !== "placeholder"),
+    available: process.env.PAYKU_API_TOKEN && process.env.PAYKU_API_TOKEN !== "placeholder" 
+      ? true 
+      : process.env.NODE_ENV !== "production",
   },
   {
     id: "TEBEX",
