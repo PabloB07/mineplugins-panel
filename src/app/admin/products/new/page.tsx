@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Save, Package, DollarSign, Calendar, Server } from "lucide-react";
+import ProductImageField from "@/components/admin/ProductImageField";
 
 export default async function NewProductPage() {
   async function createProduct(formData: FormData) {
@@ -152,19 +153,7 @@ export default async function NewProductPage() {
               </div>
 
               <div className="mt-6">
-                <label htmlFor="image" className="block text-sm font-medium text-gray-300 mb-2">
-                  Image URL
-                </label>
-                <input
-                  type="url"
-                  id="image"
-                  name="image"
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                  placeholder="https://example.com/image.png"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter a URL to an image (recommended: 600x400px)
-                </p>
+                <ProductImageField name="image" defaultValue="" />
               </div>
             </div>
 

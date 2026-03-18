@@ -59,3 +59,49 @@ export async function handleFileUpload(formData: FormData): Promise<{ url: strin
     );
   }
 }
+
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
+export async function handleImageUpload(formData: FormData): Promise<{ url: string; size: number; name: string }> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !isAdminRole(session.user.role)) {
+    throw new Error("Unauthorized");
+  }
+
+  const file = formData.get("file") as File;
+
+  if (!file) {
+    throw new Error("No file provided");
+  }
+
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    throw new Error("Only JPEG, PNG, WebP, and GIF images are allowed");
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error(`Image size must be less than ${Math.round(MAX_IMAGE_SIZE / 1024 / 1024)}MB`);
+  }
+
+  const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN");
+  const extension = file.name.split(".").pop() || "png";
+
+  try {
+    const blob = await put(`products/${Date.now()}-${Math.random().toString(36).substring(7)}.${extension}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+      token: blobToken,
+    });
+
+    return {
+      url: blob.url,
+      size: file.size,
+      name: file.name,
+    };
+  } catch (uploadError) {
+    console.error("Vercel Blob image upload error:", uploadError);
+    throw new Error(
+      `Failed to upload image to Vercel Blob: ${uploadError instanceof Error ? uploadError.message : "Unknown error"}`
+    );
+  }
+}
