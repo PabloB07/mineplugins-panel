@@ -1,0 +1,117 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "search": "Search",
+    "noResults": "No results found"
+  },
+  "nav": {
+    "store": "Store",
+    "features": "Features",
+    "hosting": "Host?",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "getStarted": "Get Started",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Premium Paper 1.21 Plugins",
+    "subtitle": "The official private Premiums plugins store by AeroSama, for your Minecraft Paper 1.21 plugins with instant downloads and update tracking.",
+    "cta": "Get Started Now",
+    "stats": {
+      "versions": "Supported Versions",
+      "quality": "Quality Code",
+      "satisfaction": "Satisfaction",
+      "support": "Expert Support"
+    }
+  },
+  "features": {
+    "title": "Everything you need to",
+    "subtitle": "MinePlugins is the official store to buy plugins with licenses, and download Minecraft Paper 1.21 plugins.",
+    "items": {
+      "official": {
+        "title": "Official Premium plugins",
+        "description": "Browse official plugins with versions, changelogs, and details optimized for Paper 1.21."
+      },
+      "license": {
+        "title": "With private license for your server",
+        "description": "Receive a license per server with activation tracking and status controls."
+      },
+      "instant": {
+        "title": "Instant Delivery",
+        "description": "Get immediate downloads after purchase with version history and secure access."
+      },
+      "secure": {
+        "title": "Secure Checkout",
+        "description": "Pay securely with a clean purchase flow built for digital goods."
+      },
+      "paper": {
+        "title": "Paper 1.21+ Focus",
+        "description": "Everything is tailored for Minecraft Paper 1.21 compatibility and support."
+      },
+      "portal": {
+        "title": "Customer Portal",
+        "description": "Access your plugins, updates, and license details in one place."
+      },
+      "details": {
+        "title": "Clear Details",
+        "description": "Transparent product pages with pricing, version notes, and requirements."
+      }
+    }
+  },
+  "store": {
+    "title": "Premium Paper 1.21 Plugins",
+    "subtitle": "Discover high-quality plugins, purchase securely, and get instant downloads with MinePlugins.",
+    "empty": "Store Empty",
+    "emptyDesc": "No products are currently available for purchase.",
+    "latestVersion": "Latest Version",
+    "activations": "Server Activation",
+    "activations_plural": "Server Activations",
+    "support": "Fast Support & Updates",
+    "purchase": "Purchase a Plugin",
+    "loginToPurchase": "Login to Purchase a Plugin",
+    "sale": "SALE",
+    "chileOnly": "(Chile only)"
+  },
+  "login": {
+    "title": "Welcome Back to MinePlugins",
+    "subtitle": "Sign in to view your purchases, manage licenses, and download updates.",
+    "chooseMethod": "Choose your sign-in method",
+    "continueWithDiscord": "Continue with Discord",
+    "signingIn": "Signing in...",
+    "secure": "Secure & Fast",
+    "benefits": {
+      "instant": "Instant access to your downloads",
+      "manage": "Manage all your licenses in one place",
+      "updates": "Get updates instantly"
+    },
+    "terms": "By signing in, you agree to our Terms of Service and Privacy Policy.",
+    "backHome": "Back to Homepage"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "licenses": "Licenses",
+    "orders": "Orders",
+    "downloads": "Downloads",
+    "recentOrders": "Recent Orders",
+    "noOrders": "No orders yet",
+    "viewAll": "View All"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "products": "Products",
+    "orders": "Orders",
+    "licenses": "Licenses",
+    "users": "Users",
+    "analytics": "Analytics",
+    "transfers": "Transfers"
+  }
+}

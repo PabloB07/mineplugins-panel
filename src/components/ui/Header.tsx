@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { User, LogOut } from "lucide-react";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const navLinks = [
   { href: "/store", label: "Store" },
@@ -82,6 +83,7 @@ export default function Header() {
             ) : session ? (
               // User is logged in - show user menu
               <div className="flex items-center gap-4">
+                <LanguageSwitcher />
                 <Link
                   href="/dashboard"
                   className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2"
@@ -118,6 +120,7 @@ export default function Header() {
             ) : (
               // User is not logged in - show login buttons
               <>
+                <LanguageSwitcher />
                 <Link
                   href="/login"
                   className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2"

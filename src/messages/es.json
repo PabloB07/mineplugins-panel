@@ -1,0 +1,117 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "back": "Volver",
+    "search": "Buscar",
+    "noResults": "No se encontraron resultados"
+  },
+  "nav": {
+    "store": "Tienda",
+    "features": "Características",
+    "hosting": "¿Hosting?",
+    "dashboard": "Panel",
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión",
+    "getStarted": "Comenzar",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Plugins Premium Paper 1.21",
+    "subtitle": "La tienda oficial de plugins Premium privados por AeroSama, para tus plugins de Minecraft Paper 1.21 con descargas instantáneas y seguimiento de actualizaciones.",
+    "cta": "Comenzar Ahora",
+    "stats": {
+      "versions": "Versiones Soportadas",
+      "quality": "Código de Calidad",
+      "satisfaction": "Satisfacción",
+      "support": "Soporte Experto"
+    }
+  },
+  "features": {
+    "title": "Todo lo que necesitas",
+    "subtitle": "MinePlugins es la tienda oficial para comprar plugins con licencias y descargar plugins de Minecraft Paper 1.21.",
+    "items": {
+      "official": {
+        "title": "Plugins Premium Oficiales",
+        "description": "Explora plugins oficiales con versiones, changelogs y detalles optimizados para Paper 1.21."
+      },
+      "license": {
+        "title": "Con licencia privada para tu servidor",
+        "description": "Recibe una licencia por servidor con seguimiento de activaciones y controles de estado."
+      },
+      "instant": {
+        "title": "Entrega Instantánea",
+        "description": "Obtén descargas inmediatas después de la compra con historial de versiones y acceso seguro."
+      },
+      "secure": {
+        "title": "Pago Seguro",
+        "description": "Paga de forma segura con un flujo de compra limpio creado para productos digitales."
+      },
+      "paper": {
+        "title": "Enfoque Paper 1.21+",
+        "description": "Todo está adaptado para compatibilidad y soporte de Minecraft Paper 1.21."
+      },
+      "portal": {
+        "title": "Portal del Cliente",
+        "description": "Accede a tus plugins, actualizaciones y detalles de licencias en un solo lugar."
+      },
+      "details": {
+        "title": "Detalles Claros",
+        "description": "Páginas de productos transparentes con precios, notas de versiones y requisitos."
+      }
+    }
+  },
+  "store": {
+    "title": "Plugins Premium Paper 1.21",
+    "subtitle": "Descubre plugins de alta calidad, compra de forma segura y obtén descargas instantáneas con MinePlugins.",
+    "empty": "Tienda Vacía",
+    "emptyDesc": "No hay productos disponibles actualmente para compra.",
+    "latestVersion": "Última Versión",
+    "activations": "Activación de Servidor",
+    "activations_plural": "Activaciones de Servidor",
+    "support": "Soporte y Actualizaciones Rápidas",
+    "purchase": "Comprar Plugin",
+    "loginToPurchase": "Iniciar Sesión para Comprar",
+    "sale": "OFERTA",
+    "chileOnly": "(Solo Chile)"
+  },
+  "login": {
+    "title": "Bienvenido a MinePlugins",
+    "subtitle": "Inicia sesión para ver tus compras, gestionar licencias y descargar actualizaciones.",
+    "chooseMethod": "Elige tu método de inicio de sesión",
+    "continueWithDiscord": "Continuar con Discord",
+    "signingIn": "Iniciando sesión...",
+    "secure": "Seguro y Rápido",
+    "benefits": {
+      "instant": "Acceso instantáneo a tus descargas",
+      "manage": "Gestiona todas tus licencias en un solo lugar",
+      "updates": "Obtén actualizaciones al instante"
+    },
+    "terms": "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad.",
+    "backHome": "Volver al Inicio"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Bienvenido de nuevo",
+    "licenses": "Licencias",
+    "orders": "Pedidos",
+    "downloads": "Descargas",
+    "recentOrders": "Pedidos Recientes",
+    "noOrders": "Sin pedidos aún",
+    "viewAll": "Ver Todo"
+  },
+  "admin": {
+    "title": "Panel de Admin",
+    "products": "Productos",
+    "orders": "Pedidos",
+    "licenses": "Licencias",
+    "users": "Usuarios",
+    "analytics": "Análisis",
+    "transfers": "Transferencias"
+  }
+}
