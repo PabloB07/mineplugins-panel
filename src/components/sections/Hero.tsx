@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "@/i18n/useTranslation";
 
 export default function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
       {/* Background Glow */}
@@ -21,14 +26,14 @@ export default function Hero() {
 
         {/* Main heading */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 leading-tight tracking-tight">
-          Download <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Premium</span>
+          {t("home.title").split(" ").slice(0, 2).join(" ")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">{t("home.title").split(" ")[2]}</span>
           <br />
-          Paper Plugins
+          {t("home.title").split(" ").slice(3).join(" ")}
         </h1>
 
         {/* Subtitle */}
         <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          The official private Premiums plugins store by AeroSama, for your Minecraft Paper 1.21 plugins with instant downloads and update tracking.
+          {t("home.subtitle")}
         </p>
 
         {/* CTA Buttons */}
@@ -37,17 +42,17 @@ export default function Hero() {
             href="/store"
             className="w-full sm:w-auto bg-[#22c55e] hover:bg-[#16a34a] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(34,197,94,0.5)] flex items-center justify-center gap-2"
           >
-            Get Started Now
+            {t("home.cta")}
           </Link>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto border-t border-[#222] pt-12">
           {[
-            { value: "1.21+", label: "Supported Versions", color: "text-green-500" },
-            { value: "Premium", label: "Quality Code", color: "text-blue-500" },
-            { value: "99.9%", label: "Satisfaction", color: "text-purple-500" },
-            { value: "24/7", label: "Expert Support", color: "text-orange-500" },
+            { value: "1.21+", label: t("home.stats.versions"), color: "text-green-500" },
+            { value: "Premium", label: t("home.stats.quality"), color: "text-blue-500" },
+            { value: "99.9%", label: t("home.stats.satisfaction"), color: "text-purple-500" },
+            { value: "24/7", label: t("home.stats.support"), color: "text-orange-500" },
           ].map((stat, index) => (
             <div key={index} className="text-center group">
               <div className={`text-3xl sm:text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300`}>{stat.value}</div>

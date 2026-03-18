@@ -5,12 +5,7 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { User, LogOut } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
-
-const navLinks = [
-  { href: "/store", label: "Store" },
-  { href: "#features", label: "Features" },
-  { href: "https://zgaming.host/", label: " ¿You want a MC Host?", external: true },
-];
+import { useTranslation } from "@/i18n/useTranslation";
 
 function CreeperVoxelIcon() {
   return (
@@ -21,16 +16,13 @@ function CreeperVoxelIcon() {
       aria-hidden="true"
       className="drop-shadow-[0_0_6px_rgba(124,252,0,0.9)]"
     >
-      {/* Creeper head base */}
       <rect x="0" y="0" width="16" height="16" fill="#1f7a2e" />
       <rect x="1" y="1" width="14" height="14" fill="#2fbf3f" />
       <rect x="2" y="2" width="12" height="12" fill="#7CFC00" />
-      {/* Voxel noise */}
       <rect x="2" y="3" width="2" height="2" fill="#56d84e" />
       <rect x="10" y="2" width="3" height="2" fill="#56d84e" />
       <rect x="5" y="5" width="3" height="2" fill="#56d84e" />
       <rect x="11" y="9" width="2" height="3" fill="#56d84e" />
-      {/* Creeper face */}
       <rect x="3" y="4" width="3" height="3" fill="#0f2112" />
       <rect x="10" y="4" width="3" height="3" fill="#0f2112" />
       <rect x="6" y="7" width="4" height="3" fill="#0f2112" />
@@ -41,16 +33,22 @@ function CreeperVoxelIcon() {
 }
 
 export default function Header() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isLoading = status === "loading";
 
+  const navLinks = [
+    { href: "/store", label: t("nav.store") },
+    { href: "#features", label: t("nav.features") },
+    { href: "https://zgaming.host/", label: t("nav.hosting"), external: true },
+  ];
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#222]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <img
               src="/mineplugins-logo.svg"
@@ -60,7 +58,6 @@ export default function Header() {
             <span className="text-xl font-bold text-white">MinePlugins</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
@@ -75,63 +72,42 @@ export default function Header() {
             ))}
           </div>
 
-          {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
             {isLoading ? (
-              // Loading state
               <div className="w-20 h-10 bg-[#181818] border border-[#333] rounded-xl animate-pulse"></div>
             ) : session ? (
-              // User is logged in - show user menu
               <div className="flex items-center gap-4">
                 <LanguageSwitcher />
-                <Link
-                  href="/dashboard"
-                  className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2"
-                >
-                  Dashboard
+                <Link href="/dashboard" className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2">
+                  {t("nav.dashboard")}
                 </Link>
                 <div className="flex items-center gap-3 pl-4 border-l border-[#222]">
                   <div className="text-right hidden md:block">
                     <div className="text-sm font-medium text-gray-200">{session.user?.name || "User"}</div>
                     <div className="text-xs text-gray-500">
-                      {session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" ? "Admin" : "Customer"}
+                      {session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" ? t("nav.admin") : "Customer"}
                     </div>
                   </div>
                   {session.user?.image ? (
-                    <img
-                      src={session.user.image}
-                      alt="Profile"
-                      className="w-9 h-9 rounded-full border-2 border-green-500/30 hover:border-green-500/50 transition-colors"
-                    />
+                    <img src={session.user.image} alt="Profile" className="w-9 h-9 rounded-full border-2 border-green-500/30 hover:border-green-500/50 transition-colors" />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-gray-400">
                       <User className="w-4 h-4" />
                     </div>
                   )}
-                  <button
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
-                    title="Sign out"
-                  >
+                  <button onClick={() => signOut({ callbackUrl: "/" })} className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200" title={t("nav.signOut")}>
                     <LogOut className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             ) : (
-              // User is not logged in - show login buttons
               <>
                 <LanguageSwitcher />
-                <Link
-                  href="/login"
-                  className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2"
-                >
-                  Sign In
+                <Link href="/login" className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2">
+                  {t("nav.signIn")}
                 </Link>
-                <Link
-                  href="/login"
-                  className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] inline-flex items-center gap-2"
-                >
-                  <span>Get Started</span>
+                <Link href="/login" className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] inline-flex items-center gap-2">
+                  <span>{t("nav.getStarted")}</span>
                   <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">
                     <CreeperVoxelIcon />
                   </span>
@@ -140,12 +116,7 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden text-zinc-400 hover:text-white"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
+          <button className="md:hidden text-zinc-400 hover:text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
             {mobileMenuOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -158,19 +129,11 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-[#222]">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target={link.external ? "_blank" : undefined}
-                  rel={link.external ? "noopener noreferrer" : undefined}
-                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
+                <a key={link.href} href={link.href} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined} className="text-gray-400 hover:text-white transition-colors text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
                   {link.label}
                 </a>
               ))}
@@ -178,7 +141,6 @@ export default function Header() {
                 {isLoading ? (
                   <div className="w-full h-20 bg-[#181818] border border-[#333] rounded-xl animate-pulse mb-3"></div>
                 ) : session ? (
-                  // Mobile user menu
                   <>
                     <div className="flex items-center gap-3 mb-3 px-2">
                       {session.user?.image ? (
@@ -193,36 +155,20 @@ export default function Header() {
                         <div className="text-xs text-gray-500">{session.user?.email}</div>
                       </div>
                     </div>
-                    <Link
-                      href="/dashboard"
-                      className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Dashboard
+                    <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
+                      {t("nav.dashboard")}
                     </Link>
-                    <button
-                      onClick={() => signOut({ callbackUrl: "/" })}
-                      className="text-red-400 hover:text-red-300 transition-colors text-sm font-medium text-left"
-                    >
-                      Sign Out
+                    <button onClick={() => signOut({ callbackUrl: "/" })} className="text-red-400 hover:text-red-300 transition-colors text-sm font-medium text-left">
+                      {t("nav.signOut")}
                     </button>
                   </>
                 ) : (
-                  // Mobile login buttons
                   <>
-                    <Link
-                      href="/login"
-                      className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Sign In
+                    <Link href="/login" className="text-gray-400 hover:text-white transition-colors text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
+                      {t("nav.signIn")}
                     </Link>
-                    <Link
-                      href="/login"
-                      className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors text-center inline-flex items-center justify-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <span>Get Started</span>
+                    <Link href="/login" className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors text-center inline-flex items-center justify-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                      <span>{t("nav.getStarted")}</span>
                       <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">
                         <CreeperVoxelIcon />
                       </span>
