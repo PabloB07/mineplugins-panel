@@ -40,6 +40,7 @@ export default async function EditProductPage({ params }: PageProps) {
     const name = formData.get("name") as string;
     const slug = formData.get("slug") as string;
     const description = formData.get("description") as string;
+    const image = formData.get("image") as string;
     const priceUSD = parseInt(formData.get("priceUSD") as string);
     const priceCLP = parseInt(formData.get("priceCLP") as string);
     const salePriceUSD = formData.get("salePriceUSD") ? parseInt(formData.get("salePriceUSD") as string) : null;
@@ -54,6 +55,7 @@ export default async function EditProductPage({ params }: PageProps) {
         name,
         slug,
         description,
+        image: image || null,
         price: priceCLP, // Legacy field - mirrors CLP price
         salePrice: salePriceCLP, // Legacy field
         priceUSD,
@@ -145,6 +147,28 @@ export default async function EditProductPage({ params }: PageProps) {
                 defaultValue={product.description || ""}
                 className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
               />
+            </div>
+
+            <div className="mt-6">
+              <label htmlFor="image" className="block text-sm font-medium text-gray-300 mb-2">
+                Image URL
+              </label>
+              <input
+                type="url"
+                id="image"
+                name="image"
+                defaultValue={product.image || ""}
+                placeholder="https://example.com/image.png"
+                className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter a URL to an image (recommended: 600x400px)
+              </p>
+              {product.image && (
+                <div className="mt-3">
+                  <img src={product.image} alt="Product preview" className="h-24 rounded-lg border border-[#333]" />
+                </div>
+              )}
             </div>
           </div>
 
