@@ -17,7 +17,11 @@ export function validateApiKey(request: NextRequest): boolean {
     return false;
   }
 
-  const apiKey = request.headers.get("x-api-key") || request.headers.get("authorization")?.replace("Bearer ", "");
+  const authorizationHeader = request.headers.get("authorization") || "";
+  const bearerToken = authorizationHeader.startsWith("Bearer ")
+    ? authorizationHeader.slice("Bearer ".length)
+    : "";
+  const apiKey = request.headers.get("x-api-key") || bearerToken;
 
   if (!apiKey) {
     return false;
@@ -103,10 +107,13 @@ export function validateRequestSignature(
     .update(payload)
     .digest("hex");
 
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  const received = Buffer.from(signature);
+  const expected = Buffer.from(expectedSignature);
+  if (received.length !== expected.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(received, expected);
 }
 
 /**
@@ -160,7 +167,7 @@ export function withPluginAuth(
 /**
  * Clean up expired rate limit records periodically
  */
-setInterval(() => {
+const cleanupInterval = setInterval(() => {
   const now = Date.now();
   for (const [key, value] of rateLimitStore.entries()) {
     if (now > value.resetTime) {
@@ -168,3 +175,5 @@ setInterval(() => {
     }
   }
 }, 60000); // Clean up every minute
+
+cleanupInterval.unref?.();

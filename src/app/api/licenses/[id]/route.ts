@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { UserRole } from "@prisma/client";
+import { LicenseStatus, UserRole } from "@prisma/client";
+import { toSafeInt } from "@/lib/security";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -117,11 +118,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const updateData: Record<string, unknown> = {};
 
     if (status) {
+      if (!Object.values(LicenseStatus).includes(status)) {
+        return NextResponse.json(
+          { error: "INVALID_STATUS", message: "Invalid license status" },
+          { status: 400 }
+        );
+      }
       updateData.status = status;
     }
 
     if (maxActivations !== undefined) {
-      updateData.maxActivations = maxActivations;
+      updateData.maxActivations = toSafeInt(maxActivations, {
+        defaultValue: 1,
+        min: 1,
+        max: 100,
+      });
     }
 
     if (expiresAt) {

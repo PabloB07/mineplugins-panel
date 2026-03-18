@@ -1,12 +1,13 @@
 import crypto from "crypto";
+import { getRequiredEnv } from "./security";
 
 const FLOW_API_URL =
   process.env.NODE_ENV === "production"
     ? "https://www.flow.cl/api"
     : "https://sandbox.flow.cl/api";
 
-const FLOW_API_KEY = process.env.FLOW_API_KEY!;
-const FLOW_SECRET_KEY = process.env.FLOW_SECRET_KEY!;
+const FLOW_API_KEY = getRequiredEnv("FLOW_API_KEY");
+const FLOW_SECRET_KEY = getRequiredEnv("FLOW_SECRET_KEY");
 
 export interface FlowPaymentCreate {
   commerceOrder: string;

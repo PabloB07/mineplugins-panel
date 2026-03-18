@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
 
 /**
  * Get all products
@@ -81,21 +82,37 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const {
-      name,
-      slug,
-      description,
-      priceUSD,
-      priceCLP,
-      salePriceUSD,
-      salePriceCLP,
-      defaultDurationDays,
-      maxActivations,
-    } = body;
+    const name = toOptionalTrimmedString(body?.name, 120);
+    const slug = toOptionalTrimmedString(body?.slug, 120)?.toLowerCase();
+    const description = toOptionalTrimmedString(body?.description, 2000);
+    const priceUSD = Number(body?.priceUSD);
+    const priceCLP = Number(body?.priceCLP);
+    const salePriceUSD = body?.salePriceUSD === null ? null : Number(body?.salePriceUSD);
+    const salePriceCLP = body?.salePriceCLP === null ? null : Number(body?.salePriceCLP);
+    const defaultDurationDays = toSafeInt(body?.defaultDurationDays, {
+      defaultValue: 365,
+      min: 1,
+      max: 3650,
+    });
+    const maxActivations = toSafeInt(body?.maxActivations, {
+      defaultValue: 1,
+      min: 1,
+      max: 100,
+    });
 
-    if (!name || !slug || !priceUSD || !priceCLP) {
+    if (!name || !slug || !Number.isFinite(priceUSD) || !Number.isFinite(priceCLP) || priceUSD <= 0 || priceCLP <= 0) {
       return NextResponse.json(
         { error: "MISSING_FIELDS", message: "Name, slug, priceUSD, and priceCLP are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return NextResponse.json(
+        {
+          error: "INVALID_SLUG",
+          message: "Slug must contain only lowercase letters, numbers, and hyphens",
+        },
         { status: 400 }
       );
     }
@@ -121,10 +138,10 @@ export async function POST(request: NextRequest) {
         salePrice: salePriceCLP, // Legacy field
         priceUSD,
         priceCLP,
-        salePriceUSD,
-        salePriceCLP,
-        defaultDurationDays: defaultDurationDays || 365,
-        maxActivations: maxActivations || 1,
+        salePriceUSD: Number.isFinite(salePriceUSD) && salePriceUSD && salePriceUSD > 0 ? salePriceUSD : null,
+        salePriceCLP: Number.isFinite(salePriceCLP) && salePriceCLP && salePriceCLP > 0 ? salePriceCLP : null,
+        defaultDurationDays,
+        maxActivations,
         isActive: true,
       },
     });

@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { getRequiredEnv } from "./security";
 
 const PAYKU_API_URL =
   process.env.PAYKU_API_URL ||
@@ -6,8 +7,8 @@ const PAYKU_API_URL =
     ? "https://app.payku.cl"
     : "https://des.payku.cl");
 
-const PAYKU_API_TOKEN = process.env.PAYKU_API_TOKEN!;
-const PAYKU_SECRET_KEY = process.env.PAYKU_SECRET_KEY!;
+const PAYKU_API_TOKEN = getRequiredEnv("PAYKU_API_TOKEN");
+const PAYKU_SECRET_KEY = getRequiredEnv("PAYKU_SECRET_KEY");
 
 export interface PaykuPaymentCreate {
   order: string; // Número de orden único
@@ -16,7 +17,7 @@ export interface PaykuPaymentCreate {
   email: string; // Email del cliente
   payment_url?: string; // URL de retorno después del pago
   webhook?: string; // URL para notificaciones
-  additional_parameters?: Record<string, any>; // Parámetros adicionales opcionales
+  additional_parameters?: Record<string, unknown>; // Parámetros adicionales opcionales
 }
 
 export interface PaykuPaymentResponse {
@@ -67,78 +68,41 @@ export async function createPaykuPayment(
   data: PaykuPaymentCreate
 ): Promise<PaykuPaymentResponse> {
   try {
-    console.log("createPaykuPayment called with data:", JSON.stringify(data, null, 2));
-
     // Validate input with detailed error messages
     if (!data.order || data.order.trim().length === 0) {
-      console.error("Validation failed: order is empty or undefined", { order: data.order });
       throw new Error("Order number is required and cannot be empty");
     }
     if (!data.subject || data.subject.trim().length === 0) {
-      console.error("Validation failed: subject is empty or undefined", { subject: data.subject });
       throw new Error("Subject is required and cannot be empty");
     }
     if (!data.amount || data.amount <= 0) {
-      console.error("Validation failed: amount is invalid", { amount: data.amount });
       throw new Error(`Valid amount is required (minimum CLP 1,000), received: ${data.amount}`);
     }
     if (!data.email || data.email.trim().length === 0) {
-      console.error("Validation failed: email is empty or undefined", { email: data.email });
       throw new Error("Email is required and cannot be empty");
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
-      console.error("Validation failed: invalid email format", { email: data.email });
       throw new Error("Invalid email format");
     }
 
     // Ensure amount is at least 1000 CLP (Payku minimum)
     const amount = Math.round(data.amount);
     if (amount < 1000) {
-      console.error("Validation failed: amount below Payku minimum", { amount });
       throw new Error(`Amount must be at least CLP 1,000, received: ${amount}`);
     }
 
-    // Build base payload with required fields only - USING ENGLISH KEYS as verified by curl test
-    const requestPayload: any = {
+    // Build base payload with required fields.
+    const requestPayload: Record<string, unknown> = {
       order: data.order.trim(),
       subject: data.subject.trim(),
       amount: amount,
       email: data.email.trim(),
     };
 
-    // Add optional fields only if they have values
-    if (data.payment_url && data.payment_url.trim().length > 0) {
-      requestPayload.urlreturn = data.payment_url.trim(); // Changed to 'urlreturn' based on some docs, or keep 'url_retorno'? 
-      // Wait, let's check the curl response success. It returned "url".
-      // The error message for Spanish keys didn't mention url return.
-      // Let's stick to what works. I will keep url_retorno for now BUT:
-      // In the English payload test I didn't send url_return. 
-      // Let's search for "Payku API English payload" to see correct optional fields.
-      // Actually, let's just use what I think is correct, but maybe I should check 'urlreturn' vs 'url_retorno'.
-      // If 'order', 'subject', 'amount' are English, 'urlreturn' or 'payment_url' might be too.
-      // Let's assume standard snake_case or whatever the docs said for English.
-      // But for now, let's fix the main fields.
-      // I'll use the Spanish names for the optional ones for now as I'm not sure, OR I can try to guess.
-      // Actually, looking at docs: "url_retorno" is common. 
-      // However, for English usually it's `urlreturn` or `payment_url`.
-      // Let's check the successful response: `{"status":"register","id":"...","url":"..."}`.
-    }
-
-    // START_DECISION:
-    // I will use 'urlreturn' and 'webhook' if possible, but let's look at the error message again:
-    // "subject:invalid,amount:is empty,order:invalid".
-    // It didn't complain about return url.
-    // Let's stick to the key change for the main fields first.
-    // I'll keep `urlreturn` as a guess or maybe `payment_url`.
-    // Actually, I'll use `payment_url` and `webhook_url` as guesses? 
-    // No, let's look at the docs I found earlier: "urlreturn" was mentioned in one chunk.
-    // "[Position: 48] ... Se requiere urlreturn, se adjuntará como parámetros GET ..."
-
-    // So I will use `urlreturn` instead of `url_retorno`.
-
+    // Add optional fields only if they have values.
     if (data.payment_url && data.payment_url.trim().length > 0) {
       requestPayload.urlreturn = data.payment_url.trim();
     }
@@ -148,8 +112,6 @@ export async function createPaykuPayment(
     if (data.additional_parameters) {
       requestPayload.additional_parameters = data.additional_parameters;
     }
-
-    console.log("Creating Payku payment with payload:", JSON.stringify(requestPayload, null, 2));
 
     const response = await fetch(`${PAYKU_API_URL}/api/transaction`, {
       method: "POST",
@@ -161,12 +123,6 @@ export async function createPaykuPayment(
     });
 
     const responseData = await response.json();
-
-    console.log("Payku API response:", {
-      status: response.status,
-      ok: response.ok,
-      data: responseData
-    });
 
     if (!response.ok) {
       console.error("Payku error:", responseData);
@@ -267,31 +223,23 @@ export async function getPaykuPaymentStatus(
  * Verifica la firma del webhook de Payku
  */
 export function verifyPaykuWebhookSignature(
-  payload: any,
+  payload: string,
   receivedSignature: string
 ): boolean {
   try {
-    // Try different payload formats for signature verification
-    const payloadString = JSON.stringify(payload);
-
     const expectedSignature = crypto
       .createHmac("sha256", PAYKU_SECRET_KEY)
-      .update(payloadString)
+      .update(payload)
       .digest("hex");
 
-    const isValid = crypto.timingSafeEqual(
-      Buffer.from(expectedSignature),
-      Buffer.from(receivedSignature)
-    );
+    const expectedBuffer = Buffer.from(expectedSignature);
+    const receivedBuffer = Buffer.from(receivedSignature);
 
-    console.log("Payku webhook signature verification:", {
-      received: receivedSignature,
-      expected: expectedSignature,
-      isValid,
-      payload: payloadString
-    });
+    if (expectedBuffer.length !== receivedBuffer.length) {
+      return false;
+    }
 
-    return isValid;
+    return crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
   } catch (error) {
     console.error("Payku signature verification error:", error);
     return false;
@@ -330,22 +278,17 @@ export function getPaykuStatusLabel(status: string): string {
  * Procesa webhook de Payku
  */
 export async function processPaykuWebhook(
-  payload: any,
-  signature: string,
+  payload: Record<string, unknown>,
   onPaymentSuccess: (payment: PaykuPaymentStatus) => Promise<void>,
   onPaymentFailed?: (payment: PaykuPaymentStatus) => Promise<void>
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // Verificar firma
-    if (!verifyPaykuWebhookSignature(payload, signature)) {
-      return {
-        success: false,
-        message: "Invalid webhook signature",
-      };
-    }
-
     // Procesar según el tipo de evento
-    const { evento, data } = payload;
+    const evento = typeof payload.evento === "string" ? payload.evento : "";
+    const data =
+      payload.data && typeof payload.data === "object"
+        ? (payload.data as PaykuPaymentStatus)
+        : ({} as PaykuPaymentStatus);
 
     switch (evento) {
       case "pago.aprobado":
@@ -383,7 +326,5 @@ export async function processPaykuWebhook(
 export function generatePaykuOrderNumber(): string {
   const timestamp = Date.now().toString();
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const orderNumber = `PK-${timestamp}-${random}`;
-  console.log("Generated Payku order number:", orderNumber);
-  return orderNumber;
+  return `PK-${timestamp}-${random}`;
 }

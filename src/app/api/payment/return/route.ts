@@ -13,42 +13,36 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  console.log("POST request to payment return");
   return handlePaymentReturn(request);
 }
 
 async function handlePaymentReturn(request: NextRequest) {
-  console.log(`Payment return ${request.method} request received`);
-  
   // Handle both GET query params and POST body
   let token: string | null;
   
   if (request.method === "GET") {
     const searchParams = request.nextUrl.searchParams;
     token = searchParams.get("token");
-    console.log("GET request - token from query params:", token);
   } else {
     // For POST requests, token might be in form data or JSON body
     const contentType = request.headers.get("content-type");
-    console.log("POST request - content-type:", contentType);
     
     if (contentType?.includes("application/json")) {
       const body = await request.json();
       token = body.token;
-      console.log("POST request - token from JSON body:", token);
     } else if (contentType?.includes("application/x-www-form-urlencoded")) {
       const formData = await request.formData();
       token = formData.get("token") as string;
-      console.log("POST request - token from form data:", token);
     } else {
       // Try to get from search params as fallback
       const searchParams = request.nextUrl.searchParams;
       token = searchParams.get("token");
-      console.log("POST request - token from query params fallback:", token);
     }
   }
 
   const baseUrl = process.env.NEXTAUTH_URL || "https://blancocl.vercel.app";
+
+  token = typeof token === "string" ? token.trim().slice(0, 255) : null;
 
   if (!token) {
     // No token - redirect to dashboard with error
@@ -109,7 +103,6 @@ async function handlePaymentReturn(request: NextRequest) {
   } catch (error) {
     console.error("Payment return error:", {
       error: error instanceof Error ? error.message : String(error),
-      token,
       method: request.method
     });
     return NextResponse.redirect(`${baseUrl}/dashboard?error=payment_error`);

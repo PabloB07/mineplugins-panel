@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus, UserRole } from "@prisma/client";
+import { toSafeInt } from "@/lib/security";
 
 /**
  * Get all orders with filtering and search (admin only)
@@ -33,8 +34,16 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status");
     const excludedStatuses = searchParams.getAll("excludeStatus");
     const search = searchParams.get("search");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "25");
+    const page = toSafeInt(searchParams.get("page"), {
+      defaultValue: 1,
+      min: 1,
+      max: 100000,
+    });
+    const limit = toSafeInt(searchParams.get("limit"), {
+      defaultValue: 25,
+      min: 1,
+      max: 100,
+    });
     const skip = (page - 1) * limit;
 
     // Build where clause

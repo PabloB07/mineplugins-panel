@@ -48,6 +48,9 @@ type ValidationLog = {
 };
 
 export default async function AdminDashboardPage() {
+  const validationWindowStart = new Date();
+  validationWindowStart.setUTCDate(validationWindowStart.getUTCDate() - 1);
+
   // Get stats
   const [
     totalUsers,
@@ -65,7 +68,7 @@ export default async function AdminDashboardPage() {
     prisma.order.count({ where: { status: "COMPLETED" } }),
     prisma.validationLog.count({
       where: {
-        createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        createdAt: { gte: validationWindowStart },
       },
     }),
     prisma.order.aggregate({

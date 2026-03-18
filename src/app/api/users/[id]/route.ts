@@ -35,12 +35,33 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
     const body = await request.json();
-    const { role } = body;
+    const role = body?.role as UserRole | undefined;
 
     if (!role) {
       return NextResponse.json(
         { error: "MISSING_FIELDS", message: "Role is required" },
         { status: 400 }
+      );
+    }
+
+    if (!Object.values(UserRole).includes(role)) {
+      return NextResponse.json(
+        { error: "INVALID_ROLE", message: "Invalid role provided" },
+        { status: 400 }
+      );
+    }
+
+    if (role === UserRole.SUPER_ADMIN && session.user.role !== UserRole.SUPER_ADMIN) {
+      return NextResponse.json(
+        { error: "FORBIDDEN", message: "Only super admins can grant SUPER_ADMIN role" },
+        { status: 403 }
+      );
+    }
+
+    if (id === session.user.id && role !== session.user.role) {
+      return NextResponse.json(
+        { error: "FORBIDDEN", message: "You cannot change your own role" },
+        { status: 403 }
       );
     }
 

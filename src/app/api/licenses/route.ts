@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generatePaperLicenseKey } from "@/lib/license";
 import { UserRole } from "@prisma/client";
+import { toSafeInt } from "@/lib/security";
 
 /**
  * Get all licenses for the current user (or all if admin)
@@ -29,8 +30,16 @@ export async function GET(request: NextRequest) {
     const productId = searchParams.get("productId");
     const userId = searchParams.get("userId");
     const search = searchParams.get("search");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "25");
+    const page = toSafeInt(searchParams.get("page"), {
+      defaultValue: 1,
+      min: 1,
+      max: 100000,
+    });
+    const limit = toSafeInt(searchParams.get("limit"), {
+      defaultValue: 25,
+      min: 1,
+      max: 100,
+    });
     const skip = (page - 1) * limit;
 
     // Build where clause
@@ -152,7 +161,22 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { userId, productId, durationDays, maxActivations, notes } = body;
+    const userId = typeof body?.userId === "string" ? body.userId : "";
+    const productId = typeof body?.productId === "string" ? body.productId : "";
+    const durationDays = toSafeInt(body?.durationDays, {
+      defaultValue: 365,
+      min: 1,
+      max: 3650,
+    });
+    const maxActivations =
+      body?.maxActivations === undefined
+        ? undefined
+        : toSafeInt(body?.maxActivations, {
+            defaultValue: 1,
+            min: 1,
+            max: 100,
+          });
+    const notes = typeof body?.notes === "string" ? body.notes.slice(0, 4000) : undefined;
 
     if (!userId || !productId) {
       return NextResponse.json(
@@ -197,7 +221,7 @@ export async function POST(request: NextRequest) {
         productId,
         status: "ACTIVE",
         expiresAt,
-        maxActivations: maxActivations || product.maxActivations,
+        maxActivations: maxActivations ?? product.maxActivations,
         notes,
       },
       include: {

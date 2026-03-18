@@ -1,10 +1,13 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { getSecuritySecret } from "./security";
 
-const PAPER_LICENSE_SECRET =
-  process.env.PAPER_LICENSE_SECRET || "TF_LIC_2024_XGAMERS_SECURE_KEY";
+const PAPER_LICENSE_SECRET = getSecuritySecret("PAPER_LICENSE_SECRET", {
+  devFallback: "dev-paper-license-secret-change-me-now",
+});
 const LICENSE_SECRET = PAPER_LICENSE_SECRET;
 const JWT_SECRET = PAPER_LICENSE_SECRET;
+const ENCRYPTION_CONTEXT = "mineplugins-v1";
 
 interface LicensePayload {
   productId: string;
@@ -158,9 +161,13 @@ export function hashForPrivacy(value: string): string {
  */
 export function encryptData(data: string): string {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv("aes-256-gcm", crypto.scryptSync(LICENSE_SECRET, "salt", 32), iv);
+  const cipher = crypto.createCipheriv(
+    "aes-256-gcm",
+    crypto.scryptSync(LICENSE_SECRET, ENCRYPTION_CONTEXT, 32),
+    iv
+  );
 
-  cipher.setAAD(Buffer.from("mineplugins", "utf8"));
+  cipher.setAAD(Buffer.from(ENCRYPTION_CONTEXT, "utf8"));
 
   let encrypted = cipher.update(data, "utf8", "hex");
   encrypted += cipher.final("hex");
@@ -183,11 +190,11 @@ export function decryptData(encryptedData: string): string | null {
 
     const decipher = crypto.createDecipheriv(
       "aes-256-gcm",
-      crypto.scryptSync(LICENSE_SECRET, "salt", 32),
+      crypto.scryptSync(LICENSE_SECRET, ENCRYPTION_CONTEXT, 32),
       Buffer.from(parts[0], "hex")
     );
 
-    decipher.setAAD(Buffer.from("mineplugins", "utf8"));
+    decipher.setAAD(Buffer.from(ENCRYPTION_CONTEXT, "utf8"));
     decipher.setAuthTag(authTag);
 
     let decrypted = decipher.update(encrypted, "hex", "utf8");

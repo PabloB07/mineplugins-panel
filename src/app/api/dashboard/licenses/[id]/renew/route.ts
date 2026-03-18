@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/authz";
+import { toSafeInt } from "@/lib/security";
 
 export async function POST(
   request: NextRequest,
@@ -14,16 +16,33 @@ export async function POST(
     }
 
     const { id: licenseId } = await params;
-    const { durationDays } = await request.json();
+    const body = await request.json();
+    const durationDays = toSafeInt(body?.durationDays, {
+      defaultValue: 0,
+      min: 1,
+      max: 730,
+    });
 
     if (!durationDays) {
       return NextResponse.json({ error: "Duration is required" }, { status: 400 });
     }
 
+    const selfServiceEnabled = process.env.ALLOW_SELF_SERVICE_LICENSE_RENEWAL === "true";
+    const isAdmin = isAdminRole(session.user.role);
+    if (!isAdmin && !selfServiceEnabled) {
+      return NextResponse.json(
+        {
+          error: "RENEWAL_DISABLED",
+          message: "Self-service renewal is disabled. Please purchase a new order from the store.",
+        },
+        { status: 403 }
+      );
+    }
+
     const license = await prisma.license.findFirst({
       where: {
         id: licenseId,
-        userId: session.user.id,
+        ...(isAdmin ? {} : { userId: session.user.id }),
       },
     });
 

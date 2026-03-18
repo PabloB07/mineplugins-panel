@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { hashForPrivacy } from "@/lib/license";
 import { prisma } from "@/lib/prisma";
 import { loadRuntimeLicense, touchLicenseActivation } from "@/lib/paper/license-runtime";
+import { withPluginAuth, getClientIp } from "@/lib/api-auth";
 
 interface ModernValidationRequest {
   pluginId?: string;
@@ -20,7 +21,7 @@ interface ModernValidationRequest {
   networkSignature?: string;
 }
 
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest): Promise<NextResponse> {
   try {
     const body: ModernValidationRequest = await request.json();
     const licenseKey = (body.licenseKey || "").trim();
@@ -41,11 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const clientIp =
-      body.serverIp ||
-      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+    const clientIp = getClientIp(request);
 
     const activation = await touchLicenseActivation(runtime.data.license, serverId, {
       serverIp: hashForPrivacy(clientIp),
@@ -91,3 +88,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export const POST = withPluginAuth(handler);

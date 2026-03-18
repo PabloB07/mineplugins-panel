@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { createFlowPayment } from "@/lib/flow";
 import { createPaykuPayment, generatePaykuOrderNumber } from "@/lib/payku";
 import { nanoid } from "nanoid";
+import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
 
 interface PaymentCreateRequest {
   productSlug: string;
@@ -28,7 +29,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body: PaymentCreateRequest = await request.json();
-    const { productSlug, durationDays, paymentMethod = "FLOW_CL" } = body;
+    const productSlug = toOptionalTrimmedString(body?.productSlug, 120);
+    const durationDays =
+      body?.durationDays === undefined
+        ? undefined
+        : toSafeInt(body?.durationDays, {
+            defaultValue: 365,
+            min: 1,
+            max: 730,
+          });
+    const paymentMethod = body?.paymentMethod === "PAYKU" ? "PAYKU" : "FLOW_CL";
 
     if (!productSlug) {
       return NextResponse.json(
@@ -38,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get product
-    const product = await prisma.product.findUnique({
+    const product = await prisma.product.findFirst({
       where: { slug: productSlug, isActive: true },
     });
 
@@ -62,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate prices for both currencies
-    const days = durationDays || product.defaultDurationDays;
+    const days = durationDays ?? product.defaultDurationDays;
     const basePriceCLP = product.salePriceCLP || product.priceCLP;
     const basePriceUSD = product.salePriceUSD || product.priceUSD;
 
@@ -119,27 +129,9 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
 
     if (paymentMethod === "PAYKU") {
-      console.log("Creating Payku payment with orderNumber:", orderNumber);
-
       // Validate payment data before sending to Payku
       const paykuAmount = Math.round(totalCLP);
       const paykuSubject = `MinePlugins License - ${days} days`;
-
-      console.log("Payku payment data validation:", {
-        orderNumber,
-        subject: paykuSubject,
-        amount: paykuAmount,
-        email: user.email,
-        totalCLP,
-        basePriceCLP,
-        days,
-        product: {
-          id: product.id,
-          slug: product.slug,
-          priceCLP: product.priceCLP,
-          salePriceCLP: product.salePriceCLP,
-        }
-      });
 
       // Validate required fields
       if (!orderNumber || orderNumber.trim().length === 0) {
@@ -164,8 +156,6 @@ export async function POST(request: NextRequest) {
         payment_url: `${baseUrl}/payment/success`,
         webhook: `${baseUrl}/api/payment/payku/webhook`,
       });
-
-      console.log("Payku payment response:", paykuResponse);
 
       const paymentUrl = paykuResponse.payment_url || paykuResponse.url_pago || paykuResponse.url_redireccion;
 

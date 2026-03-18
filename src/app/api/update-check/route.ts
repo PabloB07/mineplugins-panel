@@ -7,6 +7,7 @@ import {
   errorResponse,
 } from "@/lib/api-auth";
 import { loadRuntimeLicense } from "@/lib/paper/license-runtime";
+import { toOptionalTrimmedString } from "@/lib/security";
 
 interface UpdateCheckRequest {
   currentVersion: string;
@@ -58,8 +59,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: UpdateCheckRequest = await request.json();
-    const currentVersion = (body.currentVersion || "").trim();
-    const licenseKey = (body.license || "").trim();
+    const currentVersion = toOptionalTrimmedString(body.currentVersion, 64) || "";
+    const licenseKey = toOptionalTrimmedString(body.license, 255) || "";
+    const productId = toOptionalTrimmedString(body.productId, 64);
+    const pluginId = toOptionalTrimmedString(body.pluginId, 64);
 
     if (!currentVersion || !licenseKey) {
       return NextResponse.json(
@@ -73,7 +76,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const runtime = await loadRuntimeLicense(licenseKey, body.pluginId);
+    const runtime = await loadRuntimeLicense(licenseKey, pluginId);
     if (!runtime.ok) {
       return NextResponse.json(
         {
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (body.productId && body.productId !== runtime.data.license.productId) {
+    if (productId && productId !== runtime.data.license.productId) {
       return NextResponse.json(
         {
           updateAvailable: false,

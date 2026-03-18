@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyPaykuWebhookSignature, processPaykuWebhook, PaykuPaymentStatus } from "@/lib/payku";
+import {
+  verifyPaykuWebhookSignature,
+  processPaykuWebhook,
+  PaykuPaymentStatus,
+} from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
 import { generatePaperLicenseKey } from "@/lib/license";
+import { OrderStatus } from "@prisma/client";
 
 /**
  * Webhook endpoint for Payku payment notifications
@@ -9,166 +14,138 @@ import { generatePaperLicenseKey } from "@/lib/license";
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const rawBody = await request.text();
     const signature = request.headers.get("x-payku-signature");
 
-    console.log("Payku webhook received:", {
-      signature: signature,
-      body: body
-    });
-
     if (!signature) {
-      console.error("Payku webhook: Missing signature");
-      return NextResponse.json(
-        { error: "Missing signature" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
     }
 
-    // Verify webhook signature
-    if (!verifyPaykuWebhookSignature(body, signature)) {
-      console.error("Payku webhook: Invalid signature");
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 401 }
-      );
+    if (!verifyPaykuWebhookSignature(rawBody, signature)) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    const { evento: event = body.evento, data = body.data || body } = body;
+    let body: Record<string, unknown>;
+    try {
+      body = JSON.parse(rawBody) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
 
-    // Process webhook events
     const result = await processPaykuWebhook(
       body,
-      signature,
       async (paymentData) => {
-        // Handle successful payment
         await handlePaykuSuccess(paymentData);
       },
       async (paymentData) => {
-        // Handle failed payment
         await handlePaykuFailed(paymentData);
       }
     );
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: result.message }, { status: 400 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Payku webhook error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
-  console.log("Handling Payku success webhook:", paymentData);
-
-  const { orden: order = paymentData.orden || paymentData.order, estado: status = paymentData.estado || paymentData.status } = paymentData;
-
-  if (!order) {
-    console.error("No order number found in webhook data:", paymentData);
+  const orderNumber = paymentData.orden || paymentData.order;
+  if (!orderNumber) {
     return;
   }
 
-  // Find the order
-  const orderRecord = await prisma.order.findUnique({
-    where: { orderNumber: order },
-    include: {
-      items: {
-        include: {
-          product: true,
+  await prisma.$transaction(async (tx) => {
+    const orderRecord = await tx.order.findUnique({
+      where: { orderNumber },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
         },
       },
-      user: true, // Include user data for license creation
-    },
-  });
+    });
 
-  if (!orderRecord) {
-    console.error(`Payku success: Order ${order} not found`);
-    return;
-  }
+    if (!orderRecord) {
+      return;
+    }
 
-  if (orderRecord.status === "COMPLETED") {
-    console.log(`Payku success: Order ${order} already processed`);
-    return;
-  }
+    if (orderRecord.status === OrderStatus.COMPLETED) {
+      return;
+    }
 
-  // Create licenses for all order items
-  for (const item of orderRecord.items) {
-    // Generate license key
-    const licenseKey = generatePaperLicenseKey(item.product.slug);
-
-    // Calculate expiration date
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + item.durationDays);
-
-    // Create license
-    const license = await prisma.license.create({
+    const claimed = await tx.order.updateMany({
+      where: {
+        id: orderRecord.id,
+        status: {
+          in: [OrderStatus.PENDING, OrderStatus.PROCESSING],
+        },
+      },
       data: {
-        licenseKey,
-        userId: orderRecord.userId,
-        productId: item.productId,
-        status: "ACTIVE",
-        expiresAt,
-        maxActivations: item.product.maxActivations,
+        status: OrderStatus.PROCESSING,
       },
     });
 
-    // Link license to order item
-    await prisma.orderItem.update({
-      where: { id: item.id },
-      data: { licenseId: license.id },
+    if (claimed.count === 0) {
+      return;
+    }
+
+    for (const item of orderRecord.items) {
+      if (item.licenseId) {
+        continue;
+      }
+
+      const licenseKey = generatePaperLicenseKey(item.product.slug);
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + item.durationDays);
+
+      const license = await tx.license.create({
+        data: {
+          licenseKey,
+          userId: orderRecord.userId,
+          productId: item.productId,
+          status: "ACTIVE",
+          expiresAt,
+          maxActivations: item.product.maxActivations,
+        },
+      });
+
+      await tx.orderItem.update({
+        where: { id: item.id },
+        data: { licenseId: license.id },
+      });
+    }
+
+    await tx.order.update({
+      where: { id: orderRecord.id },
+      data: {
+        status: OrderStatus.COMPLETED,
+        paidAt: orderRecord.paidAt || new Date(),
+      },
     });
-
-    console.log(
-      `✅ Created license ${license.id} (key: ${licenseKey}) for order ${orderRecord.orderNumber}`
-    );
-  }
-
-  // Update order status
-  await prisma.order.update({
-    where: { id: orderRecord.id },
-    data: {
-      status: "COMPLETED",
-      paidAt: new Date(),
-    },
   });
-
-  console.log(`Payku success: Order ${order} processed successfully`);
 }
 
 async function handlePaykuFailed(paymentData: PaykuPaymentStatus) {
-  const { order, status } = paymentData;
-
-  // Find and update the order
-  const orderRecord = await prisma.order.findUnique({
-    where: { orderNumber: order },
-  });
-
-  if (!orderRecord) {
-    console.error(`Payku failed: Order ${order} not found`);
+  const orderNumber = paymentData.orden || paymentData.order;
+  if (!orderNumber) {
     return;
   }
 
-  if (orderRecord.status === "FAILED") {
-    console.log(`Payku failed: Order ${order} already marked as failed`);
-    return;
-  }
-
-  // Update order status to failed
-  await prisma.order.update({
-    where: { id: orderRecord.id },
+  await prisma.order.updateMany({
+    where: {
+      orderNumber,
+      status: {
+        in: [OrderStatus.PENDING, OrderStatus.PROCESSING],
+      },
+    },
     data: {
-      status: "FAILED",
+      status: OrderStatus.FAILED,
     },
   });
-
-  console.log(`Payku failed: Order ${order} marked as failed`);
 }
