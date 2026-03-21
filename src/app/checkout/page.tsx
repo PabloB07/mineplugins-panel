@@ -96,7 +96,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
                   <div className="text-right">
                     <div className="text-3xl font-bold text-white">{formatUSD(displayPriceUSD)}</div>
                     {hasDiscount && (
-                      <div className="text-sm text-gray-500 line-through">${(product.priceUSD / 100).toFixed(2)} USD</div>
+                      <div className="text-sm text-gray-500 line-through">${product.priceUSD.toFixed(2)} USD</div>
                     )}
                   </div>
                 </div>

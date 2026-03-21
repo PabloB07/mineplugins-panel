@@ -191,15 +191,15 @@ export default async function AdminProductsPage() {
                                <div className="text-sm text-gray-400">
                                  {product.salePriceCLP && formatCLP(product.salePriceCLP)}
                                </div>
-                               <div className="text-xs text-gray-500 line-through mt-1">
-                                 ${(product.priceUSD / 100).toFixed(2)} USD
-                               </div>
+                                <div className="text-xs text-gray-500 line-through mt-1">
+                                  ${product.priceUSD.toFixed(2)} USD
+                                </div>
                              </div>
                            ) : (
-                             <div>
-                               <div className="text-white font-bold text-lg">
-                                 ${(product.priceUSD / 100).toFixed(2)} USD
-                               </div>
+                              <div>
+                                <div className="text-white font-bold text-lg">
+                                  ${product.priceUSD.toFixed(2)} USD
+                                </div>
                                <div className="text-sm text-gray-400">
                                  {formatCLP(product.priceCLP)}
                                </div>
