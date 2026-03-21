@@ -1,17 +1,7 @@
 import crypto from "crypto";
+import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 
 const TEBEX_API_URL = "https://checkout.tebex.io/api";
-const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY || "";
-const TEBEX_STORE_ID = process.env.TEBEX_STORE_ID || "";
-
-function isTebexConfigured(): boolean {
-  return !!(TEBEX_SECRET_KEY && TEBEX_STORE_ID && TEBEX_SECRET_KEY !== "placeholder");
-}
-
-function getBasicAuthHeader(): string {
-  const credentials = Buffer.from(`${TEBEX_STORE_ID}:${TEBEX_SECRET_KEY}`).toString("base64");
-  return `Basic ${credentials}`;
-}
 
 export interface TebexPaymentCreate {
   order: string;
@@ -62,7 +52,11 @@ async function tebexRequest<T>(
   method: string,
   body?: Record<string, unknown>
 ): Promise<T> {
-  if (!isTebexConfigured()) {
+  const settings = await getGatewaySettings();
+  const TEBEX_SECRET_KEY = settings.tebex.secretKey || "";
+  const TEBEX_STORE_ID = settings.tebex.storeId || "";
+
+  if (!(TEBEX_SECRET_KEY && TEBEX_STORE_ID && TEBEX_SECRET_KEY !== "placeholder")) {
     throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY and TEBEX_STORE_ID environment variables.");
   }
 
@@ -99,7 +93,11 @@ export async function createTebexPayment(
   data: TebexPaymentCreate
 ): Promise<TebexPaymentResponse> {
   try {
-    if (!isTebexConfigured()) {
+    const settings = await getGatewaySettings();
+    const TEBEX_SECRET_KEY = settings.tebex.secretKey || "";
+    const TEBEX_STORE_ID = settings.tebex.storeId || "";
+
+    if (!(TEBEX_SECRET_KEY && TEBEX_STORE_ID && TEBEX_SECRET_KEY !== "placeholder")) {
       throw new Error("Tebex is not configured. Please set TEBEX_SECRET_KEY and TEBEX_STORE_ID environment variables.");
     }
 
@@ -181,11 +179,14 @@ export async function getTebexPaymentStatus(
   }
 }
 
-export function verifyTebexWebhookSignature(
+export async function verifyTebexWebhookSignature(
   payload: string,
   signature: string
-): boolean {
+): Promise<boolean> {
   try {
+    const settings = await getGatewaySettings();
+    const TEBEX_SECRET_KEY = settings.tebex.secretKey || process.env.TEBEX_SECRET_KEY || "";
+
     const expectedSignature = crypto
       .createHmac("sha256", TEBEX_SECRET_KEY)
       .update(payload)

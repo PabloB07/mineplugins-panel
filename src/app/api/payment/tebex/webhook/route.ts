@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const payload = await request.text();
     const signature = request.headers.get("x-signature") || "";
 
-    if (!verifyTebexWebhookSignature(payload, signature)) {
+    if (!(await verifyTebexWebhookSignature(payload, signature))) {
       console.warn("Invalid Tebex webhook signature");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }

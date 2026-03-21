@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 // import { authOptions } from "@/lib/auth";
 // import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { useTranslation } from "@/i18n/useTranslation";
 import { 
   Server, 
   Globe, 
@@ -49,6 +50,7 @@ type License = {
 };
 
 export default function LicensesPage() {
+  const { t } = useTranslation();
   const [licenses, setLicenses] = useState<License[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -149,7 +151,7 @@ export default function LicensesPage() {
        <div className="flex items-center justify-center min-h-[400px]">
          <div className="text-center">
            <RefreshCw className="w-8 h-8 text-green-400 animate-spin mx-auto mb-4" />
-           <p className="text-gray-400">Loading your licenses...</p>
+           <p className="text-gray-400">{t("dashboard.loadingLicenses")}</p>
          </div>
        </div>
      );
@@ -163,7 +165,7 @@ export default function LicensesPage() {
           <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
-                Your Plugins
+                {t("dashboard.yourPlugins")}
                 <button
                   onClick={handleRefresh}
                   className={`text-gray-400 hover:text-white transition-colors ${refreshing ? 'animate-spin' : ''}`}
@@ -173,16 +175,16 @@ export default function LicensesPage() {
                 </button>
               </h1>
               <p className="text-gray-400 max-w-lg text-lg">
-                Manage your plugins and licenses with real-time status updates and server activation details.
+                {t("dashboard.manageDescription")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
                   <Shield className="w-4 h-4 mr-2" />
-                  {licenses.filter(l => l.status === "ACTIVE").length} Active Plugins
+                  {licenses.filter(l => l.status === "ACTIVE").length} {t("dashboard.activePlugins")}
                 </div>
                 <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
                   <Server className="w-4 h-4 mr-2" />
-                  {licenses.reduce((acc, l) => acc + l.activations.filter(a => a.isActive).length, 0)} Active Servers
+                  {licenses.reduce((acc, l) => acc + l.activations.filter(a => a.isActive).length, 0)} {t("dashboard.activeServers")}
                 </div>
               </div>
             </div>
@@ -193,7 +195,7 @@ export default function LicensesPage() {
                 className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
               >
                 <Zap className="w-5 h-5" />
-                Buy New Plugin
+                {t("dashboard.buyNewPlugin")}
               </Link>
             </div>
           </div>
@@ -206,15 +208,15 @@ export default function LicensesPage() {
            <div className="relative z-10 w-16 h-16 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
              <Server className="w-8 h-8 text-gray-500" />
            </div>
-           <div className="text-gray-400 mb-4 text-lg">
-             You don&apos;t have any plugins yet.
-           </div>
-           <Link
-             href="/store"
-             className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 inline-block shadow-lg shadow-[#22c55e]/20"
-           >
-             Purchase Your First Plugin
-           </Link>
+            <div className="text-gray-400 mb-4 text-lg">
+              {t("dashboard.noPlugins")}
+            </div>
+            <Link
+              href="/store"
+              className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 inline-block shadow-lg shadow-[#22c55e]/20"
+            >
+              {t("dashboard.purchaseFirst")}
+            </Link>
          </div>
        ) : (
         <div className="grid gap-6">
@@ -274,7 +276,7 @@ export default function LicensesPage() {
                       {isExpired && daysLeft > -30 && (
                         <span className="text-xs text-yellow-400 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          Grace period
+                          {t("dashboard.gracePeriod")}
                         </span>
                       )}
                     </div>
@@ -282,37 +284,37 @@ export default function LicensesPage() {
 
                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
-                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                       <Calendar className="w-3 h-3" />
-                       Created
-                     </div>
+                      <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {t("dashboard.created")}
+                      </div>
                      <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
                        {new Date(license.createdAt).toLocaleDateString()}
                      </div>
                    </div>
-                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
-                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                       <Clock className="w-3 h-3" />
-                       Expires
-                     </div>
-                     <div
-                       className={`font-medium transition-colors ${
-                         isExpired ? "text-red-400" : "text-white group-hover:text-[#22c55e]"
-                       }`}
-                     >
-                       {new Date(license.expiresAt).toLocaleDateString()}
-                       {!isExpired && daysLeft <= 30 && (
-                         <span className="text-yellow-400 ml-2 text-sm animate-pulse">
-                           ({daysLeft} days left)
-                         </span>
-                       )}
-                     </div>
-                   </div>
-                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
-                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                       <Server className="w-3 h-3" />
-                       Activations
-                     </div>
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                      <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {t("dashboard.expires")}
+                      </div>
+                      <div
+                        className={`font-medium transition-colors ${
+                          isExpired ? "text-red-400" : "text-white group-hover:text-[#22c55e]"
+                        }`}
+                      >
+                        {new Date(license.expiresAt).toLocaleDateString()}
+                        {!isExpired && daysLeft <= 30 && (
+                          <span className="text-yellow-400 ml-2 text-sm animate-pulse">
+                            ({daysLeft} {t("dashboard.daysLeft")})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                      <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                        <Server className="w-3 h-3" />
+                        {t("store.activations")}
+                      </div>
                      <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
                        {activeActivations} / {license.maxActivations}
                        {activeActivations === license.maxActivations && (
@@ -320,19 +322,19 @@ export default function LicensesPage() {
                        )}
                      </div>
                    </div>
-                   <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
-                     <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                       <Activity className="w-3 h-3" />
-                       Last Validated
-                     </div>
-                     <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
-                       {license.lastValidatedAt
-                         ? new Date(
-                             license.lastValidatedAt
-                           ).toLocaleDateString()
-                         : "Never"}
-                     </div>
-                   </div>
+                    <div className="bg-[#0a0a0a]/50 rounded-lg p-3 border border-[#222] hover:border-[#22c55e]/30 transition-all group">
+                      <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                        <Activity className="w-3 h-3" />
+                        {t("dashboard.lastValidated")}
+                      </div>
+                      <div className="text-white font-medium group-hover:text-[#22c55e] transition-colors">
+                        {license.lastValidatedAt
+                          ? new Date(
+                              license.lastValidatedAt
+                            ).toLocaleDateString()
+                          : t("dashboard.never")}
+                      </div>
+                    </div>
                    </div>
 
                   {/* Server Activations */}
@@ -340,7 +342,7 @@ export default function LicensesPage() {
                     <div className="border-t border-[#222] pt-4 mt-4">
                       <div className="flex items-center gap-2 text-gray-400 text-sm mb-3">
                         <Server className="w-4 h-4" />
-                        Active Servers ({license.activations.length})
+                        {t("dashboard.activeServersCount")} ({license.activations.length})
                       </div>
                       <div className="space-y-3">
                         {license.activations.slice(0, 3).map((activation) => (
@@ -372,7 +374,7 @@ export default function LicensesPage() {
                                   ? "bg-green-500/20 text-green-300 border border-green-500/30"
                                    : "bg-[#181818] text-gray-300 border-[#333]"
                               }`}>
-                                {activation.isActive ? "Active" : "Inactive"}
+                                {activation.isActive ? t("common.active") : t("dashboard.inactive")}
                               </div>
                             </div>
                             <div className="flex items-center gap-4 text-xs text-gray-400">
@@ -384,7 +386,7 @@ export default function LicensesPage() {
                               )}
                               <div className="flex items-center gap-1">
                                 <Activity className="w-3 h-3" />
-                                {activation.validationCount} validations
+                                {activation.validationCount} {t("dashboard.validations")}
                               </div>
                               <div className="flex items-center gap-1">
                                 <Calendar className="w-3 h-3" />
@@ -399,7 +401,7 @@ export default function LicensesPage() {
                               href={`/dashboard/licenses/${license.id}`}
                               className="text-gray-400 hover:text-green-400 text-sm inline-flex items-center gap-1 transition-colors"
                             >
-                              +{license.activations.length - 3} more servers →
+                              +{license.activations.length - 3} {t("dashboard.moreServers")}
                             </Link>
                           </div>
                         )}
@@ -414,7 +416,7 @@ export default function LicensesPage() {
                         href={`/dashboard/licenses/${license.id}`}
                         className="text-[#22c55e] hover:text-[#16a34a] text-sm font-medium transition-all inline-flex items-center gap-1 hover:bg-[#22c55e]/10 px-3 py-1 rounded-lg"
                       >
-                        View Details →
+                        {t("dashboard.viewDetails")} →
                       </Link>
                       <button
                         onClick={() => copyToClipboard(license.licenseKey, `footer-${license.id}`)}
@@ -423,12 +425,12 @@ export default function LicensesPage() {
                         {copiedId === `footer-${license.id}` ? (
                           <>
                             <Check className="w-3 h-3" />
-                            Copied!
+                            {t("common.copied")}
                           </>
                         ) : (
                           <>
                             <Copy className="w-3 h-3" />
-                            Copy License
+                            {t("dashboard.copyLicense")}
                           </>
                         )}
                       </button>
@@ -442,16 +444,16 @@ export default function LicensesPage() {
                           className="text-[#22c55e] hover:text-[#16a34a] text-sm transition-all px-3 py-1 rounded-lg hover:bg-[#22c55e]/10 inline-flex items-center gap-1"
                         >
                           <RotateCcw className="w-3 h-3" />
-                          Renew
+                          {t("dashboard.renew")}
                         </button>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500">
-                        {license.licenseKey.startsWith('eyJ') ? 'JWT License' : 'Legacy License'}
+                        {license.licenseKey.startsWith('eyJ') ? t("dashboard.jwtLicense") : t("dashboard.legacyLicense")}
                       </span>
                       {isExpired && (
-                        <span className="text-xs text-red-400">Expired</span>
+                        <span className="text-xs text-red-400">{t("dashboard.expired")}</span>
                       )}
                     </div>
                   </div>
@@ -466,24 +468,24 @@ export default function LicensesPage() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] rounded-xl border border-[#222] p-6 max-w-md w-full shadow-2xl">
               <h3 className="text-xl font-semibold text-white mb-4">
-                Renew License - {renewModal.licenseName}
+                {t("dashboard.renewLicense")} - {renewModal.licenseName}
               </h3>
               
               <form onSubmit={handleRenewal} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Renewal Duration
+                    {t("dashboard.renewalDuration")}
                   </label>
                   <select
                     value={renewForm.durationDays}
                     onChange={(e) => setRenewForm({ ...renewForm, durationDays: parseInt(e.target.value) })}
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#22c55e] transition-colors"
                   >
-                    <option value={30}>30 days</option>
-                    <option value={90}>90 days</option>
-                    <option value={180}>6 months</option>
-                    <option value={365}>1 year</option>
-                    <option value={730}>2 years</option>
+                    <option value={30}>30 {t("dashboard.days")}</option>
+                    <option value={90}>90 {t("dashboard.days")}</option>
+                    <option value={180}>6 {t("dashboard.months")}</option>
+                    <option value={365}>1 {t("dashboard.year")}</option>
+                    <option value={730}>2 {t("dashboard.years")}</option>
                   </select>
                 </div>
 
@@ -491,12 +493,12 @@ export default function LicensesPage() {
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-[#22c55e] mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-[#22c55e]">
-                      <p className="font-semibold mb-1">Renewal Information:</p>
+                      <p className="font-semibold mb-1">{t("dashboard.renewalInfo")}</p>
                       <ul className="space-y-1 text-xs">
-                        <li>• Extension will be added to current expiry date</li>
-                        <li>• All activations will remain active</li>
-                        <li>• New license key will be generated</li>
-                        <li>• Only JWT licenses can be renewed</li>
+                        <li>• {t("dashboard.renewalInfoPoints.extension")}</li>
+                        <li>• {t("dashboard.renewalInfoPoints.activations")}</li>
+                        <li>• {t("dashboard.renewalInfoPoints.newKey")}</li>
+                        <li>• {t("dashboard.renewalInfoPoints.jwtOnly")}</li>
                       </ul>
                     </div>
                   </div>
@@ -508,14 +510,14 @@ export default function LicensesPage() {
                     onClick={() => setRenewModal({ open: false, licenseId: "", licenseName: "" })}
                     className="flex-1 px-4 py-2 bg-[#181818] hover:bg-[#222] text-white rounded-xl border border-[#333] font-medium transition-colors"
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
                     className="flex-1 bg-[#22c55e] text-black hover:bg-[#16a34a] disabled:bg-[#333] disabled:text-gray-500 disabled:cursor-not-allowed py-2 px-4 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-[#22c55e]/20"
                   >
-                    {submitting ? 'Processing...' : `Renew ${renewForm.durationDays} days`}
+                    {submitting ? t("common.processing") : t("dashboard.renewDays").replace("{days}", renewForm.durationDays.toString())}
                   </button>
                 </div>
               </form>

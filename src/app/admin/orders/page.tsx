@@ -98,7 +98,7 @@ export default function AdminOrdersPage() {
   }, [fetchOrders]);
 
   async function deleteOrder(orderId: string) {
-    if (!confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+    if (!confirm(t("admin.deleteOrderConfirm"))) {
       return;
     }
 
@@ -108,7 +108,7 @@ export default function AdminOrdersPage() {
       });
 
       if (res.ok) {
-        alert("Order deleted successfully");
+        alert(t("admin.orderDeleted"));
         fetchOrders();
       } else {
         const data = await res.json();
@@ -116,14 +116,12 @@ export default function AdminOrdersPage() {
       }
     } catch (error) {
       console.error("Failed to delete order:", error);
-      alert("Failed to delete order");
+      alert(t("common.error"));
     }
   }
 
   async function bulkDeletePendingAndCancelled() {
-    const ok = confirm(
-      "This will permanently delete all PENDING and CANCELLED orders. Continue?"
-    );
+    const ok = confirm(t("admin.deleteAllPendingCancelled"));
     if (!ok) return;
 
     try {
@@ -139,7 +137,7 @@ export default function AdminOrdersPage() {
         throw new Error(data.message || "Failed to bulk delete orders");
       }
 
-      alert(data.message || "Orders deleted successfully");
+      alert(data.message || t("admin.ordersDeleted"));
       fetchOrders();
     } catch (error) {
       console.error("Failed to bulk delete orders:", error);
@@ -195,7 +193,7 @@ export default function AdminOrdersPage() {
               {t("admin.orders")}
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              {t("admin.ordersDesc") || "Manage customer orders and payments. Track transactions and support requests."}
+              {t("admin.ordersDesc")}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
@@ -296,10 +294,10 @@ export default function AdminOrdersPage() {
             disabled={bulkDeleting}
             className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-[#3f3f46] disabled:text-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
             type="button"
-            title="Delete all pending/cancelled orders"
+            title={t("admin.deletePendingCancelled")}
           >
             <Trash2 className="w-4 h-4" />
-            {bulkDeleting ? "Deleting..." : "Delete Pending + Cancelled"}
+            {bulkDeleting ? t("common.deleting") : t("admin.deletePendingCancelled")}
           </button>
         </div>
       </div>
@@ -311,28 +309,28 @@ export default function AdminOrdersPage() {
             <thead className="bg-[#1a1a1a] border-b border-[#222]">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Order
+                  {t("admin.order")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Customer
+                  {t("admin.customer")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Items
+                  {t("admin.items")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Total
+                  {t("admin.total")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  License
+                  {t("admin.license")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Status
+                  {t("common.status")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Date
+                  {t("common.date")}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Actions
+                  {t("common.actions")}
                 </th>
               </tr>
             </thead>
@@ -342,7 +340,7 @@ export default function AdminOrdersPage() {
                   <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-3">
                       <div className="animate-spin rounded-full h-6 w-6 border-2 border-amber-400 border-t-transparent mx-auto"></div>
-                      <span>Loading orders...</span>
+                      <span>{t("admin.loadingOrders")}</span>
                     </div>
                   </td>
                 </tr>
@@ -352,8 +350,8 @@ export default function AdminOrdersPage() {
                     <div className="flex flex-col items-center gap-4">
                       <ShoppingCart className="w-12 h-12 text-gray-500" />
                       <div>
-                        <h3 className="text-lg font-semibold text-white mb-2">No Orders Found</h3>
-                        <p className="text-gray-500">No orders match your current filters.</p>
+                        <h3 className="text-lg font-semibold text-white mb-2">{t("admin.noOrdersFound")}</h3>
+                        <p className="text-gray-500">{t("admin.noOrdersMatch")}</p>
                       </div>
                     </div>
                   </td>
@@ -370,7 +368,7 @@ export default function AdminOrdersPage() {
                             <button
                               onClick={() => copyToClipboard(order.flowToken!)}
                               className="text-gray-400 hover:text-amber-400 p-2 rounded-lg hover:bg-[#333] transition-colors"
-                              title="Copy Flow token"
+                              title={t("admin.copyFlowToken")}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2z" />
@@ -433,7 +431,7 @@ export default function AdminOrdersPage() {
                               </span>
                             </div>
                           ) : (
-                            <span className="text-xs text-red-400">No license</span>
+                            <span className="text-xs text-red-400">{t("admin.noLicense")}</span>
                           )}
                         </div>
                       ))}
@@ -457,7 +455,7 @@ export default function AdminOrdersPage() {
                       </div>
                       {order.paidAt && (
                         <div className="text-xs text-green-400">
-                          Paid: {new Date(order.paidAt).toLocaleDateString()}
+                          {t("admin.paid")}: {new Date(order.paidAt).toLocaleDateString()}
                         </div>
                       )}
                     </td>
@@ -467,13 +465,13 @@ export default function AdminOrdersPage() {
                             href={`/dashboard/orders/${order.id}`}
                             className="text-blue-400 hover:text-blue-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-400/10 transition-colors"
                           >
-                            View
+                            {t("common.view")}
                           </Link>
                         {(order.status === "PENDING" || order.status === "FAILED" || order.status === "CANCELLED") && (
                           <button
                             onClick={() => deleteOrder(order.id)}
                             className="text-red-400 hover:text-red-300 ml-2"
-                            title="Delete Order"
+                            title={t("common.delete")}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -494,8 +492,8 @@ export default function AdminOrdersPage() {
           <div className="bg-[#111] rounded-xl border border-[#222] p-6 mt-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-400">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
+                {t("admin.showing")} {((pagination.page - 1) * pagination.limit) + 1} {t("admin.to")}{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)} {t("admin.of")} {pagination.total} {t("admin.ordersLower")}
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -503,7 +501,7 @@ export default function AdminOrdersPage() {
                   disabled={pagination.page === 1}
                   className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
-                  Previous
+                  {t("common.previous")}
                 </button>
 
                 <div className="flex items-center gap-2">
@@ -548,7 +546,7 @@ export default function AdminOrdersPage() {
                   disabled={pagination.page === pagination.totalPages}
                   className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-lg hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
-                  Next
+                  {t("common.next")}
                 </button>
               </div>
             </div>

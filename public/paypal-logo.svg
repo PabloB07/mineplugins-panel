@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="28" viewBox="0 0 96 28">
+  <defs>
+    <style>
+      .c0 { fill: #0070e0; }
+      .t0 { fill: #ffffff; font: 700 12px Arial, Helvetica, sans-serif; letter-spacing: 0.2px; }
+    </style>
+  </defs>
+  <circle class="c0" cx="14" cy="14" r="12" />
+  <text class="t0" x="32" y="18">PayPal</text>
+</svg>
+

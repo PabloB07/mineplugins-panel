@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing signature" }, { status: 400 });
     }
 
-    if (!verifyPaykuWebhookSignature(rawBody, signature)) {
+    if (!(await verifyPaykuWebhookSignature(rawBody, signature))) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 

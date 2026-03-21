@@ -20,7 +20,17 @@ interface Product {
 
 interface ProductGridProps {
   products: Product[];
-  session: any;
+  session: Session | null;
+}
+
+interface Session {
+  user?: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
+  };
 }
 
 function CreeperVoxelIcon() {
@@ -49,9 +59,7 @@ function CreeperVoxelIcon() {
 }
 
 export default function ProductGrid({ products, session }: ProductGridProps) {
-  const { t } = useTranslation();
-
-  const formatPrice = (price: number) => `$${(price / 100).toFixed(2)}`;
+  const { t, formatPrice, currency } = useTranslation();
 
   if (products.length === 0) {
     return (
@@ -70,8 +78,11 @@ export default function ProductGrid({ products, session }: ProductGridProps) {
       {products.map((product) => {
         const latestVersion = product.versions[0];
         const isOnSale = product.salePriceUSD && product.salePriceUSD < product.priceUSD;
-        const displayPrice = isOnSale && product.salePriceUSD ? product.salePriceUSD : product.priceUSD;
+        const displayPriceUSD = isOnSale && product.salePriceUSD ? product.salePriceUSD : product.priceUSD;
         const displayPriceCLP = isOnSale && product.salePriceCLP ? product.salePriceCLP : product.priceCLP;
+        const originalPriceUSD = product.priceUSD;
+        const currentPriceFormatted = formatPrice(displayPriceUSD, displayPriceCLP);
+        const originalPriceFormatted = formatPrice(originalPriceUSD, product.priceCLP);
 
         return (
           <div key={product.id} className="group relative bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-green-500/50 overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_-10px_rgba(34,197,94,0.2)] flex flex-col hover:-translate-y-1">
@@ -134,17 +145,19 @@ export default function ProductGrid({ products, session }: ProductGridProps) {
               <div className="mb-4">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-white">
-                    {formatPrice(displayPrice)} USD
+                    {currentPriceFormatted}
                   </span>
                   {isOnSale && (
                     <span className="text-sm text-gray-500 line-through">
-                      {formatPrice(product.priceUSD)} USD
+                      {originalPriceFormatted}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">
-                  {formatPrice(displayPriceCLP).replace("$", "$").replace("USD", "CLP")} {t("store.chileOnly")}
-                </div>
+                {currency === 'CLP' && (
+                  <div className="text-xs text-gray-500">
+                    {t("store.chileOnly")}
+                  </div>
+                )}
               </div>
 
               {session ? (

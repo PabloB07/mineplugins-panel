@@ -4,14 +4,14 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createPaykuPayment, generatePaykuOrderNumber } from "@/lib/payku";
 import { createTebexPayment, generateTebexOrderNumber } from "@/lib/tebex";
-import { nanoid } from "nanoid";
+import { createPaypalPayment, generatePaypalOrderNumber } from "@/lib/paypal";
 import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
 import { PaymentMethod } from "@prisma/client";
 
 interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
-  paymentMethod?: "FLOW_CL" | "PAYKU" | "TEBEX";
+  paymentMethod?: "FLOW_CL" | "PAYKU" | "TEBEX" | "PAYPAL";
 }
 
 export async function POST(request: NextRequest) {
@@ -29,8 +29,14 @@ export async function POST(request: NextRequest) {
     const durationDays = body?.durationDays === undefined
       ? undefined
       : toSafeInt(body?.durationDays, { defaultValue: 365, min: 1, max: 730 });
-    const paymentMethodRaw = body?.paymentMethod === "TEBEX" ? "TEBEX" : "PAYKU";
-    const paymentMethod: PaymentMethod = paymentMethodRaw as PaymentMethod;
+    const paymentMethodId: "PAYKU" | "TEBEX" | "PAYPAL" =
+      body?.paymentMethod === "TEBEX"
+        ? "TEBEX"
+        : body?.paymentMethod === "PAYPAL"
+          ? "PAYPAL"
+          : "PAYKU";
+
+    const paymentMethod: PaymentMethod = paymentMethodId as unknown as PaymentMethod;
 
     if (!productSlug) {
       return NextResponse.json(
@@ -76,11 +82,12 @@ export async function POST(request: NextRequest) {
     const subtotalCLP = totalCLP;
     const subtotalUSD = totalUSD;
 
-    const orderNumber = paymentMethod === "TEBEX"
-      ? generateTebexOrderNumber()
-      : paymentMethod === "PAYKU"
-        ? generatePaykuOrderNumber()
-        : `TF-${Date.now().toString(36).toUpperCase()}-${nanoid(6).toUpperCase()}`;
+    const orderNumber =
+      paymentMethodId === "TEBEX"
+        ? generateTebexOrderNumber()
+        : paymentMethodId === "PAYKU"
+          ? generatePaykuOrderNumber()
+          : generatePaypalOrderNumber();
 
     const order = await prisma.order.create({
       data: {
@@ -113,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
 
-    if (paymentMethod === "TEBEX") {
+    if (paymentMethodId === "TEBEX") {
       const tebexResponse = await createTebexPayment({
         order: orderNumber,
         productName: `${product.name} - ${days} days license`,
@@ -133,7 +140,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (paymentMethod === "PAYKU") {
+    if (paymentMethodId === "PAYKU") {
       const paykuAmount = Math.round(totalCLP);
       const paykuSubject = `MinePlugins License - ${days} days`;
 
@@ -176,6 +183,28 @@ export async function POST(request: NextRequest) {
         paymentUrl,
         paymentKey: paykuResponse.payment_key,
         transactionKey: paykuResponse.transaction_key,
+      });
+    }
+
+    if (paymentMethodId === "PAYPAL") {
+      const paypalReturnUrl = `${baseUrl}/api/payment/paypal/return`;
+      const paypalCancelUrl = `${baseUrl}/api/payment/paypal/cancel`;
+
+      const paypalResponse = await createPaypalPayment({
+        order: orderNumber,
+        productName: `${product.name} - ${days} days license`,
+        amountUSD: totalUSD,
+        email: user.email,
+        returnUrl: paypalReturnUrl,
+        cancelUrl: paypalCancelUrl,
+      });
+
+      return NextResponse.json({
+        success: true,
+        orderId: order.id,
+        orderNumber,
+        paymentUrl: paypalResponse.approvalUrl,
+        transactionId: paypalResponse.orderId,
       });
     }
 

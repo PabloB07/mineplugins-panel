@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "@/i18n/useTranslation";
 import {
   Shield,
   Key,
@@ -46,6 +47,7 @@ interface License {
 }
 
 export default function AdminLicensesPage() {
+  const { t } = useTranslation();
   const [licenses, setLicenses] = useState<License[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
@@ -121,7 +123,7 @@ export default function AdminLicensesPage() {
 
   async function deleteRevokedLicenses() {
     const ok = confirm(
-      "This will permanently delete all REVOKED licenses. Continue?"
+      t("admin.deleteAllPendingCancelled")
     );
     if (!ok) return;
 
@@ -138,11 +140,11 @@ export default function AdminLicensesPage() {
         throw new Error(data.message || "Failed to delete revoked licenses");
       }
 
-      alert(data.message || "Revoked licenses deleted");
+      alert(data.message || t("admin.revokedLicensesDeleted"));
       fetchLicenses();
     } catch (error) {
       console.error("Failed to delete revoked licenses:", error);
-      alert(error instanceof Error ? error.message : "Failed to delete revoked licenses");
+      alert(error instanceof Error ? error.message : t("admin.failedToDeleteRevoked"));
     } finally {
       setDeletingRevoked(false);
     }
@@ -165,20 +167,20 @@ export default function AdminLicensesPage() {
               Licenses
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Manage customer licenses. Monitor status, activations, and assignments.
+              {t("admin.licensesDesc")}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
                 <Key className="w-4 h-4 mr-2" />
-                {licenses.length} Total Licenses
+                {licenses.length} {t("admin.totalLicenses")}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
                 <CheckCircle className="w-4 h-4 mr-2" />
-                {licenses.filter(l => l.status === 'ACTIVE').length} Active
+                {licenses.filter(l => l.status === 'ACTIVE').length} {t("common.active")}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
                 <User className="w-4 h-4 mr-2" />
-                {new Set(licenses.map(l => l.user.id)).size} Customers
+                {new Set(licenses.map(l => l.user.id)).size} {t("admin.customersCount")}
               </div>
             </div>
           </div>
@@ -189,7 +191,7 @@ export default function AdminLicensesPage() {
               className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-[#f59e0b]/20"
             >
               <Shield className="w-5 h-5" />
-              Create License
+              {t("admin.createLicense")}
             </button>
           </div>
         </div>
@@ -200,7 +202,7 @@ export default function AdminLicensesPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
           <div className="flex items-center gap-3">
             <Filter className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-400 text-sm font-medium">Status:</span>
+            <span className="text-gray-400 text-sm font-medium">{t("common.status")}:</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {["all", "ACTIVE", "EXPIRED", "SUSPENDED", "REVOKED"].map(
@@ -214,7 +216,7 @@ export default function AdminLicensesPage() {
                       : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                   }`}
                 >
-                  {status === "all" ? "All Licenses" : status}
+                  {status === "all" ? t("admin.allLicenses") : status}
                 </button>
               )
             )}
@@ -223,7 +225,7 @@ export default function AdminLicensesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by license key, email, product..."
+              placeholder={t("admin.searchLicenseKey")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/50 transition-colors"
@@ -234,10 +236,10 @@ export default function AdminLicensesPage() {
             disabled={deletingRevoked}
             className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-[#3f3f46] disabled:text-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
             type="button"
-            title="Delete all revoked licenses"
+            title={t("admin.deleteRevoked")}
           >
             <Trash2 className="w-4 h-4" />
-            {deletingRevoked ? "Deleting..." : "Delete Revoked"}
+            {deletingRevoked ? t("common.deleting") : t("admin.deleteRevoked")}
           </button>
         </div>
       </div>
@@ -277,7 +279,7 @@ export default function AdminLicensesPage() {
                   <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-3">
                       <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-400 border-t-transparent mx-auto"></div>
-                      <span>Loading licenses...</span>
+                      <span>{t("admin.loadingLicensesAdmin")}</span>
                     </div>
                   </td>
                 </tr>
@@ -287,8 +289,8 @@ export default function AdminLicensesPage() {
                     <div className="flex flex-col items-center gap-4">
                       <Key className="w-16 h-16 text-gray-500" />
                       <div>
-                        <h3 className="text-lg font-semibold text-white mb-2">No Licenses Found</h3>
-                        <p className="text-gray-500">No licenses match your current filters.</p>
+                        <h3 className="text-lg font-semibold text-white mb-2">{t("admin.noLicensesFoundAdmin")}</h3>
+                        <p className="text-gray-500">{t("admin.noLicensesMatch")}</p>
                       </div>
                     </div>
                   </td>
@@ -314,9 +316,9 @@ export default function AdminLicensesPage() {
                              <div className="text-white text-sm font-mono">
                                {license.licenseKey.substring(0, 20)}...
                              </div>
-                             <div className="text-gray-400 text-xs">
-                               Click to copy
-                             </div>
+                            <div className="text-gray-400 text-xs">
+                                {t("admin.clickToCopy")}
+                              </div>
                            </div>
                          </div>
                        </td>
@@ -421,8 +423,8 @@ export default function AdminLicensesPage() {
         <div className="bg-[#111] rounded-xl border border-[#222] p-6 mt-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-400">
-              Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} licenses
+              {t("admin.showPagination")} {((pagination.page - 1) * pagination.limit) + 1} {t("admin.to")}{" "}
+              {Math.min(pagination.page * pagination.limit, pagination.total)} {t("admin.of")} {pagination.total} {t("admin.licensesLower")}
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -430,7 +432,7 @@ export default function AdminLicensesPage() {
                 disabled={pagination.page === 1}
                 className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-xl hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                Previous
+                {t("common.previous")}
               </button>
               
               <div className="flex items-center gap-2">
@@ -475,7 +477,7 @@ export default function AdminLicensesPage() {
                 disabled={pagination.page === pagination.totalPages}
                 className="px-4 py-2 text-sm bg-[#1a1a1a] text-gray-300 rounded-xl hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                Next
+                {t("common.next")}
               </button>
             </div>
           </div>
@@ -499,10 +501,10 @@ export default function AdminLicensesPage() {
             <div className="px-6 py-4 border-b border-red-900/70 bg-red-950/20">
               <h3 className="text-lg font-semibold text-red-300 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
-                Revoke License
+                {t("admin.revokeLicense")}
               </h3>
               <p className="text-sm text-red-200/70 mt-1">
-                This action will disable all current and future activations.
+                {t("admin.revokeWarning")}
               </p>
             </div>
 
@@ -513,7 +515,7 @@ export default function AdminLicensesPage() {
               </div>
 
               <div className="text-sm text-red-100/80">
-                Type <code className="bg-black/30 px-1.5 py-0.5 rounded">REVOKE</code> to confirm.
+                {t("admin.revokeConfirm")}
               </div>
 
               <input
@@ -540,7 +542,7 @@ export default function AdminLicensesPage() {
                   }}
                   className="px-4 py-2 text-sm text-gray-300 border border-[#333] rounded-xl hover:bg-[#1a1a1a] transition-colors"
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   onClick={() => revokeLicense(revokeTarget.id)}
@@ -548,7 +550,7 @@ export default function AdminLicensesPage() {
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-700 hover:bg-red-600 rounded-xl disabled:bg-red-900/50 disabled:text-red-300/60 transition-colors"
                 >
                   {revoking ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldX className="w-4 h-4" />}
-                  {revoking ? "Revoking..." : "Confirm Revoke"}
+                  {revoking ? t("admin.revoking") : t("admin.confirmRevoke")}
                 </button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 # MinePlugins
 
-Panel de ventas y distribucion para plugins de Minecraft Paper 1.21. Incluye gestion de productos, licencias, descargas y actualizaciones.
+Panel de ventas y distribucion para plugins de Minecraft Paper 1.21. Incluye gestion de productos, licencias, downloads y actualizaciones.
 
 ## Requisitos
 

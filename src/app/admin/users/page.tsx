@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "@/i18n/useTranslation";
 import { Users, Crown, Shield, Search, UserPlus, Link as LinkIcon, Ban } from "lucide-react";
 
 interface User {
@@ -21,6 +22,7 @@ interface User {
 }
 
 export default function AdminUsersPage() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -67,7 +69,7 @@ export default function AdminUsersPage() {
   };
 
   async function updateUserRole(userId: string, newRole: string) {
-    if (!confirm(`Are you sure you want to change this user's role to ${newRole.replace('_', ' ')}?`)) return;
+    if (!confirm(t("admin.changeRoleConfirm").replace("{role}", newRole.replace('_', ' ')))) return;
 
     try {
       const res = await fetch(`/api/users/${userId}`, {
@@ -89,7 +91,7 @@ export default function AdminUsersPage() {
   }
 
   async function revokeDiscord(userId: string) {
-    if (!confirm("Are you sure you want to revoke this user's Discord connection?")) return;
+    if (!confirm(t("admin.revokeDiscordConfirm"))) return;
 
     try {
       const res = await fetch(`/api/users/${userId}/discord`, {
@@ -117,13 +119,13 @@ export default function AdminUsersPage() {
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
             <Users className="w-8 h-8 text-[#f59e0b]" />
-            Customer Management
+            {t("admin.customerManagementTitle")}
           </h1>
-          <p className="text-gray-400 mt-1">View and manage all customers</p>
+          <p className="text-gray-400 mt-1">{t("admin.manageCustomers")}</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-sm text-gray-400 bg-[#1a1a1a] px-3 py-2 rounded-lg border border-[#333]">
-            Total: {pagination.total} customers
+            {t("admin.totalCustomersCount").replace("{count}", pagination.total.toString())}
           </div>
         </div>
         </div>
@@ -140,7 +142,7 @@ export default function AdminUsersPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by email or name..."
+                placeholder={t("admin.searchEmailName")}
                 className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-gray-500 focus:border-[#f59e0b]/50 transition-colors"
               />
             </div>
@@ -148,7 +150,7 @@ export default function AdminUsersPage() {
 
           {/* Role Filter */}
           <div className="flex items-center gap-3">
-            <span className="text-gray-400 text-sm">Filter by role:</span>
+            <span className="text-gray-400 text-sm">{t("admin.filterByRoleLabel")}</span>
             <div className="flex flex-wrap gap-2">
               {["all", "CUSTOMER", "ADMIN", "SUPER_ADMIN"].map((role) => {
                 const icons = {
@@ -156,6 +158,13 @@ export default function AdminUsersPage() {
                   "CUSTOMER": <UserPlus className="w-4 h-4" />,
                   "ADMIN": <Shield className="w-4 h-4" />,
                   "SUPER_ADMIN": <Crown className="w-4 h-4" />,
+                };
+                
+                const roleLabels: Record<string, string> = {
+                  "all": t("admin.allRoles"),
+                  "CUSTOMER": t("admin.customerRole"),
+                  "ADMIN": t("admin.adminRole"),
+                  "SUPER_ADMIN": t("admin.superAdminRole"),
                 };
                 
                 return (
@@ -169,7 +178,7 @@ export default function AdminUsersPage() {
                     }`}
                   >
                     {icons[role as keyof typeof icons]}
-                    {role === "all" ? "All" : role.replace("_", " ")}
+                    {roleLabels[role]}
                   </button>
                 );
               })}
@@ -210,7 +219,7 @@ export default function AdminUsersPage() {
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-2">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
-                      Loading users...
+                      {t("admin.loadingUsers")}
                     </div>
                   </td>
                 </tr>
@@ -218,7 +227,7 @@ export default function AdminUsersPage() {
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
                     <Users className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                    No users found
+                    {t("admin.noUsersFound")}
                   </td>
                 </tr>
               ) : (
@@ -349,8 +358,8 @@ export default function AdminUsersPage() {
         <div className="bg-[#111] rounded-xl border border-[#222] p-4 mt-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-400">
-              Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} users
+              {t("admin.showPagination")} {((pagination.page - 1) * pagination.limit) + 1} {t("admin.to")}{" "}
+              {Math.min(pagination.page * pagination.limit, pagination.total)} {t("admin.of")} {pagination.total} {t("admin.usersLower")}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -358,7 +367,7 @@ export default function AdminUsersPage() {
                 disabled={pagination.page === 1}
                 className="px-3 py-1 text-sm bg-[#1a1a1a] text-gray-300 rounded hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Previous
+                {t("common.previous")}
               </button>
               
               <div className="flex items-center gap-1">
@@ -403,7 +412,7 @@ export default function AdminUsersPage() {
                 disabled={pagination.page === pagination.totalPages}
                 className="px-3 py-1 text-sm bg-[#1a1a1a] text-gray-300 rounded hover:bg-[#222] border border-[#333] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Next
+                {t("common.next")}
               </button>
             </div>
           </div>

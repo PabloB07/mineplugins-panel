@@ -19,7 +19,17 @@ interface Product {
 
 interface StoreContentProps {
   products: Product[];
-  session: any;
+  session: Session | null;
+}
+
+interface Session {
+  user?: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
+  };
 }
 
 export default function StoreContent({ products, session }: StoreContentProps) {

@@ -10,6 +10,7 @@ import {
     Key,
     Users,
     BarChart3,
+    Wallet,
     ArrowRight,
     LogOut,
     Menu,
@@ -38,6 +39,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/transfers", label: "Transfers", icon: ArrowRight },
         { href: "/admin/users", label: "Customers", icon: Users },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+        { href: "/admin/payments", label: "Payments", icon: Wallet },
     ];
 
     const isActive = (path: string) => {

@@ -6,8 +6,10 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Save, Package, DollarSign, Calendar, Server } from "lucide-react";
 import ProductImageField from "@/components/admin/ProductImageField";
+import { useTranslation } from "@/i18n/useTranslation";
 
 export default function NewProductPage() {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [autoGenerate, setAutoGenerate] = useState(true);
@@ -77,27 +79,27 @@ export default function NewProductPage() {
                 className="text-gray-400 hover:text-[#f59e0b] transition-colors flex items-center gap-2"
               >
                 <ArrowLeft className="w-5 h-5" />
-                Back to Products
+                {t("admin.backToProducts")}
               </Link>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
-              New Product
+              {t("admin.newProductTitle")}
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
-              Create a new product for the MinePlugins store. Set pricing, availability, and features.
+              {t("admin.newProductDesc")}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
                 <Package className="w-4 h-4 mr-2" />
-                Product Creation
+                {t("admin.productCreation")}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
                 <DollarSign className="w-4 h-4 mr-2" />
-                Pricing Setup
+                {t("admin.pricingSetup")}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
                 <Server className="w-4 h-4 mr-2" />
-                Server Management
+                {t("admin.serverManagement")}
               </div>
             </div>
           </div>
@@ -118,13 +120,13 @@ export default function NewProductPage() {
                 <div className="w-8 h-8 rounded-lg bg-[#f59e0b]/10 flex items-center justify-center text-[#f59e0b] border border-[#f59e0b]/20">
                   <Package className="w-4 h-4" />
                 </div>
-                Basic Information
+                {t("admin.basicInfo")}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                    Product Name *
+                    {t("admin.productName")} *
                   </label>
                   <input
                     type="text"
@@ -141,7 +143,7 @@ export default function NewProductPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label htmlFor="slug" className="block text-sm font-medium text-gray-300">
-                      URL Slug *
+                      {t("admin.urlSlug")} *
                     </label>
                     <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
                       <input
@@ -150,7 +152,7 @@ export default function NewProductPage() {
                         onChange={(e) => setAutoGenerate(e.target.checked)}
                         className="rounded border-[#333] bg-[#0a0a0a] text-[#f59e0b] focus:ring-[#f59e0b]"
                       />
-                      Auto
+                      {t("admin.auto")}
                     </label>
                   </div>
                   <div className="relative">
@@ -171,21 +173,21 @@ export default function NewProductPage() {
                     />
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Lowercase letters, numbers, and hyphens only
+                    {t("admin.lowerCaseOnly")}
                   </p>
                 </div>
               </div>
 
               <div className="mt-6">
                 <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">
-                  Description
+                  {t("admin.description")}
                 </label>
                 <textarea
                   id="description"
                   name="description"
                   rows={4}
                   className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                  placeholder="Describe your plugin product..."
+                  placeholder={t("admin.descriptionPlaceholder")}
                 />
               </div>
 
@@ -199,15 +201,15 @@ export default function NewProductPage() {
                 <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
                   <DollarSign className="w-4 h-4" />
                 </div>
-                Pricing
+                {t("admin.pricing")}
               </h2>
 
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-400 mb-3">USD Pricing</h3>
+                <h3 className="text-sm font-medium text-gray-400 mb-3">{t("admin.usdPricing")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="priceUSD" className="block text-sm font-medium text-gray-300 mb-2">
-                      Regular Price (USD cents) *
+                      {t("admin.regularPriceUsd")}
                     </label>
                     <input
                       type="number"
@@ -219,13 +221,13 @@ export default function NewProductPage() {
                       placeholder="999"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Enter price in cents (e.g., 999 = $9.99)
+                      {t("admin.regularPriceUsdHelp")}
                     </p>
                   </div>
 
                   <div>
                     <label htmlFor="salePriceUSD" className="block text-sm font-medium text-gray-300 mb-2">
-                      Sale Price (USD cents)
+                      {t("admin.salePriceUsd")}
                     </label>
                     <input
                       type="number"
@@ -236,18 +238,18 @@ export default function NewProductPage() {
                       placeholder="499"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Optional - leave empty if no sale
+                      {t("admin.salePriceHelp")}
                     </p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-400 mb-3">CLP Pricing</h3>
+                <h3 className="text-sm font-medium text-gray-400 mb-3">{t("admin.clpPricing")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="priceCLP" className="block text-sm font-medium text-gray-300 mb-2">
-                      Regular Price (CLP) *
+                      {t("admin.regularPriceClp")}
                     </label>
                     <input
                       type="number"
@@ -259,13 +261,13 @@ export default function NewProductPage() {
                       placeholder="4990"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Enter price in CLP pesos (e.g., 4990)
+                      {t("admin.regularPriceClpHelp")}
                     </p>
                   </div>
 
                   <div>
                     <label htmlFor="salePriceCLP" className="block text-sm font-medium text-gray-300 mb-2">
-                      Sale Price (CLP)
+                      {t("admin.salePriceClp")}
                     </label>
                     <input
                       type="number"
@@ -285,13 +287,13 @@ export default function NewProductPage() {
                 <div className="w-8 h-8 rounded-lg bg-[#22c55e]/10 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20">
                   <Server className="w-4 h-4" />
                 </div>
-                License Configuration
+                {t("admin.licenseConfig")}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="defaultDurationDays" className="block text-sm font-medium text-gray-300 mb-2">
-                    Default Duration (days) *
+                    {t("admin.defaultDurationDays")}
                   </label>
                   <input
                     type="number"
@@ -306,7 +308,7 @@ export default function NewProductPage() {
 
                 <div>
                   <label htmlFor="maxActivations" className="block text-sm font-medium text-gray-300 mb-2">
-                    Max Activations *
+                    {t("admin.maxActivationsLabel")}
                   </label>
                   <input
                     type="number"
@@ -322,7 +324,7 @@ export default function NewProductPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-white mb-6">Product Status</h2>
+              <h2 className="text-xl font-bold text-white mb-6">{t("admin.productStatus")}</h2>
               
               <div className="bg-[#0a0a0a]/50 rounded-lg p-6 border border-[#222]">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -333,10 +335,10 @@ export default function NewProductPage() {
                     defaultChecked={true}
                     className="w-5 h-5 rounded bg-[#222] border-[#333] text-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b] focus:ring-offset-2 focus:ring-offset-[#0a0a0a]"
                   />
-                  <span className="text-white font-medium">Product is Active</span>
+                  <span className="text-white font-medium">{t("admin.productIsActive")}</span>
                 </label>
                 <p className="text-gray-400 text-sm mt-2">
-                  When active, the product will be available for purchase and download
+                  {t("admin.productActiveHelp")}
                 </p>
               </div>
             </div>
@@ -346,7 +348,7 @@ export default function NewProductPage() {
                 href="/admin/products"
                 className="bg-[#222] hover:bg-[#333] text-gray-300 hover:text-white px-6 py-3 rounded-xl font-medium transition-all"
               >
-                Cancel
+                {t("common.cancel")}
               </Link>
               <button
                 type="submit"
@@ -354,7 +356,7 @@ export default function NewProductPage() {
                 className="bg-[#f59e0b] text-black hover:bg-[#d97706] px-8 py-3 rounded-xl font-bold transition-all hover:shadow-lg hover:shadow-[#f59e0b]/20 flex items-center gap-2 disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                {isSubmitting ? "Creating..." : "Create Product"}
+                {isSubmitting ? t("common.processing") : t("admin.createProductBtn")}
               </button>
             </div>
           </div>

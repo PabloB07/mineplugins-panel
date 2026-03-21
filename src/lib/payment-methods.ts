@@ -1,4 +1,4 @@
-export type PaymentMethodId = "PAYKU" | "TEBEX";
+export type PaymentMethodId = "PAYKU" | "TEBEX" | "PAYPAL";
 
 export interface PaymentMethodConfig {
   id: PaymentMethodId;
@@ -30,6 +30,15 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     logo: "/tebex-logo.svg",
     accentClass: "text-purple-400",
     available: true, // Requires prior approval from Tebex
+  },
+  {
+    id: "PAYPAL",
+    name: "PayPal",
+    checkoutLabel: "PayPal",
+    description: "Pay with PayPal account (secure checkout)",
+    logo: "/paypal-logo.svg",
+    accentClass: "text-[#0070e0]",
+    available: true,
   },
 ];
 
