@@ -23,6 +23,10 @@ interface ServerStatus {
   lastChecked: string | null;
   status: string;
   isPublic: boolean;
+  playersOnline?: number;
+  playersMax?: number;
+  version?: string;
+  motd?: string;
 }
 
 export default function AdminServersPage() {
@@ -115,7 +119,19 @@ export default function AdminServersPage() {
       });
       
       if (res.ok) {
-        fetchServers();
+        const data = await res.json();
+        setServers(prev => prev.map(s => 
+          s.id === id ? { 
+            ...s, 
+            isOnline: data.online,
+            lastChecked: new Date().toISOString(),
+            status: data.online ? "online" : "offline",
+            playersOnline: data.players?.online,
+            playersMax: data.players?.max,
+            version: data.version,
+            motd: data.motd,
+          } : s
+        ));
       }
     } catch (error) {
       console.error("Failed to check server:", error);
@@ -187,7 +203,7 @@ export default function AdminServersPage() {
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       server.isOnline 
-                        ? "bg-green-500/20 text-green-400" 
+                        ? "bg-green-500/20 text-green-400 animate-pulse" 
                         : "bg-red-500/20 text-red-400"
                     }`}>
                       {server.isOnline ? (
@@ -210,8 +226,32 @@ export default function AdminServersPage() {
                   </span>
                 </div>
                 
+                {/* Server Info */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {server.version && (
+                    <div className="bg-[#0a0a0a] rounded-lg px-2 py-1.5">
+                      <span className="text-gray-500">Version:</span>
+                      <span className="text-white ml-1 font-medium">{server.version}</span>
+                    </div>
+                  )}
+                  {server.playersOnline !== undefined && (
+                    <div className="bg-[#0a0a0a] rounded-lg px-2 py-1.5">
+                      <span className="text-gray-500">Players:</span>
+                      <span className="text-white ml-1 font-medium">
+                        {server.playersOnline}/{server.playersMax}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                {server.motd && (
+                  <div className="mt-2 text-xs text-gray-400 bg-[#0a0a0a] rounded-lg px-2 py-1.5 truncate" title={server.motd}>
+                    {server.motd}
+                  </div>
+                )}
+                
                 {server.lastChecked && (
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 mt-2">
                     Last checked: {new Date(server.lastChecked).toLocaleString()}
                   </div>
                 )}

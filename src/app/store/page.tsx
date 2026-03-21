@@ -21,10 +21,7 @@ export default async function BuyPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <Header />
-      <div className="relative overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-28">
-        {/* Background Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none"></div>
-
+      <div className="pt-24 pb-20 lg:pt-32 lg:pb-28">
         <StoreContent products={products} session={session} />
       </div>
     </div>
