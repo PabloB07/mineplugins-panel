@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Package, DollarSign, Calendar, Server } from "lucide-react";
 import ProductImageField from "@/components/admin/ProductImageField";
@@ -10,6 +9,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 
 export default function NewProductPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [autoGenerate, setAutoGenerate] = useState(true);
@@ -54,7 +54,7 @@ export default function NewProductPage() {
       });
 
       if (response.ok) {
-        redirect("/admin/products");
+        router.push("/admin/products");
       } else {
         const error = await response.json();
         alert(error.message || "Error creating product");
@@ -162,7 +162,8 @@ export default function NewProductPage() {
                       id="slug"
                       name="slug"
                       required
-                      pattern="[a-z0-9-]+"
+                      pattern="^[a-z0-9-]+$"
+                      title="Only lowercase letters, numbers, and hyphens"
                       value={slug}
                       onChange={(e) => {
                         setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-"));
