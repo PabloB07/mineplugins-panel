@@ -162,7 +162,7 @@ export default function NewProductPage() {
                       id="slug"
                       name="slug"
                       required
-                      pattern="^[a-z0-9-]+$"
+                      pattern="^[a-z0-9]+(-[a-z0-9]+)*$"
                       title="Only lowercase letters, numbers, and hyphens"
                       value={slug}
                       onChange={(e) => {

@@ -127,7 +127,7 @@ export default async function EditProductPage({ params }: PageProps) {
                   id="slug"
                   name="slug"
                   required
-                  pattern="^[a-z0-9-]+$"
+                  pattern="^[a-z0-9]+(-[a-z0-9]+)*$"
                   title="Only lowercase letters, numbers, and hyphens"
                   defaultValue={product.slug}
                   className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
