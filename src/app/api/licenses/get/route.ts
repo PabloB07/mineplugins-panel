@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withPluginAuth } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
-import { toPanelLicenseDto } from "@/lib/paper/license-endpoint";
+import { toPanelLicenseDto } from "@/lib/license-utils";
 
 interface GetBody {
   key: string;

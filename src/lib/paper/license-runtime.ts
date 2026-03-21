@@ -1,222 +1,277 @@
-import { License, LicenseStatus, Prisma, Product } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { verifyPaperLicenseKey } from "@/lib/license";
-import { markExpiredIfNeeded, normalizePluginId } from "@/lib/paper/license-endpoint";
+import { verifyPaperLicenseKey, hashForPrivacy } from "@/lib/license";
+import { normalizePluginId } from "@/lib/license-utils";
 
-export type RuntimeLicense = License & {
-  product: Product;
-  activations: {
-    id: string;
-    serverId: string;
-    isActive: boolean;
-    validationCount: number;
-    macAddress: string | null;
-    hardwareHash: string | null;
-    networkSignature: string | null;
-    serverVersion: string | null;
-    minecraftVersion: string | null;
-    serverName: string | null;
-    serverPort: number | null;
-    motd: string | null;
-    onlineMode: boolean | null;
-    maxPlayers: number | null;
-    onlinePlayers: number | null;
-    plugins: string | null;
-  }[];
-};
-
-export interface LicenseRuntimeFailure {
-  result:
-    | "NOT_FOUND"
-    | "WRONG_PLUGIN"
-    | "EXPIRED"
-    | "REVOKED"
-    | "SIGNATURE_INVALID"
-    | "REMOTE_ERROR";
-  status: number;
-  message: string;
+interface RuntimeLicense {
+  ok: true;
+  data: {
+    license: {
+      id: string;
+      licenseKey: string;
+      productId: string;
+      product: { name: string; slug: string };
+      userId: string;
+      status: string;
+      expiresAt: Date;
+      maxActivations: number;
+    };
+    pluginId: string;
+  };
 }
 
-export interface LicenseRuntimeSuccess {
-  license: RuntimeLicense;
-  pluginId: string;
+interface RuntimeError {
+  ok: false;
+  error: {
+    result: string;
+    message: string;
+    status: number;
+  };
 }
 
 export async function loadRuntimeLicense(
-  key: string,
-  pluginId?: string
-): Promise<{ ok: true; data: LicenseRuntimeSuccess } | { ok: false; error: LicenseRuntimeFailure }> {
-  const license = await prisma.license.findUnique({
-    where: { licenseKey: key },
-    include: {
-      product: true,
-      activations: true,
-    },
-  });
+  licenseKey: string,
+  pluginId?: string | null
+): Promise<RuntimeLicense | RuntimeError> {
+  try {
+    const license = await prisma.license.findUnique({
+      where: { licenseKey },
+      include: {
+        product: {
+          select: { name: true, slug: true },
+        },
+        _count: {
+          select: { activations: true },
+        },
+      },
+    });
 
-  if (!license) {
+    if (!license) {
+      return {
+        ok: false,
+        error: {
+          result: "NOT_FOUND",
+          message: "License not found",
+          status: 404,
+        },
+      };
+    }
+
+    const normalizedPluginId = normalizePluginId(license.product.slug);
+    const inputPluginId = normalizePluginId(pluginId || "");
+
+    if (inputPluginId && normalizedPluginId !== inputPluginId) {
+      return {
+        ok: false,
+        error: {
+          result: "WRONG_PLUGIN",
+          message: "License is for a different plugin",
+          status: 403,
+        },
+      };
+    }
+
+    if (!verifyPaperLicenseKey(license.product.slug, licenseKey)) {
+      return {
+        ok: false,
+        error: {
+          result: "SIGNATURE_INVALID",
+          message: "License key signature verification failed",
+          status: 401,
+        },
+      };
+    }
+
+    if (license.status === "REVOKED") {
+      return {
+        ok: false,
+        error: {
+          result: "REVOKED",
+          message: "This license has been revoked",
+          status: 403,
+        },
+      };
+    }
+
+    if (license.expiresAt < new Date()) {
+      if (license.status === "ACTIVE") {
+        await prisma.license.update({
+          where: { id: license.id },
+          data: { status: "EXPIRED" },
+        });
+      }
+      return {
+        ok: false,
+        error: {
+          result: "EXPIRED",
+          message: "This license has expired",
+          status: 410,
+        },
+      };
+    }
+
+    if (license.status !== "ACTIVE") {
+      return {
+        ok: false,
+        error: {
+          result: license.status,
+          message: `License status is ${license.status}`,
+          status: 403,
+        },
+      };
+    }
+
     return {
-      ok: false,
-      error: {
-        result: "NOT_FOUND",
-        status: 404,
-        message: "License not found",
+      ok: true,
+      data: {
+        license: {
+          id: license.id,
+          licenseKey: license.licenseKey,
+          productId: license.productId,
+          product: license.product,
+          userId: license.userId,
+          status: license.status,
+          expiresAt: license.expiresAt,
+          maxActivations: license.maxActivations,
+        },
+        pluginId: normalizedPluginId,
       },
     };
-  }
-
-  const dbPluginId = normalizePluginId(license.product.slug);
-  const requestedPluginId = normalizePluginId(pluginId || dbPluginId);
-
-  if (requestedPluginId !== dbPluginId) {
-    return {
-      ok: false,
-      error: {
-        result: "WRONG_PLUGIN",
-        status: 403,
-        message: "License does not belong to this plugin",
-      },
-    };
-  }
-
-  if (!verifyPaperLicenseKey(dbPluginId, key)) {
-    return {
-      ok: false,
-      error: {
-        result: "SIGNATURE_INVALID",
-        status: 403,
-        message: "Invalid license signature",
-      },
-    };
-  }
-
-  const expiredNow = await markExpiredIfNeeded(license);
-  if (expiredNow || license.status === LicenseStatus.EXPIRED) {
-    return {
-      ok: false,
-      error: {
-        result: "EXPIRED",
-        status: 403,
-        message: "License has expired",
-      },
-    };
-  }
-
-  if (license.status === LicenseStatus.REVOKED || license.status === LicenseStatus.SUSPENDED) {
-    return {
-      ok: false,
-      error: {
-        result: "REVOKED",
-        status: 403,
-        message: `License is ${license.status.toLowerCase()}`,
-      },
-    };
-  }
-
-  if (license.status !== LicenseStatus.ACTIVE) {
+  } catch (error) {
+    console.error("Load runtime license error:", error);
     return {
       ok: false,
       error: {
         result: "REMOTE_ERROR",
+        message: "Failed to load license data",
         status: 500,
-        message: "Unexpected license status",
       },
     };
   }
+}
 
-  return {
-    ok: true,
-    data: {
-      license,
-      pluginId: dbPluginId,
-    },
+interface TouchActivationResult {
+  ok: true;
+  activation: {
+    id: string;
+    isActive: boolean;
   };
+  currentActivations: number;
+}
+
+interface TouchActivationError {
+  ok: false;
+  error: string;
+  message: string;
+  status: number;
+}
+
+interface ActivationData {
+  serverIp?: string;
+  serverVersion?: string;
+  minecraftVersion?: string;
+  serverName?: string;
+  serverPort?: number;
+  motd?: string;
+  onlineMode?: boolean;
+  maxPlayers?: number;
+  onlinePlayers?: number;
+  plugins?: string[];
+  macAddress?: string;
+  hardwareHash?: string;
+  networkSignature?: string;
 }
 
 export async function touchLicenseActivation(
-  license: RuntimeLicense,
+  license: { id: string; maxActivations: number },
   serverId: string,
-  fields: {
-    serverIp?: string;
-    serverVersion?: string;
-    minecraftVersion?: string;
-    serverName?: string;
-    serverPort?: number;
-    motd?: string;
-    onlineMode?: boolean;
-    maxPlayers?: number;
-    onlinePlayers?: number;
-    plugins?: string[];
-    macAddress?: string;
-    hardwareHash?: string;
-    networkSignature?: string;
-  }
-): Promise<{ ok: true; currentActivations: number } | { ok: false; status: number; error: string; message: string }> {
-  const existingActivation = license.activations.find((a) => a.serverId === serverId);
-  const activeActivations = license.activations.filter((a) => a.isActive).length;
+  data: ActivationData
+): Promise<TouchActivationResult | TouchActivationError> {
+  try {
+    const activations = await prisma.licenseActivation.findMany({
+      where: { licenseId: license.id, isActive: true },
+    });
 
-  if (!existingActivation && activeActivations >= license.maxActivations) {
-    return {
-      ok: false,
-      status: 403,
-      error: "MAX_ACTIVATIONS",
-      message: `Maximum activations reached (${license.maxActivations})`,
-    };
-  }
+    const currentCount = activations.length;
 
-  const now = new Date();
-  const encodedPlugins = fields.plugins ? JSON.stringify(fields.plugins) : null;
+    if (currentCount >= license.maxActivations) {
+      const existing = activations.find((a) => a.serverId === serverId);
+      if (!existing) {
+        return {
+          ok: false,
+          error: "MAX_ACTIVATIONS",
+          message: `Maximum activations (${license.maxActivations}) reached`,
+          status: 403,
+        };
+      }
+    }
 
-  if (!existingActivation) {
-    await prisma.licenseActivation.create({
+    const existingActivation = activations.find((a) => a.serverId === serverId);
+
+    if (existingActivation) {
+      const updated = await prisma.licenseActivation.update({
+        where: { id: existingActivation.id },
+        data: {
+          isActive: true,
+          serverIp: data.serverIp,
+          serverVersion: data.serverVersion,
+          minecraftVersion: data.minecraftVersion,
+          serverName: data.serverName,
+          serverPort: data.serverPort,
+          motd: data.motd,
+          onlineMode: data.onlineMode,
+          maxPlayers: data.maxPlayers,
+          onlinePlayers: data.onlinePlayers,
+          plugins: data.plugins ? JSON.stringify(data.plugins) : null,
+          macAddress: data.macAddress,
+          hardwareHash: data.hardwareHash,
+          networkSignature: data.networkSignature,
+          lastSeenAt: new Date(),
+          validationCount: existingActivation.validationCount + 1,
+        },
+      });
+
+      return {
+        ok: true,
+        activation: { id: updated.id, isActive: updated.isActive },
+        currentActivations: currentCount,
+      };
+    }
+
+    const newActivation = await prisma.licenseActivation.create({
       data: {
         licenseId: license.id,
         serverId,
-        serverIp: fields.serverIp,
-        serverVersion: fields.serverVersion,
-        minecraftVersion: fields.minecraftVersion,
-        serverName: fields.serverName,
-        serverPort: fields.serverPort,
-        motd: fields.motd,
-        onlineMode: fields.onlineMode,
-        maxPlayers: fields.maxPlayers,
-        onlinePlayers: fields.onlinePlayers,
-        plugins: encodedPlugins,
-        macAddress: fields.macAddress,
-        hardwareHash: fields.hardwareHash,
-        networkSignature: fields.networkSignature,
+        serverIp: data.serverIp,
+        serverVersion: data.serverVersion,
+        minecraftVersion: data.minecraftVersion,
+        serverName: data.serverName,
+        serverPort: data.serverPort,
+        motd: data.motd,
+        onlineMode: data.onlineMode,
+        maxPlayers: data.maxPlayers,
+        onlinePlayers: data.onlinePlayers,
+        plugins: data.plugins ? JSON.stringify(data.plugins) : null,
+        macAddress: data.macAddress,
+        hardwareHash: data.hardwareHash,
+        networkSignature: data.networkSignature,
         isActive: true,
+        lastSeenAt: new Date(),
         validationCount: 1,
-        lastSeenAt: now,
       },
     });
 
-    return { ok: true, currentActivations: activeActivations + 1 };
+    return {
+      ok: true,
+      activation: { id: newActivation.id, isActive: newActivation.isActive },
+      currentActivations: currentCount + 1,
+    };
+  } catch (error) {
+    console.error("Touch activation error:", error);
+    return {
+      ok: false,
+      error: "INTERNAL_ERROR",
+      message: "Failed to update activation",
+      status: 500,
+    };
   }
-
-  const data: Prisma.LicenseActivationUpdateInput = {
-    lastSeenAt: now,
-    validationCount: { increment: 1 },
-  };
-
-  if (fields.serverIp !== undefined) data.serverIp = fields.serverIp;
-  if (fields.serverVersion !== undefined) data.serverVersion = fields.serverVersion;
-  if (fields.minecraftVersion !== undefined) data.minecraftVersion = fields.minecraftVersion;
-  if (fields.serverName !== undefined) data.serverName = fields.serverName;
-  if (fields.serverPort !== undefined) data.serverPort = fields.serverPort;
-  if (fields.motd !== undefined) data.motd = fields.motd;
-  if (fields.onlineMode !== undefined) data.onlineMode = fields.onlineMode;
-  if (fields.maxPlayers !== undefined) data.maxPlayers = fields.maxPlayers;
-  if (fields.onlinePlayers !== undefined) data.onlinePlayers = fields.onlinePlayers;
-  if (fields.plugins !== undefined) data.plugins = encodedPlugins;
-  if (fields.macAddress !== undefined) data.macAddress = fields.macAddress;
-  if (fields.hardwareHash !== undefined) data.hardwareHash = fields.hardwareHash;
-  if (fields.networkSignature !== undefined) data.networkSignature = fields.networkSignature;
-
-  await prisma.licenseActivation.update({
-    where: { id: existingActivation.id },
-    data,
-  });
-
-  return { ok: true, currentActivations: activeActivations };
 }

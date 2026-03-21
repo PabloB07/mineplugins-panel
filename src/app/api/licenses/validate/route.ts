@@ -4,10 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { verifyPaperLicenseKey } from "@/lib/license";
 import {
   mapStatusToValidationResult,
-  markExpiredIfNeeded,
   normalizePluginId,
   toPanelLicenseDto,
-} from "@/lib/paper/license-endpoint";
+} from "@/lib/license-utils";
 
 interface ValidateBody {
   pluginId: string;
@@ -46,8 +45,11 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ result: "WRONG_PLUGIN" });
     }
 
-    const expiredNow = await markExpiredIfNeeded(license);
-    if (expiredNow) {
+    if (new Date(license.expiresAt) < new Date() && license.status === "ACTIVE") {
+      await prisma.license.update({
+        where: { id: license.id },
+        data: { status: "EXPIRED" },
+      });
       return NextResponse.json({ result: "EXPIRED" });
     }
 

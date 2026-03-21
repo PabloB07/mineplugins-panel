@@ -60,7 +60,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existing = runtime.data.license.activations.find((a) => a.serverId === serverId);
+    const activations = await prisma.licenseActivation.findMany({
+      where: { licenseId: runtime.data.license.id, isActive: true },
+    });
+
+    const existing = activations.find((a) => a.serverId === serverId);
     if (!existing) {
       return NextResponse.json(
         {

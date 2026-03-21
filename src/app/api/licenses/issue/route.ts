@@ -5,11 +5,9 @@ import { generatePaperLicenseKey } from "@/lib/license";
 import { prisma } from "@/lib/prisma";
 import {
   buildExpiresAt,
-  findProductForPluginId,
   normalizePluginId,
-  resolveOwnerUser,
   toPanelLicenseDto,
-} from "@/lib/paper/license-endpoint";
+} from "@/lib/license-utils";
 
 interface IssueBody {
   pluginId: string;
@@ -30,8 +28,22 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     }
 
     const [product, user] = await Promise.all([
-      findProductForPluginId(pluginId),
-      resolveOwnerUser(owner),
+      prisma.product.findFirst({
+        where: {
+          OR: [
+            { slug: { equals: pluginId, mode: "insensitive" } },
+            { id: pluginId },
+          ],
+        },
+      }),
+      prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: { equals: owner, mode: "insensitive" } },
+            { id: owner },
+          ],
+        },
+      }),
     ]);
 
     if (!product) {
@@ -41,11 +53,18 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       );
     }
 
+    if (!user) {
+      return NextResponse.json(
+        { error: "USER_NOT_FOUND", message: `No user found for owner '${owner}'` },
+        { status: 404 }
+      );
+    }
+
     const expiresAt = buildExpiresAt(validDays);
 
     let created = null;
     for (let i = 0; i < 5; i++) {
-      const key = generatePaperLicenseKey(pluginId);
+      const key = generatePaperLicenseKey(product.slug);
       try {
         created = await prisma.license.create({
           data: {
