@@ -217,9 +217,10 @@ export default function NewProductPage() {
                       id="priceUSD"
                       name="priceUSD"
                       required
-                      min="1"
+                      min="0.01"
+                      step="0.01"
                       className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                      placeholder="999"
+                      placeholder="9.99"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {t("admin.regularPriceUsdHelp")}
@@ -234,9 +235,10 @@ export default function NewProductPage() {
                       type="number"
                       id="salePriceUSD"
                       name="salePriceUSD"
-                      min="1"
+                      min="0.01"
+                      step="0.01"
                       className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#222] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:border-transparent hover:border-[#f59e0b]/30 transition-all"
-                      placeholder="499"
+                      placeholder="4.99"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {t("admin.salePriceHelp")}

@@ -42,9 +42,9 @@ export default async function EditProductPage({ params }: PageProps) {
     const slug = formData.get("slug") as string;
     const description = formData.get("description") as string;
     const image = formData.get("image") as string;
-    const priceUSD = parseInt(formData.get("priceUSD") as string);
+    const priceUSD = parseFloat(formData.get("priceUSD") as string);
     const priceCLP = parseInt(formData.get("priceCLP") as string);
-    const salePriceUSD = formData.get("salePriceUSD") ? parseInt(formData.get("salePriceUSD") as string) : null;
+    const salePriceUSD = formData.get("salePriceUSD") ? parseFloat(formData.get("salePriceUSD") as string) : null;
     const salePriceCLP = formData.get("salePriceCLP") ? parseInt(formData.get("salePriceCLP") as string) : null;
     const defaultDurationDays = parseInt(formData.get("defaultDurationDays") as string);
     const maxActivations = parseInt(formData.get("maxActivations") as string);
@@ -169,31 +169,33 @@ export default async function EditProductPage({ params }: PageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="priceUSD" className="block text-sm font-medium text-gray-300 mb-2">
-                    Regular Price (USD cents) *
+                    Regular Price (USD) *
                   </label>
                   <input
                     type="number"
                     id="priceUSD"
                     name="priceUSD"
                     required
-                    min="1"
+                    min="0.01"
+                    step="0.01"
                     defaultValue={product.priceUSD}
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Enter price in cents (e.g., 999 = $9.99)
+                    Price in dollars (e.g., 9.99 = $9.99)
                   </p>
                 </div>
 
                 <div>
                   <label htmlFor="salePriceUSD" className="block text-sm font-medium text-gray-300 mb-2">
-                    Sale Price (USD cents)
+                    Sale Price (USD)
                   </label>
                   <input
                     type="number"
                     id="salePriceUSD"
                     name="salePriceUSD"
-                    min="1"
+                    min="0.01"
+                    step="0.01"
                     defaultValue={product.salePriceUSD || ""}
                     className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-[#f59e0b]/60 transition-colors"
                   />

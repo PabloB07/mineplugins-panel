@@ -2,34 +2,11 @@
 
 import { useTranslation } from "@/i18n/useTranslation";
 import ProductGrid from "@/components/store/ProductGrid";
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  image: string | null;
-  priceUSD: number;
-  priceCLP: number;
-  salePriceUSD: number | null;
-  salePriceCLP: number | null;
-  maxActivations: number;
-  versions: { version: string }[];
-}
+import { Product, Session } from "./types";
 
 interface StoreContentProps {
   products: Product[];
   session: Session | null;
-}
-
-interface Session {
-  user?: {
-    id?: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    role?: string;
-  };
 }
 
 export default function StoreContent({ products, session }: StoreContentProps) {

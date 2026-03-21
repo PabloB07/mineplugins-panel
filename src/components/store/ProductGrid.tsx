@@ -20,44 +20,11 @@ import {
   Clock,
   CreditCard
 } from "lucide-react";
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  image: string | null;
-  priceUSD: number;
-  priceCLP: number;
-  salePriceUSD: number | null;
-  salePriceCLP: number | null;
-  maxActivations: number;
-  versions: { version: string }[];
-}
-
-interface ServerStatus {
-  id: string;
-  name: string;
-  ip: string;
-  port: number;
-  isOnline: boolean;
-  playersOnline?: number;
-  playersMax?: number;
-}
+import { Product, Session, ServerStatus } from "./types";
 
 interface ProductGridProps {
   products: Product[];
   session: Session | null;
-}
-
-interface Session {
-  user?: {
-    id?: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    role?: string;
-  };
 }
 
 function CreeperVoxelIcon({ className = "" }: { className?: string }) {

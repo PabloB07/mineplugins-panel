@@ -211,7 +211,7 @@
     "clpPricing": "Precio en CLP",
     "regularPrice": "Precio Regular",
     "salePrice": "Precio de Oferta",
-    "regularPriceUsdHelp": "Ingresa el precio en centavos (ej: 999 = $9.99)",
+    "regularPriceUsdHelp": "Precio en dólares USD (ej: 9.99 = $9.99)",
     "regularPriceClpHelp": "Ingresa el precio en pesos CLP (ej: 4990)",
     "salePriceHelp": "Opcional - deja vacío si no hay oferta",
     "licenseConfig": "Configuración de Licencia",
