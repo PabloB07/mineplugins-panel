@@ -16,6 +16,7 @@ import {
     Menu,
     X,
     User,
+    Server,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -36,6 +37,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/products", label: "Products", icon: Package },
         { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
         { href: "/admin/licenses", label: "Licenses", icon: Key },
+        { href: "/admin/servers", label: "Servers", icon: Server },
         { href: "/admin/transfers", label: "Transfers", icon: ArrowRight },
         { href: "/admin/users", label: "Customers", icon: Users },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
