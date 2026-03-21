@@ -12,6 +12,7 @@ import {
     X,
     User,
     LogOut,
+    Server,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -32,6 +33,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/dashboard/licenses", label: "My Plugins", icon: Key },
         { href: "/dashboard/downloads", label: "Downloads", icon: Download },
+        { href: "/dashboard/servers", label: "Servers", icon: Server },
     ];
 
     const isActive = (path: string) => pathname === path;

@@ -189,7 +189,7 @@ export default function DashboardServersPage() {
                     {server.icon ? (
                       <div className="relative">
                         <img
-                          src={`data:image/png;base64,${server.icon}`}
+                          src={server.icon.startsWith('data:') ? server.icon : `data:image/png;base64,${server.icon}`}
                           alt={server.name}
                           className="w-20 h-20 rounded-xl border-2 border-[#333] shadow-lg"
                         />
