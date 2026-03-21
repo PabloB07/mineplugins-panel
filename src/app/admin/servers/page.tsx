@@ -5,42 +5,41 @@ import {
   Server, 
   Plus, 
   Trash2, 
-  CheckCircle, 
-  XCircle, 
+  CheckCircle,
   RefreshCw,
-  Globe,
-  Shield,
-  Loader2
+  Loader2,
+  RotateCw,
+  Power
 } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
-
-interface ServerStatus {
-  id: string;
-  name: string;
-  ip: string;
-  port: number;
-  isOnline: boolean;
-  lastChecked: string | null;
-  status: string;
-  isPublic: boolean;
-  playersOnline?: number;
-  playersMax?: number;
-  version?: string;
-  motd?: string;
-}
+import { ServerStatus as ServerStatusType, ServerFormData } from "@/components/admin/servers/types";
+import ServerCard from "@/components/admin/servers/ServerCard";
+import ServerModal from "@/components/admin/servers/ServerModal";
 
 export default function AdminServersPage() {
   const { t } = useTranslation();
-  const [servers, setServers] = useState<ServerStatus[]>([]);
+  const [servers, setServers] = useState<ServerStatusType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newServer, setNewServer] = useState({ name: "", ip: "", port: "25565", isPublic: true });
+  const [showModal, setShowModal] = useState(false);
+  const [editingServer, setEditingServer] = useState<ServerStatusType | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [refreshing, setRefreshing] = useState<string | null>(null);
+  const [selectedServers, setSelectedServers] = useState<Set<string>>(new Set());
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   useEffect(() => {
     fetchServers();
   }, []);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const interval = setInterval(() => {
+      checkAllServers();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, servers]);
 
   async function fetchServers() {
     try {
@@ -56,24 +55,46 @@ export default function AdminServersPage() {
     }
   }
 
-  async function addServer(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmitForm(formData: ServerFormData) {
     setSubmitting(true);
     
     try {
-      const res = await fetch("/api/admin/servers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newServer),
-      });
-      
-      if (res.ok) {
-        setShowAddModal(false);
-        setNewServer({ name: "", ip: "", port: "25565", isPublic: true });
-        fetchServers();
+      if (editingServer) {
+        const res = await fetch(`/api/admin/servers/${editingServer.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            ip: formData.ip,
+            port: parseInt(formData.port),
+            isPublic: formData.isPublic,
+          }),
+        });
+        
+        if (res.ok) {
+          setShowModal(false);
+          setEditingServer(null);
+          fetchServers();
+        }
+      } else {
+        const res = await fetch("/api/admin/servers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            ip: formData.ip,
+            port: parseInt(formData.port),
+            isPublic: formData.isPublic,
+          }),
+        });
+        
+        if (res.ok) {
+          setShowModal(false);
+          fetchServers();
+        }
       }
     } catch (error) {
-      console.error("Failed to add server:", error);
+      console.error("Failed to save server:", error);
     } finally {
       setSubmitting(false);
     }
@@ -88,11 +109,29 @@ export default function AdminServersPage() {
       });
       
       if (res.ok) {
+        setSelectedServers(prev => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
         fetchServers();
       }
     } catch (error) {
       console.error("Failed to delete server:", error);
     }
+  }
+
+  async function deleteSelectedServers() {
+    if (selectedServers.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedServers.size} server(s)?`)) return;
+    
+    const deletePromises = Array.from(selectedServers).map(id =>
+      fetch(`/api/admin/servers/${id}`, { method: "DELETE" })
+    );
+    
+    await Promise.all(deletePromises);
+    setSelectedServers(new Set());
+    fetchServers();
   }
 
   async function togglePublic(id: string, currentPublic: boolean) {
@@ -140,9 +179,43 @@ export default function AdminServersPage() {
     }
   }
 
+  async function checkAllServers() {
+    const checkPromises = servers.map(server => checkServer(server.id));
+    await Promise.all(checkPromises);
+  }
+
+  function toggleSelectServer(id: string) {
+    setSelectedServers(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedServers.size === servers.length) {
+      setSelectedServers(new Set());
+    } else {
+      setSelectedServers(new Set(servers.map(s => s.id)));
+    }
+  }
+
+  function openEditModal(server: ServerStatusType) {
+    setEditingServer(server);
+    setShowModal(true);
+  }
+
+  function openAddModal() {
+    setEditingServer(null);
+    setShowModal(true);
+  }
+
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      {/* Header */}
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -166,17 +239,62 @@ export default function AdminServersPage() {
             </div>
           </div>
 
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
-          >
-            <Plus className="w-5 h-5" />
-            Add Server
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={checkAllServers}
+              disabled={loading || servers.length === 0}
+              className="bg-[#1a1a1a] hover:bg-[#222] text-white px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2 border border-[#333]"
+              title="Check all servers"
+            >
+              <RefreshCw className="w-5 h-5" />
+              Check All
+            </button>
+            <button
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className={`px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2 border ${
+                autoRefresh 
+                  ? "bg-green-500/10 border-green-500/30 text-green-400" 
+                  : "bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#222]"
+              }`}
+              title="Auto-refresh every 30 seconds"
+            >
+              <Power className="w-5 h-5" />
+              Auto {autoRefresh ? "ON" : "OFF"}
+            </button>
+            <button
+              onClick={openAddModal}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
+            >
+              <Plus className="w-5 h-5" />
+              Add Server
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Servers Grid */}
+      {selectedServers.size > 0 && (
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+          <span className="text-blue-400 font-medium">
+            {selectedServers.size} server(s) selected
+          </span>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setSelectedServers(new Set())}
+              className="px-4 py-2 bg-[#1a1a1a] hover:bg-[#222] text-white rounded-lg transition-colors border border-[#333]"
+            >
+              Clear Selection
+            </button>
+            <button
+              onClick={deleteSelectedServers}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors border border-red-500/30 flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Selected
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full flex items-center justify-center py-12">
@@ -188,198 +306,57 @@ export default function AdminServersPage() {
             <h3 className="text-xl font-semibold text-white mb-2">No Servers Added</h3>
             <p className="text-gray-400 mb-6">Add your first server to display status on the homepage.</p>
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={openAddModal}
               className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-xl font-medium transition-all"
             >
               Add First Server
             </button>
           </div>
         ) : (
-          servers.map((server) => (
-            <div key={server.id} className="bg-[#111] border border-[#222] rounded-xl overflow-hidden hover:border-blue-500/30 transition-all">
-              {/* Server Header */}
-              <div className="p-6 border-b border-[#222] bg-[#151515]">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      server.isOnline 
-                        ? "bg-green-500/20 text-green-400 animate-pulse" 
-                        : "bg-red-500/20 text-red-400"
-                    }`}>
-                      {server.isOnline ? (
-                        <CheckCircle className="w-5 h-5" />
-                      ) : (
-                        <XCircle className="w-5 h-5" />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">{server.name}</h3>
-                      <p className="text-sm text-gray-400 font-mono">{server.ip}:{server.port}</p>
-                    </div>
-                  </div>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    server.isOnline 
-                      ? "bg-green-500/20 text-green-400 border border-green-500/30" 
-                      : "bg-red-500/20 text-red-400 border border-red-500/30"
-                  }`}>
-                    {server.isOnline ? "Online" : "Offline"}
-                  </span>
-                </div>
-                
-                {/* Server Info */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {server.version && (
-                    <div className="bg-[#0a0a0a] rounded-lg px-2 py-1.5">
-                      <span className="text-gray-500">Version:</span>
-                      <span className="text-white ml-1 font-medium">{server.version}</span>
-                    </div>
-                  )}
-                  {server.playersOnline !== undefined && (
-                    <div className="bg-[#0a0a0a] rounded-lg px-2 py-1.5">
-                      <span className="text-gray-500">Players:</span>
-                      <span className="text-white ml-1 font-medium">
-                        {server.playersOnline}/{server.playersMax}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                
-                {server.motd && (
-                  <div className="mt-2 text-xs text-gray-400 bg-[#0a0a0a] rounded-lg px-2 py-1.5 truncate" title={server.motd}>
-                    {server.motd}
-                  </div>
-                )}
-                
-                {server.lastChecked && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    Last checked: {new Date(server.lastChecked).toLocaleString()}
-                  </div>
-                )}
-              </div>
-
-              {/* Server Actions */}
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => checkServer(server.id)}
-                    disabled={refreshing === server.id}
-                    className="p-2 rounded-lg hover:bg-[#222] text-gray-400 hover:text-blue-400 transition-colors disabled:opacity-50"
-                    title="Check Status"
-                  >
-                    <RefreshCw className={`w-4 h-4 ${refreshing === server.id ? "animate-spin" : ""}`} />
-                  </button>
-                  
-                  <button
-                    onClick={() => togglePublic(server.id, server.isPublic)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      server.isPublic 
-                        ? "hover:bg-green-500/10 text-green-400" 
-                        : "hover:bg-gray-500/10 text-gray-500"
-                    }`}
-                    title={server.isPublic ? "Public (shown on homepage)" : "Private (hidden)"}
-                  >
-                    <Globe className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <button
-                  onClick={() => deleteServer(server.id)}
-                  className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
-                  title="Delete Server"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
+          <>
+            <div className="col-span-full bg-[#0a0a0a] border border-[#222] rounded-lg p-3 flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={selectedServers.size === servers.length && servers.length > 0}
+                onChange={toggleSelectAll}
+                className="w-4 h-4 rounded border-[#333] bg-[#1a1a1a] text-blue-500 focus:ring-blue-500/50"
+              />
+              <span className="text-sm text-gray-400">Select all servers</span>
             </div>
-          ))
+            {servers.map((server) => (
+              <div key={server.id} className="relative">
+                <div className="absolute top-4 left-4 z-10">
+                  <input
+                    type="checkbox"
+                    checked={selectedServers.has(server.id)}
+                    onChange={() => toggleSelectServer(server.id)}
+                    className="w-4 h-4 rounded border-[#333] bg-[#1a1a1a] text-blue-500 focus:ring-blue-500/50"
+                  />
+                </div>
+                <ServerCard
+                  server={server}
+                  isRefreshing={refreshing === server.id}
+                  onRefresh={checkServer}
+                  onTogglePublic={togglePublic}
+                  onDelete={deleteServer}
+                  onEdit={openEditModal}
+                />
+              </div>
+            ))}
+          </>
         )}
       </div>
 
-      {/* Add Server Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#111] rounded-xl border border-[#222] w-full max-w-md p-6 shadow-2xl">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              <Server className="w-5 h-5 text-blue-400" />
-              Add New Server
-            </h2>
-
-            <form onSubmit={addServer} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Server Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newServer.name}
-                  onChange={(e) => setNewServer({ ...newServer, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-blue-500/50 transition-colors"
-                  placeholder="Main Server"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    IP Address *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newServer.ip}
-                    onChange={(e) => setNewServer({ ...newServer, ip: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-blue-500/50 transition-colors font-mono"
-                    placeholder="play.example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Port
-                  </label>
-                  <input
-                    type="number"
-                    value={newServer.port}
-                    onChange={(e) => setNewServer({ ...newServer, port: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#333] rounded-lg text-white focus:outline-none focus:border-blue-500/50 transition-colors font-mono"
-                    placeholder="25565"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="isPublic"
-                  checked={newServer.isPublic}
-                  onChange={(e) => setNewServer({ ...newServer, isPublic: e.target.checked })}
-                  className="w-4 h-4 rounded border-[#333] bg-[#0a0a0a] text-blue-500 focus:ring-blue-500/50"
-                />
-                <label htmlFor="isPublic" className="text-sm text-gray-300">
-                  Show on homepage (publicly visible)
-                </label>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1 px-4 py-3 bg-[#1a1a1a] hover:bg-[#222] text-white rounded-lg font-medium transition-colors border border-[#333]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-bold transition-colors disabled:opacity-50"
-                >
-                  {submitting ? "Adding..." : "Add Server"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <ServerModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingServer(null);
+        }}
+        onSubmit={handleSubmitForm}
+        editingServer={editingServer}
+        isSubmitting={submitting}
+      />
     </div>
   );
 }
