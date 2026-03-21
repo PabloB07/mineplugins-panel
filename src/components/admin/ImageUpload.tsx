@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Image as ImageIcon, X, Loader2 } from "lucide-react";
+import { Upload, X, Loader2 } from "lucide-react";
 import { handleImageUpload } from "@/lib/file-actions";
 
 interface ImageUploadProps {

@@ -104,8 +104,25 @@ async function handlePaypalReturn(request: NextRequest) {
       });
     });
 
-    // Redirect to the downloads route as requested.
-    return NextResponse.redirect(`${baseUrl}/downloads?success=true`);
+    // Find the created license to redirect properly
+    const completedOrder = await prisma.order.findUnique({
+      where: { id: order.id },
+      include: {
+        items: {
+          include: {
+            license: true,
+          },
+        },
+      },
+    });
+
+    const licenseId = completedOrder?.items?.[0]?.license?.id;
+    
+    // Redirect to the license detail or downloads page
+    if (licenseId) {
+      return NextResponse.redirect(`${baseUrl}/dashboard/licenses/${licenseId}?success=true`);
+    }
+    return NextResponse.redirect(`${baseUrl}/downloads?success=true&order=${order.id}`);
   } catch (error) {
     console.error("PayPal return/capture error:", {
       token,

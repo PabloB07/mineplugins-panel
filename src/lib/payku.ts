@@ -67,7 +67,6 @@ export async function createPaykuPayment(
   try {
     const settings = await getGatewaySettings();
     const PAYKU_API_TOKEN = settings.payku.apiToken || "";
-    const PAYKU_SECRET_KEY = settings.payku.secretKey || "";
     const PAYKU_API_URL = getPaykuApiUrl(settings.payku.environment);
 
     if (!PAYKU_API_TOKEN || PAYKU_API_TOKEN === "placeholder") {

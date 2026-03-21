@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         });
 
         for (const item of order.items) {
-          await prisma.license.create({
+          const license = await prisma.license.create({
             data: {
               userId: order.userId,
               productId: item.productId,
@@ -56,6 +56,10 @@ export async function POST(request: NextRequest) {
               expiresAt: new Date(Date.now() + (item.durationDays || 365) * 24 * 60 * 60 * 1000),
               maxActivations: 1,
             },
+          });
+          await prisma.orderItem.update({
+            where: { id: item.id },
+            data: { licenseId: license.id },
           });
         }
 

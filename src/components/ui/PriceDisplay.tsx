@@ -84,7 +84,6 @@ export function PriceSummary({
   const savingsCLP = priceCLP && salePriceCLP ? priceCLP - salePriceCLP : Math.round((priceUSD - displayPriceUSD) * 920);
 
   const currentPrice = formatPrice(displayPriceUSD, displayPriceCLP);
-  const originalPrice = formatPrice(priceUSD, priceCLP);
 
   return (
     <div className="space-y-4 mb-7">

@@ -568,6 +568,7 @@ function CreateLicenseModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
+  const { t } = useTranslation();
   const [durationDays, setDurationDays] = useState(365);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -628,19 +629,19 @@ function CreateLicenseModal({
       <div className="bg-[#111] rounded-xl border border-[#222] w-full max-w-md p-6 shadow-2xl shadow-black/50">
         <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <Shield className="w-5 h-5 text-blue-400" />
-          Create New License
+          {t("admin.createLicense")}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-400 text-sm font-medium mb-2">Customer</label>
+            <label className="block text-gray-400 text-sm font-medium mb-2">{t("admin.customer")}</label>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
               className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
               required
             >
-              <option value="">Select a user</option>
+              <option value="">{t("admin.selectUser")}</option>
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.email}

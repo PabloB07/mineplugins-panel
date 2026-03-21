@@ -11,6 +11,7 @@ import {
   Search,
   Users
 } from "lucide-react";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface Transfer {
   id: string;
@@ -27,6 +28,7 @@ interface User {
 }
 
 export default function AdminTransfersPage() {
+  const { t } = useTranslation();
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [licenses, setLicenses] = useState<Array<{
@@ -277,7 +279,7 @@ export default function AdminTransfersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Select License (Active only)
+                  {t("admin.selectLicenseActive")}
                 </label>
                 <select
                   value={transferForm.licenseId}
@@ -285,7 +287,7 @@ export default function AdminTransfersPage() {
                   className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white focus:outline-none focus:border-[#22c55e]/50"
                   required
                 >
-                  <option value="">Choose a license...</option>
+                  <option value="">{t("admin.chooseLicense")}</option>
                   {eligibleLicenses.map((license) => (
                     <option key={license.id} value={license.id}>
                       {license.product.name} • {license.licenseKey.substring(0, 8)}… • {license.user?.email}

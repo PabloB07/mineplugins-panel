@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 interface Version {
   id: string;
   version: string;
@@ -17,8 +15,6 @@ interface ProductVersionSelectorProps {
 }
 
 export default function ProductVersionSelector({ versions, productId }: ProductVersionSelectorProps) {
-  const router = useRouter();
-
   const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const version = versions.find(v => v.id === e.target.value);
     if (version && version.downloadUrl) {

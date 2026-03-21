@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "@/i18n/useTranslation";
 
 type EnvMode = "SANDBOX" | "PRODUCTION";
 
@@ -24,6 +25,7 @@ interface PaymentSettingsResponse {
 }
 
 export default function AdminPaymentsSettingsPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string>("");
@@ -140,8 +142,8 @@ export default function AdminPaymentsSettingsPage() {
               onChange={(e) => setPaykuEnvironment(e.target.value as EnvMode)}
               className={`${inputClass} mt-1`}
             >
-              <option value="SANDBOX">Sandbox</option>
-              <option value="PRODUCTION">Producción</option>
+              <option value="SANDBOX">{t("admin.sandbox")}</option>
+              <option value="PRODUCTION">{t("admin.production")}</option>
             </select>
           </label>
           <div className="text-xs text-gray-500 self-end pb-2">
@@ -179,8 +181,8 @@ export default function AdminPaymentsSettingsPage() {
             onChange={(e) => setPaypalEnvironment(e.target.value as EnvMode)}
             className={`${inputClass} mt-1`}
           >
-            <option value="SANDBOX">Sandbox</option>
-            <option value="PRODUCTION">Producción</option>
+            <option value="SANDBOX">{t("admin.sandbox")}</option>
+            <option value="PRODUCTION">{t("admin.production")}</option>
           </select>
         </label>
         <label className="block text-sm text-gray-300">
@@ -221,8 +223,8 @@ export default function AdminPaymentsSettingsPage() {
             onChange={(e) => setTebexEnvironment(e.target.value as EnvMode)}
             className={`${inputClass} mt-1`}
           >
-            <option value="SANDBOX">Sandbox</option>
-            <option value="PRODUCTION">Producción</option>
+            <option value="SANDBOX">{t("admin.sandbox")}</option>
+            <option value="PRODUCTION">{t("admin.production")}</option>
           </select>
         </label>
         <label className="block text-sm text-gray-300">

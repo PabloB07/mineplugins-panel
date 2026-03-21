@@ -1,10 +1,26 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Plus, Package, Download, Star, AlertTriangle } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import { DeleteVersionButton } from "@/components/DeleteVersionButton";
 import { UpdateVersionJarButton } from "@/components/admin/UpdateVersionJarButton";
+import en from "@/messages/en.json";
+
+const messages = en;
+
+function getMessage(key: string): string {
+  const keys = key.split(".");
+  let result: unknown = messages;
+  for (const k of keys) {
+    if (result && typeof result === "object" && k in (result as object)) {
+      result = (result as Record<string, unknown>)[k];
+    } else {
+      return key;
+    }
+  }
+  return typeof result === "string" ? result : key;
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -138,7 +154,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                           <div>MC: {version.minMcVersion}+</div>
                         )}
                         {version.minJavaVersion && (
-                          <div>Java: {version.minJavaVersion}+</div>
+                          <div>{getMessage("admin.java")}: {version.minJavaVersion}+</div>
                         )}
                       </div>
                       {version.changelog && (

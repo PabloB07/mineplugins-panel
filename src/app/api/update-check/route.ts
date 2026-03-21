@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
         isBeta: false,
       },
       select: {
+        id: true,
         version: true,
         changelog: true,
         downloadUrl: true,
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
       releaseDate: latestVersion.publishedAt.toISOString().split("T")[0],
       changelog: latestVersion.changelog || undefined,
       mandatory: latestVersion.isMandatory,
-      downloadUrl: `/api/download?version=${latestVersion.version}`,
+      downloadUrl: `/api/download?versionId=${latestVersion.id}&license=${licenseKey}`,
     };
 
     return NextResponse.json(response);

@@ -310,7 +310,18 @@
     "superAdminRole": "Super Admin",
     "loadingUsers": "Loading users...",
     "noUsersFound": "No users found",
-    "usersLower": "users"
+    "usersLower": "users",
+    "selectUser": "Select a user",
+    "pluginVersion": "Plugin Version",
+    "validations": "Validations",
+    "hardwareHash": "Hardware Hash",
+    "unknown": "Unknown",
+    "chooseLicense": "Choose a license...",
+    "java": "Java",
+    "sandbox": "Sandbox",
+    "production": "Production",
+    "selectLicenseActive": "Select License (Active only)",
+    "activeLicensesAvailable": "{count} active JWT license(s) available."
   },
   "currency": {
     "USD": "US Dollar (USD)",

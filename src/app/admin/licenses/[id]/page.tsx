@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { AlertTriangle, Loader2, ShieldX } from "lucide-react";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface License {
   id: string;
@@ -38,6 +39,7 @@ interface License {
 }
 
 export default function AdminLicenseDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const [license, setLicense] = useState<License | null>(null);
   const [loading, setLoading] = useState(true);
@@ -250,21 +252,21 @@ export default function AdminLicenseDetailPage() {
                       </span>
                     </div>
                     <div className="text-sm text-gray-400 space-y-1">
-                      <div>Plugin Version: {activation.serverVersion || "Unknown"}</div>
+                      <div>{t("admin.pluginVersion")}: {activation.serverVersion || t("admin.unknown")}</div>
                       <div>
-                        First Seen:{" "}
+                        {t("dashboard.created")}:{" "}
                         {new Date(activation.firstSeenAt).toLocaleString()}
                       </div>
                       <div>
-                        Last Seen:{" "}
+                        {t("dashboard.lastValidated")}:{" "}
                         {new Date(activation.lastSeenAt).toLocaleString()}
                       </div>
-                      <div>Validations: {activation.validationCount}</div>
+                      <div>{t("admin.validations")}: {activation.validationCount}</div>
                       {activation.macAddress && (
                         <div>MAC Address: {activation.macAddress}</div>
                       )}
                       {activation.hardwareHash && (
-                        <div>Hardware Hash: {activation.hardwareHash.substring(0, 16)}...</div>
+                        <div>{t("admin.hardwareHash")}: {activation.hardwareHash.substring(0, 16)}...</div>
                       )}
                     </div>
                   </div>

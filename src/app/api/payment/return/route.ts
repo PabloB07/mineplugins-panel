@@ -40,7 +40,7 @@ async function handlePaymentReturn(request: NextRequest) {
     }
   }
 
-  const baseUrl = process.env.NEXTAUTH_URL || "https://blancocl.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
 
   token = typeof token === "string" ? token.trim().slice(0, 255) : null;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Users, Crown, Shield, Search, UserPlus, Link as LinkIcon, Ban } from "lucide-react";
 
@@ -36,6 +37,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleFilter, search, pagination.page]);
 
   async function fetchUsers() {
@@ -238,10 +240,12 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {user.image ? (
-                          <img
+                          <Image
                             src={user.image}
                             alt={user.name || user.email}
-                            className="w-10 h-10 rounded-full border-2 border-[#333]"
+                            width={40}
+                            height={40}
+                            className="w-10 h-10 rounded-full border-2 border-[#333] object-cover"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
@@ -315,9 +319,9 @@ export default function AdminUsersPage() {
                             onChange={(e) => updateUserRole(user.id, e.target.value)}
                             className="bg-[#1a1a1a] border border-[#333] rounded text-xs px-2 py-1 text-white focus:border-[#f59e0b]/50 focus:outline-none"
                           >
-                            <option value="CUSTOMER">Customer</option>
-                            <option value="ADMIN">Admin</option>
-                            {user.role === "ADMIN" && <option value="SUPER_ADMIN">Super Admin</option>}
+                            <option value="CUSTOMER">{t("admin.customerRole")}</option>
+                            <option value="ADMIN">{t("admin.adminRole")}</option>
+                            {user.role === "ADMIN" && <option value="SUPER_ADMIN">{t("admin.superAdminRole")}</option>}
                           </select>
                         )}
                         {discordAccount && (

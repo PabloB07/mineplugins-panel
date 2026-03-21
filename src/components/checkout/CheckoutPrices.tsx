@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslation } from "@/i18n/useTranslation";
 import { PriceDisplay, PriceSummary } from "@/components/ui/PriceDisplay";
 
 interface CheckoutPriceProps {
@@ -8,8 +7,6 @@ interface CheckoutPriceProps {
   priceCLP?: number;
   salePriceUSD?: number | null;
   salePriceCLP?: number | null;
-  name: string;
-  version?: string;
   defaultDurationDays: number;
   maxActivations: number;
 }
@@ -19,16 +16,9 @@ export function CheckoutPrices({
   priceCLP, 
   salePriceUSD, 
   salePriceCLP,
-  name,
-  version,
   defaultDurationDays,
   maxActivations
 }: CheckoutPriceProps) {
-  const { formatPrice, currency } = useTranslation();
-  
-  const displayPriceUSD = salePriceUSD || priceUSD;
-  const displayPriceCLP = salePriceCLP || priceCLP || Math.round(priceUSD * 920);
-  
   return (
     <>
       {/* Product Card Header Price */}

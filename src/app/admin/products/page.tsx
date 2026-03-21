@@ -15,7 +15,6 @@ import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLP } from "@/lib/pricing";
 import ProductVersionSelector from "@/components/admin/ProductVersionSelector";
 import CopyButton from "@/components/admin/CopyButton";
-import { useTranslation } from "@/i18n/useTranslation";
 
 type ProductVersion = {
   id: string;
@@ -144,7 +143,6 @@ export default async function AdminProductsPage() {
               </thead>
               <tbody className="divide-y divide-[#222]">
                 {products.map((product: ProductItem) => {
-                  const latestVersion = product.versions[0];
                   const licenseCount = product.licenses.length;
                   const orderCount = product.orders.length;
 

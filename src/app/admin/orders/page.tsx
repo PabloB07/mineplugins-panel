@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { formatCLP } from "@/lib/pricing";
 import { useTranslation } from "@/i18n/useTranslation";
 import { 
   Trash2, 
@@ -20,7 +19,10 @@ interface Order {
   id: string;
   orderNumber: string;
   status: string;
+  currency: string;
   total: number;
+  totalUSD: number | null;
+  totalCLP: number;
   subtotal: number;
   discount: number;
   createdAt: string;
@@ -51,6 +53,41 @@ interface Order {
       expiresAt: string;
     } | null;
   }>;
+}
+
+function formatOrderPrice(order: Order): string {
+  const currency = order.currency || 'CLP';
+  switch (currency) {
+    case 'USD':
+      const usd = order.totalUSD || order.total;
+      return `$${(usd / 100).toFixed(2)} USD`;
+    case 'EUR':
+      const eur = order.totalUSD ? Math.round(order.totalUSD * 0.92) : Math.round(order.total * 0.92);
+      return `€${(eur / 100).toFixed(2)} EUR`;
+    case 'CAD':
+      const cad = order.totalUSD ? Math.round(order.totalUSD * 1.36) : Math.round(order.total * 1.36);
+      return `$${(cad / 100).toFixed(2)} CAD`;
+    case 'CLP':
+    default:
+      return `$${order.total.toLocaleString('es-CL')} CLP`;
+  }
+}
+
+function formatItemPrice(order: Order, unitPriceUSD: number, unitPriceCLP: number): string {
+  const currency = order.currency || 'CLP';
+  switch (currency) {
+    case 'USD':
+      return `$${(unitPriceUSD / 100).toFixed(2)} USD`;
+    case 'EUR':
+      const eur = Math.round(unitPriceUSD * 0.92);
+      return `€${(eur / 100).toFixed(2)} EUR`;
+    case 'CAD':
+      const cad = Math.round(unitPriceUSD * 1.36);
+      return `$${(cad / 100).toFixed(2)} CAD`;
+    case 'CLP':
+    default:
+      return `$${unitPriceCLP.toLocaleString('es-CL')} CLP`;
+  }
 }
 
 export default function AdminOrdersPage() {
@@ -397,13 +434,16 @@ export default function AdminOrdersPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Package className="w-4 h-4 text-gray-400" />
-                        <div>
+                        <div className="space-y-1">
                           <div className="text-sm text-gray-300 font-medium">
                             {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {order.items.map(item => item.product.name).join(', ')}
-                          </div>
+                          {order.items.map((item, idx) => (
+                            <div key={idx} className="text-xs text-gray-500 flex items-center gap-1">
+                              <span className="truncate max-w-[120px]">{item.product.name}</span>
+                              <span className="text-emerald-400/70">({formatItemPrice(order, item.unitPriceUSD, item.unitPriceCLP)})</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </td>
@@ -411,11 +451,11 @@ export default function AdminOrdersPage() {
                       <div className="flex items-center gap-3">
                         <DollarSign className="w-4 h-4 text-emerald-400" />
                         <div className="text-sm font-semibold text-emerald-400">
-                          {formatCLP(order.total)}
+                          {formatOrderPrice(order)}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       {order.items.map((item, index) => (
                         <div key={index} className="mb-1 last:mb-0">
                           {item.license ? (
@@ -436,7 +476,7 @@ export default function AdminOrdersPage() {
                         </div>
                       ))}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(order.status)}`}>
                         <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 ${order.status === "COMPLETED"
                           ? "bg-green-400"
@@ -449,7 +489,7 @@ export default function AdminOrdersPage() {
                         {order.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div className="text-sm text-gray-300">
                         {new Date(order.createdAt).toLocaleDateString()}
                       </div>
@@ -459,7 +499,7 @@ export default function AdminOrdersPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                           <Link
                             href={`/dashboard/orders/${order.id}`}

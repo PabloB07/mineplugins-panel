@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Package, DollarSign, Calendar, Server } from "lucide-react";
+import { ArrowLeft, Save, Package, DollarSign, Server } from "lucide-react";
 import ProductImageField from "@/components/admin/ProductImageField";
 import { useTranslation } from "@/i18n/useTranslation";
 

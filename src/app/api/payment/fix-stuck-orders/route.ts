@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
  * Get statistics about stuck orders
  * GET /api/payment/fix-stuck-orders
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

@@ -74,9 +74,10 @@ export async function POST(request: NextRequest) {
     const totalCLP = days === product.defaultDurationDays
       ? basePriceCLP
       : Math.round(basePriceCLP * (days / 365));
-    const totalUSD = days === product.defaultDurationDays
+    const totalUSDCents = days === product.defaultDurationDays
       ? basePriceUSD
-      : Math.round(basePriceUSD * (days / 365) * 100) / 100;
+      : Math.round(basePriceUSD * (days / 365));
+    const totalUSD = totalUSDCents / 100;
 
     const total = Math.round(totalCLP);
     const subtotalCLP = totalCLP;

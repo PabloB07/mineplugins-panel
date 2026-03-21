@@ -10,8 +10,6 @@ export interface PaymentMethodConfig {
   available?: boolean;
 }
 
-const isDev = process.env.NODE_ENV !== "production";
-
 export const PAYMENT_METHODS: PaymentMethodConfig[] = [
   {
     id: "PAYKU",

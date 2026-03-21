@@ -234,7 +234,7 @@ export default async function DownloadsPage() {
 
                             {isActive ? (
                               <a
-                                href={latestVersion.downloadUrl}
+                                href={`/api/download?versionId=${latestVersion.id}`}
                                 className="inline-flex items-center justify-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"
                                 download
                               >
@@ -279,7 +279,7 @@ export default async function DownloadsPage() {
                               </div>
                               {isActive ? (
                                 <a
-                                  href={version.downloadUrl}
+                                  href={`/api/download?versionId=${version.id}`}
                                   className="text-gray-500 hover:text-[#22c55e] p-2 hover:bg-[#22c55e]/10 rounded-lg transition-all opacity-0 group-hover/item:opacity-100"
                                   title="Download"
                                   download

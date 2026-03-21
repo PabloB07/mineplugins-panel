@@ -38,10 +38,12 @@ export async function handleFileUpload(formData: FormData): Promise<{ url: strin
   const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN");
 
   try {
-    // Upload file to Vercel Blob
-    const blob = await put(`plugins/${safeFileName}`, file, {
+    const timestamp = Date.now();
+    const blobFileName = `${timestamp}-${safeFileName}`;
+    
+    const blob = await put(`plugins/${blobFileName}`, file, {
       access: "public",
-      addRandomSuffix: true,
+      addRandomSuffix: false,
       token: blobToken,
     });
 

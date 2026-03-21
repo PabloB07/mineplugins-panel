@@ -1,5 +1,5 @@
-import { createPaykuPayment, getPaykuPaymentStatus, PaykuPaymentStatus } from "./payku";
-import { createTebexPayment, getTebexPaymentStatus, TebexPaymentStatus } from "./tebex";
+import { createPaykuPayment, getPaykuPaymentStatus } from "./payku";
+import { createTebexPayment, getTebexPaymentStatus } from "./tebex";
 
 export type PaymentProvider = "payku" | "tebex";
 

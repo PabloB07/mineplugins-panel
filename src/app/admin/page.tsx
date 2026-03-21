@@ -13,40 +13,6 @@ import {
   Clock
 } from "lucide-react";
 
-type License = {
-  id: string;
-  status: string;
-  createdAt: Date;
-  product: {
-    name: string;
-  };
-  user: {
-    email: string;
-    name: string | null;
-  };
-};
-
-type Order = {
-  id: string;
-  orderNumber: string;
-  status: string;
-  total: number;
-  createdAt: Date;
-  user: {
-    email: string;
-    name: string | null;
-  };
-};
-
-type ValidationLog = {
-  id: string;
-  createdAt: Date;
-  serverId: string;
-  serverVersion: string | null;
-  isValid: boolean;
-  failureReason: string | null;
-};
-
 export default async function AdminDashboardPage() {
   const validationWindowStart = new Date();
   validationWindowStart.setUTCDate(validationWindowStart.getUTCDate() - 1);
@@ -56,16 +22,12 @@ export default async function AdminDashboardPage() {
     totalUsers,
     totalLicenses,
     activeLicenses,
-    totalOrders,
-    completedOrders,
     recentValidations,
     totalRevenue,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.license.count(),
     prisma.license.count({ where: { status: "ACTIVE" } }),
-    prisma.order.count(),
-    prisma.order.count({ where: { status: "COMPLETED" } }),
     prisma.validationLog.count({
       where: {
         createdAt: { gte: validationWindowStart },

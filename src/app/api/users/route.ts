@@ -5,10 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { toSafeInt } from "@/lib/security";
 
-/**
- * Helper function to log admin activities
- */
-async function logActivity(data: {
+// Helper function to log admin activities (for future use when schema is migrated)
+export async function logActivity(data: {
   adminId: string;
   action: string;
   details?: string;
@@ -17,21 +15,9 @@ async function logActivity(data: {
   userAgent?: string;
 }) {
   try {
-    // For now, just log to console since schema needs migration
     console.log("Admin Activity:", data);
-    // TODO: Implement proper activity logging when schema is migrated
-    // await prisma.adminActivityLog.create({
-    //   data: {
-    //     adminId: data.adminId,
-    //     action: data.action,
-    //     details: data.details,
-    //     targetUserId: data.targetUserId,
-    //     ipAddress: data.ipAddress,
-    //     userAgent: data.userAgent,
-    //   },
-    // });
   } catch (error) {
-    console.error("Failed to log admin activity:", error);
+    console.error("Failed to log activity:", error);
   }
 }
 

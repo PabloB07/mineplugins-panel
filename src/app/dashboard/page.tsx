@@ -27,19 +27,6 @@ type License = {
   };
 };
 
-type Order = {
-  id: string;
-  orderNumber: string;
-  status: string;
-  total: number;
-  createdAt: Date;
-  items: Array<{
-    product: {
-      name: string;
-    };
-  }>;
-};
-
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
 

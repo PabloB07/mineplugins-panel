@@ -11,8 +11,6 @@ import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
     const searchParams = request.nextUrl.searchParams;
     const activeOnly = searchParams.get("active") !== "false";
 

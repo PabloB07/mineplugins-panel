@@ -4,8 +4,6 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import en from "@/messages/en.json";
 import es from "@/messages/es.json";
 
-type Messages = typeof en;
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const messages: Record<string, any> = {
   en,
@@ -38,28 +36,30 @@ type I18nContextType = {
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
+function getInitialLocale(): string {
+  if (typeof window === 'undefined') return 'es';
+  const stored = localStorage.getItem("locale");
+  return (stored === "en" || stored === "es") ? stored : 'es';
+}
+
+function getInitialCurrency(): Currency {
+  if (typeof window === 'undefined') return 'CLP';
+  const stored = localStorage.getItem("currency") as Currency | null;
+  if (stored && ['USD', 'CLP', 'EUR', 'CAD'].includes(stored)) {
+    return stored;
+  }
+  const locale = getInitialLocale();
+  return currencyByLocale[locale] || 'CLP';
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState("es");
-  const [currency, setCurrencyState] = useState<Currency>("CLP");
+  const [locale, setLocaleState] = useState(getInitialLocale);
+  const [currency, setCurrencyState] = useState<Currency>(getInitialCurrency);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedLocale = localStorage.getItem("locale");
-    const storedCurrency = localStorage.getItem("currency") as Currency | null;
-    
-    if (storedLocale && (storedLocale === "en" || storedLocale === "es")) {
-      setLocaleState(storedLocale);
-      if (!storedCurrency) {
-        setCurrencyState(currencyByLocale[storedLocale] || 'CLP');
-      }
-    }
-    
-    if (storedCurrency && ['USD', 'CLP', 'EUR', 'CAD'].includes(storedCurrency)) {
-      setCurrencyState(storedCurrency);
-    }
-    
     setMounted(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, []);
 
   const handleSetLocale = (newLocale: string) => {
