@@ -46,6 +46,7 @@ export default function Header() {
   const navLinks = [
     { href: "/store", label: t("nav.store") },
     { href: "#features", label: t("nav.features") },
+    { href: "/dashboard/servers", label: t("nav.servers") },
     { href: "https://zgaming.host/", label: t("nav.hosting"), external: true },
   ];
 

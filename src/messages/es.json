@@ -35,6 +35,7 @@
   "nav": {
     "store": "Tienda",
     "features": "Características",
+    "servers": "Servidores",
     "hosting": "¿Hosting?",
     "dashboard": "Panel",
     "signIn": "Iniciar Sesión",

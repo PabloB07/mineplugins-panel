@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { 
   Check, 
@@ -14,14 +14,12 @@ import {
   Download,
   RefreshCw,
   Star,
-  Heart,
-  Globe,
   ShieldCheck,
   Clock,
   CreditCard,
   ArrowRight
 } from "lucide-react";
-import { Product, Session, ServerStatus } from "./types";
+import { Product, Session } from "./types";
 
 interface ProductGridProps {
   products: Product[];
@@ -47,50 +45,9 @@ function CreeperVoxelIcon({ className = "" }: { className?: string }) {
   );
 }
 
-function ServerStatusCard({ server }: { server: ServerStatus }) {
-  return (
-    <div className="flex items-center gap-3 p-3 bg-[#0f0f0f] rounded-xl border border-[#222] hover:border-green-500/30 transition-all">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-        server.isOnline ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-      }`}>
-        {server.isOnline ? <Check className="w-5 h-5" /> : <Heart className="w-5 h-5" />}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-white truncate">{server.name}</div>
-        <div className="text-xs text-gray-500 font-mono">{server.ip}:{server.port}</div>
-      </div>
-      <div className="text-right">
-        <div className={`text-xs font-medium ${server.isOnline ? "text-green-400" : "text-red-400"}`}>
-          {server.isOnline ? "Online" : "Offline"}
-        </div>
-        {server.isOnline && server.playersOnline !== undefined && (
-          <div className="text-xs text-gray-500">{server.playersOnline}/{server.playersMax}</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function ProductGrid({ products, session }: ProductGridProps) {
   const { t, formatPrice } = useTranslation();
-  const [servers, setServers] = useState<ServerStatus[]>([]);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetchServers();
-  }, []);
-
-  async function fetchServers() {
-    try {
-      const res = await fetch("/api/public/servers");
-      if (res.ok) {
-        const data = await res.json();
-        setServers(data.servers || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch servers:", error);
-    }
-  }
 
   const features = [
     { icon: Shield, title: "Secure Licensing", description: "JWT-based licenses with hardware locking" },
@@ -145,32 +102,6 @@ export default function ProductGrid({ products, session }: ProductGridProps) {
           </div>
         </div>
       </div>
-
-      {/* Server Status */}
-      {servers.length > 0 && (
-        <div className="bg-gradient-to-br from-[#111] to-[#0f0f0f] rounded-2xl border border-[#222] p-6 mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Globe className="w-5 h-5 text-blue-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Server Status</h3>
-                <p className="text-sm text-gray-500">{servers.length} server{servers.length > 1 ? 's' : ''} configured</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-xs text-green-400">{servers.filter(s => s.isOnline).length} online</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {servers.slice(0, 6).map(server => (
-              <ServerStatusCard key={server.id} server={server} />
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Products */}
       <div className="mb-16">

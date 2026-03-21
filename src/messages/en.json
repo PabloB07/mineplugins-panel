@@ -35,6 +35,7 @@
   "nav": {
     "store": "Store",
     "features": "Features",
+    "servers": "Servers",
     "hosting": "Host?",
     "dashboard": "Dashboard",
     "signIn": "Sign In",
