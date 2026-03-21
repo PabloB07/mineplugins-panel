@@ -195,7 +195,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2">Total Revenue ({selectedRangeDays}d)</div>
-          <div className="text-4xl font-bold text-white">{formatCLP(revenue._sum.total || 0)}</div>
+          <div className="text-4xl font-bold text-white">${(revenue._sum.total || 0).toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP</div>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div className="bg-[#181818] border border-[#2a2a2a] rounded-lg p-3">
               <div className="text-gray-500 mb-1 flex items-center gap-2">

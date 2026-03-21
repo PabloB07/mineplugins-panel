@@ -160,7 +160,7 @@ export default async function AdminDashboardPage() {
                 <DollarSign className="w-3 h-3" /> Monthly Revenue
               </div>
               <div className="text-2xl font-bold text-green-400">
-                ${((recentRevenueData._sum.total || 0) / 100).toLocaleString("es-CL", { maximumFractionDigits: 0 })}
+                ${((recentRevenueData._sum.total || 0)).toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
               </div>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default async function AdminDashboardPage() {
                   <TrendingUp className="w-4 h-4 text-green-500" /> Total Revenue
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  ${((totalRevenue._sum.total || 0) / 100).toLocaleString("es-CL", { maximumFractionDigits: 0 })}
+                  ${((totalRevenue._sum.total || 0)).toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
                 </div>
                 <div className="text-xs text-gray-500">Lifetime earnings</div>
               </div>

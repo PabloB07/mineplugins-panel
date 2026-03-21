@@ -185,9 +185,9 @@ export default async function AdminProductsPage() {
                            </div>
                            {product.salePriceUSD ? (
                              <div>
-                               <div className="text-[#f59e0b] font-bold text-lg">
-                                 ${(product.salePriceUSD / 100).toFixed(2)} USD
-                               </div>
+                                <div className="text-[#f59e0b] font-bold text-lg">
+                                  ${product.salePriceUSD.toFixed(2)} USD
+                                </div>
                                <div className="text-sm text-gray-400">
                                  {product.salePriceCLP && formatCLP(product.salePriceCLP)}
                                </div>
