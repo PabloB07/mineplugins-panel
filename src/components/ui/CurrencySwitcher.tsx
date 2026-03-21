@@ -5,11 +5,11 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { Currency } from "@/i18n/I18nProvider";
 import { Globe, ChevronDown, Check } from "lucide-react";
 
-const currencies: { id: Currency; symbol: string; shortName: string }[] = [
-  { id: 'USD', symbol: '$', shortName: 'USD' },
-  { id: 'CLP', symbol: '$', shortName: 'CLP' },
-  { id: 'EUR', symbol: '€', shortName: 'EUR' },
-  { id: 'CAD', symbol: '$', shortName: 'CAD' },
+const currencies: { id: Currency; symbol: string; shortName: string; description: string }[] = [
+  { id: 'USD', symbol: '$', shortName: 'USD', description: 'US Dollar (exact price)' },
+  { id: 'CLP', symbol: '$', shortName: 'CLP', description: 'Chilean Peso (exact price)' },
+  { id: 'EUR', symbol: '€', shortName: 'EUR', description: 'Euro (approx.)' },
+  { id: 'CAD', symbol: '$', shortName: 'CAD', description: 'Canadian Dollar (approx.)' },
 ];
 
 export function CurrencySwitcher() {

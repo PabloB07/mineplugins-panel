@@ -60,16 +60,16 @@ function formatOrderPrice(order: Order): string {
   switch (currency) {
     case 'USD':
       const usd = order.totalUSD || order.total;
-      return `$${(usd / 100).toFixed(2)} USD`;
+      return `$${usd.toFixed(2)} USD`;
     case 'EUR':
-      const eur = order.totalUSD ? Math.round(order.totalUSD * 0.92) : Math.round(order.total * 0.92);
-      return `€${(eur / 100).toFixed(2)} EUR`;
+      const eur = order.totalUSD ? order.totalUSD * 0.92 : order.total * 0.92;
+      return `€${eur.toFixed(2)} EUR`;
     case 'CAD':
-      const cad = order.totalUSD ? Math.round(order.totalUSD * 1.36) : Math.round(order.total * 1.36);
-      return `$${(cad / 100).toFixed(2)} CAD`;
+      const cad = order.totalUSD ? order.totalUSD * 1.36 : order.total * 1.36;
+      return `$${cad.toFixed(2)} CAD`;
     case 'CLP':
     default:
-      return `$${order.total.toLocaleString('es-CL')} CLP`;
+      return `$${Math.round(order.total).toLocaleString('es-CL')} CLP`;
   }
 }
 
@@ -77,16 +77,16 @@ function formatItemPrice(order: Order, unitPriceUSD: number, unitPriceCLP: numbe
   const currency = order.currency || 'CLP';
   switch (currency) {
     case 'USD':
-      return `$${(unitPriceUSD / 100).toFixed(2)} USD`;
+      return `$${unitPriceUSD.toFixed(2)} USD`;
     case 'EUR':
-      const eur = Math.round(unitPriceUSD * 0.92);
-      return `€${(eur / 100).toFixed(2)} EUR`;
+      const eur = unitPriceUSD * 0.92;
+      return `€${eur.toFixed(2)} EUR`;
     case 'CAD':
-      const cad = Math.round(unitPriceUSD * 1.36);
-      return `$${(cad / 100).toFixed(2)} CAD`;
+      const cad = unitPriceUSD * 1.36;
+      return `$${cad.toFixed(2)} CAD`;
     case 'CLP':
     default:
-      return `$${unitPriceCLP.toLocaleString('es-CL')} CLP`;
+      return `$${Math.round(unitPriceCLP).toLocaleString('es-CL')} CLP`;
   }
 }
 

@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import en from "@/messages/en.json";
 import es from "@/messages/es.json";
+import { formatCurrency, Currency as CurrencyType, EXCHANGE_RATES } from "@/lib/pricing";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const messages: Record<string, any> = {
@@ -10,7 +11,7 @@ const messages: Record<string, any> = {
   es,
 };
 
-export type Currency = 'USD' | 'CLP' | 'EUR' | 'CAD';
+export type Currency = CurrencyType;
 
 const currencyByLocale: Record<string, Currency> = {
   en: 'USD',
@@ -32,6 +33,7 @@ type I18nContextType = {
   t: (key: string) => string;
   formatPrice: (priceUSD: number, priceCLP?: number) => string;
   formatPriceValue: (priceUSD: number, priceCLP?: number) => { value: number; currency: Currency; formatted: string };
+  exchangeRates: typeof EXCHANGE_RATES;
 };
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -86,34 +88,34 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         return {
           value: priceUSD,
           currency: 'USD',
-          formatted: `$${(priceUSD / 100).toFixed(2)} USD`,
+          formatted: formatCurrency(priceUSD, 'USD'),
         };
       case 'CLP':
-        const clpPrice = priceCLP || Math.round(priceUSD * 920);
+        const clpPrice = priceCLP || Math.round(priceUSD * EXCHANGE_RATES.USD_TO_CLP);
         return {
           value: clpPrice,
           currency: 'CLP',
           formatted: `$${clpPrice.toLocaleString('es-CL')} CLP`,
         };
       case 'EUR':
-        const eurPrice = Math.round(priceUSD * 0.92);
+        const eurPrice = priceUSD * EXCHANGE_RATES.USD_TO_EUR;
         return {
           value: eurPrice,
           currency: 'EUR',
-          formatted: `€${(eurPrice / 100).toFixed(2)} EUR`,
+          formatted: formatCurrency(eurPrice, 'EUR'),
         };
       case 'CAD':
-        const cadPrice = Math.round(priceUSD * 1.36);
+        const cadPrice = priceUSD * EXCHANGE_RATES.USD_TO_CAD;
         return {
           value: cadPrice,
           currency: 'CAD',
-          formatted: `$${(cadPrice / 100).toFixed(2)} CAD`,
+          formatted: formatCurrency(cadPrice, 'CAD'),
         };
       default:
         return {
           value: priceUSD,
           currency: 'USD',
-          formatted: `$${(priceUSD / 100).toFixed(2)} USD`,
+          formatted: formatCurrency(priceUSD, 'USD'),
         };
     }
   };
@@ -141,7 +143,16 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <I18nContext.Provider value={{ locale, currency, setLocale: handleSetLocale, setCurrency: handleSetCurrency, t, formatPrice, formatPriceValue }}>
+    <I18nContext.Provider value={{ 
+      locale, 
+      currency, 
+      setLocale: handleSetLocale, 
+      setCurrency: handleSetCurrency, 
+      t, 
+      formatPrice, 
+      formatPriceValue,
+      exchangeRates: EXCHANGE_RATES,
+    }}>
       {children}
     </I18nContext.Provider>
   );
@@ -150,7 +161,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 export function useI18n() {
   const context = useContext(I18nContext);
   if (!context) {
-    throw new Error("useI18n must be used within I18nProvider");
+    throw new Error("useI18n must be used within an I18nProvider");
   }
   return context;
 }
