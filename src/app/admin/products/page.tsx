@@ -57,7 +57,20 @@ async function deleteProduct(productId: string) {
 
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
-    include: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      image: true,
+      priceUSD: true,
+      priceCLP: true,
+      salePriceUSD: true,
+      salePriceCLP: true,
+      defaultDurationDays: true,
+      maxActivations: true,
+      isActive: true,
+      apiToken: true,
       versions: {
         orderBy: { publishedAt: "desc" },
         take: 5,
