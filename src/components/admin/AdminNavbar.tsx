@@ -61,9 +61,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
                             MinePlugins
                         </Link>
-                        <span className="hidden xl:inline-flex bg-[#f59e0b]/10 text-[#f59e0b] text-[10px] px-2 py-0.5 rounded border border-[#f59e0b]/20 font-mono tracking-wide uppercase">
-                            Store Admin
-                        </span>
                     </div>
 
                     {/* Desktop Navigation */}
