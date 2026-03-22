@@ -288,7 +288,7 @@ export default function AdminProductsPage() {
                     <DeleteProductButton
                       productId={product.id}
                       deleteAction={async () => {
-                        await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
+                        await fetch(`/api/admin/products?id=${product.id}`, { method: "DELETE" });
                         fetchProducts();
                       }}
                     />

@@ -2,12 +2,17 @@
 
 import { useTranslation } from "@/i18n/useTranslation";
 import { Globe, DollarSign } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Currency } from "@/lib/pricing";
 
 export default function CurrencySwitch() {
   const { currency, setCurrency } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const currencies: { value: Currency; label: string; symbol: string }[] = [
     { value: "USD", label: "US Dollar", symbol: "$" },
@@ -16,7 +21,14 @@ export default function CurrencySwitch() {
     { value: "CAD", label: "Canadian Dollar", symbol: "$" },
   ];
 
-  const current = currencies.find((c) => c.value === currency) || currencies[0];
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#111] border border-[#333]">
+        <DollarSign className="w-4 h-4 text-green-400" />
+        <span className="text-sm font-medium text-gray-400">...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
