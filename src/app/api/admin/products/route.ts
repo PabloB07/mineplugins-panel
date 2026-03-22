@@ -5,6 +5,31 @@ import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/authz";
 import { generateProductApiToken } from "@/lib/api-auth";
 
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isAdminRole(session.user.role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const productId = searchParams.get("id");
+
+    if (!productId) {
+      return NextResponse.json({ error: "Product ID required" }, { status: 400 });
+    }
+
+    await prisma.product.delete({ where: { id: productId } });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

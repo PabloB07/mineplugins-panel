@@ -80,6 +80,11 @@ export default function AdminLicenseDetailPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const maskApiKey = (key: string) => {
+    if (key.length <= 12) return "•".repeat(key.length);
+    return `${key.slice(0, 8)}${"•".repeat(8)}${key.slice(-4)}`;
+  };
+
   const copyApiKey = async () => {
     if (!license?.product?.apiToken) return;
     await navigator.clipboard.writeText(license.product.apiToken);
@@ -206,7 +211,7 @@ export default function AdminLicenseDetailPage() {
               <div>
                 <div className="text-yellow-400 text-sm mb-1">API Key (for plugin)</div>
                 <code className="text-yellow-500 font-mono text-lg break-all">
-                  {license.product.apiToken}
+                  {maskApiKey(license.product.apiToken)}
                 </code>
               </div>
               <button

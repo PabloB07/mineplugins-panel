@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { Download, ChevronDown, Package, ExternalLink } from "lucide-react";
+
 interface Version {
   id: string;
   version: string;
@@ -15,10 +18,19 @@ interface ProductVersionSelectorProps {
 }
 
 export default function ProductVersionSelector({ versions, productId }: ProductVersionSelectorProps) {
-  const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const version = versions.find(v => v.id === e.target.value);
-    if (version && version.downloadUrl) {
-      window.open(version.downloadUrl, '_blank');
+  const [isOpen, setIsOpen] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
+
+  const latestVersion = versions.find((v) => v.isLatest) || versions[0];
+
+  const handleDownload = async (version: Version) => {
+    if (!version.downloadUrl) return;
+    
+    setDownloading(version.id);
+    try {
+      window.open(version.downloadUrl, "_blank");
+    } finally {
+      setTimeout(() => setDownloading(null), 1000);
     }
   };
 
@@ -28,7 +40,7 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
         <span className="text-gray-500 text-sm">No versions</span>
         <a
           href={`/admin/products/${productId}/versions/new`}
-          className="text-[#f59e0b] hover:text-[#d97706] text-sm font-medium"
+          className="text-[#f59e0b] hover:text-[#d97706] text-sm font-medium hover:underline"
         >
           + Add
         </a>
@@ -38,43 +50,79 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <select 
-          className="bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/50"
-          onChange={handleVersionChange}
-          defaultValue=""
-        >
-          <option value="" disabled>Select version</option>
-          {versions.map((v) => (
-            <option key={v.id} value={v.id}>
-              v{v.version} {v.isLatest ? '(Latest)' : ''} {v.isBeta ? '(Beta)' : ''}
-            </option>
-          ))}
-        </select>
-        <a
-          href={`/admin/products/${productId}/versions`}
-          className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-all border border-transparent hover:border-[#f59e0b]/20"
-          title="Manage Versions"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-          </svg>
-        </a>
-      </div>
-      <div className="flex items-center gap-1 flex-wrap">
-        {versions[0]?.isBeta && (
-          <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-xs rounded">
-            Beta
-          </span>
-        )}
-        {versions[0]?.isMandatory && (
-          <span className="px-1.5 py-0.5 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded">
-            Required
-          </span>
-        )}
-        <span className="text-xs text-gray-500">
-          {versions.length} version{versions.length !== 1 ? 's' : ''}
-        </span>
+      {latestVersion && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleDownload(latestVersion)}
+            disabled={downloading === latestVersion.id || !latestVersion.downloadUrl}
+            className="flex items-center gap-2 bg-[#22c55e]/10 hover:bg-[#22c55e]/20 border border-[#22c55e]/30 text-[#22c55e] px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+          >
+            <Download className={`w-4 h-4 ${downloading === latestVersion.id ? "animate-bounce" : ""}`} />
+            v{latestVersion.version}
+            {latestVersion.isBeta && (
+              <span className="px-1 py-0.5 bg-yellow-500/20 text-yellow-300 text-xs rounded">Beta</span>
+            )}
+            {latestVersion.isMandatory && (
+              <span className="px-1 py-0.5 bg-red-500/20 text-red-300 text-xs rounded">Required</span>
+            )}
+          </button>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-1.5 hover:bg-[#222] rounded-lg transition-all text-gray-400 hover:text-white"
+            title="More versions"
+          >
+            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          </button>
+        </div>
+      )}
+
+      {isOpen && (
+        <div className="bg-[#0a0a0a] border border-[#333] rounded-lg overflow-hidden">
+          <div className="max-h-48 overflow-y-auto">
+            {versions.map((version) => (
+              <button
+                key={version.id}
+                onClick={() => handleDownload(version)}
+                disabled={downloading === version.id || !version.downloadUrl}
+                className="w-full flex items-center justify-between px-3 py-2 hover:bg-[#1a1a1a] transition-colors text-left disabled:opacity-50"
+              >
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-gray-500" />
+                  <span className="text-white text-sm font-mono">
+                    v{version.version}
+                  </span>
+                  {version.isLatest && (
+                    <span className="px-1.5 py-0.5 bg-[#22c55e]/20 text-[#22c55e] text-xs rounded">Latest</span>
+                  )}
+                  {version.isBeta && !version.isLatest && (
+                    <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 text-xs rounded">Beta</span>
+                  )}
+                  {version.isMandatory && (
+                    <span className="px-1.5 py-0.5 bg-red-500/20 text-red-300 text-xs rounded">Required</span>
+                  )}
+                </div>
+                {version.downloadUrl ? (
+                  <Download className={`w-4 h-4 text-gray-400 ${downloading === version.id ? "animate-bounce" : ""}`} />
+                ) : (
+                  <span className="text-xs text-gray-500">No URL</span>
+                )}
+              </button>
+            ))}
+          </div>
+          <div className="border-t border-[#333] px-3 py-2">
+            <a
+              href={`/admin/products/${productId}/versions`}
+              className="flex items-center gap-1 text-xs text-[#f59e0b] hover:text-[#d97706] hover:underline"
+            >
+              <ExternalLink className="w-3 h-3" />
+              Manage Versions
+            </a>
+          </div>
+        </div>
+      )}
+
+      <div className="text-xs text-gray-500">
+        {versions.length} version{versions.length !== 1 ? "s" : ""} total
       </div>
     </div>
   );

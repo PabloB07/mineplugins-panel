@@ -12,39 +12,66 @@ import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const activeOnly = searchParams.get("active") !== "false";
+    const showAll = searchParams.get("showAll") === "true";
+    const search = searchParams.get("search");
+    const page = toSafeInt(searchParams.get("page"), { defaultValue: 1, min: 1, max: 1000 });
+    const limit = toSafeInt(searchParams.get("limit"), { defaultValue: 10, min: 1, max: 50 });
+    const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {};
 
-    if (activeOnly) {
+    if (!showAll) {
       where.isActive = true;
     }
 
-    const products = await prisma.product.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        priceUSD: true,
-        priceCLP: true,
-        salePriceUSD: true,
-        salePriceCLP: true,
-        defaultDurationDays: true,
-        maxActivations: true,
-        isActive: true,
-        _count: {
-          select: {
-            licenses: true,
-            versions: true,
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { slug: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    const [total, products] = await Promise.all([
+      prisma.product.count({ where }),
+      prisma.product.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          priceUSD: true,
+          priceCLP: true,
+          salePriceUSD: true,
+          salePriceCLP: true,
+          defaultDurationDays: true,
+          maxActivations: true,
+          isActive: true,
+          apiToken: true,
+          versions: {
+            orderBy: { publishedAt: "desc" },
+            take: 5,
+          },
+          _count: {
+            select: {
+              licenses: true,
+              orders: true,
+            },
           },
         },
-      },
-      orderBy: { name: "asc" },
-    });
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+    ]);
 
-    return NextResponse.json({ products });
+    const totalPages = Math.ceil(total / limit);
+
+    return NextResponse.json({
+      products,
+      pagination: { page, limit, total, totalPages },
+    });
   } catch (error) {
     console.error("Get products error:", error);
     return NextResponse.json(

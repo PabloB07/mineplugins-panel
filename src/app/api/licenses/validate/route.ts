@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyPaperLicenseKey } from "@/lib/license";
 import { normalizePluginId } from "@/lib/license-utils";
 import { checkRateLimit, getClientIp } from "@/lib/api-auth";
+import { eventEmitter } from "@/lib/events";
 
 function withProductAuth(
   handler: (request: NextRequest) => Promise<NextResponse>
@@ -118,6 +119,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     await prisma.license.update({
       where: { id: license.id },
       data: { lastValidatedAt: new Date() },
+    });
+
+    eventEmitter.emit("license_validated", {
+      licenseId: license.id,
+      licenseKey: license.licenseKey,
+      productId: license.productId,
     });
 
     return NextResponse.json({

@@ -240,13 +240,26 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {user.image ? (
-                          <Image
-                            src={user.image}
-                            alt={user.name || user.email}
-                            width={40}
-                            height={40}
-                            className="w-10 h-10 rounded-full border-2 border-[#333] object-cover"
-                          />
+                          <div className="relative w-10 h-10">
+                            <Image
+                              src={user.image}
+                              alt={user.name || user.email}
+                              fill
+                              sizes="40px"
+                              className="rounded-full border-2 border-[#333] object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = "none";
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  const fallback = document.createElement("div");
+                                  fallback.className = "w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold";
+                                  fallback.textContent = user.email[0].toUpperCase();
+                                  parent.appendChild(fallback);
+                                }
+                              }}
+                            />
+                          </div>
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
                             {user.email[0].toUpperCase()}

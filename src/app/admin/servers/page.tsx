@@ -25,11 +25,21 @@ export default function AdminServersPage() {
   const [submitting, setSubmitting] = useState(false);
   const [refreshing, setRefreshing] = useState<string | null>(null);
   const [selectedServers, setSelectedServers] = useState<Set<string>>(new Set());
-  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("serverAutoRefresh") === "true";
+    }
+    return false;
+  });
+  const [lastLicenseValidation, setLastLicenseValidation] = useState<string | null>(null);
 
   useEffect(() => {
     fetchServers();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("serverAutoRefresh", String(autoRefresh));
+  }, [autoRefresh]);
 
   useEffect(() => {
     if (!autoRefresh) return;
@@ -40,6 +50,42 @@ export default function AdminServersPage() {
 
     return () => clearInterval(interval);
   }, [autoRefresh, servers]);
+
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+
+    function connectSSE() {
+      eventSource = new EventSource("/api/admin/events");
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === "license_validated") {
+            if (data.licenseId !== lastLicenseValidation) {
+              setLastLicenseValidation(data.licenseId);
+              if (!autoRefresh) {
+                setAutoRefresh(true);
+              }
+              checkAllServers();
+            }
+          }
+        } catch (error) {
+          console.error("Failed to parse SSE message:", error);
+        }
+      };
+
+      eventSource.onerror = () => {
+        eventSource?.close();
+        setTimeout(connectSSE, 5000);
+      };
+    }
+
+    connectSSE();
+
+    return () => {
+      eventSource?.close();
+    };
+  }, [autoRefresh, lastLicenseValidation]);
 
   async function fetchServers() {
     try {

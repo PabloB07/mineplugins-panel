@@ -20,6 +20,13 @@ import {
   Filter
 } from "lucide-react";
 
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  apiToken: string | null;
+}
+
 interface License {
   id: string;
   licenseKey: string;
@@ -31,6 +38,7 @@ interface License {
   product: {
     name: string;
     slug: string;
+    apiToken: string | null;
   };
   user: {
     id: string;
@@ -52,6 +60,9 @@ export default function AdminLicensesPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [productFilter, setProductFilter] = useState<string>("all");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [revokeTarget, setRevokeTarget] = useState<License | null>(null);
   const [revokeConfirmText, setRevokeConfirmText] = useState("");
@@ -71,6 +82,7 @@ export default function AdminLicensesPage() {
       const params = new URLSearchParams();
       if (filter !== "all") params.append("status", filter);
       if (search) params.append("search", search);
+      if (productFilter !== "all") params.append("productId", productFilter);
       params.append("page", pagination.page.toString());
       params.append("limit", pagination.limit.toString());
       
@@ -88,11 +100,24 @@ export default function AdminLicensesPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter, pagination.limit, pagination.page, search]);
+  }, [filter, pagination.limit, pagination.page, productFilter, search]);
 
   useEffect(() => {
     fetchLicenses();
   }, [fetchLicenses]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(data => setProducts(data.products || []))
+      .catch(console.error);
+  }, []);
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   async function revokeLicense(id: string) {
     try {
@@ -149,11 +174,6 @@ export default function AdminLicensesPage() {
       setDeletingRevoked(false);
     }
   }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-  };
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
@@ -221,6 +241,21 @@ export default function AdminLicensesPage() {
               )
             )}
           </div>
+          <div className="flex items-center gap-3">
+            <span className="text-gray-400 text-sm font-medium">Product:</span>
+            <select
+              value={productFilter}
+              onChange={(e) => setProductFilter(e.target.value)}
+              className="bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#f59e0b]/50 transition-colors"
+            >
+              <option value="all">All Products</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex-1 max-w-md relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -254,6 +289,9 @@ export default function AdminLicensesPage() {
                   License Key
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  API Key
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Customer
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -276,7 +314,7 @@ export default function AdminLicensesPage() {
             <tbody className="divide-y divide-[#222]">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-3">
                       <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-400 border-t-transparent mx-auto"></div>
                       <span>{t("admin.loadingLicensesAdmin")}</span>
@@ -285,7 +323,7 @@ export default function AdminLicensesPage() {
                 </tr>
               ) : licenses.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
                     <div className="flex flex-col items-center gap-4">
                       <Key className="w-16 h-16 text-gray-500" />
                       <div>
@@ -304,29 +342,47 @@ export default function AdminLicensesPage() {
 
                   return (
                     <tr key={license.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
-                       <td className="px-6 py-4">
-                         <div 
-                           className="flex items-center gap-3 cursor-pointer hover:bg-[#1a1a1a]/30 -mx-2 px-2 py-1 rounded transition-colors"
-                           onClick={() => copyToClipboard(license.licenseKey)}
-                         >
-                           <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
-                             <Key className="w-4 h-4 text-blue-400" />
-                           </div>
-                           <div>
-                             <div className="text-white text-sm font-mono">
-                               {license.licenseKey.substring(0, 20)}...
-                             </div>
-                            <div className="text-gray-400 text-xs">
-                                {t("admin.clickToCopy")}
+                        <td className="px-6 py-4">
+                           <div 
+                             className="flex items-center gap-3 cursor-pointer hover:bg-[#1a1a1a]/30 -mx-2 px-2 py-1 rounded transition-colors"
+                             onClick={() => copyToClipboard(license.licenseKey, `license-${license.id}`)}
+                           >
+                            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+                              <Key className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <div>
+                              <div className="text-white text-sm font-mono">
+                                {copiedId === `license-${license.id}` 
+                                  ? "Copied!" 
+                                  : `${license.licenseKey.substring(0, 20)}...`}
                               </div>
-                           </div>
-                         </div>
-                       </td>
-                       <td className="px-6 py-4">
-                         <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30">
-                             <User className="w-4 h-4 text-green-400" />
-                           </div>
+                             <div className="text-gray-400 text-xs">
+                                 {t("admin.clickToCopy")}
+                               </div>
+                            </div>
+                          </div>
+                         </td>
+                        <td className="px-6 py-4">
+                          {license.product.apiToken ? (
+                            <div 
+                              className="flex items-center gap-2 cursor-pointer hover:bg-[#1a1a1a]/30 -mx-2 px-2 py-1 rounded transition-colors"
+                              onClick={() => copyToClipboard(license.product.apiToken!, `apikey-${license.id}`)}
+                            >
+                              <code className="text-yellow-500 font-mono text-xs">
+                                {copiedId === `apikey-${license.id}` 
+                                  ? "Copied!" 
+                                  : `${license.product.apiToken.substring(0, 8)}...${license.product.apiToken.slice(-4)}`}
+                              </code>
+                            </div>
+                          ) : (
+                            <span className="text-gray-500 text-xs">No API Key</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30">
+                              <User className="w-4 h-4 text-green-400" />
+                            </div>
                            <div>
                              <div className="text-white text-sm font-medium">
                                {license.user.email}
