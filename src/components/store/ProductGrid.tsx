@@ -1,7 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { 
   Check, 
@@ -10,65 +10,106 @@ import {
   Shield, 
   ShoppingCart, 
   ChevronDown,
-  Users,
-  Download,
-  RefreshCw,
-  Star,
-  ShieldCheck,
-  Clock,
+  ChevronLeft,
+  ChevronRight,
   CreditCard,
-  ArrowRight
+  ArrowRight,
+  Loader2,
+  MessageCircle,
+  HelpCircle,
+  RefreshCw,
+  Users
 } from "lucide-react";
 import { Product, Session } from "./types";
 
 interface ProductGridProps {
-  products: Product[];
   session: Session | null;
 }
 
-function CreeperVoxelIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" className={className}>
-      <rect x="0" y="0" width="16" height="16" fill="#1f7a2e" />
-      <rect x="1" y="1" width="14" height="14" fill="#2fbf3f" />
-      <rect x="2" y="2" width="12" height="12" fill="#7CFC00" />
-      <rect x="2" y="3" width="2" height="2" fill="#56d84e" />
-      <rect x="10" y="2" width="3" height="2" fill="#56d84e" />
-      <rect x="5" y="5" width="3" height="2" fill="#56d84e" />
-      <rect x="11" y="9" width="2" height="3" fill="#56d84e" />
-      <rect x="3" y="4" width="3" height="3" fill="#0f2112" />
-      <rect x="10" y="4" width="3" height="3" fill="#0f2112" />
-      <rect x="6" y="7" width="4" height="3" fill="#0f2112" />
-      <rect x="5" y="9" width="2" height="4" fill="#0f2112" />
-      <rect x="9" y="9" width="2" height="4" fill="#0f2112" />
-    </svg>
-  );
-}
+const FAQ_DATA = [
+  {
+    question: "¿Cómo funciona el sistema de licencias?",
+    answer: "Nuestras licencias utilizan tokens JWT con bloqueo de hardware. Cada licencia puede activarse en un número limitado de servidores según tu compra. El plugin valida la licencia automáticamente al iniciar."
+  },
+  {
+    question: "¿Puedo transferir mi licencia a otro servidor?",
+    answer: "Sí, puedes desactivar un servidor y activar uno nuevo desde tu panel, siempre que no excedas tu límite de activaciones. El proceso es instantáneo."
+  },
+  {
+    question: "¿Las actualizaciones son gratuitas?",
+    answer: "¡Sí! Todas las actualizaciones lanzadas durante tu período de licencia son gratuitas. Tu licencia seguirá funcionando con las últimas versiones del plugin."
+  },
+  {
+    question: "¿Qué métodos de pago aceptan?",
+    answer: "Aceptamos PayPal, Payku (Chile) y Tebex. Todos los pagos se procesan de forma segura a través de nuestros proveedores de pago."
+  },
+  {
+    question: "¿Qué pasa si tengo problemas con el plugin?",
+    answer: "Ofrecemos soporte premium incluido con tu licencia. Puedes contactarnos a través de Discord o email y te ayudaremos lo antes posible."
+  },
+  {
+    question: "¿Puedo obtener un reembolso?",
+    answer: "Ofrecemos reembolso dentro de los primeros 7 días si el plugin no funciona como se describió. Consulta nuestros términos para más detalles."
+  }
+];
 
-export default function ProductGrid({ products, session }: ProductGridProps) {
-  const { t, formatPrice } = useTranslation();
+const FAQ_CATEGORIES = [
+  { icon: HelpCircle, label: "General", questions: [0, 3, 5] },
+  { icon: RefreshCw, label: "Licencias", questions: [1, 2] },
+  { icon: MessageCircle, label: "Soporte", questions: [4] },
+];
+
+export default function ProductGrid({ session }: ProductGridProps) {
+  const { formatPrice } = useTranslation();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 6,
+    total: 0,
+    totalPages: 0,
+  });
 
-  const features = [
-    { icon: Shield, title: "Secure Licensing", description: "JWT-based licenses with hardware locking" },
-    { icon: RefreshCw, title: "Lifetime Updates", description: "Free updates for your entire license period" },
-    { icon: Download, title: "Instant Delivery", description: "Download immediately after purchase" },
-    { icon: Users, title: "Multi-server Support", description: "Activate on multiple servers" }
-  ];
+  useEffect(() => {
+    fetchProducts();
+  }, [pagination.page]);
 
-  const faqs = [
-    { question: "How does the license system work?", answer: "Our licenses use JWT tokens with hardware locking. Each license can be activated on a limited number of servers based on your purchase." },
-    { question: "Can I transfer my license to another server?", answer: "Yes, you can deactivate a server and activate a new one from your dashboard, as long as you don't exceed your activation limit." },
-    { question: "Do I get free updates?", answer: "Yes! All updates released during your license period are free. Your license will continue to work with the latest versions." },
-    { question: "What payment methods do you accept?", answer: "We accept PayPal, Payku (Chile), and Tebex. All payments are processed securely through our payment providers." }
-  ];
+  async function fetchProducts() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.append("page", pagination.page.toString());
+      params.append("limit", pagination.limit.toString());
+      
+      const res = await fetch(`/api/products?${params.toString()}`);
+      const data = await res.json();
+      setProducts(data.products || []);
+      if (data.pagination) {
+        setPagination(prev => ({
+          ...prev,
+          total: data.pagination.total,
+          totalPages: data.pagination.totalPages,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  if (products.length === 0) {
+  const filteredFaqs = selectedCategory === null
+    ? FAQ_DATA
+    : FAQ_DATA.filter((_, i) => FAQ_CATEGORIES[selectedCategory].questions.includes(i));
+
+  if (products.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-[#111] rounded-2xl border border-[#222]">
         <ShoppingCart className="w-16 h-16 text-gray-500 mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">{t("store.empty")}</h2>
-        <p className="text-neutral-400">{t("store.emptyDesc")}</p>
+        <h2 className="text-xl font-bold text-white mb-2">No hay productos disponibles</h2>
+        <p className="text-neutral-400">Pronto tendremos nuevos plugins para ti.</p>
       </div>
     );
   }
@@ -82,23 +123,23 @@ export default function ProductGrid({ products, session }: ProductGridProps) {
           Premium Minecraft Plugins
         </div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
-          {t("store.title")}
+          Plugin Premium para tu Servidor
         </h1>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-          {t("store.subtitle")}
+          Licencias instantáneas, actualizaciones gratis y soporte premium incluido.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-[#111] rounded-xl border border-[#222]">
-            <ShieldCheck className="w-5 h-5 text-green-400" />
-            <span className="text-sm text-gray-300">Secure Licensing</span>
+            <Shield className="w-5 h-5 text-green-400" />
+            <span className="text-sm text-gray-300">Licencias Seguras</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-[#111] rounded-xl border border-[#222]">
             <RefreshCw className="w-5 h-5 text-blue-400" />
-            <span className="text-sm text-gray-300">Free Updates</span>
+            <span className="text-sm text-gray-300">Actualizaciones Gratis</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-[#111] rounded-xl border border-[#222]">
-            <Clock className="w-5 h-5 text-purple-400" />
-            <span className="text-sm text-gray-300">Instant Delivery</span>
+            <Users className="w-5 h-5 text-purple-400" />
+            <span className="text-sm text-gray-300">Soporte Premium</span>
           </div>
         </div>
       </div>
@@ -107,124 +148,189 @@ export default function ProductGrid({ products, session }: ProductGridProps) {
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white">Available Plugins</h2>
-            <p className="text-gray-400 text-sm mt-1">{products.length} product{products.length > 1 ? 's' : ''} available</p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <Star className="w-4 h-4 text-yellow-400" />
-            Rated 5/5 by customers
+            <h2 className="text-2xl font-bold text-white">Plugins Disponibles</h2>
+            <p className="text-gray-400 text-sm mt-1">
+              {pagination.total} producto{pagination.total > 1 ? 's' : ''} disponible{pagination.total > 1 ? 's' : ''}
+            </p>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => {
-            const latestVersion = product.versions[0];
-            const isOnSale = product.salePriceUSD && product.salePriceUSD < product.priceUSD;
-            const displayPriceUSD = isOnSale && product.salePriceUSD ? product.salePriceUSD : product.priceUSD;
-            const displayPriceCLP = isOnSale && product.salePriceCLP ? product.salePriceCLP : product.priceCLP;
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product) => {
+                const latestVersion = product.versions[0];
+                const isOnSale = product.salePriceUSD && product.salePriceUSD < product.priceUSD;
+                const displayPriceUSD = isOnSale && product.salePriceUSD ? product.salePriceUSD : product.priceUSD;
+                const displayPriceCLP = isOnSale && product.salePriceCLP ? product.salePriceCLP : product.priceCLP;
 
-            return (
-              <div key={product.id} className="group bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-green-500/40 overflow-hidden transition-all duration-300 flex flex-col">
-                {/* Image */}
-                <div className="relative h-40 overflow-hidden">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
-                      <Zap className="w-16 h-16 text-green-500/20" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-                  
-                  {isOnSale && (
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1">
-                        <Zap className="w-3 h-3" />
-                        SALE
-                      </span>
-                    </div>
-                  )}
-                  {latestVersion && (
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-mono px-2 py-1 rounded-lg">v{latestVersion.version}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-green-400 transition-colors">{product.name}</h3>
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2 flex-1">{product.description}</p>
-
-                  <div className="space-y-1.5 mb-4">
-                    <div className="flex items-center text-sm text-gray-300">
-                      <Check className="w-4 h-4 text-green-500 mr-2" />
-                      <span>Version {latestVersion?.version || 'N/A'}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <ServerIcon className="w-4 h-4 text-green-500 mr-2" />
-                      <span>{product.maxActivations} server{product.maxActivations > 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <Shield className="w-4 h-4 text-green-500 mr-2" />
-                      <span>Premium support</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto">
-                    <div className="flex items-baseline gap-2 mb-3">
-                      <span className="text-2xl font-bold text-white">{formatPrice(displayPriceUSD, displayPriceCLP)}</span>
+                return (
+                  <div key={product.id} className="group bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-green-500/40 overflow-hidden transition-all duration-300 flex flex-col">
+                    <div className="relative h-40 overflow-hidden">
+                      {product.image ? (
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
+                          <Zap className="w-16 h-16 text-green-500/20" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
+                      
                       {isOnSale && (
-                        <span className="text-sm text-gray-500 line-through">{formatPrice(product.priceUSD, product.priceCLP)}</span>
+                        <div className="absolute top-3 left-3">
+                          <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1">
+                            <Zap className="w-3 h-3" />
+                            OFERTA
+                          </span>
+                        </div>
+                      )}
+                      {latestVersion && (
+                        <div className="absolute top-3 right-3">
+                          <span className="bg-black/60 backdrop-blur-sm text-white text-xs font-mono px-2 py-1 rounded-lg">v{latestVersion.version}</span>
+                        </div>
                       )}
                     </div>
 
-                    {session ? (
-                      <Link href={`/checkout?productId=${product.id}`} className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 rounded-xl transition-all">
-                        <CreditCard className="w-4 h-4" />
-                        Purchase Now
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    ) : (
-                      <Link href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`} className="flex items-center justify-center gap-2 w-full bg-[#1a1a1a] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3 rounded-xl transition-all border border-[#333] hover:border-green-500/50">
-                        Login to Purchase
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="text-lg font-bold text-white mb-2 group-hover:text-green-400 transition-colors">{product.name}</h3>
+                      <p className="text-gray-400 text-sm mb-4 line-clamp-2 flex-1">{product.description}</p>
 
-      {/* Features */}
-      <div className="mb-16">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-white mb-3">Why Choose MinePlugins?</h2>
-          <p className="text-gray-400 max-w-xl mx-auto">Get the best Minecraft plugin experience with our premium features.</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((feature, i) => (
-            <div key={i} className="bg-[#111] border border-[#222] rounded-xl p-5 hover:border-green-500/30 transition-all">
-              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center mb-3">
-                <feature.icon className="w-5 h-5 text-green-400" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-1">{feature.title}</h3>
-              <p className="text-sm text-gray-400">{feature.description}</p>
+                      <div className="space-y-1.5 mb-4">
+                        <div className="flex items-center text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-green-500 mr-2" />
+                          <span>Versión {latestVersion?.version || 'N/A'}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-300">
+                          <ServerIcon className="w-4 h-4 text-green-500 mr-2" />
+                          <span>{product.maxActivations} servidor{product.maxActivations > 1 ? 'es' : ''}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-300">
+                          <Shield className="w-4 h-4 text-green-500 mr-2" />
+                          <span>Soporte premium</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto">
+                        <div className="flex items-baseline gap-2 mb-3">
+                          <span className="text-2xl font-bold text-white">{formatPrice(displayPriceUSD, displayPriceCLP)}</span>
+                          {isOnSale && (
+                            <span className="text-sm text-gray-500 line-through">{formatPrice(product.priceUSD, product.priceCLP)}</span>
+                          )}
+                        </div>
+
+                        {session ? (
+                          <Link href={`/checkout?productId=${product.id}`} className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 rounded-xl transition-all">
+                            <CreditCard className="w-4 h-4" />
+                            Comprar Ahora
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        ) : (
+                          <Link href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`} className="flex items-center justify-center gap-2 w-full bg-[#1a1a1a] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3 rounded-xl transition-all border border-[#333] hover:border-green-500/50">
+                            Iniciar Sesión para Comprar
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <button
+                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  disabled={pagination.page === 1}
+                  className="p-2 rounded-lg bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                    let pageNum = i + 1;
+                    if (pagination.totalPages > 5) {
+                      if (pagination.page > 3) {
+                        pageNum = pagination.page - 2 + i;
+                      }
+                      if (pageNum > pagination.totalPages) return null;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                        className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
+                          pagination.page === pageNum
+                            ? "bg-green-500 text-black"
+                            : "bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222]"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  disabled={pagination.page === pagination.totalPages}
+                  className="p-2 rounded-lg bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* FAQ */}
       <div className="mb-16">
         <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-white mb-3">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">Preguntas Frecuentes</h2>
+          <p className="text-gray-400 max-w-xl mx-auto">Todo lo que necesitas saber sobre nuestras licencias.</p>
         </div>
+
+        {/* FAQ Categories */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              selectedCategory === null
+                ? "bg-green-500 text-black"
+                : "bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222]"
+            }`}
+          >
+            <HelpCircle className="w-4 h-4" />
+            Todas
+          </button>
+          {FAQ_CATEGORIES.map((cat, i) => (
+            <button
+              key={i}
+              onClick={() => setSelectedCategory(i)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                selectedCategory === i
+                  ? "bg-green-500 text-black"
+                  : "bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222]"
+              }`}
+            >
+              <cat.icon className="w-4 h-4" />
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* FAQ Items */}
         <div className="space-y-3 max-w-3xl mx-auto">
-          {faqs.map((faq, i) => (
+          {filteredFaqs.map((faq, i) => (
             <div key={i} className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
-              <button onClick={() => setExpandedFaq(expandedFaq === i ? null : i)} className="w-full flex items-center justify-between p-4 text-left hover:bg-[#151515] transition-colors">
+              <button 
+                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)} 
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-[#151515] transition-colors"
+              >
                 <span className="font-medium text-white pr-4">{faq.question}</span>
                 <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ${expandedFaq === i ? 'rotate-180' : ''}`} />
               </button>
@@ -236,16 +342,19 @@ export default function ProductGrid({ products, session }: ProductGridProps) {
             </div>
           ))}
         </div>
-      </div>
 
-      {/* CTA */}
-      <div className="bg-gradient-to-br from-green-900/20 to-[#111] rounded-2xl border border-green-500/20 p-10 text-center mb-12">
-        <h2 className="text-2xl font-bold text-white mb-3">Ready to Get Started?</h2>
-        <p className="text-gray-400 mb-6 max-w-lg mx-auto">Purchase your license today and start using premium Minecraft plugins.</p>
-        <Link href="#products" className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold px-8 py-3 rounded-xl transition-all">
-          Browse Products
-          <ArrowRight className="w-5 h-5" />
-        </Link>
+        {/* Contact CTA */}
+        <div className="mt-8 text-center">
+          <p className="text-gray-400 mb-4">¿No encontraste tu respuesta?</p>
+          <Link 
+            href="https://discord.gg/townyfaith" 
+            target="_blank"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-xl transition-all"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Contactar en Discord
+          </Link>
+        </div>
       </div>
     </div>
   );

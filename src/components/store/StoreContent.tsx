@@ -1,18 +1,14 @@
 "use client";
 
-import { useTranslation } from "@/i18n/useTranslation";
 import ProductGrid from "@/components/store/ProductGrid";
-import { Product, Session } from "./types";
+import { Session } from "./types";
 
 interface StoreContentProps {
-  products: Product[];
   session: Session | null;
 }
 
-export default function StoreContent({ products, session }: StoreContentProps) {
-  const { t } = useTranslation();
-
+export default function StoreContent({ session }: StoreContentProps) {
   return (
-    <ProductGrid products={products} session={session} />
+    <ProductGrid session={session} />
   );
 }
