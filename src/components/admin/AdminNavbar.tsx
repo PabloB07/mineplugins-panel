@@ -19,6 +19,7 @@ import {
     Server,
 } from "lucide-react";
 import { useState } from "react";
+import CurrencySwitch from "@/components/dashboard/CurrencySwitch";
 
 interface AdminNavbarProps {
     user: {
@@ -99,6 +100,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                     {/* User Menu & Mobile Toggle */}
                     <div className="flex items-center gap-3">
+                        <CurrencySwitch />
                         <div className="hidden md:flex items-center gap-3 pl-3 border-l border-white/10">
                             <div className="text-right hidden md:block">
                                 <div className="text-sm font-medium text-white">{user.name || "Admin"}</div>

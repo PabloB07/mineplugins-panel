@@ -11,6 +11,7 @@ export async function createVersion(data: {
   version: string;
   changelog?: string;
   downloadUrl: string;
+  fileName?: string | null;
   fileSize: number;
   minJavaVersion?: string | null;
   minMcVersion?: string | null;
@@ -68,6 +69,7 @@ export async function createVersion(data: {
       version,
       changelog: toOptionalTrimmedString(data.changelog, 8000) || null,
       downloadUrl,
+      fileName: toOptionalTrimmedString(data.fileName, 255) || null,
       fileSize,
       minJavaVersion: toOptionalTrimmedString(data.minJavaVersion, 32) || null,
       minMcVersion: toOptionalTrimmedString(data.minMcVersion, 32) || null,

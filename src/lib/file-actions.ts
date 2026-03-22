@@ -38,8 +38,7 @@ export async function handleFileUpload(formData: FormData): Promise<{ url: strin
   const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN");
 
   try {
-    const timestamp = Date.now();
-    const blobFileName = `${timestamp}-${safeFileName}`;
+    const blobFileName = safeFileName;
     
     const blob = await put(`plugins/${blobFileName}`, file, {
       access: "public",

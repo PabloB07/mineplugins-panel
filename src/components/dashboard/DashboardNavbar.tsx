@@ -15,6 +15,7 @@ import {
     Server,
 } from "lucide-react";
 import { useState } from "react";
+import CurrencySwitch from "./CurrencySwitch";
 
 interface DashboardNavbarProps {
     user?: {
@@ -87,6 +88,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
 
                     {/* User Menu */}
                     <div className="flex items-center gap-4">
+                        <CurrencySwitch />
                         {user ? (
                             <div className="hidden sm:flex items-center gap-4 pl-4 border-l border-[#222]">
                                 <div className="text-right hidden md:block">

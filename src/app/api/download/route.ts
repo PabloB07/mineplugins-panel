@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const filename = `${version.product.slug}-${version.version}.jar`;
+    const filename = version.fileName || `${version.product.slug}-${version.version}.jar`;
 
     try {
       const fileResponse = await fetch(version.downloadUrl);

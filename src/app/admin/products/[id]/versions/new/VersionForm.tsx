@@ -29,9 +29,9 @@ export default function VersionForm({ productId }: VersionFormProps) {
       const isLatest = formData.get("isLatest") === "on";
       const isMandatory = formData.get("isMandatory") === "on";
 
-      // Handle file upload
       let downloadUrl = formData.get("downloadUrl") as string;
       let fileSize = parseInt(formData.get("fileSize") as string) || 0;
+      let fileName: string | undefined = undefined;
 
       if (uploadedFiles.length > 0) {
         const file = uploadedFiles[0];
@@ -42,18 +42,26 @@ export default function VersionForm({ productId }: VersionFormProps) {
           const uploadResult = await handleFileUpload(uploadFormData);
           downloadUrl = uploadResult.url;
           fileSize = uploadResult.size;
+          fileName = uploadResult.name;
           console.log(`File uploaded: ${uploadResult.name} -> ${uploadResult.url}`);
         } catch (uploadError) {
           throw new Error(`File upload failed: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`);
         }
+      } else if (downloadUrl) {
+        try {
+          const url = new URL(downloadUrl);
+          fileName = url.pathname.split("/").pop() || undefined;
+        } catch {
+          fileName = undefined;
+        }
       }
 
-      // Call server action
       await createVersion({
         productId,
         version,
         changelog,
         downloadUrl,
+        fileName,
         fileSize,
         minJavaVersion,
         minMcVersion,

@@ -99,6 +99,7 @@ model PluginVersion {
   version        String
   changelog      String?
   downloadUrl    String
+  fileName       String?
   fileSize       Int
   minJavaVersion String?
   minMcVersion   String?
