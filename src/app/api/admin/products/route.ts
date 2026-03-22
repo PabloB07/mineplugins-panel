@@ -22,7 +22,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Product ID required" }, { status: 400 });
     }
 
-    await prisma.product.delete({ where: { id: productId } });
+    await prisma.$transaction([
+      prisma.download.deleteMany({ where: { version: { productId } } }),
+      prisma.orderItem.deleteMany({ where: { productId } }),
+      prisma.licenseActivation.deleteMany({ where: { license: { productId } } }),
+      prisma.license.deleteMany({ where: { productId } }),
+      prisma.pluginVersion.deleteMany({ where: { productId } }),
+      prisma.product.delete({ where: { id: productId } }),
+    ]);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting product:", error);
