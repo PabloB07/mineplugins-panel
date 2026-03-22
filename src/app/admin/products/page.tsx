@@ -18,7 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { DeleteProductButton } from "@/components/DeleteProductButton";
-import { formatCLP } from "@/lib/pricing";
+import { formatCLPValue } from "@/lib/pricing";
 import ProductVersionSelector from "@/components/admin/ProductVersionSelector";
 import CopyButton from "@/components/admin/CopyButton";
 import ApiTokenButton from "@/components/admin/ApiTokenButton";
@@ -243,7 +243,7 @@ export default function AdminProductsPage() {
                       ${product.salePriceUSD ? product.salePriceUSD.toFixed(2) : product.priceUSD.toFixed(2)} USD
                     </div>
                     <div className="text-xs text-gray-400">
-                      {formatCLP(product.salePriceCLP || product.priceCLP)}
+                      {formatCLPValue(product.salePriceCLP || product.priceCLP)}
                     </div>
                   </div>
 

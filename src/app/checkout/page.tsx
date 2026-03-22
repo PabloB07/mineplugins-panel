@@ -5,7 +5,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Package, Shield, Clock, Server, Check, CreditCard, Lock, Zap, Star } from "lucide-react";
 import { CheckoutClient } from "@/app/checkout/CheckoutClient";
-import { formatUSD, formatCLP } from "@/lib/pricing";
+import { formatUSD, formatCLPValue } from "@/lib/pricing";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 interface PageProps {
@@ -202,19 +202,19 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
                 <div className="space-y-4 mb-7">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
-                    <span>{formatCLP(displayPriceCLP)}</span>
+                    <span>{formatCLPValue(displayPriceCLP)}</span>
                   </div>
                   {hasDiscount && (
                     <div className="flex justify-between text-green-500">
                       <span>Discount</span>
-                      <span>Save {formatCLP(product.priceCLP - displayPriceCLP)}</span>
+                      <span>Save {formatCLPValue(product.priceCLP - displayPriceCLP)}</span>
                     </div>
                   )}
                   <div className="h-px bg-[#222] my-3"></div>
                   <div className="flex justify-between items-end">
                     <span className="text-white font-medium">Total</span>
                     <div className="text-right">
-                      <div className="text-3xl font-bold text-white">{formatCLP(displayPriceCLP)}</div>
+                      <div className="text-3xl font-bold text-white">{formatCLPValue(displayPriceCLP)}</div>
                       <div className="text-xs text-gray-500 mb-1">({formatUSD(displayPriceUSD)})</div>
                     </div>
                   </div>

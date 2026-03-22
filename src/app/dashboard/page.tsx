@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { formatCLP } from "@/lib/pricing";
+import { formatCLPValue } from "@/lib/pricing";
 import {
   Download,
   ShoppingCart,
@@ -248,7 +248,7 @@ export default async function DashboardPage() {
                         </span>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {formatCLP(order.total)} • {new Date(order.createdAt).toLocaleDateString()}
+                        {formatCLPValue(order.total)} • {new Date(order.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                     <div className="text-xs text-gray-400 text-right max-w-[150px] truncate">

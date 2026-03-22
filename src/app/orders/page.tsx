@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { formatCLP } from "@/lib/pricing";
+import { formatCLPValue } from "@/lib/pricing";
 import { ShoppingBag, Package, ArrowRight } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
@@ -146,7 +146,7 @@ export default async function OrdersPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm font-semibold text-[#22c55e]">
-                            {formatCLP(order.total || 199900)}
+                            {formatCLPValue(order.total || 199900)}
                           </div>
                         </td>
                         <td className="px-6 py-4">

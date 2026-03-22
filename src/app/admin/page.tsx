@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { formatCLP } from "@/lib/pricing";
+import { formatCLPValue } from "@/lib/pricing";
 import Link from "next/link";
 import {
   Users,
@@ -265,7 +265,7 @@ export default async function AdminDashboardPage() {
                           </span>
                         </td>
                         <td className="px-5 py-4 text-sm text-white text-right font-medium">
-                          {formatCLP(order.total)}
+                          {formatCLPValue(order.total)}
                         </td>
                       </tr>
                     ))

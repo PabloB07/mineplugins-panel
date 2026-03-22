@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
-import { formatUSD, formatCLP } from "@/lib/pricing";
+import { formatUSD, formatCLPValue } from "@/lib/pricing";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -263,7 +263,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                       {formatUSD(item.unitPriceUSD || item.product.priceUSD)}
                     </div>
                     <div className="text-sm text-gray-300">
-                      {formatCLP(item.unitPriceCLP || item.product.priceCLP)}
+                      {formatCLPValue(item.unitPriceCLP || item.product.priceCLP)}
                     </div>
                   </div>
                 </div>
@@ -305,13 +305,13 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Discount</span>
                     <span className="text-red-400">
-                      -{formatCLP(discountCLP)}
+                      -{formatCLPValue(discountCLP)}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Tax</span>
-                  <span className="text-white">{formatCLP(0)}</span>
+                    <span className="text-white">{formatCLPValue(0)}</span>
                 </div>
                 <div className="border-t border-[#222] pt-3">
                   <div className="flex justify-between">
@@ -321,7 +321,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                         {formatUSD(totalUSD)}
                       </div>
                       <div className="text-sm text-gray-300">
-                        {formatCLP(totalCLP)}
+                        {formatCLPValue(totalCLP)}
                       </div>
                     </div>
                   </div>

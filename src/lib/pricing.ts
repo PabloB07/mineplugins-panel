@@ -25,6 +25,10 @@ export function formatCLP(dollars: number): string {
   return `$${clp.toLocaleString('es-CL')} CLP`;
 }
 
+export function formatCLPValue(clp: number): string {
+  return `$${Math.round(clp).toLocaleString('es-CL')} CLP`;
+}
+
 export function formatCurrency(dollars: number, currency: Currency): string {
   switch (currency) {
     case 'USD':

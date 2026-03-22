@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/useTranslation";
-import { formatUSD, formatCLP } from "@/lib/pricing";
+import { formatUSD, formatCLPValue } from "@/lib/pricing";
 
 interface PriceDisplayProps {
   priceUSD: number;
@@ -56,7 +56,7 @@ export function PriceDisplay({
       )}
       {currency !== 'CLP' && (
         <div className="text-xs text-gray-500">
-          ≈ {formatCLP(displayPriceCLP)}
+          ≈ {formatCLPValue(displayPriceCLP)}
         </div>
       )}
     </div>
@@ -89,12 +89,12 @@ export function PriceSummary({
     <div className="space-y-4 mb-7">
       <div className="flex justify-between text-gray-400">
         <span>Subtotal</span>
-        <span>{currency === 'CLP' ? formatCLP(displayPriceCLP) : formatUSD(displayPriceUSD)}</span>
+        <span>{currency === 'CLP' ? formatCLPValue(displayPriceCLP) : formatUSD(displayPriceUSD)}</span>
       </div>
       {hasDiscount && (
         <div className="flex justify-between text-green-500">
           <span>Discount</span>
-          <span>Save {currency === 'CLP' ? formatCLP(savingsCLP) : formatUSD(priceUSD - displayPriceUSD)}</span>
+          <span>Save {currency === 'CLP' ? formatCLPValue(savingsCLP) : formatUSD(priceUSD - displayPriceUSD)}</span>
         </div>
       )}
       <div className="h-px bg-[#222] my-3"></div>
@@ -105,7 +105,7 @@ export function PriceSummary({
             {currentPrice}
           </div>
           <div className="text-xs text-gray-500 mb-1">
-            ({currency === 'CLP' ? formatUSD(displayPriceUSD) : formatCLP(displayPriceCLP)})
+            ({currency === 'CLP' ? formatUSD(displayPriceUSD) : formatCLPValue(displayPriceCLP)})
           </div>
         </div>
       </div>
