@@ -41,6 +41,17 @@ export function verifyLicenseSignature(licenseKey: string): boolean {
   return dot > 0 && dot < licenseKey.length - 1;
 }
 
+export function generateSimpleLicenseKey(): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+  const length = 26;
+  let key = "";
+  for (let i = 0; i < length; i++) {
+    if (i > 0 && i % 5 === 0) key += "-";
+    key += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return key;
+}
+
 /**
  * Generate Paper-compatible key: <nonce>.<signature>
  * signature = base64url(HMAC_SHA256(pluginId:nonce))[0..16 bytes]

@@ -70,7 +70,7 @@ export async function loadRuntimeLicense(
       };
     }
 
-    if (!verifyPaperLicenseKey(license.product.slug, licenseKey)) {
+    if (licenseKey.includes(".") && !verifyPaperLicenseKey(license.product.slug, licenseKey)) {
       return {
         ok: false,
         error: {

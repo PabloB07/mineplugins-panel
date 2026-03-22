@@ -5,7 +5,7 @@ import {
   PaykuPaymentStatus,
 } from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
-import { generatePaperLicenseKey } from "@/lib/license";
+import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
 
 /**
@@ -100,7 +100,7 @@ async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
         continue;
       }
 
-      const licenseKey = generatePaperLicenseKey(item.product.slug);
+      const licenseKey = generateSimpleLicenseKey();
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 

@@ -165,6 +165,27 @@ export function withPluginAuth(
 }
 
 /**
+ * Middleware wrapper for public plugin API endpoints
+ * No API key required, but applies rate limiting
+ */
+export function withPluginAuthOptional(
+  handler: (request: NextRequest) => Promise<NextResponse>
+) {
+  return async (request: NextRequest): Promise<NextResponse> => {
+    const clientIp = getClientIp(request);
+
+    // Apply rate limiting
+    const rateLimitResponse = checkRateLimit(clientIp, RATE_LIMIT_MAX_REQUESTS * 2);
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    // Call the handler (no API key required)
+    return handler(request);
+  };
+}
+
+/**
  * Clean up expired rate limit records periodically
  */
 const cleanupInterval = setInterval(() => {

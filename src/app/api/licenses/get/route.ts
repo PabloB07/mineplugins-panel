@@ -1,11 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withPluginAuth } from "@/lib/api-auth";
+import { withPluginAuthOptional } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
-import { toPanelLicenseDto } from "@/lib/license-utils";
+import { normalizePluginId } from "@/lib/license-utils";
 
 interface GetBody {
   key: string;
   serverId?: string;
+}
+
+interface PanelLicenseResponse {
+  key: string;
+  pluginId: string;
+  owner: string;
+  issuedAt: number;
+  expiresAt: number;
+  revoked: boolean;
+}
+
+function toPanelLicenseDto(license: {
+  licenseKey: string;
+  product: { slug: string };
+  user: { email: string };
+  createdAt: Date;
+  expiresAt: Date;
+  status: string;
+}): PanelLicenseResponse {
+  return {
+    key: license.licenseKey,
+    pluginId: normalizePluginId(license.product.slug),
+    owner: license.user.email,
+    issuedAt: new Date(license.createdAt).getTime(),
+    expiresAt: license.status === "REVOKED" ? 0 : new Date(license.expiresAt).getTime(),
+    revoked: license.status === "REVOKED",
+  };
 }
 
 async function handler(request: NextRequest): Promise<NextResponse> {
@@ -20,8 +47,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     const license = await prisma.license.findUnique({
       where: { licenseKey: key },
       include: {
-        product: true,
-        user: true,
+        product: {
+          select: { slug: true },
+        },
+        user: {
+          select: { email: true },
+        },
       },
     });
 
@@ -38,4 +69,4 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const POST = withPluginAuth(handler);
+export const POST = withPluginAuthOptional(handler);

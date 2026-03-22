@@ -1,17 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withPluginAuth } from "@/lib/api-auth";
+import { withPluginAuthOptional } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { verifyPaperLicenseKey } from "@/lib/license";
-import {
-  mapStatusToValidationResult,
-  normalizePluginId,
-  toPanelLicenseDto,
-} from "@/lib/license-utils";
+import { normalizePluginId } from "@/lib/license-utils";
 
 interface ValidateBody {
   pluginId: string;
   key: string;
   serverId?: string;
+}
+
+interface PanelLicenseResponse {
+  key: string;
+  pluginId: string;
+  owner: string;
+  issuedAt: number;
+  expiresAt: number;
+  revoked: boolean;
+}
+
+function toPanelLicenseDto(license: {
+  licenseKey: string;
+  product: { slug: string };
+  user: { email: string };
+  createdAt: Date;
+  expiresAt: Date;
+  status: string;
+}): PanelLicenseResponse {
+  return {
+    key: license.licenseKey,
+    pluginId: normalizePluginId(license.product.slug),
+    owner: license.user.email,
+    issuedAt: new Date(license.createdAt).getTime(),
+    expiresAt: license.status === "REVOKED" ? 0 : new Date(license.expiresAt).getTime(),
+    revoked: license.status === "REVOKED",
+  };
 }
 
 async function handler(request: NextRequest): Promise<NextResponse> {
@@ -31,8 +54,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     const license = await prisma.license.findUnique({
       where: { licenseKey: key },
       include: {
-        product: true,
-        user: true,
+        product: {
+          select: { slug: true },
+        },
+        user: {
+          select: { email: true },
+        },
       },
     });
 
@@ -45,7 +72,11 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ result: "WRONG_PLUGIN" });
     }
 
-    if (new Date(license.expiresAt) < new Date() && license.status === "ACTIVE") {
+    if (license.status === "REVOKED") {
+      return NextResponse.json({ result: "REVOKED" });
+    }
+
+    if (license.expiresAt < new Date() && license.status === "ACTIVE") {
       await prisma.license.update({
         where: { id: license.id },
         data: { status: "EXPIRED" },
@@ -53,9 +84,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ result: "EXPIRED" });
     }
 
-    const statusResult = mapStatusToValidationResult(license.status);
-    if (statusResult !== "VALID") {
-      return NextResponse.json({ result: statusResult });
+    if (license.status === "EXPIRED") {
+      return NextResponse.json({ result: "EXPIRED" });
+    }
+
+    if (license.status === "SUSPENDED") {
+      return NextResponse.json({ result: "SUSPENDED" });
     }
 
     await prisma.license.update({
@@ -73,4 +107,4 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const POST = withPluginAuth(handler);
+export const POST = withPluginAuthOptional(handler);

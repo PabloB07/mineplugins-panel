@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generatePaperLicenseKey } from "@/lib/license";
+import { generateSimpleLicenseKey } from "@/lib/license";
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     const newExpiresAt = new Date();
     newExpiresAt.setUTCDate(newExpiresAt.getUTCDate() + Number(durationDays));
-    const newLicenseKey = generatePaperLicenseKey(license.product.slug);
+    const newLicenseKey = generateSimpleLicenseKey();
 
     const transferRecord = await prisma.$transaction(async (tx) => {
       await tx.licenseActivation.deleteMany({ where: { licenseId: license.id } });

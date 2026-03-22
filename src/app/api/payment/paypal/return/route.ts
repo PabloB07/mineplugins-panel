@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { generatePaperLicenseKey } from "@/lib/license";
+import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
 import { capturePaypalPayment } from "@/lib/paypal";
 
@@ -74,7 +74,7 @@ async function handlePaypalReturn(request: NextRequest) {
       for (const item of freshOrder.items) {
         if (item.licenseId) continue;
 
-        const licenseKey = generatePaperLicenseKey(item.product.slug);
+        const licenseKey = generateSimpleLicenseKey();
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 

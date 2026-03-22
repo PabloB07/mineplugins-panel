@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { withPluginAuth } from "@/lib/api-auth";
-import { generatePaperLicenseKey } from "@/lib/license";
+import { generateSimpleLicenseKey } from "@/lib/license";
 import { prisma } from "@/lib/prisma";
-import {
-  buildExpiresAt,
-  normalizePluginId,
-  toPanelLicenseDto,
-} from "@/lib/license-utils";
+import { normalizePluginId } from "@/lib/license-utils";
 
 interface IssueBody {
   pluginId: string;
@@ -16,12 +12,39 @@ interface IssueBody {
   serverId?: string;
 }
 
+interface PanelLicenseResponse {
+  key: string;
+  pluginId: string;
+  owner: string;
+  issuedAt: number;
+  expiresAt: number;
+  revoked: boolean;
+}
+
+function toPanelLicenseDto(license: {
+  licenseKey: string;
+  product: { slug: string };
+  user: { email: string };
+  createdAt: Date;
+  expiresAt: Date;
+  status: string;
+}): PanelLicenseResponse {
+  return {
+    key: license.licenseKey,
+    pluginId: normalizePluginId(license.product.slug),
+    owner: license.user.email,
+    issuedAt: new Date(license.createdAt).getTime(),
+    expiresAt: license.status === "REVOKED" ? 0 : new Date(license.expiresAt).getTime(),
+    revoked: license.status === "REVOKED",
+  };
+}
+
 async function handler(request: NextRequest): Promise<NextResponse> {
   try {
     const body = (await request.json()) as IssueBody;
     const pluginId = normalizePluginId(body.pluginId);
     const owner = (body.owner || "").trim();
-    const validDays = Number.isFinite(body.validDays) ? Number(body.validDays) : 0;
+    const validDays = Number.isFinite(body.validDays) ? Number(body.validDays) : -1;
 
     if (!pluginId || !owner) {
       return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 400 });
@@ -60,11 +83,17 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const expiresAt = buildExpiresAt(validDays);
+    let expiresAt: Date;
+    if (validDays === -1) {
+      expiresAt = new Date("2099-12-31T23:59:59.999Z");
+    } else {
+      expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + validDays);
+    }
 
     let created = null;
     for (let i = 0; i < 5; i++) {
-      const key = generatePaperLicenseKey(product.slug);
+      const key = generateSimpleLicenseKey();
       try {
         created = await prisma.license.create({
           data: {
@@ -77,8 +106,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
             notes: `Issued via plugin API owner=${owner}`,
           },
           include: {
-            product: true,
-            user: true,
+            product: {
+              select: { slug: true },
+            },
+            user: {
+              select: { email: true },
+            },
           },
         });
         break;

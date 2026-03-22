@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getFlowPaymentStatus, FlowPaymentStatusCodes } from "@/lib/flow";
-import { generatePaperLicenseKey } from "@/lib/license";
+import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
 
 /**
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
             continue;
           }
 
-          const licenseKey = generatePaperLicenseKey(item.product.slug);
+          const licenseKey = generateSimpleLicenseKey();
           const expiresAt = new Date();
           expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 

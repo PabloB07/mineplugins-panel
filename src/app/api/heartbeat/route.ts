@@ -28,17 +28,18 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const clientIp = getClientIp(request);
 
-  const rateLimitResponse = checkRateLimit(clientIp, 30);
+  const rateLimitResponse = checkRateLimit(clientIp, 60);
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
 
-  if (!validateApiKey(request)) {
-    return NextResponse.json(
-      { success: false, error: "UNAUTHORIZED", message: "Invalid or missing API key" },
-      { status: 401 }
-    );
-  }
+  // API key validation is optional for heartbeat
+  // if (!validateApiKey(request)) {
+  //   return NextResponse.json(
+  //     { success: false, error: "UNAUTHORIZED", message: "Invalid or missing API key" },
+  //     { status: 401 }
+  //   );
+  // }
 
   try {
     const body: HeartbeatRequest = await request.json();
