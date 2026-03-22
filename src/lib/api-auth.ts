@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { prisma } from "@/lib/prisma";
 
 // Environment variables for API authentication
 const PLUGIN_API_KEY = process.env.PLUGIN_API_KEY || "";
@@ -10,19 +11,25 @@ const RATE_LIMIT_MAX_REQUESTS = 60; // 60 requests per minute
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 /**
- * Validates the API key from the request headers
+ * Extracts the API key from request headers
+ */
+function extractApiKey(request: NextRequest): string {
+  const authorizationHeader = request.headers.get("authorization") || "";
+  const bearerToken = authorizationHeader.startsWith("Bearer ")
+    ? authorizationHeader.slice("Bearer ".length)
+    : "";
+  return request.headers.get("x-api-key") || bearerToken;
+}
+
+/**
+ * Validates the API key from the request headers (global token)
  */
 export function validateApiKey(request: NextRequest): boolean {
   if (!PLUGIN_API_KEY) {
     return false;
   }
 
-  const authorizationHeader = request.headers.get("authorization") || "";
-  const bearerToken = authorizationHeader.startsWith("Bearer ")
-    ? authorizationHeader.slice("Bearer ".length)
-    : "";
-  const apiKey = request.headers.get("x-api-key") || bearerToken;
-
+  const apiKey = extractApiKey(request);
   if (!apiKey) {
     return false;
   }
@@ -36,6 +43,43 @@ export function validateApiKey(request: NextRequest): boolean {
   }
 
   return crypto.timingSafeEqual(expectedKey, receivedKey);
+}
+
+/**
+ * Validates product-specific API token from request
+ * Falls back to global PLUGIN_API_KEY if no product token matches
+ */
+export async function validateProductApiKey(request: NextRequest): Promise<{ valid: boolean; productId?: string; productSlug?: string }> {
+  const apiKey = extractApiKey(request);
+  
+  if (!apiKey) {
+    return { valid: false };
+  }
+
+  // First try to find a product-specific token
+  const product = await prisma.product.findFirst({
+    where: { apiToken: apiKey, isActive: true },
+    select: { id: true, slug: true },
+  });
+
+  if (product) {
+    return { valid: true, productId: product.id, productSlug: product.slug };
+  }
+
+  // Fall back to global API key
+  if (PLUGIN_API_KEY && apiKey === PLUGIN_API_KEY) {
+    return { valid: true };
+  }
+
+  return { valid: false };
+}
+
+/**
+ * Generate a secure API token for a product
+ */
+export function generateProductApiToken(): string {
+  const bytes = crypto.randomBytes(32);
+  return bytes.toString("hex");
 }
 
 /**

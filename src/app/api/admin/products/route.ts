@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/authz";
+import { generateProductApiToken } from "@/lib/api-auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,6 +46,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const apiToken = generateProductApiToken();
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -60,14 +63,69 @@ export async function POST(request: NextRequest) {
         defaultDurationDays,
         maxActivations,
         isActive,
+        apiToken,
       },
     });
 
-    return NextResponse.json(product);
+    return NextResponse.json({
+      ...product,
+      apiToken,
+    });
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(
       { error: "Failed to create product" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!isAdminRole(session.user.role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { productId, action } = body;
+
+    if (!productId) {
+      return NextResponse.json({ error: "Product ID required" }, { status: 400 });
+    }
+
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    if (action === "regenerateToken") {
+      const newToken = generateProductApiToken();
+      const updated = await prisma.product.update({
+        where: { id: productId },
+        data: { apiToken: newToken },
+      });
+      return NextResponse.json({
+        apiToken: updated.apiToken,
+      });
+    }
+
+    if (action === "getToken") {
+      return NextResponse.json({
+        apiToken: product.apiToken,
+      });
+    }
+
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return NextResponse.json(
+      { error: "Failed to update product" },
       { status: 500 }
     );
   }

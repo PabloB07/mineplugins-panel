@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashForPrivacy } from "@/lib/license";
 import {
-  validateApiKey,
+  validateProductApiKey,
   checkRateLimit,
   getClientIp,
   errorResponse,
@@ -60,7 +60,8 @@ export async function POST(request: NextRequest) {
     return rateLimitResponse;
   }
 
-  if (!validateApiKey(request)) {
+  const authResult = await validateProductApiKey(request);
+  if (!authResult.valid) {
     return errorResponse("UNAUTHORIZED", "Invalid or missing API key", 401);
   }
 

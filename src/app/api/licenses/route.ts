@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             slug: true,
+            apiToken: true,
           },
         },
         user: isAdmin

@@ -87,8 +87,10 @@ model Product {
   licenses            License[]
   orders              OrderItem[]
   versions            PluginVersion[]
+  apiToken            String?         @unique
 
   @@index([slug])
+  @@index([apiToken])
 }
 
 model PluginVersion {

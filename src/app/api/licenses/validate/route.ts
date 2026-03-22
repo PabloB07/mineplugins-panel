@@ -1,8 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withPluginAuthOptional } from "@/lib/api-auth";
+import { withPluginAuth, validateProductApiKey } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { verifyPaperLicenseKey } from "@/lib/license";
 import { normalizePluginId } from "@/lib/license-utils";
+import { checkRateLimit, getClientIp } from "@/lib/api-auth";
+
+function withProductAuth(
+  handler: (request: NextRequest) => Promise<NextResponse>
+): (request: NextRequest) => Promise<NextResponse> {
+  return async (request: NextRequest): Promise<NextResponse> => {
+    const clientIp = getClientIp(request);
+    const rateLimitResponse = checkRateLimit(clientIp);
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    const authResult = await validateProductApiKey(request);
+    if (!authResult.valid) {
+      return NextResponse.json(
+        { error: "UNAUTHORIZED", message: "Invalid or missing API key" },
+        { status: 401 }
+      );
+    }
+
+    return handler(request);
+  };
+}
 
 interface ValidateBody {
   pluginId: string;
@@ -107,4 +130,4 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const POST = withPluginAuthOptional(handler);
+export const POST = withProductAuth(handler);
