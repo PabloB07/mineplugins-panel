@@ -129,7 +129,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    if (action === "regenerateToken") {
+    if (action === "generateToken" || action === "regenerateToken") {
       const newToken = generateProductApiToken();
       const updated = await prisma.product.update({
         where: { id: productId },

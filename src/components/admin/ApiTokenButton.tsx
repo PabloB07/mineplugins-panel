@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Key, Copy, RefreshCw } from "lucide-react";
+import { Key, Copy, RefreshCw, Plus } from "lucide-react";
 
 interface ApiTokenButtonProps {
   productId: string;
@@ -22,20 +22,22 @@ export default function ApiTokenButton({ productId, apiToken }: ApiTokenButtonPr
     }
   };
 
-  const handleRegenerate = async () => {
+  const handleGenerateOrRegenerate = async () => {
     setRegenerating(true);
     try {
+      const action = token ? "regenerateToken" : "generateToken";
       const res = await fetch("/api/admin/products", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, action: "regenerateToken" }),
+        body: JSON.stringify({ productId, action }),
       });
       const data = await res.json();
       if (data.apiToken) {
         setToken(data.apiToken);
+        setShowToken(true);
       }
     } catch (error) {
-      console.error("Failed to regenerate token:", error);
+      console.error("Failed to generate token:", error);
     } finally {
       setRegenerating(false);
     }
@@ -44,11 +46,21 @@ export default function ApiTokenButton({ productId, apiToken }: ApiTokenButtonPr
   return (
     <div className="flex items-center gap-2">
       <button
-        onClick={() => setShowToken(!showToken)}
-        className="text-yellow-500 hover:text-yellow-400 p-2 hover:bg-yellow-500/10 rounded-lg transition-all duration-200 border border-transparent hover:border-yellow-500/20"
-        title="View API Key"
+        onClick={() => {
+          if (!token) {
+            handleGenerateOrRegenerate();
+          } else {
+            setShowToken(!showToken);
+          }
+        }}
+        className={`p-2 rounded-lg transition-all duration-200 border border-transparent hover:border-yellow-500/20 ${
+          token
+            ? "text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
+            : "text-gray-500 hover:text-gray-400 hover:bg-gray-500/10 border-gray-500/20"
+        }`}
+        title={token ? "View API Key" : "Generate API Key"}
       >
-        <Key className="w-4 h-4" />
+        {token ? <Key className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
       </button>
       
       {showToken && token && (
@@ -64,7 +76,7 @@ export default function ApiTokenButton({ productId, apiToken }: ApiTokenButtonPr
             {copied ? <span className="text-xs text-green-400">✓</span> : <Copy className="w-3 h-3" />}
           </button>
           <button
-            onClick={handleRegenerate}
+            onClick={handleGenerateOrRegenerate}
             disabled={regenerating}
             className="text-gray-400 hover:text-yellow-400"
             title="Regenerate"

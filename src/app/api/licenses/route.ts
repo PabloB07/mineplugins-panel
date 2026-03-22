@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
+import { generateProductApiToken } from "@/lib/api-auth";
 import { UserRole } from "@prisma/client";
 import { toSafeInt } from "@/lib/security";
 
@@ -209,6 +210,14 @@ export async function POST(request: NextRequest) {
     // Generate license key
     const days = durationDays || product.defaultDurationDays;
     const licenseKey = generateSimpleLicenseKey();
+
+    // Auto-generate API token if product doesn't have one
+    if (!product.apiToken) {
+      await prisma.product.update({
+        where: { id: productId },
+        data: { apiToken: generateProductApiToken() },
+      });
+    }
 
     // Calculate expiration
     const expiresAt = new Date();
