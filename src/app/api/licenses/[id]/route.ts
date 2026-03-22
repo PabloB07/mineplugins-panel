@@ -31,7 +31,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const license = await prisma.license.findUnique({
       where: { id },
       include: {
-        product: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            apiToken: true,
+          },
+        },
         user: isAdmin
           ? {
               select: {

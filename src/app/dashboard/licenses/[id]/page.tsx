@@ -16,6 +16,7 @@ import {
   CheckCircle,
   XCircle,
   Copy,
+  Key,
 } from "lucide-react";
 
 interface License {
@@ -31,6 +32,7 @@ interface License {
     id: string;
     name: string;
     slug: string;
+    apiToken: string | null;
   };
   activations: Array<{
     id: string;
@@ -54,6 +56,7 @@ export default function LicenseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [apiKeyCopied, setApiKeyCopied] = useState(false);
 
   useEffect(() => {
     async function fetchLicense() {
@@ -81,6 +84,13 @@ export default function LicenseDetailPage() {
     await navigator.clipboard.writeText(license.licenseKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyApiKey = async () => {
+    if (!license?.product?.apiToken) return;
+    await navigator.clipboard.writeText(license.product.apiToken);
+    setApiKeyCopied(true);
+    setTimeout(() => setApiKeyCopied(false), 2000);
   };
 
   if (loading) {
@@ -177,6 +187,46 @@ export default function LicenseDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* API Key Card - for plugin validation */}
+      {license.product.apiToken && (
+        <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-yellow-500/20 transition-all duration-300">
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-500 border border-yellow-500/20">
+                <Key className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">API Key</h2>
+                <p className="text-gray-400 text-sm">Required for plugin validation on your server</p>
+              </div>
+            </div>
+            
+            <div className="bg-[#0a0a0a]/50 rounded-lg p-4 border border-[#222] hover:border-yellow-500/30 transition-all">
+              <div className="flex justify-between items-center">
+                <div className="flex-1">
+                  <code className="text-yellow-500 font-mono text-lg break-all">
+                    {license.product.apiToken}
+                  </code>
+                </div>
+                <button
+                  onClick={copyApiKey}
+                  className="bg-yellow-500 text-black hover:bg-yellow-400 px-4 py-2 rounded-lg text-sm font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/20 ml-4"
+                >
+                  {apiKeyCopied ? "✓ Copied" : <><Copy className="w-4 h-4 mr-1" /> Copy</>}
+                </button>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+              <p className="text-yellow-200 text-sm">
+                <strong>Important:</strong> Add this API key to your plugin config file (config.yml) 
+                to enable license validation on your Minecraft server.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* License Information Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

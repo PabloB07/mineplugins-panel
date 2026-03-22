@@ -9,12 +9,16 @@ import {
   EyeOff, 
   DollarSign, 
   Server,
-  TrendingUp
+  TrendingUp,
+  Key,
+  Copy,
+  RefreshCw
 } from "lucide-react";
 import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLP } from "@/lib/pricing";
 import ProductVersionSelector from "@/components/admin/ProductVersionSelector";
 import CopyButton from "@/components/admin/CopyButton";
+import ApiTokenButton from "@/components/admin/ApiTokenButton";
 
 type ProductVersion = {
   id: string;
@@ -39,6 +43,7 @@ type ProductItem = {
   defaultDurationDays: number;
   maxActivations: number;
   isActive: boolean;
+  apiToken: string | null;
   versions: ProductVersion[];
   licenses: { id: string }[];
   orders: { id: string }[];
@@ -249,28 +254,32 @@ export default async function AdminProductsPage() {
                            )}
                          </span>
                       </td>
-                      <td className="px-6 py-4">
-                         <div className="flex items-center gap-3">
-                           <Link
-                             href={`/admin/products/${product.id}`}
-                             className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-500/20"
-                             title="Edit"
-                           >
-                             <Edit className="w-4 h-4" />
-                           </Link>
-                           <Link
-                             href={`/admin/products/${product.id}/versions`}
-                             className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-all duration-200 border border-transparent hover:border-[#f59e0b]/20"
-                             title="Manage Versions"
-                           >
-                             <Package className="w-4 h-4" />
-                           </Link>
-                           <DeleteProductButton
-                             productId={product.id}
-                             deleteAction={deleteProduct}
-                           />
-                         </div>
-                      </td>
+<td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <ApiTokenButton
+                              productId={product.id}
+                              apiToken={product.apiToken}
+                            />
+                            <Link
+                              href={`/admin/products/${product.id}`}
+                              className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-500/20"
+                              title="Edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Link>
+                            <Link
+                              href={`/admin/products/${product.id}/versions`}
+                              className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-all duration-200 border border-transparent hover:border-[#f59e0b]/20"
+                              title="Manage Versions"
+                            >
+                              <Package className="w-4 h-4" />
+                            </Link>
+                            <DeleteProductButton
+                              productId={product.id}
+                              deleteAction={deleteProduct}
+                            />
+                          </div>
+                       </td>
                     </tr>
                   );
                 })}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { AlertTriangle, Loader2, ShieldX } from "lucide-react";
+import { AlertTriangle, Loader2, ShieldX, Key, Copy } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
 
 interface License {
@@ -19,6 +19,7 @@ interface License {
     id: string;
     name: string;
     slug: string;
+    apiToken: string | null;
   };
   user: {
     id: string;
@@ -45,6 +46,7 @@ export default function AdminLicenseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [apiKeyCopied, setApiKeyCopied] = useState(false);
   const [revokeConfirm, setRevokeConfirm] = useState("");
   const [revoking, setRevoking] = useState(false);
   const [revokeMessage, setRevokeMessage] = useState<string | null>(null);
@@ -76,6 +78,13 @@ export default function AdminLicenseDetailPage() {
     await navigator.clipboard.writeText(license.licenseKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyApiKey = async () => {
+    if (!license?.product?.apiToken) return;
+    await navigator.clipboard.writeText(license.product.apiToken);
+    setApiKeyCopied(true);
+    setTimeout(() => setApiKeyCopied(false), 2000);
   };
 
   const revokeLicense = async () => {
@@ -189,6 +198,26 @@ export default function AdminLicenseDetailPage() {
             </button>
           </div>
         </div>
+
+        {/* API Key */}
+        {license.product.apiToken && (
+          <div className="bg-[#0a0a0a] rounded-xl p-4 mb-6 border border-yellow-500/30">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-yellow-400 text-sm mb-1">API Key (for plugin)</div>
+                <code className="text-yellow-500 font-mono text-lg break-all">
+                  {license.product.apiToken}
+                </code>
+              </div>
+              <button
+                onClick={copyApiKey}
+                className="bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 px-4 py-2 rounded-xl text-sm transition-colors border border-yellow-500/30"
+              >
+                {apiKeyCopied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* License Info Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
