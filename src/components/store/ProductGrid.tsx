@@ -60,7 +60,7 @@ const FAQ_CATEGORIES = [
 ];
 
 export default function ProductGrid({ session }: ProductGridProps) {
-  const { formatPrice } = useTranslation();
+  const { formatPrice, t } = useTranslation();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -108,8 +108,8 @@ export default function ProductGrid({ session }: ProductGridProps) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-[#111] rounded-2xl border border-[#222]">
         <ShoppingCart className="w-16 h-16 text-gray-500 mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">No hay productos disponibles</h2>
-        <p className="text-neutral-400">Pronto tendremos nuevos plugins para ti.</p>
+        <h2 className="text-xl font-bold text-white mb-2">{t("store.empty")}</h2>
+        <p className="text-neutral-400">{t("store.emptyDesc")}</p>
       </div>
     );
   }
@@ -120,26 +120,26 @@ export default function ProductGrid({ session }: ProductGridProps) {
       <div className="text-center py-16 lg:py-24">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium mb-6">
           <Zap className="w-4 h-4" />
-          Premium Minecraft Plugins
+          {t("store.premiumMinecraftPlugins")}
         </div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
-          Plugin Premium para tu Servidor
+          {t("store.pluginPremium")}
         </h1>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-          Licencias instantáneas, actualizaciones gratis y soporte premium incluido.
+          {t("store.instantLicenses")}
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-[#111] rounded-xl border border-[#222]">
             <Shield className="w-5 h-5 text-green-400" />
-            <span className="text-sm text-gray-300">Licencias Seguras</span>
+            <span className="text-sm text-gray-300">{t("store.secureLicenses")}</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-[#111] rounded-xl border border-[#222]">
             <RefreshCw className="w-5 h-5 text-blue-400" />
-            <span className="text-sm text-gray-300">Actualizaciones Gratis</span>
+            <span className="text-sm text-gray-300">{t("store.freeUpdates")}</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-[#111] rounded-xl border border-[#222]">
             <Users className="w-5 h-5 text-purple-400" />
-            <span className="text-sm text-gray-300">Soporte Premium</span>
+            <span className="text-sm text-gray-300">{t("store.premiumSupport")}</span>
           </div>
         </div>
       </div>
@@ -148,9 +148,9 @@ export default function ProductGrid({ session }: ProductGridProps) {
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white">Plugins Disponibles</h2>
+            <h2 className="text-2xl font-bold text-white">{t("store.pluginsAvailable")}</h2>
             <p className="text-gray-400 text-sm mt-1">
-              {pagination.total} producto{pagination.total > 1 ? 's' : ''} disponible{pagination.total > 1 ? 's' : ''}
+              {t("store.productsAvailable").replace("{count}", pagination.total.toString())}
             </p>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                         <div className="absolute top-3 left-3">
                           <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1">
                             <Zap className="w-3 h-3" />
-                            OFERTA
+                            {t("store.sale")}
                           </span>
                         </div>
                       )}
@@ -202,15 +202,15 @@ export default function ProductGrid({ session }: ProductGridProps) {
                       <div className="space-y-1.5 mb-4">
                         <div className="flex items-center text-sm text-gray-300">
                           <Check className="w-4 h-4 text-green-500 mr-2" />
-                          <span>Versión {latestVersion?.version || 'N/A'}</span>
+                          <span>{t("store.version")} {latestVersion?.version || 'N/A'}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-300">
                           <ServerIcon className="w-4 h-4 text-green-500 mr-2" />
-                          <span>{product.maxActivations} servidor{product.maxActivations > 1 ? 'es' : ''}</span>
+                          <span>{product.maxActivations} {product.maxActivations > 1 ? t("store.servers") : t("store.server")}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-300">
                           <Shield className="w-4 h-4 text-green-500 mr-2" />
-                          <span>Soporte premium</span>
+                          <span>{t("store.premiumSupportText")}</span>
                         </div>
                       </div>
 
@@ -225,12 +225,12 @@ export default function ProductGrid({ session }: ProductGridProps) {
                         {session ? (
                           <Link href={`/checkout?productId=${product.id}`} className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 rounded-xl transition-all">
                             <CreditCard className="w-4 h-4" />
-                            Comprar Ahora
+                            {t("store.buyNow")}
                             <ArrowRight className="w-4 h-4" />
                           </Link>
                         ) : (
                           <Link href={`/login?callbackUrl=${encodeURIComponent(`/store?productId=${product.id}`)}`} className="flex items-center justify-center gap-2 w-full bg-[#1a1a1a] hover:bg-[#222] text-gray-300 hover:text-white font-semibold py-3 rounded-xl transition-all border border-[#333] hover:border-green-500/50">
-                            Iniciar Sesión para Comprar
+                            {t("store.loginToPurchase")}
                           </Link>
                         )}
                       </div>
@@ -290,8 +290,8 @@ export default function ProductGrid({ session }: ProductGridProps) {
       {/* FAQ */}
       <div className="mb-16">
         <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-white mb-3">Preguntas Frecuentes</h2>
-          <p className="text-gray-400 max-w-xl mx-auto">Todo lo que necesitas saber sobre nuestras licencias.</p>
+          <h2 className="text-2xl font-bold text-white mb-3">{t("store.faq")}</h2>
+          <p className="text-gray-400 max-w-xl mx-auto">{t("store.faqSubtitle")}</p>
         </div>
 
         {/* FAQ Categories */}
@@ -305,22 +305,25 @@ export default function ProductGrid({ session }: ProductGridProps) {
             }`}
           >
             <HelpCircle className="w-4 h-4" />
-            Todas
+            {t("store.all")}
           </button>
-          {FAQ_CATEGORIES.map((cat, i) => (
-            <button
-              key={i}
-              onClick={() => setSelectedCategory(i)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                selectedCategory === i
-                  ? "bg-green-500 text-black"
-                  : "bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222]"
-              }`}
-            >
-              <cat.icon className="w-4 h-4" />
-              {cat.label}
-            </button>
-          ))}
+          {FAQ_CATEGORIES.map((cat, i) => {
+            const labelKey = ['store.general', 'store.licenses', 'store.support'][i] || cat.label;
+            return (
+              <button
+                key={i}
+                onClick={() => setSelectedCategory(i)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  selectedCategory === i
+                    ? "bg-green-500 text-black"
+                    : "bg-[#1a1a1a] border border-[#333] text-gray-300 hover:bg-[#222]"
+                }`}
+              >
+                <cat.icon className="w-4 h-4" />
+                {t(labelKey)}
+              </button>
+            );
+          })}
         </div>
 
         {/* FAQ Items */}
@@ -345,14 +348,14 @@ export default function ProductGrid({ session }: ProductGridProps) {
 
         {/* Contact CTA */}
         <div className="mt-8 text-center">
-          <p className="text-gray-400 mb-4">¿No encontraste tu respuesta?</p>
+          <p className="text-gray-400 mb-4">{t("store.noAnswer")}</p>
           <Link 
             href="https://discord.gg/townyfaith" 
             target="_blank"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-xl transition-all"
           >
             <MessageCircle className="w-5 h-5" />
-            Contactar en Discord
+            {t("store.contactDiscord")}
           </Link>
         </div>
       </div>

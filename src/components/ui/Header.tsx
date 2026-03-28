@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { User, LogOut } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { CurrencySwitcher } from "./CurrencySwitcher";
+
 import { useTranslation } from "@/i18n/useTranslation";
 
 function CreeperVoxelIcon() {
@@ -41,7 +41,6 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isLoading = status === "loading";
-  const isStoreRoute = pathname?.startsWith("/store");
 
   const navLinks = [
     { href: "/store", label: t("nav.store") },
@@ -82,7 +81,6 @@ export default function Header() {
               <div className="w-20 h-10 bg-[#181818] border border-[#333] rounded-xl animate-pulse"></div>
             ) : session ? (
               <div className="flex items-center gap-4">
-                {isStoreRoute && <CurrencySwitcher />}
                 <LanguageSwitcher />
                 <Link href="/dashboard" className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2">
                   {t("nav.dashboard")}
@@ -108,7 +106,6 @@ export default function Header() {
               </div>
             ) : (
               <>
-                {isStoreRoute && <CurrencySwitcher />}
                 <LanguageSwitcher />
                 <Link href="/login" className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2">
                   {t("nav.signIn")}
