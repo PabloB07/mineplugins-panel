@@ -46,7 +46,7 @@ export default function Header() {
     { href: "/store", label: t("nav.store") },
     { href: "#features", label: t("nav.features") },
     { href: "/dashboard/servers", label: t("nav.servers") },
-    { href: "https://zgaming.host/", label: t("nav.hosting"), external: true },
+    { href: "https://www.latamservers.net/", label: t("nav.hosting"), external: true },
   ];
 
   return (

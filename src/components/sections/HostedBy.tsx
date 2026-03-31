@@ -13,19 +13,19 @@ export default function HostedBy() {
               </span>
               <h3 className="text-2xl md:text-3xl font-bold text-white mt-2 mb-3">
                 Our server runs on{" "}
-                <span className="text-blue-400">ZGaming.host</span>
+                <span className="text-green-400">LatamServers.net</span>
               </h3>
               <p className="text-zinc-400 max-w-md">
                 High-performance Minecraft hosting with DDoS protection,
                 instant setup, and 24/7 support. Get your server running today!
               </p>
               <a
-                href="https://zgaming.host/"
+                href="https://www.latamservers.net/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mt-6 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="inline-flex items-center gap-2 mt-6 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Visit ZGaming.host
+                Visit LatamServers.net
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -44,14 +44,14 @@ export default function HostedBy() {
 
             {/* Logo */}
             <a
-              href="https://zgaming.host/"
+              href="https://www.latamservers.net/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-shrink-0 hover:scale-105 transition-transform duration-300"
             >
               <Image
-                src="/zgaming-logo.webp"
-                alt="ZGaming.host Logo"
+                src="/latamservers-logo.webp"
+                alt="LatamServers.net Logo"
                 width={200}
                 height={200}
                 className="drop-shadow-2xl"
