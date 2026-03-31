@@ -107,9 +107,6 @@ export default function Header() {
             ) : (
               <>
                 <LanguageSwitcher />
-                <Link href="/login" className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2">
-                  {t("nav.signIn")}
-                </Link>
                 <Link href="/login" className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] inline-flex items-center gap-2">
                   <span>{t("nav.getStarted")}</span>
                   <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">
@@ -168,9 +165,6 @@ export default function Header() {
                   </>
                 ) : (
                   <>
-                    <Link href="/login" className="text-gray-400 hover:text-white transition-colors text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
-                      {t("nav.signIn")}
-                    </Link>
                     <Link href="/login" className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors text-center inline-flex items-center justify-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                       <span>{t("nav.getStarted")}</span>
                       <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-6 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1">

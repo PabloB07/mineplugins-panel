@@ -56,12 +56,6 @@ export default function DownloadsContent({ session, licenses }: Props) {
             <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-3">{t("common.accessDenied")}</h2>
             <p className="text-gray-400 mb-6">{t("downloads.loginToView")}</p>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-all duration-200"
-            >
-              {t("nav.signIn")}
-            </Link>
           </div>
         </div>
       </div>

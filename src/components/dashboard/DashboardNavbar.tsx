@@ -117,12 +117,6 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                             </div>
                         ) : (
                             <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[#222]">
-                                <Link
-                                    href="/login"
-                                    className="text-sm font-medium text-white bg-green-600 hover:bg-green-500 px-5 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-green-600/20"
-                                >
-                                    Sign In
-                                </Link>
                             </div>
                         )}
 
@@ -206,15 +200,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                         Sign out
                                     </button>
                                 </>
-                            ) : (
-                                <Link
-                                    href="/login"
-                                    className="flex items-center gap-3 px-4 py-3 text-green-400 font-medium hover:bg-green-500/10 rounded-xl transition-all duration-200"
-                                >
-                                    <User className="w-5 h-5" />
-                                    Sign In
-                                </Link>
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </div>
