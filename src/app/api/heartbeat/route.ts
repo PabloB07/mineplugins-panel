@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     const activation = await touchLicenseActivation(runtime.data.license, serverId, {
-      serverIp: hashForPrivacy(clientIp),
+      serverIp: clientIp,
       serverVersion: body.version,
       minecraftVersion: body.minecraftVersion,
       motd: body.motd,

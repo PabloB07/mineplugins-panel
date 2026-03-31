@@ -45,7 +45,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     const clientIp = getClientIp(request);
 
     const activation = await touchLicenseActivation(runtime.data.license, serverId, {
-      serverIp: hashForPrivacy(clientIp),
+      serverIp: clientIp,
       serverVersion: body.serverVersion || body.minecraftVersion,
       minecraftVersion: body.minecraftVersion,
       serverName: body.serverName,
