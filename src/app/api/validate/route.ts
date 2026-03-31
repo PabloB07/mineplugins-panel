@@ -181,6 +181,7 @@ function getActivationErrorHint(error: string): string {
     MAX_ACTIVATIONS: "You have reached the maximum number of server activations. Deactivate a server or upgrade your license.",
     NO_ACTIVATION: "Please validate your license first before sending heartbeats.",
     SERVER_NOT_FOUND: "This server has not been activated yet. Run validation first.",
+    HARDWARE_LINKED: "This license is already activated on another server. Deactivate the other server first.",
   };
   return hints[error] || "Please contact support if this issue persists.";
 }

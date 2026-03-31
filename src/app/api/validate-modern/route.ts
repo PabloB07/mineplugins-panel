@@ -59,8 +59,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     });
 
     if (!activation.ok) {
+      const hints: Record<string, string> = {
+        MAX_ACTIVATIONS: "You have reached the maximum number of server activations. Deactivate a server or upgrade your license.",
+        HARDWARE_LINKED: "This license is already activated on another server. Deactivate the other server first.",
+      };
       return NextResponse.json(
-        { valid: false, result: activation.error, error: activation.message },
+        { valid: false, result: activation.error, error: activation.message, hint: hints[activation.error] },
         { status: activation.status }
       );
     }

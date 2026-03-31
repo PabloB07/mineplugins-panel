@@ -193,6 +193,28 @@ export async function touchLicenseActivation(
 
     const currentCount = activations.length;
 
+    if (data.hardwareHash) {
+      const existingWithHardware = activations.find((a) => a.hardwareHash === data.hardwareHash);
+      
+      if (existingWithHardware && existingWithHardware.serverId !== serverId) {
+        return {
+          ok: false,
+          error: "HARDWARE_LINKED",
+          message: "This license is already activated on another server with different hardware",
+          status: 403,
+        };
+      }
+
+      if (!existingWithHardware && currentCount >= license.maxActivations) {
+        return {
+          ok: false,
+          error: "MAX_ACTIVATIONS",
+          message: `Maximum activations (${license.maxActivations}) reached`,
+          status: 403,
+        };
+      }
+    }
+
     if (currentCount >= license.maxActivations) {
       const existing = activations.find((a) => a.serverId === serverId);
       if (!existing) {
