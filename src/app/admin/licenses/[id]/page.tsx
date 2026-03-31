@@ -296,9 +296,6 @@ export default function AdminLicenseDetailPage() {
                         {new Date(activation.lastSeenAt).toLocaleString()}
                       </div>
                       <div>{t("admin.validations")}: {activation.validationCount}</div>
-                      {activation.macAddress && (
-                        <div>MAC Address: {activation.macAddress}</div>
-                      )}
                       {activation.hardwareHash && (
                         <div>{t("admin.hardwareHash")}: {activation.hardwareHash.substring(0, 16)}...</div>
                       )}
