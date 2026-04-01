@@ -78,6 +78,7 @@ export default function DashboardPage() {
     <div className="space-y-8 animate-fade-in pb-10">
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full -ml-32 -mb-32 blur-2xl"></div>
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
@@ -98,29 +99,41 @@ export default function DashboardPage() {
 
         <div className="px-8 pb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Key className="w-3 h-3" /> {t("dashboard.activePlugins")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-green-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <Key className="w-3 h-3" /> {t("dashboard.activePlugins")}
+                </div>
+                <div className="text-2xl font-bold text-white">{activeLicenses}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{activeLicenses}</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Clock className="w-3 h-3" /> {t("dashboard.activeServers")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <Clock className="w-3 h-3" /> {t("dashboard.activeServers")}
+                </div>
+                <div className="text-2xl font-bold text-white">{totalActivations}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{totalActivations}</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <ShoppingCart className="w-3 h-3" /> {t("dashboard.orders")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <ShoppingCart className="w-3 h-3" /> {t("dashboard.orders")}
+                </div>
+                <div className="text-2xl font-bold text-white">{orders.length}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{orders.length}</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Package className="w-3 h-3" /> {t("dashboard.yourPlugins")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-amber-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <Package className="w-3 h-3" /> {t("dashboard.yourPlugins")}
+                </div>
+                <div className="text-2xl font-bold text-white">{licenses.length}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{licenses.length}</div>
             </div>
           </div>
         </div>

@@ -140,30 +140,42 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Users className="w-3 h-3" /> {t("admin.users")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <Users className="w-3 h-3" /> {t("admin.users")}
+                </div>
+                <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Key className="w-3 h-3" /> {t("admin.activeLicenses")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-green-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <Key className="w-3 h-3" /> {t("admin.activeLicenses")}
+                </div>
+                <div className="text-2xl font-bold text-white">{stats.activeLicenses}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{stats.activeLicenses}</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <ShoppingCart className="w-3 h-3" /> {t("admin.ordersToday")}
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-amber-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                  <ShoppingCart className="w-3 h-3" /> {t("admin.ordersToday")}
+                </div>
+                <div className="text-2xl font-bold text-white">{stats.todayOrders}</div>
               </div>
-              <div className="text-2xl font-bold text-white">{stats.todayOrders}</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 text-green-400 text-xs font-medium mb-1">
-                <DollarSign className="w-3 h-3" /> {t("admin.revenue")}
-              </div>
-              <div className="text-2xl font-bold text-green-400">
-                ${stats.recentRevenue.toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/20 transition-all"></div>
+              <div className="relative">
+                <div className="flex items-center gap-2 text-green-400 text-xs font-medium mb-1">
+                  <DollarSign className="w-3 h-3" /> {t("admin.revenue")}
+                </div>
+                <div className="text-2xl font-bold text-green-400">
+                  ${stats.recentRevenue.toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
+                </div>
               </div>
             </div>
           </div>
