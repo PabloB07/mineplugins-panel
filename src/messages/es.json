@@ -338,15 +338,19 @@
   },
   "downloads": {
     "title": "Descargas",
-    "subtitle": "Descarga tus plugins purchased y accede a versiones anteriores.",
+    "subtitle": "Descarga tus plugins comprados y accede a versiones anteriores.",
     "noDownloads": "Sin Descargas",
     "noDownloadsDesc": "No tienes productos comprados aún.",
     "browseStore": "Explorar Tienda",
     "downloadLatest": "Descargar Último",
     "version": "Versión",
+    "versions": "Versiones",
     "downloads": "Descargas",
     "lastDownload": "Última Descarga",
-    "noVersion": "Sin versión"
+    "noVersion": "Sin versión",
+    "expires": "Expira",
+    "downloadHistory": "Historial de Descargas",
+    "downloadedAt": "Descargado"
   },
   "store": {
     "title": "Tienda de Plugins Premium Paper 1.21",
