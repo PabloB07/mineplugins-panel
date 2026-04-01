@@ -215,15 +215,18 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">
-      <DashboardNavbar 
-        user={{ 
-          name: product.session.name, 
-          email: product.session.email, 
-          image: null 
-        }} 
-        isAdmin={isAdmin} 
+      <div 
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(135deg, #0f0f0f 25%, #1a1a1a 25%, #1a1a1a 50%, #0f0f0f 50%, #0f0f0f 75%, #1a1a1a 75%),
+            linear-gradient(to bottom, transparent 60%, rgba(80, 60, 40, 0.1) 100%)
+          `,
+          backgroundSize: '4px 4px, 100% 100%',
+          backgroundColor: '#0a0a0a'
+        }}
       />
-      <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-green-500/5 to-transparent pointer-events-none"></div>
+      <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-green-500/5 to-transparent pointer-events-none z-10"></div>
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 relative z-10">
