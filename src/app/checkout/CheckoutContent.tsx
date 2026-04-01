@@ -226,6 +226,14 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
           <span>{t("checkout.backToStore")}</span>
         </Link>
 
+        <div className="flex justify-center mb-8">
+          <img 
+            src="https://mineatar.io/head/8667ba71-b85a-4004-af54-4a56a6a56d5e.png" 
+            alt="Player"
+            className="w-24 h-24 rounded-2xl border-4 border-green-500/30 shadow-lg shadow-green-500/20"
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
           <div className="lg:col-span-7">
             <CheckoutContent product={product} />
@@ -233,17 +241,7 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
 
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-[#111] rounded-2xl border border-[#222] p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <img 
-                  src="https://mineatar.io/head/8667ba71-b85a-4004-af54-4a56a6a56d5e.png" 
-                  alt="Player"
-                  className="w-16 h-16 rounded-lg border-2 border-green-500/30"
-                />
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{t("checkout.orderSummary")}</h3>
-                  <p className="text-sm text-gray-400">{product.session.name || product.session.email}</p>
-                </div>
-              </div>
+              <h3 className="text-lg font-semibold text-white mb-4">{t("checkout.orderSummary")}</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">{t("checkout.product")}</span>
