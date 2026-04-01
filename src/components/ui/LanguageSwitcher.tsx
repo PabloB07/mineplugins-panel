@@ -30,7 +30,7 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[100]" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#222]"
@@ -41,7 +41,7 @@ export default function LanguageSwitcher() {
       </button>
       
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-48 bg-[#111] border border-[#222] rounded-lg shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-1 w-48 bg-[#111] border border-[#222] rounded-lg shadow-xl z-[101] overflow-hidden">
           {locales.map((loc) => (
             <button
               key={loc.code}

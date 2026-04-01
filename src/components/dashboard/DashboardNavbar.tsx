@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface DashboardNavbarProps {
     user?: {
@@ -28,13 +29,14 @@ interface DashboardNavbarProps {
 
 export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
     const pathname = usePathname();
+    const { t } = useTranslation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/licenses", label: "My Plugins", icon: Key },
-        { href: "/dashboard/downloads", label: "Downloads", icon: Download },
-        { href: "/dashboard/servers", label: "Servers", icon: Server },
+        { href: "/dashboard", label: t("dashboard.title"), icon: LayoutDashboard },
+        { href: "/dashboard/licenses", label: t("dashboard.yourPlugins"), icon: Key },
+        { href: "/dashboard/downloads", label: t("dashboard.downloads"), icon: Download },
+        { href: "/dashboard/servers", label: t("admin.servers"), icon: Server },
     ];
 
     const isActive = (path: string) => pathname === path;

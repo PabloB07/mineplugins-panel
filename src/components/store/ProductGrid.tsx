@@ -206,12 +206,24 @@ export default function ProductGrid({ session }: ProductGridProps) {
 
                 return (
                   <div key={product.id} className="group bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-green-500/40 overflow-hidden transition-all duration-300 flex flex-col">
-                    <div className="relative h-40 overflow-hidden">
+                    <div className="relative h-40 overflow-hidden bg-[#0a0a0a]">
                       {product.image ? (
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
                           <Zap className="w-16 h-16 text-green-500/20" />
+                        </div>
+                      )}
+                      {!product.image && (
+                        <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
+                          <Zap className="w-16 h-16 text-green-500/30" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
