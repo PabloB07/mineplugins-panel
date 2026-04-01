@@ -1,264 +1,243 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { formatCLPValue } from "@/lib/pricing";
+import { useTranslation } from "@/i18n/useTranslation";
 import {
   Download,
   ShoppingCart,
   Key,
-  ShieldCheck,
   Clock,
   ArrowRight,
-  Zap,
-  Package
+  Package,
 } from "lucide-react";
 
-type License = {
+interface License {
   id: string;
   status: string;
-  expiresAt: Date;
-  createdAt: Date;
-  product: {
-    name: string;
-  };
-  _count: {
-    activations: number;
-  };
-};
+  expiresAt: string;
+  createdAt: string;
+  product: { name: string };
+  _count: { activations: number };
+}
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+interface Order {
+  id: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+  createdAt: string;
+  items: Array<{
+    product: { name: string };
+  }>;
+}
+
+export default function DashboardPage() {
+  const { t } = useTranslation();
+  const { data: session } = useSession();
+  const [licenses, setLicenses] = useState<License[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch("/api/dashboard/stats")
+        .then(res => res.json())
+        .then(data => {
+          setLicenses(data.licenses || []);
+          setOrders(data.orders || []);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [session]);
 
   if (!session?.user?.id) {
     return null;
   }
 
-  // Get user's licenses
-  const licenses = await prisma.license.findMany({
-    where: { userId: session.user.id },
-    include: {
-      product: {
-        select: { name: true },
-      },
-      _count: {
-        select: { activations: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
-
-  // Get recent orders
-  const orders = await prisma.order.findMany({
-    where: { userId: session.user.id },
-    include: {
-      items: {
-        include: {
-          product: {
-            select: { name: true },
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
-
-  // Stats
   const activeLicenses = licenses.filter((l: License) => l.status === "ACTIVE").length;
   const totalActivations = licenses.reduce(
-    (acc: number, l: License & { _count: { activations: number } }) => acc + l._count.activations,
+    (acc: number, l: License) => acc + l._count.activations,
     0
   );
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">{t("common.loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      {/* Welcome Hero - Gradient Background */}
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
-              Welcome back, {session.user.name?.split(' ')[0] || "User"}!
+              {t("dashboard.title")}
             </h1>
-            <p className="text-gray-400 max-w-lg text-lg">
-              Your customer dashboard. Manage licenses, orders, and downloads all in one place.
+            <p className="text-gray-400 text-lg">
+              {t("dashboard.welcome")}, {session.user.name?.split(" ")[0] || "User"}!
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
-                <Key className="w-4 h-4 mr-2" />
-                {activeLicenses} Active Licenses
-              </div>
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-                <ShieldCheck className="w-4 h-4 mr-2" />
-                {totalActivations} Activated Servers
-              </div>
-            </div>
           </div>
+          <Link
+            href="/store"
+            className="bg-[#22c55e] text-black hover:bg-[#16a34a] px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-[#22c55e]/20"
+          >
+            <Package className="w-5 h-5" />
+            {t("dashboard.buyNewPlugin")}
+          </Link>
+        </div>
 
-          {/* Quick Action Button within Hero (Optional but nice) */}
-          <div className="hidden md:block">
-            <Link href="/downloads" className="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 flex items-center gap-2 shadow-lg shadow-white/5">
-              <Download className="w-5 h-5" />
-              Go to Downloads
-            </Link>
+        <div className="px-8 pb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                <Key className="w-3 h-3" /> {t("dashboard.activePlugins")}
+              </div>
+              <div className="text-2xl font-bold text-white">{activeLicenses}</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                <Clock className="w-3 h-3" /> {t("dashboard.activeServers")}
+              </div>
+              <div className="text-2xl font-bold text-white">{totalActivations}</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                <ShoppingCart className="w-3 h-3" /> {t("dashboard.orders")}
+              </div>
+              <div className="text-2xl font-bold text-white">{orders.length}</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+              <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
+                <Package className="w-3 h-3" /> {t("dashboard.yourPlugins")}
+              </div>
+              <div className="text-2xl font-bold text-white">{licenses.length}</div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Link
-          href="/store"
-          className="group relative bg-[#111] hover:bg-[#151515] rounded-xl p-8 border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-            <ShoppingCart className="w-32 h-32 text-green-500 -mr-8 -mt-8 transform rotate-12" />
-          </div>
-
-          <div className="relative z-10">
-            <div className="w-12 h-12 rounded-lg bg-[#22c55e]/10 mb-6 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20 group-hover:scale-110 transition-transform">
-              <Zap className="w-6 h-6" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-[#22c55e] transition-colors">Purchase a Plugin</h2>
-            <p className="text-gray-400 mb-6 max-w-sm group-hover:text-gray-300">
-              And get a plugin with license key for your Minecraft server. Instant delivery and activation.
-            </p>
-            <span className="inline-flex items-center text-sm font-medium text-[#22c55e] group-hover:translate-x-1 transition-transform">
-              Browse Store <ArrowRight className="w-4 h-4 ml-1" />
-            </span>
-          </div>
-        </Link>
-
-        <Link
-          href="/downloads"
-          className="group relative bg-[#111] hover:bg-[#151515] rounded-xl p-8 border border-[#222] hover:border-blue-500/50 transition-all duration-300 overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Download className="w-32 h-32 text-blue-500 -mr-8 -mt-8 transform -rotate-12" />
-          </div>
-
-          <div className="relative z-10">
-            <div className="w-12 h-12 rounded-lg bg-blue-500/10 mb-6 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:scale-110 transition-transform">
-              <Package className="w-6 h-6" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Downloads & Updates</h2>
-            <p className="text-gray-400 mb-6 max-w-sm group-hover:text-gray-300">
-              Get the latest versions of your plugins. Access archived releases and documentation.
-            </p>
-            <span className="inline-flex items-center text-sm font-medium text-blue-400 group-hover:translate-x-1 transition-transform">
-              Go to Downloads <ArrowRight className="w-4 h-4 ml-1" />
-            </span>
-          </div>
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Licenses List */}
-        <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-[#222] flex justify-between items-center bg-[#151515]">
+        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+          <div className="p-5 border-b border-[#222] flex justify-between items-center">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Key className="w-5 h-5 text-gray-400" />
-              Your Licenses
+              <Key className="w-5 h-5 text-green-400" />
+              {t("dashboard.yourPlugins")}
             </h2>
-            <Link href="/dashboard/licenses" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-              View All
+            <Link href="/dashboard/licenses" className="text-sm text-green-400 hover:text-green-300 flex items-center gap-1">
+              {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="flex-1">
+          <div className="divide-y divide-[#222]">
             {licenses.length === 0 ? (
-              <div className="p-10 text-center flex flex-col items-center justify-center h-full">
-                <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
-                  <Key className="w-8 h-8 text-gray-600" />
-                </div>
-                <h3 className="text-white font-medium mb-1">No licenses yet</h3>
-                <p className="text-gray-500 text-sm mb-4">Start by purchasing a license for your server.</p>
-                <Link href="/store" className="text-sm bg-[#22c55e] text-white px-4 py-2 rounded-lg hover:bg-[#16a34a] transition-colors">
-                  Buy Now
+              <div className="p-8 text-center">
+                <Key className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400 mb-4">{t("dashboard.noPlugins")}</p>
+                <Link
+                  href="/store"
+                  className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] px-4 py-2 rounded-lg font-medium"
+                >
+                  {t("dashboard.purchaseFirst")}
                 </Link>
               </div>
             ) : (
-              <div className="divide-y divide-[#222]">
-                {licenses.map((license) => (
-                  <div key={license.id} className="p-4 hover:bg-[#1a1a1a] transition-colors flex items-center justify-between group">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-2 h-12 rounded-full ${license.status === 'ACTIVE' ? 'bg-[#22c55e]' : 'bg-gray-700'}`}></div>
-                      <div>
-                        <div className="font-medium text-white group-hover:text-[#22c55e] transition-colors">
-                          {license.product.name}
-                        </div>
-                        <div className="text-xs text-gray-500 flex items-center gap-3">
-                          <span className="flex items-center gap-1">
-                            <ShieldCheck className="w-3 h-3" />
-                            {license._count.activations} Activations
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            Expires: {new Date(license.expiresAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <Link
-                      href={`/dashboard/licenses/${license.id}`}
-                      className="bg-[#222] hover:bg-[#333] text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                    >
-                      Manage
-                    </Link>
+              licenses.map((license) => (
+                <div key={license.id} className="p-4 hover:bg-[#1a1a1a]/50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-white">{license.product.name}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+                      license.status === "ACTIVE"
+                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                        : "bg-gray-800 text-gray-400 border border-[#333]"
+                    }`}>
+                      {license.status === "ACTIVE" ? t("common.active") : t("dashboard.expired")}
+                    </span>
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>
+                      {license._count.activations} {license._count.activations === 1 ? t("dashboard.server") : t("dashboard.servers")}
+                    </span>
+                    <span>
+                      {t("dashboard.expires")}: {new Date(license.expiresAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>
 
-        {/* Recent Orders List */}
-        <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-[#222] flex justify-between items-center bg-[#151515]">
+        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+          <div className="p-5 border-b border-[#222] flex justify-between items-center">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-gray-400" />
-              Recent Orders
+              <ShoppingCart className="w-5 h-5 text-blue-400" />
+              {t("dashboard.recentOrders")}
             </h2>
-            <Link href="/dashboard/orders" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-              View All
+            <Link href="/orders" className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+              {t("dashboard.viewAll")} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="flex-1">
+          <div className="divide-y divide-[#222]">
             {orders.length === 0 ? (
-              <div className="p-10 text-center flex flex-col items-center justify-center h-full">
-                <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
-                  <ShoppingCart className="w-8 h-8 text-gray-600" />
-                </div>
-                <h3 className="text-white font-medium mb-1">No orders yet</h3>
-                <p className="text-gray-500 text-sm">Your purchase history will appear here.</p>
+              <div className="p-8 text-center">
+                <ShoppingCart className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">{t("dashboard.noOrders")}</p>
               </div>
             ) : (
-              <div className="divide-y divide-[#222]">
-                {orders.map((order) => (
-                  <div key={order.id} className="p-4 hover:bg-[#1a1a1a] transition-colors flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-sm text-white">{order.orderNumber}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded border ${order.status === 'COMPLETED' ? 'bg-green-900/20 text-green-400 border-green-900/30' :
-                            order.status === 'PENDING' ? 'bg-yellow-900/20 text-yellow-400 border-yellow-900/30' :
-                              'bg-red-900/20 text-red-400 border-red-900/30'
-                          }`}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatCLPValue(order.total)} • {new Date(order.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="text-xs text-gray-400 text-right max-w-[150px] truncate">
-                      {order.items.map(i => i.product.name).join(", ")}
-                    </div>
+              orders.map((order) => (
+                <div key={order.id} className="p-4 hover:bg-[#1a1a1a]/50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-white">#{order.orderNumber}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+                      order.status === "COMPLETED"
+                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                        : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                    }`}>
+                      {order.status === "COMPLETED" ? t("admin.completed") : t("admin.pending")}
+                    </span>
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>
+                      {order.items.length} {order.items.length === 1 ? t("store.server") : t("store.servers")}
+                    </span>
+                    <span className="text-white font-medium">
+                      ${Math.round(order.total).toLocaleString("es-CL")} CLP
+                    </span>
+                  </div>
+                </div>
+              ))
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-white mb-4">{t("dashboard.manageDescription")}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link href="/dashboard/licenses" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-green-500/30 transition-all group">
+            <Key className="w-8 h-8 text-green-400 mb-3" />
+            <h3 className="text-white font-medium mb-1">{t("dashboard.licenses")}</h3>
+            <p className="text-sm text-gray-400">{t("dashboard.manageDescription")}</p>
+          </Link>
+          <Link href="/dashboard/orders" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-blue-500/30 transition-all group">
+            <ShoppingCart className="w-8 h-8 text-blue-400 mb-3" />
+            <h3 className="text-white font-medium mb-1">{t("dashboard.orders")}</h3>
+            <p className="text-sm text-gray-400">{t("dashboard.viewAll")}</p>
+          </Link>
+          <Link href="/dashboard/downloads" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-purple-500/30 transition-all group">
+            <Download className="w-8 h-8 text-purple-400 mb-3" />
+            <h3 className="text-white font-medium mb-1">{t("dashboard.downloads")}</h3>
+            <p className="text-sm text-gray-400">{t("downloads.downloadLatest")}</p>
+          </Link>
         </div>
       </div>
     </div>

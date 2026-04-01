@@ -1,13 +1,14 @@
-import { prisma } from "@/lib/prisma";
-import { formatCLPValue } from "@/lib/pricing";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "@/i18n/useTranslation";
 import {
   Users,
   Key,
   ShoppingCart,
   DollarSign,
   Activity,
-  ArrowUpRight,
   ArrowRight,
   Package,
   Clock,
@@ -15,89 +16,92 @@ import {
   CheckCircle,
   XCircle,
   TrendingUp,
-  TrendingDown,
   AlertTriangle,
-  Plus
+  Plus,
 } from "lucide-react";
 
-export default async function AdminDashboardPage() {
-  const validationWindowStart = new Date();
-  validationWindowStart.setUTCDate(validationWindowStart.getUTCDate() - 1);
+interface DashboardStats {
+  totalUsers: number;
+  totalLicenses: number;
+  activeLicenses: number;
+  recentValidations: number;
+  totalRevenue: number;
+  recentRevenue: number;
+  todayOrders: number;
+  completedTodayOrders: number;
+  onlineServers: number;
+  totalServers: number;
+}
 
-  const revenueWindowStart = new Date();
-  revenueWindowStart.setDate(revenueWindowStart.getDate() - 30);
+interface RecentOrder {
+  id: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+  createdAt: string;
+  user: { email: string };
+}
 
-  const [
-    totalUsers,
-    totalLicenses,
-    activeLicenses,
-    recentValidations,
-    servers,
-    recentRevenueData,
-    totalRevenue,
-  ] = await Promise.all([
-    prisma.user.count(),
-    prisma.license.count(),
-    prisma.license.count({ where: { status: "ACTIVE" } }),
-    prisma.validationLog.count({
-      where: { createdAt: { gte: validationWindowStart } },
-    }),
-    prisma.serverStatus.findMany({
-      where: { isPublic: true },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.order.aggregate({
-      where: { 
-        status: "COMPLETED",
-        paidAt: { gte: revenueWindowStart },
-      },
-      _sum: { total: true },
-    }),
-    prisma.order.aggregate({
-      where: { status: "COMPLETED" },
-      _sum: { total: true },
-    }),
-  ]);
+interface RecentLicense {
+  id: string;
+  status: string;
+  createdAt: string;
+  product: { name: string };
+  user: { email: string };
+}
 
-  const recentLicenses = await prisma.license.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: { select: { email: true, name: true } },
-      product: { select: { name: true } },
-    },
-  });
+interface ValidationLog {
+  id: string;
+  serverId: string;
+  isValid: boolean;
+  failureReason: string | null;
+  createdAt: string;
+}
 
-  const recentOrders = await prisma.order.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: { select: { email: true, name: true } },
-    },
-  });
+interface ServerStatus {
+  id: string;
+  name: string;
+  ip: string;
+  port: number;
+  isOnline: boolean;
+}
 
-  const validationLogs = await prisma.validationLog.findMany({
-    take: 6,
-    orderBy: { createdAt: "desc" },
-  });
+export default function AdminDashboardPage() {
+  const { t } = useTranslation();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
+  const [recentLicenses, setRecentLicenses] = useState<RecentLicense[]>([]);
+  const [validationLogs, setValidationLogs] = useState<ValidationLog[]>([]);
+  const [servers, setServers] = useState<ServerStatus[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const onlineServers = servers.filter(s => s.isOnline).length;
-  const todayOrders = await prisma.order.count({
-    where: {
-      createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-    },
-  });
+  useEffect(() => {
+    fetch("/api/admin/stats")
+      .then(res => res.json())
+      .then(data => {
+        setStats(data.stats);
+        setRecentOrders(data.recentOrders || []);
+        setRecentLicenses(data.recentLicenses || []);
+        setValidationLogs(data.validationLogs || []);
+        setServers(data.servers || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
-  const completedTodayOrders = await prisma.order.count({
-    where: {
-      status: "COMPLETED",
-      paidAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-    },
-  });
+  if (loading || !stats) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">{t("common.loading")}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      {/* Welcome Hero */}
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#111] via-[#0f0f0f] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-500/15 via-transparent to-transparent rounded-full -mr-48 -mt-48 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full -ml-32 -mb-32 blur-2xl"></div>
@@ -110,7 +114,7 @@ export default async function AdminDashboardPage() {
                 <span className="text-green-400 text-sm font-medium">System Online</span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
-                Store Admin
+                {t("admin.title")}
               </h1>
               <p className="text-gray-400 max-w-xl text-lg">
                 Monitor sales, manage licenses, and track server status from one dashboard.
@@ -123,66 +127,60 @@ export default async function AdminDashboardPage() {
                 className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:scale-[1.02]"
               >
                 <Package className="w-5 h-5" />
-                New Product
+                {t("admin.newProduct")}
               </Link>
               <Link
                 href="/admin/servers"
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.02]"
               >
                 <Server className="w-5 h-5" />
-                Manage Servers
+                {t("admin.manageServers")}
               </Link>
             </div>
           </div>
 
-          {/* Quick Stats Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Users className="w-3 h-3" /> Customers
+                <Users className="w-3 h-3" /> {t("admin.users")}
               </div>
-              <div className="text-2xl font-bold text-white">{totalUsers}</div>
+              <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
             </div>
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <Key className="w-3 h-3" /> Active Licenses
+                <Key className="w-3 h-3" /> {t("admin.activeLicenses")}
               </div>
-              <div className="text-2xl font-bold text-white">{activeLicenses}</div>
+              <div className="text-2xl font-bold text-white">{stats.activeLicenses}</div>
             </div>
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                <ShoppingCart className="w-3 h-3" /> Orders Today
+                <ShoppingCart className="w-3 h-3" /> {t("admin.ordersToday")}
               </div>
-              <div className="text-2xl font-bold text-white">{todayOrders}</div>
+              <div className="text-2xl font-bold text-white">{stats.todayOrders}</div>
             </div>
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-2 text-green-400 text-xs font-medium mb-1">
-                <DollarSign className="w-3 h-3" /> Monthly Revenue
+                <DollarSign className="w-3 h-3" /> {t("admin.revenue")}
               </div>
               <div className="text-2xl font-bold text-green-400">
-                ${((recentRevenueData._sum.total || 0)).toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
+                ${stats.recentRevenue.toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        
-        {/* Left Column - Stats & Tables */}
         <div className="xl:col-span-8 space-y-8">
-          
-          {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-green-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-green-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <TrendingUp className="w-4 h-4 text-green-500" /> Total Revenue
+                  <TrendingUp className="w-4 h-4 text-green-500" /> {t("admin.sales")}
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  ${((totalRevenue._sum.total || 0)).toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
+                  ${stats.totalRevenue.toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
                 </div>
                 <div className="text-xs text-gray-500">Lifetime earnings</div>
               </div>
@@ -192,9 +190,9 @@ export default async function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <Activity className="w-4 h-4 text-blue-500" /> Validations (24h)
+                  <Activity className="w-4 h-4 text-blue-500" /> {t("admin.totalValidations")}
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">{recentValidations}</div>
+                <div className="text-2xl font-bold text-white mb-1">{stats.recentValidations}</div>
                 <div className="text-xs text-gray-500">Server checks</div>
               </div>
             </div>
@@ -203,10 +201,10 @@ export default async function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <Key className="w-4 h-4 text-purple-500" /> All Licenses
+                  <Key className="w-4 h-4 text-purple-500" /> {t("admin.allLicenses")}
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">{totalLicenses}</div>
-                <div className="text-xs text-gray-500">{totalLicenses - activeLicenses} expired</div>
+                <div className="text-2xl font-bold text-white mb-1">{stats.totalLicenses}</div>
+                <div className="text-xs text-gray-500">{stats.totalLicenses - stats.activeLicenses} {t("admin.expired")}</div>
               </div>
             </div>
 
@@ -214,39 +212,38 @@ export default async function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-amber-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <CheckCircle className="w-4 h-4 text-amber-500" /> Completed Today
+                  <CheckCircle className="w-4 h-4 text-amber-500" /> {t("admin.completed")}
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">{completedTodayOrders}</div>
-                <div className="text-xs text-gray-500">of {todayOrders} orders</div>
+                <div className="text-2xl font-bold text-white mb-1">{stats.completedTodayOrders}</div>
+                <div className="text-xs text-gray-500">{t("admin.ofOrders").replace("{total}", stats.todayOrders.toString())}</div>
               </div>
             </div>
           </div>
 
-          {/* Recent Orders */}
           <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-gray-400" />
-                Recent Orders
+                {t("admin.recentOrders")}
               </h2>
               <Link href="/admin/orders" className="text-sm text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors">
-                View All <ArrowRight className="w-4 h-4" />
+                {t("common.view")} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-[#1a1a1a] text-xs uppercase text-gray-500 font-medium">
                   <tr>
-                    <th className="px-5 py-3 text-left">Order</th>
-                    <th className="px-5 py-3 text-left">Customer</th>
-                    <th className="px-5 py-3 text-left">Status</th>
-                    <th className="px-5 py-3 text-right">Amount</th>
+                    <th className="px-5 py-3 text-left">{t("admin.order")}</th>
+                    <th className="px-5 py-3 text-left">{t("admin.customer")}</th>
+                    <th className="px-5 py-3 text-left">{t("admin.status")}</th>
+                    <th className="px-5 py-3 text-right">{t("admin.total")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#222]">
                   {recentOrders.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-5 py-8 text-center text-gray-500">No orders found</td>
+                      <td colSpan={4} className="px-5 py-8 text-center text-gray-500">{t("admin.noRecentOrders")}</td>
                     </tr>
                   ) : (
                     recentOrders.map((order) => (
@@ -265,7 +262,7 @@ export default async function AdminDashboardPage() {
                           </span>
                         </td>
                         <td className="px-5 py-4 text-sm text-white text-right font-medium">
-                          {formatCLPValue(order.total)}
+                          ${Math.round(order.total).toLocaleString("es-CL")} CLP
                         </td>
                       </tr>
                     ))
@@ -275,12 +272,11 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Live Validations */}
           <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Activity className="w-5 h-5 text-gray-400" />
-                Live Validations
+                {t("admin.recentValidations")}
                 <span className="ml-2 w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
               </h2>
             </div>
@@ -333,19 +329,16 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Right Column - Sidebar */}
         <div className="xl:col-span-4 space-y-6">
-          
-          {/* Server Status Card */}
           <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <Server className="w-5 h-5 text-blue-400" />
-                  Server Status
+                  {t("admin.servers")}
                 </h2>
                 <Link href="/admin/servers" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                  Manage
+                  {t("common.view")}
                 </Link>
               </div>
             </div>
@@ -353,15 +346,15 @@ export default async function AdminDashboardPage() {
               {servers.length === 0 ? (
                 <div className="text-center py-6">
                   <Server className="w-10 h-10 text-gray-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">No servers configured</p>
+                  <p className="text-sm text-gray-500">{t("admin.noServersAdded")}</p>
                   <Link href="/admin/servers" className="text-xs text-blue-400 hover:underline">
-                    Add a server
+                    {t("admin.addServer")}
                   </Link>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between text-xs text-gray-400 px-1">
-                    <span>{onlineServers} of {servers.length} online</span>
+                    <span>{t("admin.serversOnline").replace("{online}", stats.onlineServers.toString()).replace("{total}", stats.totalServers.toString())}</span>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
                       <span>Public</span>
@@ -392,7 +385,7 @@ export default async function AdminDashboardPage() {
                             ? "bg-green-500/20 text-green-400" 
                             : "bg-red-500/20 text-red-400"
                         }`}>
-                          {server.isOnline ? "Online" : "Offline"}
+                          {server.isOnline ? t("admin.serverOnline") : t("admin.serverOffline")}
                         </span>
                       </div>
                     ))}
@@ -407,22 +400,21 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Latest Licenses */}
           <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <Key className="w-5 h-5 text-purple-400" />
-                  Latest Licenses
+                  {t("admin.allLicenses")}
                 </h2>
                 <Link href="/admin/licenses" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
-                  View All
+                  {t("common.view")}
                 </Link>
               </div>
             </div>
             <div className="divide-y divide-[#222]">
               {recentLicenses.length === 0 ? (
-                <div className="p-6 text-center text-gray-500 text-sm">No licenses yet</div>
+                <div className="p-6 text-center text-gray-500 text-sm">{t("admin.noLicensesFoundAdmin")}</div>
               ) : (
                 recentLicenses.map((lic) => (
                   <div key={lic.id} className="p-4 hover:bg-[#1a1a1a]/50 transition-colors">
@@ -449,7 +441,6 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Quick Actions */}
           <div className="bg-[#111] border border-[#222] rounded-xl p-5">
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h2>
             <div className="space-y-2">
@@ -457,19 +448,19 @@ export default async function AdminDashboardPage() {
                 <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/30">
                   <Plus className="w-4 h-4" />
                 </div>
-                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">Add New Product</span>
+                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.newProduct")}</span>
               </Link>
               <Link href="/admin/licenses?status=REVOKED" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-red-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400 group-hover:bg-red-500/30">
                   <AlertTriangle className="w-4 h-4" />
                 </div>
-                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">Review Revoked Licenses</span>
+                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.reviewRevoked")}</span>
               </Link>
               <Link href="/admin/transfers" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-purple-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500/30">
                   <ArrowRight className="w-4 h-4" />
                 </div>
-                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">License Transfers</span>
+                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.licenseTransfers")}</span>
               </Link>
             </div>
           </div>
