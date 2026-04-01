@@ -20,29 +20,32 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface AdminNavbarProps {
     user: {
         name?: string | null;
         email?: string | null;
         image?: string | null;
+        role?: string;
     };
 }
 
 export function AdminNavbar({ user }: AdminNavbarProps) {
     const pathname = usePathname();
+    const { t } = useTranslation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
-        { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/admin/products", label: "Products", icon: Package },
-        { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-        { href: "/admin/licenses", label: "Licenses", icon: Key },
-        { href: "/admin/servers", label: "Servers", icon: Server },
-        { href: "/admin/transfers", label: "Transfers", icon: ArrowRight },
-        { href: "/admin/users", label: "Customers", icon: Users },
-        { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-        { href: "/admin/payments", label: "Payments", icon: Wallet },
+        { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
+        { href: "/admin/products", label: t("admin.products"), icon: Package },
+        { href: "/admin/orders", label: t("admin.orders"), icon: ShoppingCart },
+        { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
+        { href: "/admin/servers", label: t("admin.servers"), icon: Server },
+        { href: "/admin/transfers", label: t("admin.transfers"), icon: ArrowRight },
+        { href: "/admin/users", label: t("admin.users"), icon: Users },
+        { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
+        { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
     ];
 
     const isActive = (path: string) => {
@@ -89,9 +92,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         <Link
                             href="/dashboard"
                             className="text-blue-400 hover:text-blue-300 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-blue-400/10 border border-blue-400/20 hover:border-blue-400/30 whitespace-nowrap flex-shrink-0"
-                            title="Switch to customer dashboard"
+                            title={t("admin.switchToCustomer")}
                         >
-                            Customer View
+                            {t("admin.customerView")}
                         </Link>
                     </div>
 
@@ -120,7 +123,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 type="button"
                                 onClick={() => signOut({ callbackUrl: "/" })}
                                 className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
-                                title="Sign out"
+                                title={t("admin.signOut")}
                             >
                                 <LogOut className="w-4 h-4" />
                             </button>
@@ -174,7 +177,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 className="flex items-center gap-3 px-4 py-3 text-blue-400 font-medium hover:bg-blue-400/10 rounded-xl transition-all duration-200"
                             >
                                 <LayoutDashboard className="w-5 h-5" />
-                                Client Dashboard
+                                {t("admin.customerView")}
                             </Link>
                             <button
                                 type="button"
@@ -185,7 +188,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                             >
                                 <LogOut className="w-5 h-5" />
-                                Sign out
+                                {t("admin.signOut")}
                             </button>
                         </div>
                     </div>
