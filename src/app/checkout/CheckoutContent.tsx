@@ -12,6 +12,7 @@ import {
   PaymentMethodId,
 } from "@/lib/payment-methods";
 import { Zap, ArrowLeft } from "lucide-react";
+import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 interface ProductData {
   id: string;
@@ -214,6 +215,14 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">
+      <DashboardNavbar 
+        user={{ 
+          name: product.session.name, 
+          email: product.session.email, 
+          image: null 
+        }} 
+        isAdmin={isAdmin} 
+      />
       <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-green-500/5 to-transparent pointer-events-none"></div>
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-green-500/10 blur-[120px] rounded-full pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
 
