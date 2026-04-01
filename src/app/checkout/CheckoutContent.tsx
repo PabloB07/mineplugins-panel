@@ -228,7 +228,7 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
 
         <div className="flex justify-center mb-8">
           <img 
-            src="https://mineatar.io/head/8667ba71-b85a-4004-af54-4a56a6a56d5e.png" 
+            src="https://api.mineatar.io/face/8667ba71-b85a-4004-af54-4a56a6a56d5e" 
             alt="Player"
             className="w-24 h-24 rounded-2xl border-4 border-green-500/30 shadow-lg shadow-green-500/20"
           />
