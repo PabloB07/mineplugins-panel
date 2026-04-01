@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
+import { FormattedPrice } from "@/components/ui/FormattedPrice";
 import {
   Users,
   Key,
@@ -174,7 +175,7 @@ export default function AdminDashboardPage() {
                   <DollarSign className="w-3 h-3" /> {t("admin.revenue")}
                 </div>
                 <div className="text-2xl font-bold text-green-400">
-                  ${stats.recentRevenue.toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
+                  <FormattedPrice value={stats.recentRevenue} className="text-white" />
                 </div>
               </div>
             </div>
@@ -192,7 +193,7 @@ export default function AdminDashboardPage() {
                   <TrendingUp className="w-4 h-4 text-green-500" /> {t("admin.sales")}
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
-                  ${stats.totalRevenue.toLocaleString("es-CL", { maximumFractionDigits: 0 })} CLP
+                  <FormattedPrice value={stats.totalRevenue} />
                 </div>
                 <div className="text-xs text-gray-500">Lifetime earnings</div>
               </div>
@@ -275,7 +276,7 @@ export default function AdminDashboardPage() {
                           </span>
                         </td>
                         <td className="px-5 py-4 text-sm text-white text-right font-medium">
-                          ${Math.round(order.total).toLocaleString("es-CL")} CLP
+                          <FormattedPrice value={order.total} />
                         </td>
                       </tr>
                     ))
