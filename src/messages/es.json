@@ -459,6 +459,16 @@
     "licenses": "Licencias",
     "support": "Soporte"
   },
+  "checkout": {
+    "daysAccess": "Días de Acceso",
+    "fullAccessPeriod": "Período de acceso completo",
+    "serverIps": "Servidor(es) IP",
+    "simultaneousActivations": "Activaciones simultáneas",
+    "prioritySupport": "Soporte Prioritario",
+    "fastDiscordSupport": "Soporte rápido por Discord",
+    "instantDelivery": "Entrega Instantánea",
+    "automatedProcessing": "Procesamiento automático"
+  },
   "currency": {
     "USD": "Dólar Estadounidense (USD)",
     "CLP": "Peso Chileno (CLP)",

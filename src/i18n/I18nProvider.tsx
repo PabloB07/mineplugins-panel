@@ -39,19 +39,18 @@ type I18nContextType = {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 function getInitialLocale(): string {
-  if (typeof window === 'undefined') return 'es';
+  if (typeof window === 'undefined') return 'en';
   const stored = localStorage.getItem("locale");
-  return (stored === "en" || stored === "es") ? stored : 'es';
+  return (stored === "en" || stored === "es") ? stored : 'en';
 }
 
 function getInitialCurrency(): Currency {
-  if (typeof window === 'undefined') return 'CLP';
+  if (typeof window === 'undefined') return 'USD';
   const stored = localStorage.getItem("currency") as Currency | null;
   if (stored && ['USD', 'CLP', 'EUR', 'CAD'].includes(stored)) {
     return stored;
   }
-  const locale = getInitialLocale();
-  return currencyByLocale[locale] || 'CLP';
+  return 'USD';
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -75,11 +74,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const handleSetCurrency = (newCurrency: Currency) => {
     setCurrencyState(newCurrency);
     localStorage.setItem("currency", newCurrency);
-    const newLocale = localeByCurrency[newCurrency];
-    if (newLocale !== locale) {
-      setLocaleState(newLocale);
-      localStorage.setItem("locale", newLocale);
-    }
   };
 
   const formatPriceValue = (priceUSD: number, priceCLP?: number): { value: number; currency: Currency; formatted: string } => {

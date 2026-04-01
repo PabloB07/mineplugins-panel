@@ -30,7 +30,7 @@ export function CurrencySwitcher() {
   const currentCurrency = currencies.find(c => c.id === currency) || currencies[0];
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[100]" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
@@ -41,7 +41,7 @@ export function CurrencySwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl shadow-black/50 overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl shadow-black/50 overflow-hidden z-[101]">
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-gray-500 font-medium uppercase tracking-wider">
               {t("currency.selectCurrency")}

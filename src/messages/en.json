@@ -421,6 +421,16 @@
     "downloadHistory": "Download History",
     "downloadedAt": "Downloaded"
   },
+  "checkout": {
+    "daysAccess": "Days Access",
+    "fullAccessPeriod": "Full access period",
+    "serverIps": "Server IP(s)",
+    "simultaneousActivations": "Simultaneous activations",
+    "prioritySupport": "Priority Support",
+    "fastDiscordSupport": "Fast discord support",
+    "instantDelivery": "Instant Delivery",
+    "automatedProcessing": "Automated processing"
+  },
   "currency": {
     "USD": "US Dollar (USD)",
     "CLP": "Chilean Peso (CLP)",
