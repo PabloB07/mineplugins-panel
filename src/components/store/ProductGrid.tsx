@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { 
@@ -26,7 +26,7 @@ interface ProductGridProps {
   session: Session | null;
 }
 
-const FAQ_DATA = [
+const FAQ_DATA_ES = [
   {
     question: "¿Cómo funciona el sistema de licencias?",
     answer: "Nuestras licencias utilizan tokens JWT con bloqueo de hardware. Cada licencia puede activarse en un número limitado de servidores según tu compra. El plugin valida la licencia automáticamente al iniciar."
@@ -53,14 +53,47 @@ const FAQ_DATA = [
   }
 ];
 
-const FAQ_CATEGORIES = [
+const FAQ_DATA_EN = [
+  {
+    question: "How does the license system work?",
+    answer: "Our licenses use JWT tokens with hardware locking. Each license can be activated on a limited number of servers based on your purchase. The plugin validates the license automatically on startup."
+  },
+  {
+    question: "Can I transfer my license to another server?",
+    answer: "Yes, you can deactivate a server and activate a new one from your panel, as long as you don't exceed your activation limit. The process is instant."
+  },
+  {
+    question: "Are updates free?",
+    answer: "Yes! All updates released during your license period are free. Your license will continue to work with the latest versions of the plugin."
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "We accept PayPal, Payku (Chile), and Tebex. All payments are processed securely through our payment providers."
+  },
+  {
+    question: "What if I have issues with the plugin?",
+    answer: "We offer premium support included with your license. You can contact us through Discord or email and we'll help you as soon as possible."
+  },
+  {
+    question: "Can I get a refund?",
+    answer: "We offer refunds within the first 7 days if the plugin doesn't work as described. Check our terms for more details."
+  }
+];
+
+const FAQ_CATEGORIES_ES = [
   { icon: HelpCircle, label: "General", questions: [0, 3, 5] },
   { icon: RefreshCw, label: "Licencias", questions: [1, 2] },
   { icon: MessageCircle, label: "Soporte", questions: [4] },
 ];
 
+const FAQ_CATEGORIES_EN = [
+  { icon: HelpCircle, label: "General", questions: [0, 3, 5] },
+  { icon: RefreshCw, label: "Licenses", questions: [1, 2] },
+  { icon: MessageCircle, label: "Support", questions: [4] },
+];
+
 export default function ProductGrid({ session }: ProductGridProps) {
-  const { formatPrice, t } = useTranslation();
+  const { formatPrice, t, locale } = useTranslation();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -71,6 +104,9 @@ export default function ProductGrid({ session }: ProductGridProps) {
     total: 0,
     totalPages: 0,
   });
+
+  const faqData = useMemo(() => locale === 'es' ? FAQ_DATA_ES : FAQ_DATA_EN, [locale]);
+  const faqCategories = useMemo(() => locale === 'es' ? FAQ_CATEGORIES_ES : FAQ_CATEGORIES_EN, [locale]);
 
   useEffect(() => {
     fetchProducts();
@@ -101,8 +137,8 @@ export default function ProductGrid({ session }: ProductGridProps) {
   }
 
   const filteredFaqs = selectedCategory === null
-    ? FAQ_DATA
-    : FAQ_DATA.filter((_, i) => FAQ_CATEGORIES[selectedCategory].questions.includes(i));
+    ? faqData
+    : faqData.filter((_, i) => faqCategories[selectedCategory].questions.includes(i));
 
   if (products.length === 0 && !loading) {
     return (
@@ -307,7 +343,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
             <HelpCircle className="w-4 h-4" />
             {t("store.all")}
           </button>
-          {FAQ_CATEGORIES.map((cat, i) => {
+          {faqCategories.map((cat, i) => {
             const labelKey = ['store.general', 'store.licenses', 'store.support'][i] || cat.label;
             return (
               <button
