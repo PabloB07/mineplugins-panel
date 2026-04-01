@@ -66,9 +66,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const handleSetLocale = (newLocale: string) => {
     setLocaleState(newLocale);
     localStorage.setItem("locale", newLocale);
-    const newCurrency = currencyByLocale[newLocale] || 'USD';
-    setCurrencyState(newCurrency);
-    localStorage.setItem("currency", newCurrency);
   };
 
   const handleSetCurrency = (newCurrency: Currency) => {
