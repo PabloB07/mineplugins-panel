@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
-import { CurrencySwitcher } from "@/components/ui/CurrencySwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
 
 interface DashboardNavbarProps {
@@ -43,7 +42,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <nav className="bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#222] shadow-lg shadow-black/20">
+        <nav className="bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#222] shadow-lg shadow-black/20 relative z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
@@ -91,7 +90,6 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
 
                     {/* User Menu */}
                     <div className="flex items-center gap-4">
-                        <CurrencySwitcher />
                         <LanguageSwitcher />
                         {user ? (
                             <div className="hidden sm:flex items-center gap-4 pl-4 border-l border-[#222]">

@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
-import { CurrencySwitcher } from "@/components/ui/CurrencySwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
 
 interface AdminNavbarProps {
@@ -101,7 +100,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                     {/* User Menu & Mobile Toggle */}
                     <div className="flex items-center gap-3">
-                        <CurrencySwitcher />
                         <LanguageSwitcher />
                         <div className="hidden md:flex items-center gap-3 pl-3 border-l border-white/10">
                             <div className="text-right hidden md:block">
