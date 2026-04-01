@@ -51,6 +51,15 @@ export async function POST(request: NextRequest) {
     const newLicenseKey = generateSimpleLicenseKey();
 
     const transferRecord = await prisma.$transaction(async (tx) => {
+      const originalLicense = await tx.license.findUnique({
+        where: { id: license.id },
+        include: { user: true },
+      });
+
+      if (!originalLicense) {
+        throw new Error("Original license not found");
+      }
+
       await tx.licenseActivation.deleteMany({ where: { licenseId: license.id } });
       await tx.license.delete({ where: { id: license.id } });
 
@@ -62,6 +71,15 @@ export async function POST(request: NextRequest) {
           userId: targetUser.id,
           productId: license.product.id,
           expiresAt: newExpiresAt,
+        },
+      });
+
+      await tx.licenseTransfer.create({
+        data: {
+          originalLicenseId: license.id,
+          newLicenseId: newLicense.id,
+          fromUserId: originalLicense.userId,
+          toUserId: targetUser.id,
         },
       });
 
