@@ -215,6 +215,14 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">
+      <DashboardNavbar 
+        user={{ 
+          name: product.session.name, 
+          email: product.session.email, 
+          image: null 
+        }} 
+        isAdmin={isAdmin} 
+      />
       <div 
         className="fixed inset-0 pointer-events-none z-0"
         style={{
