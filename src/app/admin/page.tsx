@@ -232,7 +232,8 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-gray-400" />
@@ -284,7 +285,8 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Activity className="w-5 h-5 text-gray-400" />
@@ -342,7 +344,8 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="xl:col-span-4 space-y-6">
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -412,7 +415,8 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -453,8 +457,9 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h2>
+          <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 relative z-10">Quick Actions</h2>
             <div className="space-y-2">
               <Link href="/admin/products/new" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-amber-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/30">

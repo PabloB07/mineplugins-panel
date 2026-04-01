@@ -140,7 +140,8 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
           <div className="p-5 border-b border-[#222] flex justify-between items-center">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <Key className="w-5 h-5 text-green-400" />
@@ -189,7 +190,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
           <div className="p-5 border-b border-[#222] flex justify-between items-center">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <ShoppingCart className="w-5 h-5 text-blue-400" />
@@ -233,24 +235,37 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-[#111] border border-[#222] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">{t("dashboard.manageDescription")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link href="/dashboard/licenses" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-green-500/30 transition-all group">
-            <Key className="w-8 h-8 text-green-400 mb-3" />
-            <h3 className="text-white font-medium mb-1">{t("dashboard.licenses")}</h3>
-            <p className="text-sm text-gray-400">{t("dashboard.manageDescription")}</p>
-          </Link>
-          <Link href="/dashboard/orders" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-blue-500/30 transition-all group">
-            <ShoppingCart className="w-8 h-8 text-blue-400 mb-3" />
-            <h3 className="text-white font-medium mb-1">{t("dashboard.orders")}</h3>
-            <p className="text-sm text-gray-400">{t("dashboard.viewAll")}</p>
-          </Link>
-          <Link href="/dashboard/downloads" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-purple-500/30 transition-all group">
-            <Download className="w-8 h-8 text-purple-400 mb-3" />
-            <h3 className="text-white font-medium mb-1">{t("dashboard.downloads")}</h3>
-            <p className="text-sm text-gray-400">{t("downloads.downloadLatest")}</p>
-          </Link>
+      <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-green-500/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full -ml-24 -mb-24 blur-3xl"></div>
+        <div className="relative z-10">
+          <h2 className="text-lg font-semibold text-white mb-4">{t("dashboard.manageDescription")}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link href="/dashboard/licenses" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-green-500/30 transition-all group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-green-500/20 transition-all"></div>
+              <div className="relative">
+                <Key className="w-8 h-8 text-green-400 mb-3" />
+                <h3 className="text-white font-medium mb-1">{t("dashboard.licenses")}</h3>
+                <p className="text-sm text-gray-400">{t("dashboard.manageDescription")}</p>
+              </div>
+            </Link>
+            <Link href="/dashboard/orders" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-blue-500/30 transition-all group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all"></div>
+              <div className="relative">
+                <ShoppingCart className="w-8 h-8 text-blue-400 mb-3" />
+                <h3 className="text-white font-medium mb-1">{t("dashboard.orders")}</h3>
+                <p className="text-sm text-gray-400">{t("dashboard.viewAll")}</p>
+              </div>
+            </Link>
+            <Link href="/dashboard/downloads" className="p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-purple-500/30 transition-all group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/20 transition-all"></div>
+              <div className="relative">
+                <Download className="w-8 h-8 text-purple-400 mb-3" />
+                <h3 className="text-white font-medium mb-1">{t("dashboard.downloads")}</h3>
+                <p className="text-sm text-gray-400">{t("downloads.downloadLatest")}</p>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
