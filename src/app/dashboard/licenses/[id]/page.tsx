@@ -18,6 +18,7 @@ interface License {
     id: string;
     name: string;
     slug: string;
+    icon: string | null;
     apiToken: string | null;
   };
   activations: Array<{
@@ -137,7 +138,10 @@ export default function LicenseDetailPage() {
                 ← Back to Licenses
               </Link>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
+              {license.product.icon ? (
+                <span className={`icon-minecraft ${license.product.icon}`} />
+              ) : null}
               {license.product.name}
             </h1>
             <p className="text-gray-400 max-w-lg text-lg">
