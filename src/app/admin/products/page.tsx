@@ -186,10 +186,10 @@ export default function AdminProductsPage() {
           <Loader2 className="w-8 h-8 text-[#f59e0b] animate-spin" />
         </div>
       ) : products.length === 0 ? (
-        <div className="bg-[#111] rounded-xl border border-[#222] p-16 text-center">
-          <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">No Products Found</h3>
-          <p className="text-gray-400 mb-6">
+        <div className="bg-[#111] rounded-xl border border-[#222] p-20 text-center">
+          <Package className="w-20 h-20 text-gray-500 mx-auto mb-6" />
+          <h3 className="text-2xl font-bold text-white mb-3">No Products Found</h3>
+          <p className="text-gray-400 mb-8 text-lg">
             {search ? "Try adjusting your search or filters." : "Create your first store product."}
           </p>
           {!search && (
@@ -203,18 +203,18 @@ export default function AdminProductsPage() {
           )}
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-[#111] rounded-xl border border-[#222] p-5 hover:border-[#f59e0b]/30 transition-all"
+              className="bg-[#111] rounded-xl border border-[#222] p-6 hover:border-[#f59e0b]/30 transition-all"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center gap-5">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-bold text-white truncate">{product.name}</h3>
+                  <div className="flex items-center gap-4 mb-3">
+                    <h3 className="text-xl font-bold text-white truncate">{product.name}</h3>
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium shrink-0 ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium shrink-0 ${
                         product.isActive
                           ? "bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30"
                           : "bg-[#181818] text-gray-400 border border-[#333]"
@@ -224,37 +224,37 @@ export default function AdminProductsPage() {
                       {product.isActive ? "Active" : "Inactive"}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-400 mb-3 line-clamp-2">{product.description || "No description"}</p>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <div className="text-xs text-gray-500 bg-[#0a0a0a] px-2 py-1 rounded border border-[#222]">
+                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">{product.description || "No description"}</p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <div className="text-xs text-gray-500 bg-[#0a0a0a] px-3 py-1.5 rounded border border-[#222]">
                       /{product.slug}
                     </div>
                     <CopyButton text={product.slug} />
-                    <div className="text-xs text-gray-500 bg-[#0a0a0a] px-2 py-1 rounded border border-[#222]">
+                    <div className="text-xs text-gray-500 bg-[#0a0a0a] px-3 py-1.5 rounded border border-[#222]">
                       v{product.versions.find((v) => v.isLatest)?.version || "N/A"}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 lg:gap-6">
-                  <div className="text-center min-w-[100px]">
+                <div className="flex flex-wrap items-center gap-6 lg:gap-8">
+                  <div className="text-center min-w-[120px]">
                     <div className="text-xs text-gray-500 mb-1">Price</div>
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-xl font-bold text-white">
                       ${product.salePriceUSD ? product.salePriceUSD.toFixed(2) : product.priceUSD.toFixed(2)} USD
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-sm text-gray-400">
                       {formatCLPValue(product.salePriceCLP || product.priceCLP)}
                     </div>
                   </div>
 
-                  <div className="flex gap-4 text-center min-w-[100px]">
+                  <div className="flex gap-6 text-center min-w-[120px]">
                     <div>
                       <div className="text-xs text-gray-500">Licenses</div>
-                      <div className="text-lg font-bold text-[#22c55e]">{product._count.licenses}</div>
+                      <div className="text-xl font-bold text-[#22c55e]">{product._count.licenses}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-500">Orders</div>
-                      <div className="text-lg font-bold text-blue-400">{product._count.orders}</div>
+                      <div className="text-xl font-bold text-blue-400">{product._count.orders}</div>
                     </div>
                   </div>
 

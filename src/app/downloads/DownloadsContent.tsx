@@ -104,7 +104,7 @@ export default function DownloadsContent({ session, licenses }: Props) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8 animate-fade-in pb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-fade-in pb-16">
         {licenses.length === 0 ? (
           <div className="relative bg-[#111] rounded-xl border border-[#222] p-12 text-center overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
@@ -134,27 +134,27 @@ export default function DownloadsContent({ session, licenses }: Props) {
             </div>
           </div>
         ) : (
-          <div className={`grid grid-cols-1 gap-8 ${licenses.length > 1 ? "lg:grid-cols-2" : ""}`}>
+          <div className={`grid grid-cols-1 gap-10 ${licenses.length > 1 ? "lg:grid-cols-2" : ""}`}>
             {licenses.map((license) => {
               const latestVersion = license.product.versions[0];
               const isActive = license.status === "ACTIVE";
 
               return (
                 <div key={license.id} className="group bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20">
-                  <div className="bg-[#151515] px-8 py-6 border-b border-[#222]">
-                    <div className="flex items-start justify-between gap-4">
+                  <div className="bg-[#151515] px-10 py-8 border-b border-[#222]">
+                    <div className="flex items-start justify-between gap-6">
                       <div className="flex-1">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 rounded-lg bg-[#22c55e]/10 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20">
-                            <Package className="w-6 h-6" />
+                        <div className="flex items-center gap-6 mb-6">
+                          <div className="w-14 h-14 rounded-xl bg-[#22c55e]/10 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20">
+                            <Package className="w-7 h-7" />
                           </div>
                           <div>
                             <h3 className="text-2xl font-bold text-white">
                               {license.product.name}
                             </h3>
-                            <div className="mt-2 flex flex-wrap gap-2">
+                            <div className="mt-3 flex flex-wrap gap-3">
                               <span
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide border ${
+                                className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold tracking-wide border ${
                                   isActive
                                     ? "bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20"
                                     : license.status === "EXPIRED"
@@ -170,20 +170,20 @@ export default function DownloadsContent({ session, licenses }: Props) {
                                   license.status
                                 )}
                               </span>
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
                                 {license.product.versions.length} {t("downloads.version")}s
                               </span>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-4 text-sm">
+                        <div className="flex flex-wrap gap-6 text-sm">
                           <div className="flex items-center gap-2 text-gray-400 group-hover:text-[#22c55e] transition-colors">
                             <Calendar className="w-4 h-4" />
-                            <span>{t("downloads.expires")}: <span className="text-white">{new Date(license.expiresAt).toLocaleDateString()}</span></span>
+                            <span>{t("downloads.expires")}: <span className="text-white ml-1">{new Date(license.expiresAt).toLocaleDateString()}</span></span>
                           </div>
                           <div className="flex items-center gap-2 text-gray-400 group-hover:text-[#22c55e] transition-colors">
                             <Server className="w-4 h-4" />
-                            <span>{t("store.activations")}: <span className="text-white">{license.maxActivations}</span></span>
+                            <span>{t("store.activations")}: <span className="text-white ml-1">{license.maxActivations}</span></span>
                           </div>
                           <div className="font-mono text-xs text-gray-500 bg-[#0a0a0a] px-3 py-1.5 rounded border border-[#222] inline-flex items-center hover:border-[#22c55e]/30 transition-all">
                             {license.licenseKey.slice(0, 16)}...
