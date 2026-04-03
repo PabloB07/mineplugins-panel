@@ -367,9 +367,9 @@
     "serversOnline": "{online} of {total} online",
     "sales": "Sales",
     "revenue": "Revenue",
-    "avgOrderValue": "Avg Order Value",
     "totalValidations": "Total Validations",
     "activeLicenses": "Active Licenses",
+    "allLicensesCount": "All Licenses",
     "expiringLicenses": "Expiring Licenses",
     "recentValidations": "Recent Validations",
     "validationStats": "Validation Stats",
@@ -407,7 +407,13 @@
     "transferOnlyJwt": "Only JWT licenses can be transferred",
     "customerNotification": "Customer will receive email notification",
     "licenseDuration": "License Duration (days)",
-    "transferComplete": "Transfer Complete"
+    "transferComplete": "Transfer Complete",
+    "allLicensesCount": "Total Licenses",
+    "time": "Time",
+    "serverId": "Server ID",
+    "result": "Result",
+    "reason": "Reason",
+    "noValidationLogs": "No recent validations"
   },
   "orders": {
     "title": "Order History",

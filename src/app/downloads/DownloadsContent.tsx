@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Download, Package, Calendar, Server, CheckCircle, XCircle } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 import { useTranslation } from "@/i18n/useTranslation";
 
@@ -46,6 +46,12 @@ type Props = {
 export default function DownloadsContent({ session, licenses }: Props) {
   const { t } = useTranslation();
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
+  const Download = useIcon("Download");
+  const Package = useIcon("Package");
+  const Calendar = useIcon("Calendar");
+  const Server = useIcon("Server");
+  const CheckCircle = useIcon("CheckCircle");
+  const XCircle = useIcon("XCircle");
 
   if (!session?.user?.id) {
     return (

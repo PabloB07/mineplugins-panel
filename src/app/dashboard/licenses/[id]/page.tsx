@@ -3,21 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { 
-  Server, 
-  Globe, 
-  Activity, 
-  Calendar, 
-  Shield, 
-  Monitor, 
-  Zap,
-  MapPin,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Copy,
-  Key,
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 
 interface License {
   id: string;
@@ -57,6 +43,19 @@ export default function LicenseDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [apiKeyCopied, setApiKeyCopied] = useState(false);
+  const Server = useIcon("Server");
+  const Globe = useIcon("Globe");
+  const Activity = useIcon("Activity");
+  const Calendar = useIcon("Calendar");
+  const Shield = useIcon("Shield");
+  const Monitor = useIcon("Monitor");
+  const Zap = useIcon("Zap");
+  const MapPin = useIcon("MapPin");
+  const Clock = useIcon("Clock");
+  const CheckCircle = useIcon("CheckCircle");
+  const XCircle = useIcon("XCircle");
+  const Copy = useIcon("Copy");
+  const Key = useIcon("Key");
 
   useEffect(() => {
     async function fetchLicense() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Server, RefreshCw, Users, Wifi, WifiOff, Crown } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import { useTranslation } from "@/i18n/useTranslation";
 
 interface ServerInfo {
@@ -94,6 +94,13 @@ function parseMinecraftColors(text: string): React.ReactNode {
 
 export default function DashboardServersPage() {
   const { t } = useTranslation();
+  const Server = useIcon("Server");
+  const RefreshCw = useIcon("RefreshCw");
+  const Users = useIcon("Users");
+  const Wifi = useIcon("Wifi");
+  const WifiOff = useIcon("WifiOff");
+  const Crown = useIcon("Crown");
+  
   const [servers, setServers] = useState<ServerInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

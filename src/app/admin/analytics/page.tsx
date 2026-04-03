@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import AnalyticsCharts, { DailyValidation, LicenseStatusItem } from "@/components/AnalyticsCharts";
 import Link from "next/link";
-import {
+import { 
   BarChart3,
   Download,
   Activity,

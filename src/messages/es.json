@@ -383,7 +383,13 @@
     "transferOnlyJwt": "Solo las licencias JWT pueden transferirse",
     "customerNotification": "El cliente recibirá notificación por email",
     "licenseDuration": "Duración de la Licencia (días)",
-    "transferComplete": "Transferencia Completada"
+    "transferComplete": "Transferencia Completada",
+    "allLicensesCount": "Total de Licencias",
+    "time": "Hora",
+    "serverId": "ID del Servidor",
+    "result": "Resultado",
+    "reason": "Razón",
+    "noValidationLogs": "Sin validaciones recientes"
   },
   "orders": {
     "title": "Historial de Pedidos",

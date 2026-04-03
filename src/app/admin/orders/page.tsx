@@ -3,17 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
-import { 
-  Trash2, 
-  ShoppingCart, 
-  User, 
-  Package, 
-  DollarSign,
-  CheckCircle,
-  AlertCircle,
-  Search,
-  Filter
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 
 interface Order {
   id: string;
@@ -92,6 +82,16 @@ function formatItemPrice(order: Order, unitPriceUSD: number, unitPriceCLP: numbe
 
 export default function AdminOrdersPage() {
   const { t } = useTranslation();
+  const Trash2 = useIcon("Trash2");
+  const ShoppingCart = useIcon("ShoppingCart");
+  const User = useIcon("User");
+  const Package = useIcon("Package");
+  const DollarSign = useIcon("DollarSign");
+  const CheckCircle = useIcon("CheckCircle");
+  const AlertCircle = useIcon("AlertCircle");
+  const Search = useIcon("Search");
+  const Filter = useIcon("Filter");
+  
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
@@ -235,15 +235,15 @@ export default function AdminOrdersPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                {orders.length} {t("admin.totalOrders") || "Total Orders"}
+                {orders.length} {t("admin.totalOrders")}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
                 <CheckCircle className="w-4 h-4 mr-2" />
-                {orders.filter(o => o.status === 'COMPLETED').length} {t("admin.completed") || "Completed"}
+                {orders.filter(o => o.status === 'COMPLETED').length} {t("admin.completed")}
               </div>
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
                 <AlertCircle className="w-4 h-4 mr-2" />
-                {orders.filter(o => o.status === 'PENDING').length} {t("admin.pending") || "Pending"}
+                {orders.filter(o => o.status === 'PENDING').length} {t("admin.pending")}
               </div>
             </div>
           </div>
@@ -256,13 +256,13 @@ export default function AdminOrdersPage() {
       <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg space-y-4">
         <div className="flex items-center gap-3 mb-2">
           <Filter className="w-5 h-5 text-gray-400" />
-          <span className="text-white font-semibold">{t("admin.filters") || "Filters"}</span>
+          <span className="text-white font-semibold">{t("admin.filters")}</span>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Status Filter */}
           <div className="space-y-2">
-            <span className="text-gray-400 text-sm font-medium block">{t("admin.status") || "Status"}:</span>
+            <span className="text-gray-400 text-sm font-medium block">{t("admin.status")}:</span>
             <div className="flex flex-wrap gap-2">
               {["all", "PENDING", "COMPLETED", "FAILED", "CANCELLED"].map(
                 (status) => (
@@ -275,7 +275,7 @@ export default function AdminOrdersPage() {
                         : "bg-[#1a1a1a] text-gray-300 border border-[#333] hover:bg-[#222] hover:border-[#444]"
                     }`}
                   >
-                    {status === "all" ? (t("admin.all") || "All") : status}
+                    {status === "all" ? t("admin.all") : status}
                   </button>
                 )
               )}
@@ -284,7 +284,7 @@ export default function AdminOrdersPage() {
 
           {/* Exclude Filter */}
           <div className="space-y-2">
-            <span className="text-gray-400 text-sm font-medium block">{t("admin.exclude") || "Exclude"}:</span>
+            <span className="text-gray-400 text-sm font-medium block">{t("admin.exclude")}:</span>
             <div className="flex flex-wrap gap-2">
               {["PENDING", "COMPLETED", "FAILED", "CANCELLED"].map((status) => (
                 <button
@@ -311,12 +311,12 @@ export default function AdminOrdersPage() {
 
           {/* Search */}
           <div className="space-y-2 lg:col-span-2">
-            <span className="text-gray-400 text-sm font-medium block">{t("admin.search") || "Search"}:</span>
+            <span className="text-gray-400 text-sm font-medium block">{t("admin.search")}:</span>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder={t("admin.searchPlaceholder") || "Search by order number, email..."}
+                placeholder={t("admin.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg pl-10 pr-4 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"

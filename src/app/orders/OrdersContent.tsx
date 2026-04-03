@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { formatCLPValue } from "@/lib/pricing";
-import { ShoppingBag, Package, ArrowRight } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 import { useTranslation } from "@/i18n/useTranslation";
 
@@ -40,6 +40,9 @@ type Props = {
 export default function OrdersContent({ session, orders }: Props) {
   const { t } = useTranslation();
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
+  const ShoppingBag = useIcon("ShoppingBag");
+  const Package = useIcon("Package");
+  const ArrowRight = useIcon("ArrowRight");
 
   if (!session?.user?.id) {
     return (

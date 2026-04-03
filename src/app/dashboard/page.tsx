@@ -4,14 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
-import {
-  Download,
-  ShoppingCart,
-  Key,
-  Clock,
-  ArrowRight,
-  Package,
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 
 interface License {
   id: string;
@@ -36,6 +29,13 @@ interface Order {
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { data: session } = useSession();
+  const Download = useIcon("Download");
+  const ShoppingCart = useIcon("ShoppingCart");
+  const Key = useIcon("Key");
+  const Clock = useIcon("Clock");
+  const ArrowRight = useIcon("ArrowRight");
+  const Package = useIcon("Package");
+  
   const [licenses, setLicenses] = useState<License[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
-import { Users, Crown, Shield, Search, UserPlus, Link as LinkIcon, Ban } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 
 interface User {
   id: string;
@@ -24,6 +24,14 @@ interface User {
 
 export default function AdminUsersPage() {
   const { t } = useTranslation();
+  const Users = useIcon("Users");
+  const Crown = useIcon("Crown");
+  const Shield = useIcon("Shield");
+  const Search = useIcon("Search");
+  const UserPlus = useIcon("UserPlus");
+  const LinkIcon = useIcon("Link");
+  const Ban = useIcon("Ban");
+  
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

@@ -11,7 +11,7 @@ import {
   getAvailablePaymentMethods,
   PaymentMethodId,
 } from "@/lib/payment-methods";
-import { Zap, ArrowLeft } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 interface ProductData {
@@ -44,6 +44,7 @@ interface CheckoutClientProps {
 export function CheckoutContent({ product }: CheckoutClientProps) {
   const { t, formatPrice } = useTranslation();
   const availableMethods = getAvailablePaymentMethods();
+  const Zap = useIcon("Zap");
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(
     availableMethods.length > 0 ? availableMethods[0].id : "PAYKU"
   );
@@ -243,6 +244,8 @@ interface CheckoutWrapperProps {
 export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
   const { t } = useTranslation();
   const isAdmin = product.session.role === "ADMIN" || product.session.role === "SUPER_ADMIN";
+  const Zap = useIcon("Zap");
+  const ArrowLeft = useIcon("ArrowLeft");
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">

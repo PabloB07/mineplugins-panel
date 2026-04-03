@@ -4,22 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { FormattedPrice } from "@/components/ui/FormattedPrice";
-import {
-  Users,
-  Key,
-  ShoppingCart,
-  DollarSign,
-  Activity,
-  ArrowRight,
-  Package,
-  Clock,
-  Server,
-  CheckCircle,
-  XCircle,
-  TrendingUp,
-  AlertTriangle,
-  Plus,
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
+import { Icon as IconComponent, IconHeader } from "@/components/ui/Icon";
 
 interface DashboardStats {
   totalUsers: number;
@@ -69,6 +55,7 @@ interface ServerStatus {
 
 export default function AdminDashboardPage() {
   const { t } = useTranslation();
+  
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [recentLicenses, setRecentLicenses] = useState<RecentLicense[]>([]);
@@ -127,14 +114,14 @@ export default function AdminDashboardPage() {
                 href="/admin/products/new"
                 className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:scale-[1.02]"
               >
-                <Package className="w-5 h-5" />
+                <IconComponent name="Package" className="w-5 h-5" />
                 {t("admin.newProduct")}
               </Link>
               <Link
                 href="/admin/servers"
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.02]"
               >
-                <Server className="w-5 h-5" />
+                <IconComponent name="Server" className="w-5 h-5" />
                 {t("admin.manageServers")}
               </Link>
             </div>
@@ -145,7 +132,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                  <Users className="w-3 h-3" /> {t("admin.users")}
+                  <IconComponent name="Users" className="w-3 h-3" /> {t("admin.users")}
                 </div>
                 <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
               </div>
@@ -154,7 +141,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-green-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                  <Key className="w-3 h-3" /> {t("admin.activeLicenses")}
+                  <IconComponent name="Key" className="w-3 h-3" /> {t("admin.activeLicenses")}
                 </div>
                 <div className="text-2xl font-bold text-white">{stats.activeLicenses}</div>
               </div>
@@ -163,7 +150,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-amber-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
-                  <ShoppingCart className="w-3 h-3" /> {t("admin.ordersToday")}
+                  <IconComponent name="ShoppingCart" className="w-3 h-3" /> {t("admin.ordersToday")}
                 </div>
                 <div className="text-2xl font-bold text-white">{stats.todayOrders}</div>
               </div>
@@ -172,7 +159,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-green-400 text-xs font-medium mb-1">
-                  <DollarSign className="w-3 h-3" /> {t("admin.revenue")}
+                  <IconComponent name="DollarSign" className="w-3 h-3" /> {t("admin.revenue")}
                 </div>
                 <div className="text-2xl font-bold text-green-400">
                   <FormattedPrice value={stats.recentRevenue} className="text-white" />
@@ -190,7 +177,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-green-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <TrendingUp className="w-4 h-4 text-green-500" /> {t("admin.sales")}
+                  <IconComponent name="TrendingUp" className="w-4 h-4 text-green-500" /> {t("admin.sales")}
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
                   <FormattedPrice value={stats.totalRevenue} />
@@ -203,7 +190,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <Activity className="w-4 h-4 text-blue-500" /> {t("admin.totalValidations")}
+                  <IconComponent name="Activity" className="w-4 h-4 text-blue-500" /> {t("admin.totalValidations")}
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">{stats.recentValidations}</div>
                 <div className="text-xs text-gray-500">Server checks</div>
@@ -214,7 +201,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <Key className="w-4 h-4 text-purple-500" /> {t("admin.allLicenses")}
+                  <IconComponent name="Key" className="w-4 h-4 text-purple-500" /> {t("admin.allLicenses")}
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">{stats.totalLicenses}</div>
                 <div className="text-xs text-gray-500">{stats.totalLicenses - stats.activeLicenses} {t("admin.expired")}</div>
@@ -225,7 +212,7 @@ export default function AdminDashboardPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-amber-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
-                  <CheckCircle className="w-4 h-4 text-amber-500" /> {t("admin.completed")}
+                  <IconComponent name="CheckCircle" className="w-4 h-4 text-amber-500" /> {t("admin.completed")}
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">{stats.completedTodayOrders}</div>
                 <div className="text-xs text-gray-500">{t("admin.ofOrders").replace("{total}", stats.todayOrders.toString())}</div>
@@ -236,12 +223,9 @@ export default function AdminDashboardPage() {
           <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-gray-400" />
-                {t("admin.recentOrders")}
-              </h2>
+              <IconHeader name="ShoppingCart">{t("admin.recentOrders")}</IconHeader>
               <Link href="/admin/orders" className="text-sm text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors">
-                {t("common.view")} <ArrowRight className="w-4 h-4" />
+                {t("common.view")} <IconComponent name="ArrowRight" className="w-4 h-4" />
               </Link>
             </div>
             <div className="overflow-x-auto">
@@ -289,11 +273,10 @@ export default function AdminDashboardPage() {
           <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Activity className="w-5 h-5 text-gray-400" />
+              <IconHeader name="Activity" iconClassName="w-5 h-5 text-gray-400">
                 {t("admin.recentValidations")}
                 <span className="ml-2 w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              </h2>
+              </IconHeader>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -349,10 +332,7 @@ export default function AdminDashboardPage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                  <Server className="w-5 h-5 text-blue-400" />
-                  {t("admin.servers")}
-                </h2>
+                <IconHeader name="Server" iconClassName="w-5 h-5 text-blue-400">{t("admin.servers")}</IconHeader>
                 <Link href="/admin/servers" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
                   {t("common.view")}
                 </Link>
@@ -361,7 +341,7 @@ export default function AdminDashboardPage() {
             <div className="p-4 space-y-3">
               {servers.length === 0 ? (
                 <div className="text-center py-6">
-                  <Server className="w-10 h-10 text-gray-600 mx-auto mb-2" />
+                  <IconComponent name="Server" className="w-10 h-10 text-gray-600 mx-auto mb-2" />
                   <p className="text-sm text-gray-500">{t("admin.noServersAdded")}</p>
                   <Link href="/admin/servers" className="text-xs text-blue-400 hover:underline">
                     {t("admin.addServer")}
@@ -386,9 +366,9 @@ export default function AdminDashboardPage() {
                               : "bg-red-500/20 text-red-400"
                           }`}>
                             {server.isOnline ? (
-                              <CheckCircle className="w-4 h-4" />
+                              <IconComponent name="CheckCircle" className="w-4 h-4" />
                             ) : (
-                              <XCircle className="w-4 h-4" />
+                              <IconComponent name="XCircle" className="w-4 h-4" />
                             )}
                           </div>
                           <div>
@@ -420,10 +400,7 @@ export default function AdminDashboardPage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                  <Key className="w-5 h-5 text-purple-400" />
-                  {t("admin.allLicenses")}
-                </h2>
+                <IconHeader name="Key" iconClassName="w-5 h-5 text-purple-400">{t("admin.allLicenses")}</IconHeader>
                 <Link href="/admin/licenses" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
                   {t("common.view")}
                 </Link>
@@ -448,7 +425,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <span className="truncate">{lic.user.email}</span>
                       <span className="flex items-center gap-1 ml-2">
-                        <Clock className="w-3 h-3" />
+                        <IconComponent name="Clock" className="w-3 h-3" />
                         {new Date(lic.createdAt).toLocaleDateString()}
                       </span>
                     </div>
@@ -464,19 +441,19 @@ export default function AdminDashboardPage() {
             <div className="space-y-2">
               <Link href="/admin/products/new" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-amber-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/30">
-                  <Plus className="w-4 h-4" />
+                  <IconComponent name="Plus" className="w-4 h-4" />
                 </div>
                 <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.newProduct")}</span>
               </Link>
               <Link href="/admin/licenses?status=REVOKED" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-red-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400 group-hover:bg-red-500/30">
-                  <AlertTriangle className="w-4 h-4" />
+                  <IconComponent name="AlertTriangle" className="w-4 h-4" />
                 </div>
                 <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.reviewRevoked")}</span>
               </Link>
               <Link href="/admin/transfers" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-purple-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500/30">
-                  <ArrowRight className="w-4 h-4" />
+                  <IconComponent name="ArrowRight" className="w-4 h-4" />
                 </div>
                 <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.licenseTransfers")}</span>
               </Link>

@@ -3,13 +3,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Package, DollarSign, Server } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import ProductImageField from "@/components/admin/ProductImageField";
 import { useTranslation } from "@/i18n/useTranslation";
 
 export default function NewProductPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const ArrowLeft = useIcon("ArrowLeft");
+  const Save = useIcon("Save");
+  const Package = useIcon("Package");
+  const DollarSign = useIcon("DollarSign");
+  const Server = useIcon("Server");
+  
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [autoGenerate, setAutoGenerate] = useState(true);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { AlertTriangle, Loader2, ShieldX, Key, Copy } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import { useTranslation } from "@/i18n/useTranslation";
 
 interface License {
@@ -42,6 +42,12 @@ interface License {
 export default function AdminLicenseDetailPage() {
   const { t } = useTranslation();
   const params = useParams();
+  const AlertTriangle = useIcon("AlertTriangle");
+  const Loader2 = useIcon("Loader2");
+  const ShieldX = useIcon("ShieldX");
+  const Key = useIcon("Key");
+  const Copy = useIcon("Copy");
+  
   const [license, setLicense] = useState<License | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

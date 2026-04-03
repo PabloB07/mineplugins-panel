@@ -2,21 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import {
-  Plus,
-  Package,
-  Edit,
-  Eye,
-  EyeOff,
-  DollarSign,
-  Server,
-  TrendingUp,
-  Search,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import { DeleteProductButton } from "@/components/DeleteProductButton";
 import { formatCLPValue } from "@/lib/pricing";
 import ProductVersionSelector from "@/components/admin/ProductVersionSelector";
@@ -62,6 +48,20 @@ interface Pagination {
 }
 
 export default function AdminProductsPage() {
+  const Plus = useIcon("Plus");
+  const Package = useIcon("Package");
+  const Edit = useIcon("Edit");
+  const Eye = useIcon("Eye");
+  const EyeOff = useIcon("EyeOff");
+  const DollarSign = useIcon("DollarSign");
+  const Server = useIcon("Server");
+  const TrendingUp = useIcon("TrendingUp");
+  const Search = useIcon("Search");
+  const Filter = useIcon("Filter");
+  const ChevronLeft = useIcon("ChevronLeft");
+  const ChevronRight = useIcon("ChevronRight");
+  const Loader2 = useIcon("Loader2");
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");

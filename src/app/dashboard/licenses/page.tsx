@@ -1,27 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/auth";
-// import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
-import { 
-  Server, 
-  Globe, 
-  CheckCircle, 
-  XCircle,
-  Calendar,
-  Zap,
-  Activity,
-  RefreshCw,
-  Shield,
-  AlertTriangle,
-  Clock,
-  Copy,
-  Check,
-  RotateCcw
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 
 type License = {
   id: string;
@@ -51,6 +33,21 @@ type License = {
 
 export default function LicensesPage() {
   const { t } = useTranslation();
+  const Server = useIcon("Server");
+  const Globe = useIcon("Globe");
+  const CheckCircle = useIcon("CheckCircle");
+  const XCircle = useIcon("XCircle");
+  const Calendar = useIcon("Calendar");
+  const Zap = useIcon("Zap");
+  const Activity = useIcon("Activity");
+  const RefreshCw = useIcon("RefreshCw");
+  const Shield = useIcon("Shield");
+  const AlertTriangle = useIcon("AlertTriangle");
+  const Clock = useIcon("Clock");
+  const Copy = useIcon("Copy");
+  const Check = useIcon("Check");
+  const RotateCcw = useIcon("RefreshCw");
+  
   const [licenses, setLicenses] = useState<License[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);

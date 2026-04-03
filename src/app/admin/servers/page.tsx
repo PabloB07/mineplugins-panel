@@ -1,23 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Server, 
-  Plus, 
-  Trash2, 
-  CheckCircle,
-  RefreshCw,
-  Loader2,
-  RotateCw,
-  Power
-} from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { useIcon } from "@/hooks/useIcon";
 import { ServerStatus as ServerStatusType, ServerFormData } from "@/components/admin/servers/types";
 import ServerCard from "@/components/admin/servers/ServerCard";
 import ServerModal from "@/components/admin/servers/ServerModal";
 
 export default function AdminServersPage() {
   const { t } = useTranslation();
+  const Server = useIcon("Server");
+  const Plus = useIcon("Plus");
+  const Trash2 = useIcon("Trash2");
+  const CheckCircle = useIcon("CheckCircle");
+  const RefreshCw = useIcon("RefreshCw");
+  const Loader2 = useIcon("Loader2");
+  const Power = useIcon("Power");
+  
   const [servers, setServers] = useState<ServerStatusType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);

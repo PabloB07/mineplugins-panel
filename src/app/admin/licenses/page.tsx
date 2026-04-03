@@ -3,21 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
-import {
-  Key,
-  User,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Search,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Eye,
-  ShieldX,
-  AlertTriangle,
-} from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 
 interface Product {
   id: string;
@@ -55,6 +41,20 @@ interface License {
 
 export default function AdminLicensesPage() {
   const { t } = useTranslation();
+  const Key = useIcon("Key");
+  const User = useIcon("User");
+  const CheckCircle = useIcon("CheckCircle");
+  const XCircle = useIcon("XCircle");
+  const AlertCircle = useIcon("AlertCircle");
+  const Search = useIcon("Search");
+  const Filter = useIcon("Filter");
+  const ChevronLeft = useIcon("ChevronLeft");
+  const ChevronRight = useIcon("ChevronRight");
+  const Loader2 = useIcon("Loader2");
+  const Eye = useIcon("Eye");
+  const ShieldX = useIcon("ShieldX");
+  const AlertTriangle = useIcon("AlertTriangle");
+  
   const [licenses, setLicenses] = useState<License[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -544,6 +544,10 @@ function CreateLicenseModal({
   onSuccess: () => void;
 }) {
   const { t } = useTranslation();
+  const Key = useIcon("Key");
+  const Loader2 = useIcon("Loader2");
+  const ShieldX = useIcon("ShieldX");
+  
   const [durationDays, setDurationDays] = useState(365);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

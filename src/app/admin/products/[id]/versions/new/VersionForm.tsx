@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Save, Package } from "lucide-react";
+import { useIcon } from "@/hooks/useIcon";
 import FileUpload from "@/components/ui/FileUpload";
 import { handleFileUpload } from "@/lib/file-actions";
 import { createVersion } from "./actions";
@@ -14,6 +14,8 @@ interface VersionFormProps {
 }
 
 export default function VersionForm({ productId }: VersionFormProps) {
+  const Save = useIcon("Save");
+  const Package = useIcon("Package");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

@@ -1,17 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  ArrowRight, 
-  Mail, 
-  Calendar, 
-  CheckCircle, 
-  AlertTriangle,
-  RefreshCw,
-  Search,
-  Users
-} from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { useIcon } from "@/hooks/useIcon";
 
 interface Transfer {
   id: string;
@@ -29,6 +20,15 @@ interface User {
 
 export default function AdminTransfersPage() {
   const { t } = useTranslation();
+  const ArrowRight = useIcon("ArrowRight");
+  const Mail = useIcon("Mail");
+  const Calendar = useIcon("Calendar");
+  const CheckCircle = useIcon("CheckCircle");
+  const AlertTriangle = useIcon("AlertTriangle");
+  const RefreshCw = useIcon("RefreshCw");
+  const Search = useIcon("Search");
+  const Users = useIcon("Users");
+  
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [licenses, setLicenses] = useState<Array<{
