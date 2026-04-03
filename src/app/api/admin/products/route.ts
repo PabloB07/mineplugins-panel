@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
     const slug = formData.get("slug") as string;
     const description = formData.get("description") as string;
     const image = formData.get("image") as string;
+    const icon = formData.get("icon") as string;
     const priceUSD = parseFloat(formData.get("priceUSD") as string);
     const priceCLP = parseInt(formData.get("priceCLP") as string);
     const salePriceUSD = formData.get("salePriceUSD") ? parseFloat(formData.get("salePriceUSD") as string) : null;
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest) {
         slug,
         description,
         image: image || null,
+        icon: icon || null,
         price: priceCLP,
         salePrice: salePriceCLP,
         priceUSD,

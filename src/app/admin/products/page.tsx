@@ -25,6 +25,7 @@ interface Product {
   slug: string;
   description: string | null;
   image: string | null;
+  icon: string | null;
   priceUSD: number;
   priceCLP: number;
   salePriceUSD: number | null;
@@ -212,6 +213,15 @@ export default function AdminProductsPage() {
               <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-4 mb-3">
+                    {product.icon ? (
+                      <div className="w-10 h-10 rounded-lg bg-[#0a0a0a] border border-[#333] flex items-center justify-center overflow-hidden shrink-0">
+                        <span className={`icon-minecraft-sm ${product.icon}`} />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#f59e0b]/20 to-[#f59e0b]/5 border border-[#f59e0b]/20 flex items-center justify-center shrink-0">
+                        <Package className="w-5 h-5 text-[#f59e0b]" />
+                      </div>
+                    )}
                     <h3 className="text-xl font-bold text-white truncate">{product.name}</h3>
                     <span
                       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium shrink-0 ${

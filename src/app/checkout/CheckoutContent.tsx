@@ -19,6 +19,7 @@ interface ProductData {
   name: string;
   description: string | null;
   image: string | null;
+  icon: string | null;
   priceUSD: number;
   priceCLP: number;
   salePriceUSD: number | null;
@@ -73,7 +74,11 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="flex items-start justify-between relative z-10">
             <div className="flex gap-4">
-              {product.image ? (
+              {product.icon ? (
+                <div className="w-20 h-20 rounded-xl bg-[#0a0a0a] border border-[#333] flex items-center justify-center overflow-hidden">
+                  <span className={`icon-minecraft ${product.icon}`} />
+                </div>
+              ) : product.image ? (
                 <Image
                   src={product.image}
                   alt={product.name}

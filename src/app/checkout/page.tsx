@@ -14,6 +14,7 @@ interface SerializedProduct {
   name: string;
   description: string | null;
   image: string | null;
+  icon: string | null;
   priceUSD: number;
   priceCLP: number;
   salePriceUSD: number | null;
@@ -64,6 +65,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
     name: product.name,
     description: product.description,
     image: product.image,
+    icon: product.icon,
     priceUSD: product.priceUSD,
     priceCLP: product.priceCLP,
     salePriceUSD: product.salePriceUSD,

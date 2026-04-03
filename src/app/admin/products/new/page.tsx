@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useIcon } from "@/hooks/useIcon";
 import ProductImageField from "@/components/admin/ProductImageField";
+import MinecraftIconPicker from "@/components/admin/MinecraftIconPicker";
 import { useTranslation } from "@/i18n/useTranslation";
 
 export default function NewProductPage() {
@@ -200,6 +201,10 @@ export default function NewProductPage() {
 
               <div className="mt-6">
                 <ProductImageField name="image" defaultValue="" />
+              </div>
+
+              <div className="mt-6">
+                <MinecraftIconPicker name="icon" defaultValue="" />
               </div>
             </div>
 

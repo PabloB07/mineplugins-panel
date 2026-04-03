@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Save, Package, DollarSign, Server, Upload, Plus } from "lucide-react";
 import ProductImageField from "@/components/admin/ProductImageField";
+import MinecraftIconPicker from "@/components/admin/MinecraftIconPicker";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -42,6 +43,7 @@ export default async function EditProductPage({ params }: PageProps) {
     const slug = formData.get("slug") as string;
     const description = formData.get("description") as string;
     const image = formData.get("image") as string;
+    const icon = formData.get("icon") as string;
     const priceUSD = parseFloat(formData.get("priceUSD") as string);
     const priceCLP = parseInt(formData.get("priceCLP") as string);
     const salePriceUSD = formData.get("salePriceUSD") ? parseFloat(formData.get("salePriceUSD") as string) : null;
@@ -57,6 +59,7 @@ export default async function EditProductPage({ params }: PageProps) {
         slug,
         description,
         image: image || null,
+        icon: icon || null,
         price: priceCLP, // Legacy field - mirrors CLP price
         salePrice: salePriceCLP, // Legacy field
         priceUSD,
@@ -153,6 +156,10 @@ export default async function EditProductPage({ params }: PageProps) {
 
             <div className="mt-6">
               <ProductImageField name="image" defaultValue={product.image || ""} />
+            </div>
+
+            <div className="mt-6">
+              <MinecraftIconPicker name="icon" defaultValue={product.icon || ""} />
             </div>
           </div>
 
