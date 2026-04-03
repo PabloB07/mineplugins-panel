@@ -329,7 +329,10 @@ export default function AdminLicensesPage() {
 
                     <div className="text-center min-w-[80px]">
                       <div className="text-xs text-gray-500">Product</div>
-                      <div className="text-sm font-medium text-gray-200">
+                      <div className="text-sm font-medium text-gray-200 flex items-center justify-center gap-2">
+                        {(license.product as any).icon ? (
+                          <span className={`icon-minecraft-sm ${(license.product as any).icon}`} />
+                        ) : null}
                         {license.product.name}
                       </div>
                     </div>

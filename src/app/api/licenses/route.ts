@@ -81,6 +81,7 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             slug: true,
+            icon: true,
             apiToken: true,
           },
         },

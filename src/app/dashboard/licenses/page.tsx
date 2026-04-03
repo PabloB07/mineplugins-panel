@@ -16,6 +16,7 @@ type License = {
   product: {
     name: string;
     slug: string;
+    icon: string | null;
   };
   _count?: {
     activations: number;
@@ -237,7 +238,11 @@ export default function LicensesPage() {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-blue-400" />
+                        {license.product.icon ? (
+                          <span className={`icon-minecraft ${license.product.icon}`} />
+                        ) : (
+                          <Shield className="w-5 h-5 text-blue-400" />
+                        )}
                         {license.product.name}
                       </h3>
                       <p className="text-gray-400 text-sm font-mono mt-1 flex items-center gap-2">

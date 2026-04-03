@@ -13,7 +13,7 @@ export async function GET() {
     const licenses = await prisma.license.findMany({
       where: { userId: session.user.id },
       include: {
-        product: { select: { name: true } },
+        product: { select: { name: true, icon: true } },
         _count: { select: { activations: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -37,7 +37,7 @@ export async function GET() {
         status: l.status,
         expiresAt: l.expiresAt.toISOString(),
         createdAt: l.createdAt.toISOString(),
-        product: { name: l.product.name },
+        product: { name: l.product.name, icon: l.product.icon },
         _count: { activations: l._count.activations },
       })),
       orders: orders.map(o => ({

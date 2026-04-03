@@ -200,7 +200,10 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
               <div key={item.id} className="border-b border-[#222] pb-4 last:border-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="text-lg font-medium text-white mb-1">
+                    <h3 className="text-lg font-medium text-white mb-1 flex items-center gap-2">
+                      {(item.product as any).icon ? (
+                        <span className={`icon-minecraft ${(item.product as any).icon}`} />
+                      ) : null}
                       {item.product.name}
                     </h3>
                     <p className="text-gray-400 text-sm mb-2">

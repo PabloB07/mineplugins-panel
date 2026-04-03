@@ -11,7 +11,7 @@ interface License {
   status: string;
   expiresAt: string;
   createdAt: string;
-  product: { name: string };
+  product: { name: string; icon: string | null };
   _count: { activations: number };
 }
 
@@ -167,7 +167,12 @@ export default function DashboardPage() {
               licenses.map((license) => (
                 <div key={license.id} className="p-4 hover:bg-[#1a1a1a]/50 transition-colors">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-white">{license.product.name}</span>
+                    <span className="text-sm font-medium text-white flex items-center gap-2">
+                      {license.product.icon ? (
+                        <span className={`icon-minecraft-sm ${license.product.icon}`} />
+                      ) : null}
+                      {license.product.name}
+                    </span>
                     <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
                       license.status === "ACTIVE"
                         ? "bg-green-500/20 text-green-400 border border-green-500/30"
