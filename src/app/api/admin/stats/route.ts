@@ -80,7 +80,12 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
       include: {
         user: { select: { email: true, name: true } },
-        product: { select: { name: true } },
+        product: {
+          select: {
+            name: true,
+            icon: true
+          }
+        },
       },
     });
 
@@ -114,7 +119,7 @@ export async function GET() {
         id: l.id,
         status: l.status,
         createdAt: l.createdAt.toISOString(),
-        product: { name: l.product.name },
+        product: { name: l.product.name, icon: l.product.icon },
         user: { email: l.user.email },
       })),
       validationLogs: validationLogs.map(v => ({

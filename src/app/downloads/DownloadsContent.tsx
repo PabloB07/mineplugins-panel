@@ -26,6 +26,7 @@ type License = {
   licenseKey: string;
   product: {
     name: string;
+    icon: string | null;
     versions: ProductVersion[];
   };
 };
@@ -145,9 +146,15 @@ export default function DownloadsContent({ session, licenses }: Props) {
                     <div className="flex items-start justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex items-center gap-6 mb-6">
-                          <div className="w-14 h-14 rounded-xl bg-[#22c55e]/10 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20">
-                            <Package className="w-7 h-7" />
-                          </div>
+                          {license.product.icon ? (
+                            <div className="w-14 h-14 rounded-xl bg-[#0a0a0a] flex items-center justify-center border border-[#333] overflow-hidden">
+                              <span className={`icon-minecraft ${license.product.icon}`} />
+                            </div>
+                          ) : (
+                            <div className="w-14 h-14 rounded-xl bg-[#22c55e]/10 flex items-center justify-center text-[#22c55e] border border-[#22c55e]/20">
+                              <Package className="w-7 h-7" />
+                            </div>
+                          )}
                           <div>
                             <h3 className="text-2xl font-bold text-white">
                               {license.product.name}

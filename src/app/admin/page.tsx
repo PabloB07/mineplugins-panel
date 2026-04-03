@@ -33,7 +33,7 @@ interface RecentLicense {
   id: string;
   status: string;
   createdAt: string;
-  product: { name: string };
+  product: { name: string; icon: string | null };
   user: { email: string };
 }
 
