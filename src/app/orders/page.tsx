@@ -12,7 +12,7 @@ export default async function OrdersPage() {
       items: {
         include: {
           product: {
-            select: { name: true },
+            select: { name: true, icon: true },
           },
           license: {
             select: { 

@@ -84,6 +84,7 @@ export async function GET(request: NextRequest) {
                 id: true,
                 name: true,
                 slug: true,
+                icon: true,
               },
             },
             license: {

@@ -216,14 +216,13 @@ export default function ProductGrid({ session }: ProductGridProps) {
                             (e.target as HTMLImageElement).style.display = 'none';
                           }}
                         />
+                      ) : product.icon ? (
+                        <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
+                          <span className={`icon-minecraft ${product.icon}`}></span>
+                        </div>
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
                           <Zap className="w-16 h-16 text-green-500/20" />
-                        </div>
-                      )}
-                      {!product.image && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
-                          <Zap className="w-16 h-16 text-green-500/30" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>

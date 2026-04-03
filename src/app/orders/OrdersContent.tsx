@@ -14,7 +14,7 @@ type OrderItem = {
   status: string;
   items: {
     id: string;
-    product: { name: string };
+    product: { name: string; icon: string | null };
     license: {
       id: string;
       status: string;
@@ -147,7 +147,11 @@ export default function OrdersContent({ session, orders }: Props) {
                           <div className="flex flex-col gap-1">
                             {order.items.map((item, index) => (
                               <div key={index} className="flex items-center gap-2">
-                                <span className="w-2 h-2 bg-[#22c55e] rounded-full"></span>
+                                {item.product.icon ? (
+                                  <span className={`icon-minecraft-sm ${item.product.icon}`} />
+                                ) : (
+                                  <span className="w-2 h-2 bg-[#22c55e] rounded-full"></span>
+                                )}
                                 <span className="text-sm text-gray-300">{item.product.name}</span>
                               </div>
                             ))}

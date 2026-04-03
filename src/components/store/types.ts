@@ -4,6 +4,7 @@ export interface Product {
   slug: string;
   description: string | null;
   image: string | null;
+  icon: string | null;
   priceUSD: number;
   priceCLP: number;
   salePriceUSD: number | null;

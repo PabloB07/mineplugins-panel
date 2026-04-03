@@ -35,6 +35,7 @@ interface Order {
       id: string;
       name: string;
       slug: string;
+      icon: string | null;
     };
     license: {
       id: string;
@@ -440,6 +441,11 @@ export default function AdminOrdersPage() {
                           </div>
                           {order.items.map((item, idx) => (
                             <div key={idx} className="text-xs text-gray-500 flex items-center gap-1">
+                              {item.product.icon ? (
+                                <span className={`icon-minecraft-sm ${item.product.icon}`} />
+                              ) : (
+                                <Package className="w-3 h-3" />
+                              )}
                               <span className="truncate max-w-[120px]">{item.product.name}</span>
                               <span className="text-emerald-400/70">({formatItemPrice(order, item.unitPriceUSD, item.unitPriceCLP)})</span>
                             </div>

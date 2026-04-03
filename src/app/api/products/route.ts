@@ -41,6 +41,8 @@ export async function GET(request: NextRequest) {
           name: true,
           slug: true,
           description: true,
+          image: true,
+          icon: true,
           priceUSD: true,
           priceCLP: true,
           salePriceUSD: true,
