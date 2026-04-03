@@ -19,6 +19,7 @@ interface License {
     id: string;
     name: string;
     slug: string;
+    icon: string | null;
     apiToken: string | null;
   };
   user: {
@@ -169,7 +170,12 @@ export default function AdminLicenseDetailPage() {
       <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-white">{license.product.name}</h1>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+              {license.product.icon ? (
+                <span className={`icon-minecraft ${license.product.icon}`} />
+              ) : null}
+              {license.product.name}
+            </h1>
             <p className="text-gray-400 mt-1">License Details - Store Admin</p>
             <div className="text-gray-400 text-sm mt-1">
               Customer: {license.user.email}
