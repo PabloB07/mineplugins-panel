@@ -213,18 +213,15 @@ export default function ProductGrid({ session }: ProductGridProps) {
                           alt={product.name} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
+                            const img = e.target as HTMLImageElement;
+                            img.style.display = 'none';
+                            img.nextElementSibling?.classList.remove('hidden');
                           }}
                         />
-                      ) : product.icon ? (
-                        <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
-                          <span className={`icon-minecraft ${product.icon}`}></span>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center">
-                          <Zap className="w-16 h-16 text-green-500/20" />
-                        </div>
-                      )}
+                      ) : null}
+                      <div className={`w-full h-full bg-gradient-to-br from-green-900/20 to-[#0f0f0f] flex items-center justify-center ${product.image ? 'hidden' : ''}`}>
+                        <span className="icon-minecraft icon-minecraft-paper scale-150"></span>
+                      </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
                       
                       {isOnSale && (
