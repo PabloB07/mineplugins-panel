@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import { getAdminNotificationPayload } from "@/lib/notifications";
 
 export async function GET() {
   try {
@@ -16,36 +16,8 @@ export async function GET() {
       return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
     }
 
-    const [ticketsToRespond, pendingOrders, processingOrders] = await Promise.all([
-      prisma.supportTicket.count({
-        where: {
-          status: {
-            in: ["OPEN", "WAITING_REPLY"],
-          },
-        },
-      }),
-      prisma.order.count({
-        where: {
-          status: "PENDING",
-        },
-      }),
-      prisma.order.count({
-        where: {
-          status: "PROCESSING",
-        },
-      }),
-    ]);
-
-    const unreadTotal = ticketsToRespond + pendingOrders + processingOrders;
-
-    return NextResponse.json({
-      unreadTotal,
-      counts: {
-        ticketsToRespond,
-        pendingOrders,
-        processingOrders,
-      },
-    });
+    const payload = await getAdminNotificationPayload();
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Admin notifications error:", error);
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });

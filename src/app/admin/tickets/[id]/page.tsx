@@ -36,6 +36,23 @@ export default function AdminTicketDetailPage() {
   const [message, setMessage] = useState("");
   const [isInternal, setIsInternal] = useState(false);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "OPEN":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/40";
+      case "IN_PROGRESS":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/40";
+      case "WAITING_REPLY":
+        return "bg-orange-500/20 text-orange-300 border-orange-500/40";
+      case "RESOLVED":
+        return "bg-green-500/20 text-green-300 border-green-500/40";
+      case "CLOSED":
+        return "bg-gray-500/20 text-gray-300 border-gray-500/40";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/40";
+    }
+  };
+
   const fetchTicket = useCallback(async () => {
     setLoading(true);
     try {
@@ -86,7 +103,7 @@ export default function AdminTicketDetailPage() {
   if (!ticket) return <div className="p-6 text-red-400">{t("tickets.notFound")}</div>;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -98,10 +115,20 @@ export default function AdminTicketDetailPage() {
         <span className="text-xs font-mono text-gray-500">{ticket.ticketNumber}</span>
       </div>
 
+      <div className="rounded-2xl border border-[#2f2f2f] bg-gradient-to-br from-[#151515] to-[#0d0d0d] p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-white">{ticket.subject}</h1>
+            <p className="mt-1 text-sm text-gray-400">{ticket.user.email}</p>
+          </div>
+          <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusColor(ticket.status)}`}>
+            {ticket.status}
+          </span>
+        </div>
+      </div>
+
       <div className="rounded-xl border border-[#333] bg-[#111] p-4">
-        <h1 className="text-xl font-bold text-white">{ticket.subject}</h1>
-        <p className="mt-1 text-sm text-gray-400">{ticket.user.email}</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm text-gray-300">
             {t("tickets.status")}
             <select
@@ -161,7 +188,7 @@ export default function AdminTicketDetailPage() {
             }`}
           >
             <div className="mb-1 flex items-center justify-between text-xs text-gray-400">
-              <span>{msg.user.name || msg.user.email}</span>
+              <span className="font-medium">{msg.user.name || msg.user.email}</span>
               <span>{new Date(msg.createdAt).toLocaleString()}</span>
             </div>
             <p className="whitespace-pre-wrap text-sm text-gray-200">{msg.content}</p>

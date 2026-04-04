@@ -1,60 +1,112 @@
 "use client";
 
+import { Activity, Download, FileText, KeyRound, ShoppingCart } from "lucide-react";
+import { useTranslation } from "@/i18n/useTranslation";
+
 export default function AdminExportPage() {
+  const { t } = useTranslation();
+  const tr = (key: string, fallback: string) => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
+
   const exportOptions = [
     {
-      title: "Licencias",
-      description: "Exportar todas las licencias con información de usuario, producto y estado",
+      title: tr("adminExport.licensesTitle", "Licenses"),
+      description: tr("adminExport.licensesDesc", "Export all licenses with user, product, and status information"),
       endpoint: "/api/export/licenses",
-      icon: "Key",
+      icon: KeyRound,
+      accent: "from-emerald-500/20 to-emerald-500/5 border-emerald-500/30",
     },
     {
-      title: "Órdenes",
-      description: "Exportar todas las órdenes con detalles de pago y productos",
+      title: tr("adminExport.ordersTitle", "Orders"),
+      description: tr("adminExport.ordersDesc", "Export all orders with payment details and products"),
       endpoint: "/api/export/orders",
-      icon: "ShoppingCart",
+      icon: ShoppingCart,
+      accent: "from-blue-500/20 to-blue-500/5 border-blue-500/30",
     },
     {
-      title: "Activaciones",
-      description: "Exportar historial de activaciones de servidores",
+      title: tr("adminExport.activationsTitle", "Activations"),
+      description: tr("adminExport.activationsDesc", "Export server activation history"),
       endpoint: "/api/export/activations",
-      icon: "Server",
+      icon: Activity,
+      accent: "from-orange-500/20 to-orange-500/5 border-orange-500/30",
     },
     {
-      title: "Historial de descargas",
-      description: "Exportar historial de descargas por usuario, producto y versión",
+      title: tr("adminExport.downloadsTitle", "Download history"),
+      description: tr("adminExport.downloadsDesc", "Export download history by user, product, and version"),
       endpoint: "/api/export/downloads",
-      icon: "Download",
+      icon: Download,
+      accent: "from-violet-500/20 to-violet-500/5 border-violet-500/30",
     },
   ];
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-white mb-6">Exportar Datos</h1>
-      
+    <div className="space-y-6 p-6">
+      <div className="rounded-2xl border border-[#2f2f2f] bg-gradient-to-br from-[#141414] to-[#0d0d0d] p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white">{tr("adminExport.title", "Export Data")}</h1>
+            <p className="mt-1 text-sm text-gray-400">{tr("adminExport.subtitle", "Download key business datasets in one click.")}</p>
+          </div>
+          <div className="rounded-xl border border-[#3a3a3a] bg-[#121212] p-2.5">
+            <FileText className="h-5 w-5 text-[#f59e0b]" />
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {exportOptions.map((option) => (
           <a
             key={option.endpoint}
             href={`${option.endpoint}?format=csv`}
-            className="bg-[#111] rounded-xl border border-[#333] p-6 hover:border-[#f59e0b]/50 transition-colors group"
+            className={`group relative overflow-hidden rounded-2xl border bg-[#111] p-5 transition-all hover:-translate-y-0.5 hover:border-[#f59e0b]/50 ${option.accent}`}
           >
-            <h3 className="text-white font-medium text-lg mb-2 group-hover:text-[#f59e0b] transition-colors">
-              {option.title}
-            </h3>
-            <p className="text-gray-500 text-sm">{option.description}</p>
-            <div className="mt-4 text-[#f59e0b] text-sm font-medium">Descargar CSV ↓</div>
+            <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-white/5 blur-2xl" />
+            <div className="relative z-10">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="rounded-lg border border-white/10 bg-[#0d0d0d] p-2">
+                  <option.icon className="h-4 w-4 text-gray-200" />
+                </div>
+                <span className="rounded-full border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-2 py-0.5 text-[10px] font-semibold text-[#f59e0b]">
+                  CSV
+                </span>
+              </div>
+              <h3 className="text-lg font-semibold text-white transition-colors group-hover:text-[#f59e0b]">
+                {option.title}
+              </h3>
+              <p className="mt-1 text-sm text-gray-400">{option.description}</p>
+              <div className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#f59e0b]">
+                {tr("adminExport.downloadCsv", "Download CSV")}
+                <Download className="h-3.5 w-3.5" />
+              </div>
+            </div>
           </a>
         ))}
       </div>
 
-      <div className="mt-8 bg-[#111] rounded-xl border border-[#333] p-6">
-        <h2 className="text-white font-medium mb-4">Acerca de la exportación</h2>
-        <ul className="text-gray-400 text-sm space-y-2">
-          <li>• Los archivos se exportan en formato CSV</li>
-          <li>• El límite máximo es de 10,000 registros por exportación</li>
-          <li>• Los datos incluyen todos los campos relevantes del sistema</li>
-          <li>• Puede agregar filtros usando los parámetros de URL</li>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+          <p className="text-xs uppercase tracking-wide text-gray-500">{tr("adminExport.tipTitle", "Quick tip")}</p>
+          <p className="mt-1 text-sm text-gray-300">{tr("adminExport.tipBody", "Run exports in off-peak hours for very large datasets.")}</p>
+        </div>
+        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+          <p className="text-xs uppercase tracking-wide text-gray-500">{tr("adminExport.formatTitle", "Format")}</p>
+          <p className="mt-1 text-sm text-gray-300">{tr("adminExport.formatBody", "Use CSV for spreadsheets and JSON for integrations.")}</p>
+        </div>
+        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+          <p className="text-xs uppercase tracking-wide text-gray-500">{tr("adminExport.limitTitle", "Limit")}</p>
+          <p className="mt-1 text-sm text-gray-300">{tr("adminExport.limitBody", "Each export returns up to 10,000 records.")}</p>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-[#333] bg-[#111] p-6">
+        <h2 className="mb-4 text-white font-medium">{tr("adminExport.aboutTitle", "About export")}</h2>
+        <ul className="space-y-2 text-sm text-gray-400">
+          <li>• {tr("adminExport.aboutItem1", "Files are exported in CSV format")}</li>
+          <li>• {tr("adminExport.aboutItem2", "The maximum limit is 10,000 records per export")}</li>
+          <li>• {tr("adminExport.aboutItem3", "Data includes all relevant system fields")}</li>
+          <li>• {tr("adminExport.aboutItem4", "You can add filters using URL query parameters")}</li>
         </ul>
       </div>
     </div>

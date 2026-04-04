@@ -41,8 +41,31 @@ export function AdminNotifications() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
+
+    const stream = new EventSource("/api/notifications/stream?scope=admin");
+
+    stream.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setUnreadTotal(Number(data?.unreadTotal || 0));
+        setCounts({
+          ticketsToRespond: Number(data?.counts?.ticketsToRespond || 0),
+          pendingOrders: Number(data?.counts?.pendingOrders || 0),
+          processingOrders: Number(data?.counts?.processingOrders || 0),
+        });
+        setLoading(false);
+      } catch {
+        // ignore malformed events
+      }
+    };
+
+    stream.onerror = () => {
+      // Browser auto-reconnect handles transient connection issues.
+    };
+
+    return () => {
+      stream.close();
+    };
   }, [fetchNotifications]);
 
   useEffect(() => {

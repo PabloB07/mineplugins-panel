@@ -32,6 +32,23 @@ export default function DashboardTicketDetailPage() {
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "OPEN":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/40";
+      case "IN_PROGRESS":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/40";
+      case "WAITING_REPLY":
+        return "bg-orange-500/20 text-orange-300 border-orange-500/40";
+      case "RESOLVED":
+        return "bg-green-500/20 text-green-300 border-green-500/40";
+      case "CLOSED":
+        return "bg-gray-500/20 text-gray-300 border-gray-500/40";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/40";
+    }
+  };
+
   const fetchTicket = useCallback(async () => {
     setLoading(true);
     try {
@@ -86,14 +103,15 @@ export default function DashboardTicketDetailPage() {
         <span className="text-xs font-mono text-gray-500">{ticket.ticketNumber}</span>
       </div>
 
-      <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+      <div className="rounded-2xl border border-[#2f2f2f] bg-gradient-to-br from-[#151515] to-[#0d0d0d] p-5">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-bold text-white">{ticket.subject}</h1>
-            <p className="text-sm text-gray-500">
-              {ticket.status} · {ticket.priority} · {ticket.category}
-            </p>
+            <p className="text-sm text-gray-500">{ticket.priority} · {ticket.category}</p>
           </div>
+          <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusColor(ticket.status)}`}>
+            {ticket.status}
+          </span>
           {ticket.status !== "CLOSED" ? (
             <button
               type="button"
@@ -114,7 +132,7 @@ export default function DashboardTicketDetailPage() {
             className={`rounded-lg border p-3 ${msg.isAdmin ? "border-blue-500/30 bg-blue-500/10" : "border-[#333] bg-[#0b0b0b]"}`}
           >
             <div className="mb-1 flex items-center justify-between text-xs text-gray-400">
-              <span>{msg.isAdmin ? t("tickets.support") : msg.user.name || msg.user.email}</span>
+              <span className="font-medium">{msg.isAdmin ? t("tickets.support") : msg.user.name || msg.user.email}</span>
               <span>{new Date(msg.createdAt).toLocaleString()}</span>
             </div>
             <p className="whitespace-pre-wrap text-sm text-gray-200">{msg.content}</p>
