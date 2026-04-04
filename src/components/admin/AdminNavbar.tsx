@@ -35,17 +35,21 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const pathname = usePathname();
     const { t } = useTranslation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [productsOpen, setProductsOpen] = useState(false);
 
     const navItems = [
         { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
-        { href: "/admin/products", label: t("admin.products"), icon: Package },
-        { href: "/admin/orders", label: t("admin.orders"), icon: ShoppingCart },
-        { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
         { href: "/admin/servers", label: t("admin.servers"), icon: Server },
+        { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
         { href: "/admin/transfers", label: t("admin.transfers"), icon: ArrowRight },
         { href: "/admin/users", label: t("admin.users"), icon: Users },
         { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
         { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
+    ];
+
+    const productsItems = [
+        { href: "/admin/products", label: t("admin.products"), icon: Package },
+        { href: "/admin/orders", label: t("admin.orders"), icon: ShoppingCart },
     ];
 
     const isActive = (path: string) => {
@@ -68,7 +72,51 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                     {/* Desktop Navigation */}
                     <div className="hidden xl:flex items-center gap-1">
-                        {navItems.map((item) => {
+                        <Link
+                            href="/admin"
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${isActive("/admin")
+                                ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                }`}
+                        >
+                            <LayoutDashboard className="w-3.5 h-3.5" />
+                            {t("admin.dashboard")}
+                        </Link>
+
+                        {/* Products Dropdown */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setProductsOpen(!productsOpen)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+                                    pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/orders")
+                                        ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                        : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                }`}
+                            >
+                                <Package className="w-3.5 h-3.5" />
+                                {t("admin.products")}
+                                <svg className={`w-3 h-3 transition-transform ${productsOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            {productsOpen && (
+                                <div className="absolute top-full left-0 mt-1 bg-[#111] border border-[#333] rounded-lg shadow-xl overflow-hidden min-w-[140px]">
+                                    {productsItems.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setProductsOpen(false)}
+                                            className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
+                                        >
+                                            <item.icon className="w-3.5 h-3.5" />
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {navItems.slice(2).map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
 
