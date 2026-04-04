@@ -41,7 +41,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
         { href: "/admin/servers", label: t("admin.servers"), icon: Server },
         { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
-        { href: "/admin/transfers", label: t("admin.transfers"), icon: ArrowRight },
         { href: "/admin/users", label: t("admin.users"), icon: Users },
         { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
         { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
@@ -50,7 +49,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const productsItems = [
         { href: "/admin/products", label: t("admin.products"), icon: Package },
         { href: "/admin/orders", label: t("admin.orders"), icon: ShoppingCart },
-        { href: "/admin/transfers", label: t("admin.transfers"), icon: ArrowRight },
         { href: "/admin/servers", label: t("admin.servers"), icon: Server },
     ];
 
