@@ -54,7 +54,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center gap-1.5 overflow-x-auto">
+                    <div className="hidden xl:flex items-center gap-0">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -63,12 +63,12 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${active
-                                        ? "bg-green-500/20 text-green-400 border border-green-500/30 shadow-lg shadow-green-500/10"
-                                        : "text-gray-400 hover:text-white hover:bg-[#111] hover:border-[#333] border border-transparent"
+                                    className={`flex items-center gap-0.5 px-1.5 py-1.5 rounded text-[10px] font-medium transition-all duration-200 whitespace-nowrap ${active
+                                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                                        : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon className={`w-3.5 h-3.5 ${active ? "text-green-400" : "text-gray-500"}`} />
+                                    <Icon className={`w-3 h-3 ${active ? "text-green-400" : "text-gray-500"}`} />
                                     {item.label}
                                 </Link>
                             );
@@ -76,12 +76,12 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
 
                         {isAdmin && (
                             <>
-                                <div className="h-5 w-px bg-[#222] mx-1" />
+                                <div className="h-4 w-px bg-[#222] mx-0.5" />
                                 <Link
                                     href="/admin"
-                                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/20 hover:border-yellow-500/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                                    className="flex items-center gap-0.5 px-1.5 py-1.5 rounded text-[10px] font-medium text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/20 transition-all duration-200 whitespace-nowrap"
                                 >
-                                    <ShieldAlert className="w-3.5 h-3.5" />
+                                    <ShieldAlert className="w-3 h-3" />
                                     Admin
                                 </Link>
                             </>
