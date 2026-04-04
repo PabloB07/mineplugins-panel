@@ -125,7 +125,7 @@ export default function AdminTransfersPage() {
   });
   
   const eligibleLicenses = licenses.filter(
-    (license) => license.licenseKey.startsWith("eyJ") && license.status === "ACTIVE"
+    (license) => license.status === "ACTIVE"
   );
 
   if (loading) {
@@ -293,7 +293,7 @@ export default function AdminTransfersPage() {
                   ))}
                 </select>
                 <p className="mt-2 text-xs text-gray-500">
-                  {eligibleLicenses.length} JWT license{eligibleLicenses.length === 1 ? "" : "s"} available
+                  {eligibleLicenses.length} active license{eligibleLicenses.length === 1 ? "" : "s"} available
                 </p>
               </div>
 
@@ -319,7 +319,7 @@ export default function AdminTransfersPage() {
                     <p className="font-medium mb-1">Notice:</p>
                     <ul className="space-y-1">
                       <li>• Cannot be undone</li>
-                      <li>• JWT licenses only</li>
+                      <li>• All activations removed</li>
                     </ul>
                   </div>
                 </div>
