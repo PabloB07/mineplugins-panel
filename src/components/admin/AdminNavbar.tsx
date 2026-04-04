@@ -67,7 +67,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden xl:flex items-center gap-0">
+                    <div className="hidden xl:flex items-center gap-1">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -76,22 +76,22 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-0.5 px-1 py-1.5 rounded text-[10px] font-medium transition-all duration-200 group whitespace-nowrap ${active
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${active
                                         ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon className={`w-3 h-3 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
+                                    <Icon className={`w-3.5 h-3.5 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
                                     {item.label}
                                 </Link>
                             );
                         })}
 
-                        <div className="h-4 w-px bg-white/10 mx-1" />
+                        <div className="h-5 w-px bg-white/10 mx-1" />
 
                         <Link
                             href="/dashboard"
-                            className="text-blue-400 hover:text-blue-300 px-1.5 py-1.5 rounded text-[10px] font-medium transition-all duration-200 hover:bg-blue-400/10 border border-blue-400/20 whitespace-nowrap"
+                            className="text-blue-400 hover:text-blue-300 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 hover:bg-blue-400/10 border border-blue-400/20 whitespace-nowrap"
                             title={t("admin.switchToCustomer")}
                         >
                             {t("admin.customerView")}
