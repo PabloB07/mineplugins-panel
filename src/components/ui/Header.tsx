@@ -55,11 +55,7 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img
-              src="/mineplugins-logo.svg"
-              alt="MinePlugins logo"
-              className="h-9 w-9 rounded-full object-cover border border-[#22c55e]/20"
-            />
+            <div className="icon-minecraft icon-minecraft-grass-block"></div>
             <span className="text-xl font-bold text-white">MinePlugins</span>
           </Link>
 

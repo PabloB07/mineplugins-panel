@@ -47,7 +47,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <div className="text-2xl">⛏️</div>
+                        <div className="icon-minecraft icon-minecraft-grass-block"></div>
                         <Link href="/dashboard" className="text-xl font-bold text-white tracking-tight hover:text-green-400 transition-colors">
                             MinePlugins
                         </Link>

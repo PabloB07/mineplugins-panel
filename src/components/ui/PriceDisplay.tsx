@@ -40,6 +40,7 @@ export function PriceDisplay({
   return (
     <div className={`space-y-1 ${className}`}>
       <div className="flex items-baseline gap-2">
+        <div className="icon-minecraft-sm icon-minecraft-diamond-block"></div>
         <span className={`font-bold text-white ${sizeClasses[size]}`}>
           {currentPrice}
         </span>
@@ -100,7 +101,8 @@ export function PriceSummary({
       <div className="h-px bg-[#222] my-3"></div>
       <div className="flex justify-between items-end">
         <span className="text-white font-medium">Total</span>
-        <div className="text-right">
+        <div className="text-right flex items-center gap-2">
+          <div className="icon-minecraft-sm icon-minecraft-emerald-block"></div>
           <div className={`font-bold text-white ${currency === 'CLP' ? 'text-2xl' : 'text-3xl'}`}>
             {currentPrice}
           </div>

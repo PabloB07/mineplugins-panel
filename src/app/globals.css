@@ -3,23 +3,34 @@
 :root {
   --background: #09090b;
   --foreground: #fafafa;
+  --font-minecraft: "Minecraft", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-minecraft);
+  --font-mono: var(--font-minecraft);
 }
 
 * {
   scroll-behavior: smooth;
+  font-family: var(--font-minecraft), var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-minecraft), system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-minecraft), system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+}
+
+p, span, div, a, li, td, th, label, input, button, select, textarea {
+  font-family: var(--font-minecraft), system-ui, -apple-system, sans-serif;
 }
 
 /* Custom scrollbar for dark theme */
@@ -68,4 +79,48 @@ body {
 ::selection {
   background-color: rgba(16, 185, 129, 0.3);
   color: #fff;
+}
+
+/* Minecraft-style animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.05);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
 }

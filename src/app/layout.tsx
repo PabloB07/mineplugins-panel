@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import Providers from "@/components/providers/SessionProvider";
 import "./globals.css";
 import "./mine.css";
@@ -12,6 +13,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const minecraft = localFont({
+  src: [{ path: "../../public/fonts/minecraft.ttf", weight: "400", style: "normal" }],
+  variable: "--font-minecraft",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${minecraft.variable} antialiased`}
       >
         <Providers>
           {children}
