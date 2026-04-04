@@ -16,6 +16,7 @@ import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 interface ProductData {
   id: string;
+  slug: string;
   name: string;
   description: string | null;
   image: string | null;
@@ -226,7 +227,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
 
       <div className="pt-1">
         <CombinedCheckoutButton
-          productSlug={product.id}
+          productSlug={product.slug}
           paymentMethod={selectedMethod}
           className="mt-1"
         />
