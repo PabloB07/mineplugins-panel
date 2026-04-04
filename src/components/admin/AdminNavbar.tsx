@@ -47,7 +47,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/users", label: t("admin.users"), icon: Users },
         { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
         { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
-        { href: "/admin/export", label: t("adminExport.navLabel"), icon: Download },
     ];
 
     const productsItems = [
@@ -58,8 +57,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
     const licensesItems = [
         { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
-        { href: "/admin/discounts", label: t("admin.discounts") || "Descuentos", icon: Tag },
-        { href: "/admin/tickets", label: t("admin.tickets") || "Tickets", icon: Ticket },
+        { href: "/admin/discounts", label: t("admin.discounts"), icon: Tag },
+        { href: "/admin/tickets", label: t("admin.tickets"), icon: Ticket },
+        { href: "/admin/export", label: t("admin.export"), icon: Download },
     ];
 
     const isActive = (path: string) => {
@@ -131,7 +131,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             <button
                                 onClick={() => setLicensesOpen(!licensesOpen)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
-                                    pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets")
+                                    pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export")
                                         ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
@@ -265,13 +265,13 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             type="button"
                             onClick={() => setMobileLicensesOpen(!mobileLicensesOpen)}
                             className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
-                                pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets")
+                                pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export")
                                     ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
                                     : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                             }`}
                         >
                             <span className="flex items-center gap-3">
-                                <Key className={`w-5 h-5 ${pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                <Key className={`w-5 h-5 ${pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export") ? "text-[#f59e0b]" : "text-gray-500"}`} />
                                 {t("admin.licenses")}
                             </span>
                             <svg className={`w-4 h-4 transition-transform ${mobileLicensesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
