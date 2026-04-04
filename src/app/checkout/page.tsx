@@ -11,6 +11,7 @@ interface PageProps {
 
 interface SerializedProduct {
   id: string;
+  slug: string;
   name: string;
   description: string | null;
   image: string | null;
@@ -62,6 +63,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
 
   const serializedProduct: SerializedProduct = {
     id: product.id,
+    slug: product.slug,
     name: product.name,
     description: product.description,
     image: product.image,
