@@ -60,6 +60,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
+    import("@/lib/pricing").then(({ refreshExchangeRates }) => {
+      refreshExchangeRates();
+    });
   }, []);
 
   const handleSetLocale = (newLocale: string) => {

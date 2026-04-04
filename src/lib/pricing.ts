@@ -6,12 +6,45 @@ export const EXCHANGE_RATES = {
   USD_TO_CLP: 920,
 };
 
-export function getExchangeRates(): typeof EXCHANGE_RATES {
-  return EXCHANGE_RATES;
+let cachedRates: typeof EXCHANGE_RATES = EXCHANGE_RATES;
+let lastFetch = 0;
+const CACHE_DURATION = 60 * 60 * 1000;
+
+export async function refreshExchangeRates(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  
+  const now = Date.now();
+  if (now - lastFetch < CACHE_DURATION) return;
+  
+  try {
+    const res = await fetch('/api/exchange-rates');
+    if (res.ok) {
+      const data = await res.json();
+      cachedRates = {
+        USD_TO_EUR: data.EUR || 0.92,
+        USD_TO_CAD: data.CAD || 1.36,
+        USD_TO_CLP: data.CLP || 920,
+      };
+      lastFetch = now;
+      localStorage.setItem('exchange_rates', JSON.stringify(cachedRates));
+    }
+  } catch {
+    // Keep cached rates
+  }
 }
 
-export function refreshExchangeRates(): void {
-  // Keep default rates - no external API
+export function getExchangeRates(): typeof EXCHANGE_RATES {
+  if (typeof window === 'undefined') return EXCHANGE_RATES;
+  
+  const stored = localStorage.getItem('exchange_rates');
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return cachedRates;
+    }
+  }
+  return cachedRates;
 }
 
 export function formatUSD(dollars: number): string {
