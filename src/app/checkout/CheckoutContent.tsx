@@ -79,16 +79,25 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
                   <span className={`icon-minecraft ${product.icon}`} />
                 </div>
               ) : product.image ? (
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={64}
-                  height={64}
-                  className="w-20 h-20 rounded-xl object-cover ring-2 ring-green-500/30"
-                />
+                <div className="w-20 h-20 rounded-xl bg-[#0a0a0a] border border-[#333] flex items-center justify-center overflow-hidden">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement;
+                      img.style.display = 'none';
+                      img.nextElementSibling?.classList.remove('hidden');
+                    }}
+                    unoptimized
+                  />
+                  <span className="icon-minecraft icon-minecraft-paper hidden scale-125"></span>
+                </div>
               ) : (
-                <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-green-900/40 to-green-900/10 border border-green-500/20 flex items-center justify-center text-green-500 shadow-inner shadow-green-500/10">
-                  <Zap className="w-10 h-10" />
+                <div className="w-20 h-20 rounded-xl bg-[#0a0a0a] border border-[#333] flex items-center justify-center overflow-hidden">
+                  <span className="icon-minecraft icon-minecraft-paper scale-125"></span>
                 </div>
               )}
               <div className="space-y-1">
