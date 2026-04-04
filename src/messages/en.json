@@ -502,6 +502,26 @@
     "categoryRefund": "Refund",
     "categoryBugReport": "Bug report"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No pending notifications",
+    "client": {
+      "ticketsTitle": "Tickets to reply",
+      "ticketsDesc": "You have support messages waiting for your reply",
+      "ordersTitle": "Orders in progress",
+      "ordersDesc": "You have pending or processing orders",
+      "licensesTitle": "Licenses expiring soon",
+      "licensesDesc": "You have active licenses expiring within the next 7 days"
+    },
+    "admin": {
+      "ticketsTitle": "Tickets to respond",
+      "ticketsDesc": "New tickets or tickets waiting for staff response",
+      "pendingOrdersTitle": "Pending orders",
+      "pendingOrdersDesc": "Orders pending confirmation",
+      "processingOrdersTitle": "Processing orders",
+      "processingOrdersDesc": "Processing orders that require follow-up"
+    }
+  },
   "adminExport": {
     "navLabel": "Export",
     "title": "Export Data",

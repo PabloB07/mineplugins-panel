@@ -23,6 +23,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
+import { AdminNotifications } from "@/components/notifications/AdminNotifications";
 
 interface AdminNavbarProps {
     user: {
@@ -39,16 +40,16 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [productsOpen, setProductsOpen] = useState(false);
     const [licensesOpen, setLicensesOpen] = useState(false);
+    const [usersOpen, setUsersOpen] = useState(false);
+    const [mobileUsersOpen, setMobileUsersOpen] = useState(false);
     const [mobileLicensesOpen, setMobileLicensesOpen] = useState(false);
     const productsDropdownRef = useRef<HTMLDivElement | null>(null);
     const licensesDropdownRef = useRef<HTMLDivElement | null>(null);
+    const usersDropdownRef = useRef<HTMLDivElement | null>(null);
 
     const navItems = [
         { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
         { href: "/admin/servers", label: t("admin.servers"), icon: Server },
-        { href: "/admin/users", label: t("admin.users"), icon: Users },
-        { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
-        { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
     ];
 
     const productsItems = [
@@ -62,6 +63,12 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin/discounts", label: t("admin.discounts"), icon: Tag },
         { href: "/admin/tickets", label: t("admin.tickets"), icon: Ticket },
         { href: "/admin/export", label: t("admin.export"), icon: Download },
+    ];
+
+    const usersItems = [
+        { href: "/admin/users", label: t("admin.users"), icon: Users },
+        { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
+        { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
     ];
 
     const isActive = (path: string) => {
@@ -87,13 +94,22 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
             ) {
                 setLicensesOpen(false);
             }
+
+            if (
+                usersDropdownRef.current &&
+                !usersDropdownRef.current.contains(target)
+            ) {
+                setUsersOpen(false);
+            }
         };
 
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
                 setProductsOpen(false);
                 setLicensesOpen(false);
+                setUsersOpen(false);
                 setMobileLicensesOpen(false);
+                setMobileUsersOpen(false);
             }
         };
 
@@ -197,6 +213,39 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             )}
                         </div>
 
+                        {/* Users Dropdown */}
+                        <div className="relative" ref={usersDropdownRef}>
+                            <button
+                                onClick={() => setUsersOpen(!usersOpen)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+                                    pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/analytics") || pathname?.startsWith("/admin/payments")
+                                        ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                        : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                }`}
+                            >
+                                <Users className="w-3.5 h-3.5" />
+                                {t("admin.users")}
+                                <svg className={`w-3 h-3 transition-transform ${usersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            {usersOpen && (
+                                <div className="absolute top-full left-0 mt-1 bg-[#111] border border-[#333] rounded-lg shadow-xl overflow-hidden min-w-[160px]">
+                                    {usersItems.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setUsersOpen(false)}
+                                            className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
+                                        >
+                                            <item.icon className="w-3.5 h-3.5" />
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         {navItems.slice(2).map((item) => {
                             const active = isActive(item.href);
                             const Icon = item.icon;
@@ -229,6 +278,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                     {/* User Menu & Mobile Toggle */}
                     <div className="flex items-center gap-3">
+                        <AdminNotifications />
                         <LanguageSwitcher />
                         <div className="hidden md:flex items-center gap-3 pl-3 border-l border-white/10">
                             <div className="text-right hidden md:block">
@@ -319,6 +369,47 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         {mobileLicensesOpen && (
                             <div className="space-y-1 pl-4">
                                 {licensesItems.map((item) => {
+                                    const Icon = item.icon;
+                                    const active = isActive(item.href);
+                                    return (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                                active
+                                                    ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                                    : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                            }`}
+                                        >
+                                            <Icon className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                            {item.label}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        <button
+                            type="button"
+                            onClick={() => setMobileUsersOpen(!mobileUsersOpen)}
+                            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                                pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/analytics") || pathname?.startsWith("/admin/payments")
+                                    ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                    : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                            }`}
+                        >
+                            <span className="flex items-center gap-3">
+                                <Users className={`w-5 h-5 ${pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/analytics") || pathname?.startsWith("/admin/payments") ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                {t("admin.users")}
+                            </span>
+                            <svg className={`w-4 h-4 transition-transform ${mobileUsersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        {mobileUsersOpen && (
+                            <div className="space-y-1 pl-4">
+                                {usersItems.map((item) => {
                                     const Icon = item.icon;
                                     const active = isActive(item.href);
                                     return (

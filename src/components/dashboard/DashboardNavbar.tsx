@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
+import { ClientNotifications } from "@/components/notifications/ClientNotifications";
 
 interface DashboardNavbarProps {
     user?: {
@@ -92,6 +93,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
 
                     {/* User Menu */}
                     <div className="flex items-center gap-4">
+                        {user ? <ClientNotifications /> : null}
                         <LanguageSwitcher />
                         {user ? (
                             <div className="hidden sm:flex items-center gap-4 pl-4 border-l border-[#222]">

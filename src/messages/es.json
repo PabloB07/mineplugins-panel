@@ -478,6 +478,26 @@
     "categoryRefund": "Reembolso",
     "categoryBugReport": "Reporte de bug"
   },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "Sin notificaciones pendientes",
+    "client": {
+      "ticketsTitle": "Tickets por responder",
+      "ticketsDesc": "Tienes mensajes de soporte pendientes de respuesta",
+      "ordersTitle": "Órdenes en proceso",
+      "ordersDesc": "Tienes órdenes pendientes o procesándose",
+      "licensesTitle": "Licencias por expirar",
+      "licensesDesc": "Tienes licencias activas que expiran en los próximos 7 días"
+    },
+    "admin": {
+      "ticketsTitle": "Tickets por responder",
+      "ticketsDesc": "Tickets nuevos o esperando respuesta del staff",
+      "pendingOrdersTitle": "Órdenes pendientes",
+      "pendingOrdersDesc": "Órdenes con estado pendiente de confirmación",
+      "processingOrdersTitle": "Órdenes en procesamiento",
+      "processingOrdersDesc": "Órdenes en procesamiento que requieren seguimiento"
+    }
+  },
   "adminExport": {
     "navLabel": "Exportar",
     "title": "Exportar Datos",
