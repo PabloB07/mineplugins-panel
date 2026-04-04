@@ -20,7 +20,7 @@ import {
     Download,
     Tag,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
 
@@ -40,6 +40,8 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const [productsOpen, setProductsOpen] = useState(false);
     const [licensesOpen, setLicensesOpen] = useState(false);
     const [mobileLicensesOpen, setMobileLicensesOpen] = useState(false);
+    const productsDropdownRef = useRef<HTMLDivElement | null>(null);
+    const licensesDropdownRef = useRef<HTMLDivElement | null>(null);
 
     const navItems = [
         { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
@@ -68,6 +70,42 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         return false;
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+
+            if (
+                productsDropdownRef.current &&
+                !productsDropdownRef.current.contains(target)
+            ) {
+                setProductsOpen(false);
+            }
+
+            if (
+                licensesDropdownRef.current &&
+                !licensesDropdownRef.current.contains(target)
+            ) {
+                setLicensesOpen(false);
+            }
+        };
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setProductsOpen(false);
+                setLicensesOpen(false);
+                setMobileLicensesOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, []);
+
     return (
         <nav className="bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#f59e0b]/20 sticky top-0 z-50 shadow-lg shadow-black/20">
             <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -94,7 +132,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         </Link>
 
                         {/* Products Dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={productsDropdownRef}>
                             <button
                                 onClick={() => setProductsOpen(!productsOpen)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
@@ -127,7 +165,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         </div>
 
                         {/* Licenses Dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={licensesDropdownRef}>
                             <button
                                 onClick={() => setLicensesOpen(!licensesOpen)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
