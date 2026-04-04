@@ -2,20 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
-import { useIcon } from "@/hooks/useIcon";
 import { ServerStatus as ServerStatusType, ServerFormData } from "@/components/admin/servers/types";
 import ServerCard from "@/components/admin/servers/ServerCard";
 import ServerModal from "@/components/admin/servers/ServerModal";
 
 export default function AdminServersPage() {
   const { t } = useTranslation();
-  const Server = useIcon("Server");
-  const Plus = useIcon("Plus");
-  const Trash2 = useIcon("Trash2");
-  const CheckCircle = useIcon("CheckCircle");
-  const RefreshCw = useIcon("RefreshCw");
-  const Loader2 = useIcon("Loader2");
-  const Power = useIcon("Power");
   
   const [servers, setServers] = useState<ServerStatusType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -260,137 +252,124 @@ export default function AdminServersPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in pb-10">
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
-              <Server className="w-8 h-8 text-blue-400" />
-              Server Status
-            </h1>
-            <p className="text-gray-400 max-w-lg text-lg">
-              Manage and monitor your Minecraft server status. Display live server information on your store.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-                <Server className="w-4 h-4 mr-2" />
-                {servers.length} Servers
-              </div>
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                {servers.filter(s => s.isOnline).length} Online
-              </div>
+    <div className="space-y-6 pb-10">
+      <div className="bg-[#111] border border-[#222] rounded-2xl p-6 md:p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <span className="icon-minecraft icon-minecraft-grass-block scale-125"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                Server Status
+              </h1>
+              <p className="text-gray-400 text-sm mt-1">
+                Manage and monitor your Minecraft servers
+              </p>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <button
-              onClick={checkAllServers}
-              disabled={loading || servers.length === 0}
-              className="bg-[#1a1a1a] hover:bg-[#222] text-white px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2 border border-[#333]"
-              title="Check all servers"
-            >
-              <RefreshCw className="w-5 h-5" />
-              Check All
-            </button>
-            <button
-              onClick={() => setAutoRefresh(!autoRefresh)}
-              className={`px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2 border ${
-                autoRefresh 
-                  ? "bg-green-500/10 border-green-500/30 text-green-400" 
-                  : "bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#222]"
-              }`}
-              title="Auto-refresh every 30 seconds"
-            >
-              <Power className="w-5 h-5" />
-              Auto {autoRefresh ? "ON" : "OFF"}
-            </button>
-            <button
-              onClick={openAddModal}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
-            >
-              <Plus className="w-5 h-5" />
-              Add Server
-            </button>
+            <div className="flex items-center gap-2 px-3 py-2 bg-[#0a0a0a] rounded-lg border border-[#222]">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-gray-400">{servers.filter(s => s.isOnline).length} Online</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-[#0a0a0a] rounded-lg border border-[#222]">
+              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+              <span className="text-sm text-gray-400">{servers.filter(s => !s.isOnline).length} Offline</span>
+            </div>
           </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-[#222]">
+          <button
+            onClick={checkAllServers}
+            disabled={loading || servers.length === 0}
+            className="px-4 py-2.5 bg-[#1a1a1a] hover:bg-[#222] text-white rounded-lg font-medium transition-all flex items-center gap-2 border border-[#333] disabled:opacity-50"
+          >
+            <span className="icon-minecraft-sm icon-minecraft-clock"></span>
+            Check All
+          </button>
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`px-4 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 border ${
+              autoRefresh 
+                ? "bg-green-500/10 border-green-500/30 text-green-400" 
+                : "bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#222]"
+            }`}
+          >
+            <span className={`icon-minecraft-sm ${autoRefresh ? 'icon-minecraft-clock' : 'icon-minecraft-clock'}`} style={{ opacity: autoRefresh ? 1 : 0.3 }}></span>
+            Auto {autoRefresh ? "ON" : "OFF"}
+          </button>
+          <button
+            onClick={openAddModal}
+            className="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-bold transition-all flex items-center gap-2 ml-auto"
+          >
+            <span className="icon-minecraft-sm icon-minecraft-green-stone-button"></span>
+            Add Server
+          </button>
         </div>
       </div>
 
       {selectedServers.size > 0 && (
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between">
           <span className="text-blue-400 font-medium">
             {selectedServers.size} server(s) selected
           </span>
           <div className="flex gap-3">
             <button
               onClick={() => setSelectedServers(new Set())}
-              className="px-4 py-2 bg-[#1a1a1a] hover:bg-[#222] text-white rounded-lg transition-colors border border-[#333]"
+              className="px-3 py-1.5 bg-[#1a1a1a] hover:bg-[#222] text-white text-sm rounded-lg transition-colors border border-[#333]"
             >
-              Clear Selection
+              Clear
             </button>
             <button
               onClick={deleteSelectedServers}
-              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors border border-red-500/30 flex items-center gap-2"
+              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm rounded-lg transition-colors border border-red-500/30 flex items-center gap-1"
             >
-              <Trash2 className="w-4 h-4" />
-              Delete Selected
+              <span className="icon-minecraft-sm icon-minecraft-barrel"></span>
+              Delete
             </button>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
-          <div className="col-span-full flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>
+      ) : servers.length === 0 ? (
+        <div className="bg-[#111] border border-[#222] rounded-xl p-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#0a0a0a] border border-[#222] flex items-center justify-center">
+            <span className="icon-minecraft icon-minecraft-grass-block opacity-50"></span>
           </div>
-        ) : servers.length === 0 ? (
-          <div className="col-span-full bg-[#111] border border-[#222] rounded-xl p-12 text-center">
-            <Server className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No Servers Added</h3>
-            <p className="text-gray-400 mb-6">Add your first server to display status on the homepage.</p>
-            <button
-              onClick={openAddModal}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-xl font-medium transition-all"
-            >
-              Add First Server
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="col-span-full bg-[#0a0a0a] border border-[#222] rounded-lg p-3 flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={selectedServers.size === servers.length && servers.length > 0}
-                onChange={toggleSelectAll}
-                className="w-4 h-4 rounded border-[#333] bg-[#1a1a1a] text-blue-500 focus:ring-blue-500/50"
-              />
-              <span className="text-sm text-gray-400">Select all servers</span>
-            </div>
-            {servers.map((server) => (
-              <div key={server.id} className="relative">
-                <div className="absolute top-4 left-4 z-10">
-                  <input
-                    type="checkbox"
-                    checked={selectedServers.has(server.id)}
-                    onChange={() => toggleSelectServer(server.id)}
-                    className="w-4 h-4 rounded border-[#333] bg-[#1a1a1a] text-blue-500 focus:ring-blue-500/50"
-                  />
-                </div>
-                <ServerCard
-                  server={server}
-                  isRefreshing={refreshing === server.id}
-                  onRefresh={checkServer}
-                  onTogglePublic={togglePublic}
-                  onDelete={deleteServer}
-                  onEdit={openEditModal}
-                />
-              </div>
-            ))}
-          </>
-        )}
-      </div>
+          <h3 className="text-lg font-semibold text-white mb-2">No Servers Added</h3>
+          <p className="text-gray-400 text-sm mb-6">Add your first server to display status.</p>
+          <button
+            onClick={openAddModal}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-all"
+          >
+            Add First Server
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {servers.map((server) => (
+            <ServerCard
+              key={server.id}
+              server={server}
+              isRefreshing={refreshing === server.id}
+              onRefresh={checkServer}
+              onTogglePublic={togglePublic}
+              onDelete={deleteServer}
+              onEdit={openEditModal}
+              showCheckbox
+              selected={selectedServers.has(server.id)}
+              onSelect={() => toggleSelectServer(server.id)}
+            />
+          ))}
+        </div>
+      )}
 
       <ServerModal
         isOpen={showModal}

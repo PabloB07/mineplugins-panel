@@ -1,7 +1,6 @@
 "use client";
 
 import { ServerStatus } from "./types";
-import { CheckCircle, XCircle, RefreshCw, Globe, Trash2, Edit2 } from "lucide-react";
 
 interface ServerCardProps {
   server: ServerStatus;
@@ -10,6 +9,9 @@ interface ServerCardProps {
   onTogglePublic: (id: string, currentPublic: boolean) => void;
   onDelete: (id: string) => void;
   onEdit: (server: ServerStatus) => void;
+  showCheckbox?: boolean;
+  selected?: boolean;
+  onSelect?: () => void;
 }
 
 export default function ServerCard({
@@ -19,25 +21,39 @@ export default function ServerCard({
   onTogglePublic,
   onDelete,
   onEdit,
+  showCheckbox,
+  selected,
+  onSelect,
 }: ServerCardProps) {
   return (
-    <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden hover:border-blue-500/30 transition-all group">
-      <div className="p-6 border-b border-[#222] bg-[#151515]">
+    <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden hover:border-blue-500/30 transition-all group relative">
+      {showCheckbox && (
+        <div className="absolute top-3 left-3 z-10">
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={onSelect}
+            className="w-4 h-4 rounded border-[#333] bg-[#1a1a1a] text-blue-500 focus:ring-blue-500/50"
+          />
+        </div>
+      )}
+      
+      <div className="p-5 border-b border-[#222] bg-[#151515]">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
               server.isOnline 
                 ? "bg-green-500/20 text-green-400" 
                 : "bg-red-500/20 text-red-400"
             }`}>
               {server.isOnline ? (
-                <CheckCircle className="w-5 h-5" />
+                <span className="icon-minecraft-sm icon-minecraft-emerald-block"></span>
               ) : (
-                <XCircle className="w-5 h-5" />
+                <span className="icon-minecraft-sm icon-minecraft-barrel"></span>
               )}
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">{server.name}</h3>
+              <h3 className="text-base font-bold text-white">{server.name}</h3>
               <p className="text-sm text-gray-400 font-mono">{server.ip}:{server.port}</p>
             </div>
           </div>
@@ -50,16 +66,16 @@ export default function ServerCard({
           </span>
         </div>
         
-        <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="flex flex-wrap gap-2 text-xs">
           {server.version && (
-            <div className="bg-[#0a0a0a] rounded-lg px-2 py-1.5">
-              <span className="text-gray-500">Version:</span>
+            <div className="bg-[#0a0a0a] rounded px-2 py-1">
+              <span className="text-gray-500">v</span>
               <span className="text-white ml-1 font-medium">{server.version}</span>
             </div>
           )}
           {server.playersOnline !== undefined && (
-            <div className="bg-[#0a0a0a] rounded-lg px-2 py-1.5">
-              <span className="text-gray-500">Players:</span>
+            <div className="bg-[#0a0a0a] rounded px-2 py-1">
+              <span className="icon-minecraft-sm icon-minecraft-player-head-2-sm-textures-sm" style={{ opacity: 0.5 }}></span>
               <span className="text-white ml-1 font-medium">
                 {server.playersOnline}/{server.playersMax}
               </span>
@@ -67,28 +83,23 @@ export default function ServerCard({
           )}
         </div>
         
-        {server.motd && (
-          <div className="mt-2 text-xs text-gray-400 bg-[#0a0a0a] rounded-lg px-2 py-1.5 truncate" title={server.motd}>
-            {server.motd}
-          </div>
-        )}
-        
         {server.lastChecked && (
-          <div className="text-xs text-gray-500 mt-2">
-            Last checked: {new Date(server.lastChecked).toLocaleString()}
+          <div className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <span className="icon-minecraft-sm icon-minecraft-clock" style={{ opacity: 0.5 }}></span>
+            {new Date(server.lastChecked).toLocaleString()}
           </div>
         )}
       </div>
 
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="p-3 flex items-center justify-between">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => onRefresh(server.id)}
             disabled={isRefreshing}
             className="p-2 rounded-lg hover:bg-[#222] text-gray-400 hover:text-blue-400 transition-colors disabled:opacity-50"
             title="Check Status"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            <span className={`icon-minecraft-sm icon-minecraft-clock ${isRefreshing ? 'animate-spin' : ''}`} style={{ filter: isRefreshing ? 'invert(1)' : 'none' }}></span>
           </button>
           
           <button
@@ -100,7 +111,7 @@ export default function ServerCard({
             }`}
             title={server.isPublic ? "Public (shown on homepage)" : "Private (hidden)"}
           >
-            <Globe className="w-4 h-4" />
+            <span className="icon-minecraft-sm icon-minecraft-compass"></span>
           </button>
 
           <button
@@ -108,7 +119,7 @@ export default function ServerCard({
             className="p-2 rounded-lg hover:bg-[#222] text-gray-400 hover:text-yellow-400 transition-colors opacity-0 group-hover:opacity-100"
             title="Edit Server"
           >
-            <Edit2 className="w-4 h-4" />
+            <span className="icon-minecraft-sm icon-minecraft-anvil"></span>
           </button>
         </div>
 
@@ -117,7 +128,7 @@ export default function ServerCard({
           className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
           title="Delete Server"
         >
-          <Trash2 className="w-4 h-4" />
+          <span className="icon-minecraft-sm icon-minecraft-tnt"></span>
         </button>
       </div>
     </div>
