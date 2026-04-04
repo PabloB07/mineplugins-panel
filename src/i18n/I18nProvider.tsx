@@ -60,7 +60,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    import("@/lib/pricing").then(({ refreshExchangeRates }) => {
+      refreshExchangeRates();
+    });
   }, []);
 
   const handleSetLocale = (newLocale: string) => {
