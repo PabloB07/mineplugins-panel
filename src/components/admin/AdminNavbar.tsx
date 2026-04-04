@@ -50,6 +50,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const productsItems = [
         { href: "/admin/products", label: t("admin.products"), icon: Package },
         { href: "/admin/orders", label: t("admin.orders"), icon: ShoppingCart },
+        { href: "/admin/transfers", label: t("admin.transfers"), icon: ArrowRight },
         { href: "/admin/servers", label: t("admin.servers"), icon: Server },
     ];
 

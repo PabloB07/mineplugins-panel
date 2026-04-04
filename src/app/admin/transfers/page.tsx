@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
-import { useIcon } from "@/hooks/useIcon";
 
 interface Transfer {
   id: string;
@@ -20,14 +19,6 @@ interface User {
 
 export default function AdminTransfersPage() {
   const { t } = useTranslation();
-  const ArrowRight = useIcon("ArrowRight");
-  const Mail = useIcon("Mail");
-  const Calendar = useIcon("Calendar");
-  const CheckCircle = useIcon("CheckCircle");
-  const AlertTriangle = useIcon("AlertTriangle");
-  const RefreshCw = useIcon("RefreshCw");
-  const Search = useIcon("Search");
-  const Users = useIcon("Users");
   
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -132,6 +123,7 @@ export default function AdminTransfersPage() {
 
     return matchesSearch;
   });
+  
   const eligibleLicenses = licenses.filter(
     (license) => license.licenseKey.startsWith("eyJ") && license.status === "ACTIVE"
   );
@@ -139,88 +131,94 @@ export default function AdminTransfersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-green-400 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading transfer history...</p>
-        </div>
+        <div className="w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in pb-10">
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f59e0b]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-        <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">License Transfers</h1>
-            <p className="text-gray-400 max-w-lg text-lg">Transfer licenses between users securely and keep a full transfer history.</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 text-[#f59e0b] text-sm">
-                <ArrowRight className="w-4 h-4 mr-2" />
-                {filteredTransfers.length} Transfers
-              </div>
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                {eligibleLicenses.length} Transfer-ready Licenses
-              </div>
+    <div className="space-y-6 pb-10">
+      <div className="bg-[#111] border border-[#222] rounded-2xl p-6 md:p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-xl bg-[#f59e0b]/10 border border-[#f59e0b]/20 flex items-center justify-center">
+              <span className="icon-minecraft icon-minecraft-paper scale-125"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                License Transfers
+              </h1>
+              <p className="text-gray-400 text-sm mt-1">
+                Transfer licenses between users securely
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-2 bg-[#0a0a0a] rounded-lg border border-[#222]">
+              <span className="icon-minecraft-sm icon-minecraft-paper"></span>
+              <span className="text-sm text-gray-400">{filteredTransfers.length} Transfers</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-[#0a0a0a] rounded-lg border border-[#222]">
+              <span className="icon-minecraft-sm icon-minecraft-diamond-block"></span>
+              <span className="text-sm text-gray-400">{eligibleLicenses.length} Ready</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-[#111] rounded-xl border border-[#222] p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Transfer History</h2>
+          <div className="bg-[#111] rounded-xl border border-[#222] p-5">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold text-white">Transfer History</h2>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 icon-minecraft-sm icon-minecraft-clock" style={{ opacity: 0.5 }}></span>
                 <input
                   type="text"
-                  placeholder="Search transfers..."
+                  placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#22c55e]/50"
+                  className="pl-9 pr-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-green-500/50 w-48"
                 />
               </div>
             </div>
 
             {filteredTransfers.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-12 h-12 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ArrowRight className="w-6 h-6 text-gray-500" />
+              <div className="text-center py-10">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#181818] border border-[#333] flex items-center justify-center">
+                  <span className="icon-minecraft icon-minecraft-paper opacity-50"></span>
                 </div>
-                <p className="text-gray-400">No transfers found</p>
+                <p className="text-gray-400 text-sm">No transfers found</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {filteredTransfers.map((transfer) => (
                   <div
                     key={transfer.id}
-                    className="bg-[#0a0a0a]/50 rounded-xl p-4 border border-[#333] hover:border-[#22c55e]/30 transition-all"
+                    className="bg-[#0a0a0a]/50 rounded-lg p-4 border border-[#333] hover:border-green-500/30 transition-all"
                   >
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-sm font-medium text-white">
                             {transfer.product_name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <div className="flex items-center gap-4 text-xs text-gray-400">
                           <div className="flex items-center gap-1">
-                            <Mail className="w-3 h-3" />
+                            <span className="icon-minecraft-sm icon-minecraft-paper" style={{ opacity: 0.5 }}></span>
                             {transfer.from_user_email} → {transfer.to_user_email}
                           </div>
                           <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
+                            <span className="icon-minecraft-sm icon-minecraft-clock" style={{ opacity: 0.5 }}></span>
                             {new Date(transfer.transferred_at).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-4 h-4 text-green-400" />
-                        <span className="text-sm text-green-400">Completed</span>
+                        <span className="icon-minecraft-sm icon-minecraft-diamond-block"></span>
+                        <span className="text-xs text-green-400">Done</span>
                       </div>
                     </div>
                   </div>
@@ -231,9 +229,9 @@ export default function AdminTransfersPage() {
         </div>
 
         <div>
-          <div className="bg-[#111] rounded-xl border border-[#222] p-6">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5" />
+          <div className="bg-[#111] rounded-xl border border-[#222] p-5">
+            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <span className="icon-minecraft-sm icon-minecraft-paper"></span>
               New Transfer
             </h2>
             
@@ -249,13 +247,13 @@ export default function AdminTransfersPage() {
                     setTransferForm({ ...transferForm, targetEmail: e.target.value, targetUserId: "" });
                     searchUsers(e.target.value);
                   }}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#22c55e]/50"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-green-500/50"
                   placeholder="Search by email..."
                   required
                 />
                 
                 {users.length > 0 && (
-                  <div className="mt-2 bg-[#0a0a0a] border border-[#333] rounded-xl max-h-40 overflow-y-auto">
+                  <div className="mt-2 bg-[#0a0a0a] border border-[#333] rounded-lg max-h-40 overflow-y-auto">
                     {users.map((user) => (
                       <button
                         key={user.id}
@@ -284,46 +282,44 @@ export default function AdminTransfersPage() {
                 <select
                   value={transferForm.licenseId}
                   onChange={(e) => setTransferForm({ ...transferForm, licenseId: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white focus:outline-none focus:border-[#22c55e]/50"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white text-sm focus:outline-none focus:border-green-500/50"
                   required
                 >
                   <option value="">{t("admin.chooseLicense")}</option>
                   {eligibleLicenses.map((license) => (
                     <option key={license.id} value={license.id}>
-                      {license.product.name} • {license.licenseKey.substring(0, 8)}… • {license.user?.email}
+                      {license.product.name} • {license.licenseKey.substring(0, 8)}…
                     </option>
                   ))}
                 </select>
                 <p className="mt-2 text-xs text-gray-500">
-                  {eligibleLicenses.length} active JWT license{eligibleLicenses.length === 1 ? "" : "s"} available.
+                  {eligibleLicenses.length} JWT license{eligibleLicenses.length === 1 ? "" : "s"} available
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  License Duration (days)
+                  Duration (days)
                 </label>
                 <input
                   type="number"
                   value={transferForm.durationDays}
                   onChange={(e) => setTransferForm({ ...transferForm, durationDays: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-xl text-white focus:outline-none focus:border-[#22c55e]/50"
+                  className="w-full px-3 py-2 bg-[#0a0a0a] border border-[#333] rounded-lg text-white text-sm focus:outline-none focus:border-green-500/50"
                   min="1"
                   max="1095"
                   required
                 />
               </div>
 
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-blue-300">
-                    <p className="font-semibold mb-1">Store Transfer Notice:</p>
-                    <ul className="space-y-1 text-xs">
-                      <li>• This action cannot be undone</li>
-                      <li>• All current activations will be removed</li>
-                      <li>• Only JWT licenses can be transferred</li>
-                      <li>• Customer will receive email notification</li>
+                  <span className="icon-minecraft-sm icon-minecraft-clock" style={{ opacity: 0.5 }}></span>
+                  <div className="text-xs text-blue-300">
+                    <p className="font-medium mb-1">Notice:</p>
+                    <ul className="space-y-1">
+                      <li>• Cannot be undone</li>
+                      <li>• JWT licenses only</li>
                     </ul>
                   </div>
                 </div>
@@ -332,7 +328,7 @@ export default function AdminTransfersPage() {
               <button
                 type="submit"
                 disabled={submitting || !transferForm.licenseId || !transferForm.targetEmail}
-                className="w-full bg-[#22c55e] text-black hover:bg-[#16a34a] disabled:bg-[#333] disabled:text-gray-500 disabled:cursor-not-allowed py-2.5 px-4 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-[#22c55e]/20"
+                className="w-full bg-green-500 hover:bg-green-600 text-black disabled:bg-[#333] disabled:text-gray-500 py-2.5 px-4 rounded-lg font-medium transition-all"
               >
                 {submitting ? 'Transferring...' : 'Transfer License'}
               </button>
