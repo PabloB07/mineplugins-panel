@@ -59,9 +59,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
             <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-[4.5rem]">
                     {/* Logo */}
-                    <div className="flex items-center gap-2.5">
-                        <div className="text-2xl">⛏️</div>
-                        <Link href="/admin" className="text-xl font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
+                    <div className="flex items-center gap-2">
+                        <div className="icon-minecraft icon-minecraft-grass-block"></div>
+                        <Link href="/admin" className="text-lg font-bold text-white flex items-center gap-2 hover:text-[#f59e0b] transition-colors">
                             MinePlugins
                         </Link>
                     </div>
