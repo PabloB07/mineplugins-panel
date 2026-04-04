@@ -7,6 +7,7 @@ import { type PaymentMethodId } from "@/lib/payment-methods";
 interface CombinedCheckoutButtonProps {
   productSlug: string;
   durationDays?: number;
+  discountCode?: string;
   paymentMethod: PaymentMethodId;
   className?: string;
   children?: React.ReactNode;
@@ -18,6 +19,7 @@ interface CombinedCheckoutButtonProps {
 export function CombinedCheckoutButton({
   productSlug,
   durationDays,
+  discountCode,
   paymentMethod,
   className = "",
   children,
@@ -42,6 +44,7 @@ export function CombinedCheckoutButton({
         body: JSON.stringify({
           productSlug,
           durationDays,
+          discountCode,
           paymentMethod,
         }),
       });

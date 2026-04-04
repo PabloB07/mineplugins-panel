@@ -13,6 +13,7 @@ import {
     User,
     LogOut,
     Server,
+    LifeBuoy,
 } from "lucide-react";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
@@ -37,6 +38,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
         { href: "/dashboard/licenses", label: t("dashboard.yourPlugins"), icon: Key },
         { href: "/dashboard/downloads", label: t("dashboard.downloads"), icon: Download },
         { href: "/dashboard/servers", label: t("admin.servers"), icon: Server },
+        { href: "/dashboard/tickets", label: t("tickets.navLabel"), icon: LifeBuoy },
     ];
 
     const isActive = (path: string) => pathname === path;

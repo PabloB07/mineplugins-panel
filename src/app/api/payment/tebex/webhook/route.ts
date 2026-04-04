@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { processTebexWebhook, verifyTebexWebhookSignature } from "@/lib/tebex";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 export async function POST(request: NextRequest) {
   try {
@@ -62,6 +63,10 @@ export async function POST(request: NextRequest) {
             data: { licenseId: license.id },
           });
         }
+
+        await prisma.$transaction(async (tx) => {
+          await registerDiscountUsageOnCompletedOrder(tx, order.id);
+        });
 
         console.log("Tebex payment completed for order:", order.id);
       },

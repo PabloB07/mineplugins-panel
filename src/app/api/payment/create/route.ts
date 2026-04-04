@@ -12,6 +12,7 @@ interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
   paymentMethod?: "FLOW_CL" | "PAYKU" | "TEBEX" | "PAYPAL";
+  discountCode?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
 
     const body: PaymentCreateRequest = await request.json();
     const productSlug = toOptionalTrimmedString(body?.productSlug, 120);
+    const discountCodeInput = toOptionalTrimmedString(body?.discountCode, 64);
     const durationDays = body?.durationDays === undefined
       ? undefined
       : toSafeInt(body?.durationDays, { defaultValue: 365, min: 1, max: 730 });
@@ -71,17 +73,105 @@ export async function POST(request: NextRequest) {
     const basePriceCLP = product.salePriceCLP || product.priceCLP;
     const basePriceUSD = product.salePriceUSD || product.priceUSD;
 
-    const totalCLP = days === product.defaultDurationDays
+    const subtotalCLP = days === product.defaultDurationDays
       ? basePriceCLP
       : Math.round(basePriceCLP * (days / 365));
-    const totalUSDCents = days === product.defaultDurationDays
+    const subtotalUSDCents = days === product.defaultDurationDays
       ? basePriceUSD
       : Math.round(basePriceUSD * (days / 365));
-    const totalUSD = totalUSDCents / 100;
+    const subtotalUSD = Number((subtotalUSDCents / 100).toFixed(2));
 
+    let discountCodeId: string | null = null;
+    let discountCLP = 0;
+    let discountUSD = 0;
+
+    if (discountCodeInput) {
+      const normalizedCode = discountCodeInput.toUpperCase();
+      const discountCode = await prisma.discountCode.findUnique({
+        where: { code: normalizedCode },
+      });
+
+      if (!discountCode) {
+        return NextResponse.json(
+          { error: "INVALID_DISCOUNT_CODE", message: "Discount code is invalid" },
+          { status: 400 }
+        );
+      }
+
+      if (!discountCode.isActive) {
+        return NextResponse.json(
+          { error: "INACTIVE_DISCOUNT_CODE", message: "Discount code is inactive" },
+          { status: 400 }
+        );
+      }
+
+      const now = new Date();
+      if (discountCode.startsAt && now < discountCode.startsAt) {
+        return NextResponse.json(
+          { error: "DISCOUNT_NOT_STARTED", message: "Discount code is not active yet" },
+          { status: 400 }
+        );
+      }
+
+      if (discountCode.expiresAt && now > discountCode.expiresAt) {
+        return NextResponse.json(
+          { error: "DISCOUNT_EXPIRED", message: "Discount code has expired" },
+          { status: 400 }
+        );
+      }
+
+      if (discountCode.productId && discountCode.productId !== product.id) {
+        return NextResponse.json(
+          { error: "DISCOUNT_PRODUCT_MISMATCH", message: "Discount code is not valid for this product" },
+          { status: 400 }
+        );
+      }
+
+      if (discountCode.minPurchase && subtotalCLP < discountCode.minPurchase) {
+        return NextResponse.json(
+          { error: "MIN_PURCHASE_NOT_REACHED", message: `Minimum purchase is ${discountCode.minPurchase} CLP` },
+          { status: 400 }
+        );
+      }
+
+      if (discountCode.maxUses && discountCode.usedCount >= discountCode.maxUses) {
+        return NextResponse.json(
+          { error: "DISCOUNT_USAGE_LIMIT_REACHED", message: "Discount code reached max usage limit" },
+          { status: 400 }
+        );
+      }
+
+      if (discountCode.maxUsesPerUser) {
+        const userUsageCount = await prisma.discountUsage.count({
+          where: {
+            discountCodeId: discountCode.id,
+            userId: user.id,
+          },
+        });
+
+        if (userUsageCount >= discountCode.maxUsesPerUser) {
+          return NextResponse.json(
+            { error: "DISCOUNT_USER_LIMIT_REACHED", message: "You already reached max uses for this discount code" },
+            { status: 400 }
+          );
+        }
+      }
+
+      discountCodeId = discountCode.id;
+
+      if (discountCode.type === "PERCENTAGE") {
+        discountCLP = Math.round((subtotalCLP * discountCode.value) / 100);
+      } else {
+        discountCLP = discountCode.value;
+      }
+
+      discountCLP = Math.max(0, Math.min(Math.round(discountCLP), Math.round(subtotalCLP)));
+      discountUSD = Number((subtotalUSD * (discountCLP / Math.max(subtotalCLP, 1))).toFixed(2));
+    }
+
+    const totalCLP = Math.max(0, subtotalCLP - discountCLP);
+    const totalUSD = Number(Math.max(0, subtotalUSD - discountUSD).toFixed(2));
     const total = Math.round(totalCLP);
-    const subtotalCLP = totalCLP;
-    const subtotalUSD = totalUSD;
 
     const orderNumber =
       paymentMethodId === "TEBEX"
@@ -97,21 +187,25 @@ export async function POST(request: NextRequest) {
         status: "PENDING",
         paymentMethod,
         currency: "CLP",
-        subtotal: total,
+        subtotal: Math.round(subtotalCLP),
+        discount: Math.round(discountCLP),
         total,
-        subtotalCLP,
+        subtotalCLP: Number(subtotalCLP.toFixed(2)),
         subtotalUSD,
+        discountCLP: Number(discountCLP.toFixed(2)),
+        discountUSD,
         totalCLP,
         totalUSD,
+        discountCodeId,
         customerEmail: user.email,
         customerName: user.name,
         items: {
           create: {
             productId: product.id,
             currency: "CLP",
-            unitPrice: total,
-            unitPriceCLP: totalCLP,
-            unitPriceUSD: totalUSD,
+            unitPrice: Math.round(subtotalCLP),
+            unitPriceCLP: Number(subtotalCLP.toFixed(2)),
+            unitPriceUSD: subtotalUSD,
             quantity: 1,
             durationDays: days,
           },

@@ -7,6 +7,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 /**
  * Webhook endpoint for Payku payment notifications
@@ -128,6 +129,8 @@ async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
         paidAt: orderRecord.paidAt || new Date(),
       },
     });
+
+    await registerDiscountUsageOnCompletedOrder(tx, orderRecord.id);
   });
 }
 

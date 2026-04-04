@@ -17,6 +17,9 @@ import {
     X,
     User,
     Server,
+    Ticket,
+    Download,
+    Tag,
 } from "lucide-react";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
@@ -41,9 +44,12 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
         { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
         { href: "/admin/servers", label: t("admin.servers"), icon: Server },
         { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
+        { href: "/admin/discounts", label: t("admin.discounts") || "Descuentos", icon: Tag },
+        { href: "/admin/tickets", label: t("admin.tickets") || "Tickets", icon: Ticket },
         { href: "/admin/users", label: t("admin.users"), icon: Users },
         { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
         { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
+        { href: "/admin/export", label: "Exportar", icon: Download },
     ];
 
     const productsItems = [

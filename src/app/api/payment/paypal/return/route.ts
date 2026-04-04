@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
 import { capturePaypalPayment } from "@/lib/paypal";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 async function handlePaypalReturn(request: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
@@ -102,6 +103,8 @@ async function handlePaypalReturn(request: NextRequest) {
           paidAt: new Date(),
         },
       });
+
+      await registerDiscountUsageOnCompletedOrder(tx, freshOrder.id);
     });
 
     // Find the created license to redirect properly
@@ -140,4 +143,3 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return handlePaypalReturn(request);
 }
-

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getFlowPaymentStatus, FlowPaymentStatusCodes } from "@/lib/flow";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 /**
  * Helper function to get readable status label
@@ -118,6 +119,8 @@ export async function POST(request: NextRequest) {
             paidAt: new Date(),
           },
         });
+
+        await registerDiscountUsageOnCompletedOrder(tx, freshOrder.id);
       });
 
       return NextResponse.json({

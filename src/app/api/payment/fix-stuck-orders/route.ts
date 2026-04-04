@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { getFlowPaymentStatus, FlowPaymentStatusCodes } from "@/lib/flow";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 /**
  * Find and fix stuck orders
@@ -121,6 +122,10 @@ export async function POST(request: NextRequest) {
                 status: "COMPLETED",
                 paidAt: order.paidAt || new Date(),
               },
+            });
+
+            await prisma.$transaction(async (tx) => {
+              await registerDiscountUsageOnCompletedOrder(tx, order.id);
             });
 
             fixedOrders.push({

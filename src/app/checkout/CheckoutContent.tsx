@@ -6,13 +6,12 @@ import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
 import { CombinedCheckoutButton } from "@/components/CombinedCheckoutButton";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { formatUSD, formatCLPValue } from "@/lib/pricing";
 import {
   getAvailablePaymentMethods,
   PaymentMethodId,
 } from "@/lib/payment-methods";
-import { useIcon } from "@/hooks/useIcon";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
+import { ArrowLeft } from "lucide-react";
 
 interface ProductData {
   id: string;
@@ -43,25 +42,92 @@ interface CheckoutClientProps {
   product: ProductData;
 }
 
+interface AppliedDiscount {
+  code: string;
+  type: "PERCENTAGE" | "FIXED";
+  value: number;
+  discountCLP: number;
+}
+
 export function CheckoutContent({ product }: CheckoutClientProps) {
-  const { t, formatPrice } = useTranslation();
+  const { t } = useTranslation();
   const availableMethods = getAvailablePaymentMethods();
-  const Zap = useIcon("Zap");
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(
     availableMethods.length > 0 ? availableMethods[0].id : "PAYKU"
   );
+  const [discountCodeInput, setDiscountCodeInput] = useState("");
+  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
+  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(null);
 
   const latestVersion = product.versions[0];
   const displayPriceUSD = product.salePriceUSD || product.priceUSD;
   const displayPriceCLP = product.salePriceCLP || product.priceCLP;
   const hasDiscount = !!product.salePriceUSD || !!product.salePriceCLP;
+  const totalCLPWithDiscount = Math.max(0, Math.round(displayPriceCLP - (appliedDiscount?.discountCLP || 0)));
+
+  const applyDiscount = async () => {
+    const normalizedCode = discountCodeInput.trim().toUpperCase();
+    if (!normalizedCode) {
+      setDiscountError(t("checkout.discountCodeRequired"));
+      return;
+    }
+
+    setIsApplyingDiscount(true);
+    setDiscountError(null);
+
+    try {
+      const params = new URLSearchParams({
+        code: normalizedCode,
+        productId: product.id,
+        subtotal: String(Math.round(displayPriceCLP)),
+      });
+
+      const res = await fetch(`/api/discounts?${params.toString()}`);
+      const data = await res.json();
+
+      if (!res.ok || !data?.valid || !data?.discount) {
+        const errorKey = String(data?.error || "");
+        const errorMap: Record<string, string> = {
+          MISSING_CODE: "checkout.discountErrors.missingCode",
+          INVALID_CODE: "checkout.discountErrors.invalidCode",
+          INACTIVE_CODE: "checkout.discountErrors.inactiveCode",
+          EXPIRED_CODE: "checkout.discountErrors.expiredCode",
+          NOT_STARTED: "checkout.discountErrors.notStarted",
+          LIMIT_REACHED: "checkout.discountErrors.limitReached",
+          INVALID_PRODUCT: "checkout.discountErrors.invalidProduct",
+          USER_LIMIT_REACHED: "checkout.discountErrors.userLimitReached",
+          MIN_PURCHASE_NOT_REACHED: "checkout.discountErrors.minPurchaseNotReached",
+        };
+        throw new Error(errorMap[errorKey] ? t(errorMap[errorKey]) : (data?.message || t("checkout.discountErrors.invalidCode")));
+      }
+
+      const discountValue = Number(data.discount.value || 0);
+      const discountCLP =
+        data.discount.type === "PERCENTAGE"
+          ? Math.round((displayPriceCLP * discountValue) / 100)
+          : discountValue;
+
+      setAppliedDiscount({
+        code: data.discount.code,
+        type: data.discount.type,
+        value: discountValue,
+        discountCLP: Math.max(0, Math.min(Math.round(discountCLP), Math.round(displayPriceCLP))),
+      });
+    } catch (error) {
+      setAppliedDiscount(null);
+      setDiscountError(error instanceof Error ? error.message : t("checkout.discountApplyFailed"));
+    } finally {
+      setIsApplyingDiscount(false);
+    }
+  };
 
   if (availableMethods.length === 0) {
     return (
       <div className="space-y-6">
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <p className="text-center text-red-400">
-            No payment methods configured. Please contact support.
+            {t("checkout.noPaymentMethods")}
           </p>
         </div>
       </div>
@@ -226,8 +292,40 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
       </div>
 
       <div className="pt-1">
+        <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0f0f0f] p-4">
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-400">
+            {t("checkout.discountCodeLabel")}
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={discountCodeInput}
+              onChange={(e) => setDiscountCodeInput(e.target.value.toUpperCase())}
+              placeholder={t("checkout.discountCodePlaceholder")}
+              className="w-full rounded-lg border border-[#2f2f2f] bg-[#111] px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+            />
+            <button
+              type="button"
+              onClick={applyDiscount}
+              disabled={isApplyingDiscount}
+              className="rounded-lg bg-[#1f6feb] px-4 py-2 text-sm font-medium text-white hover:bg-[#1a5fcc] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isApplyingDiscount ? t("checkout.validatingDiscount") : t("checkout.applyDiscount")}
+            </button>
+          </div>
+          {appliedDiscount ? (
+            <p className="mt-2 text-xs text-green-400">
+              {t("checkout.discountCodeApplied")}: {appliedDiscount.code} (-{appliedDiscount.discountCLP.toLocaleString("es-CL")} CLP)
+            </p>
+          ) : null}
+          {discountError ? <p className="mt-2 text-xs text-red-400">{discountError}</p> : null}
+          <p className="mt-3 text-xs text-gray-500">
+            {t("checkout.finalTotal")}: {totalCLPWithDiscount.toLocaleString("es-CL")} CLP
+          </p>
+        </div>
         <CombinedCheckoutButton
           productSlug={product.slug}
+          discountCode={appliedDiscount?.code}
           paymentMethod={selectedMethod}
           className="mt-1"
         />
@@ -249,8 +347,6 @@ interface CheckoutWrapperProps {
 export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
   const { t } = useTranslation();
   const isAdmin = product.session.role === "ADMIN" || product.session.role === "SUPER_ADMIN";
-  const Zap = useIcon("Zap");
-  const ArrowLeft = useIcon("ArrowLeft");
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">

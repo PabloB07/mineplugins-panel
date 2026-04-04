@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { verifyPaypalWebhookSignature } from "@/lib/paypal";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 async function activateOrderFromPaypal(params: {
   orderNumber: string;
@@ -82,6 +83,8 @@ async function activateOrderFromPaypal(params: {
       where: { id: freshOrder.id },
       data: { status: OrderStatus.COMPLETED, paidAt: new Date() },
     });
+
+    await registerDiscountUsageOnCompletedOrder(tx, freshOrder.id);
   });
 }
 
@@ -131,4 +134,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "WEBHOOK_ERROR" }, { status: 500 });
   }
 }
-

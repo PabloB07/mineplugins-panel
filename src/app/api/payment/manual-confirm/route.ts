@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { UserRole } from "@prisma/client";
 import { getFlowPaymentStatus, FlowPaymentStatusCodes } from "@/lib/flow";
+import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 /**
  * Manual payment confirmation / debug endpoint
@@ -175,6 +176,10 @@ export async function POST(request: NextRequest) {
         status: "COMPLETED",
         paidAt: order.paidAt || new Date(),
       },
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await registerDiscountUsageOnCompletedOrder(tx, order.id);
     });
 
     console.log(`Manually completed order ${order.orderNumber} with ${createdLicenses.length} licenses`);
