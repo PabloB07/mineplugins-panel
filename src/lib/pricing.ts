@@ -6,47 +6,12 @@ export const EXCHANGE_RATES = {
   USD_TO_CLP: 920,
 };
 
-const RATE_CACHE_KEY = 'exchange_rates_cache';
-const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
-
-interface CachedRates {
-  rates: typeof EXCHANGE_RATES;
-  timestamp: number;
-}
-
-let liveRates: typeof EXCHANGE_RATES = EXCHANGE_RATES;
-
-export async function refreshExchangeRates(): Promise<void> {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const cached = localStorage.getItem(RATE_CACHE_KEY);
-    if (cached) {
-      const parsed: CachedRates = JSON.parse(cached);
-      if (Date.now() - parsed.timestamp < CACHE_DURATION) {
-        liveRates = parsed.rates;
-        return;
-      }
-    }
-    
-    const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,CAD,CLP');
-    if (!response.ok) return;
-    
-    const data = await response.json();
-    liveRates = {
-      USD_TO_EUR: data.rates.EUR || 0.92,
-      USD_TO_CAD: data.rates.CAD || 1.36,
-      USD_TO_CLP: data.rates.CLP || 920,
-    };
-    
-    localStorage.setItem(RATE_CACHE_KEY, JSON.stringify({ rates: liveRates, timestamp: Date.now() }));
-  } catch {
-    // Keep default rates on error
-  }
-}
-
 export function getExchangeRates(): typeof EXCHANGE_RATES {
-  return liveRates;
+  return EXCHANGE_RATES;
+}
+
+export function refreshExchangeRates(): void {
+  // Keep default rates - no external API
 }
 
 export function formatUSD(dollars: number): string {

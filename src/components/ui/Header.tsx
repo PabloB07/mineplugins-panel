@@ -91,7 +91,11 @@ export default function Header() {
                     </div>
                   </div>
                   {session.user?.image ? (
-                    <img src={session.user.image} alt="Profile" className="w-9 h-9 rounded-full border-2 border-green-500/30 hover:border-green-500/50 transition-colors" />
+                    <img 
+                      src={session.user.image} 
+                      alt="Profile" 
+                      className="w-9 h-9 rounded-full border-2 border-green-500/30 hover:border-green-500/50 transition-colors"
+                    />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-gray-400">
                       <User className="w-4 h-4" />
