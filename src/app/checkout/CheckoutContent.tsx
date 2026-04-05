@@ -50,7 +50,7 @@ interface AppliedDiscount {
 }
 
 export function CheckoutContent({ product }: CheckoutClientProps) {
-  const { t } = useTranslation();
+  const { t, formatPrice } = useTranslation();
   const availableMethods = getAvailablePaymentMethods();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(
     availableMethods.length > 0 ? availableMethods[0].id : "PAYKU"
@@ -64,7 +64,11 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
   const displayPriceUSD = product.salePriceUSD || product.priceUSD;
   const displayPriceCLP = product.salePriceCLP || product.priceCLP;
   const hasDiscount = !!product.salePriceUSD || !!product.salePriceCLP;
-  const totalCLPWithDiscount = Math.max(0, Math.round(displayPriceCLP - (appliedDiscount?.discountCLP || 0)));
+  const appliedDiscountCLP = appliedDiscount?.discountCLP || 0;
+  const appliedDiscountUSD =
+    displayPriceCLP > 0 ? (displayPriceUSD * appliedDiscountCLP) / displayPriceCLP : 0;
+  const totalCLPWithDiscount = Math.max(0, displayPriceCLP - appliedDiscountCLP);
+  const totalUSDWithDiscount = Math.max(0, displayPriceUSD - appliedDiscountUSD);
 
   const applyDiscount = async () => {
     const normalizedCode = discountCodeInput.trim().toUpperCase();
@@ -315,12 +319,12 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
           </div>
           {appliedDiscount ? (
             <p className="mt-2 text-xs text-green-400">
-              {t("checkout.discountCodeApplied")}: {appliedDiscount.code} (-{appliedDiscount.discountCLP.toLocaleString("es-CL")} CLP)
+              {t("checkout.discountCodeApplied")}: {appliedDiscount.code} (-{formatPrice(appliedDiscountUSD, appliedDiscountCLP)})
             </p>
           ) : null}
           {discountError ? <p className="mt-2 text-xs text-red-400">{discountError}</p> : null}
           <p className="mt-3 text-xs text-gray-500">
-            {t("checkout.finalTotal")}: {totalCLPWithDiscount.toLocaleString("es-CL")} CLP
+            {t("checkout.finalTotal")}: {formatPrice(totalUSDWithDiscount, totalCLPWithDiscount)}
           </p>
         </div>
         <CombinedCheckoutButton
@@ -424,9 +428,17 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
                   <span className="text-gray-400">{t("checkout.activations")}</span>
                   <span className="text-white">{product.maxActivations}</span>
                 </div>
+                {appliedDiscount ? (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">{t("checkout.discountApplied")}</span>
+                    <span className="text-green-400">-{formatPrice(appliedDiscountUSD, appliedDiscountCLP)}</span>
+                  </div>
+                ) : null}
                 <div className="border-t border-[#222] pt-3 flex justify-between items-center">
                   <span className="text-gray-300 font-medium">{t("checkout.total")}</span>
-                  <span className="text-green-400 font-bold text-lg">${Math.round(product.salePriceUSD || product.priceUSD).toLocaleString()} USD</span>
+                  <span className="text-green-400 font-bold text-lg">
+                    {formatPrice(totalUSDWithDiscount, totalCLPWithDiscount)}
+                  </span>
                 </div>
               </div>
             </div>
