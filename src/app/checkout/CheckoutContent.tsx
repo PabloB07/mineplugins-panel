@@ -349,8 +349,10 @@ interface CheckoutWrapperProps {
 }
 
 export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
-  const { t } = useTranslation();
+  const { t, formatPrice } = useTranslation();
   const isAdmin = product.session.role === "ADMIN" || product.session.role === "SUPER_ADMIN";
+  const displayPriceUSD = product.salePriceUSD || product.priceUSD;
+  const displayPriceCLP = product.salePriceCLP || product.priceCLP;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-hidden">
@@ -428,16 +430,10 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
                   <span className="text-gray-400">{t("checkout.activations")}</span>
                   <span className="text-white">{product.maxActivations}</span>
                 </div>
-                {appliedDiscount ? (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">{t("checkout.discountApplied")}</span>
-                    <span className="text-green-400">-{formatPrice(appliedDiscountUSD, appliedDiscountCLP)}</span>
-                  </div>
-                ) : null}
                 <div className="border-t border-[#222] pt-3 flex justify-between items-center">
                   <span className="text-gray-300 font-medium">{t("checkout.total")}</span>
                   <span className="text-green-400 font-bold text-lg">
-                    {formatPrice(totalUSDWithDiscount, totalCLPWithDiscount)}
+                    {formatPrice(displayPriceUSD, displayPriceCLP)}
                   </span>
                 </div>
               </div>
