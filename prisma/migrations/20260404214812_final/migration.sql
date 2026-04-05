@@ -13,6 +13,18 @@ CREATE TYPE "PaymentMethod" AS ENUM ('FLOW_CL', 'PAYKU', 'TEBEX', 'PAYPAL', 'FRE
 -- CreateEnum
 CREATE TYPE "GatewayEnvironment" AS ENUM ('SANDBOX', 'PRODUCTION');
 
+-- CreateEnum
+CREATE TYPE "DiscountType" AS ENUM ('PERCENTAGE', 'FIXED');
+
+-- CreateEnum
+CREATE TYPE "TicketStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'WAITING_REPLY', 'RESOLVED', 'CLOSED');
+
+-- CreateEnum
+CREATE TYPE "TicketPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+
+-- CreateEnum
+CREATE TYPE "TicketCategory" AS ENUM ('GENERAL', 'LICENSE', 'PAYMENT', 'TECHNICAL', 'REFUND', 'BUG_REPORT');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -69,6 +81,7 @@ CREATE TABLE "Product" (
     "slug" TEXT NOT NULL,
     "description" TEXT,
     "image" TEXT,
+    "icon" TEXT,
     "price" INTEGER NOT NULL,
     "salePrice" INTEGER,
     "defaultDurationDays" INTEGER NOT NULL DEFAULT 365,
@@ -80,6 +93,7 @@ CREATE TABLE "Product" (
     "priceCLP" DOUBLE PRECISION NOT NULL,
     "salePriceUSD" DOUBLE PRECISION,
     "salePriceCLP" DOUBLE PRECISION,
+    "apiToken" TEXT,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -91,6 +105,7 @@ CREATE TABLE "PluginVersion" (
     "version" TEXT NOT NULL,
     "changelog" TEXT,
     "downloadUrl" TEXT NOT NULL,
+    "fileName" TEXT,
     "fileSize" INTEGER NOT NULL,
     "minJavaVersion" TEXT,
     "minMcVersion" TEXT,
@@ -172,6 +187,7 @@ CREATE TABLE "Order" (
     "discountCLP" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "totalUSD" DOUBLE PRECISION,
     "totalCLP" DOUBLE PRECISION NOT NULL,
+    "discountCodeId" TEXT,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -286,6 +302,85 @@ CREATE TABLE "PaymentGatewayConfig" (
     CONSTRAINT "PaymentGatewayConfig_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "ServerStatus" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "ip" TEXT NOT NULL,
+    "port" INTEGER NOT NULL DEFAULT 25565,
+    "isOnline" BOOLEAN NOT NULL DEFAULT false,
+    "lastChecked" TIMESTAMP(3),
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "isPublic" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ServerStatus_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DiscountCode" (
+    "id" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "type" "DiscountType" NOT NULL DEFAULT 'PERCENTAGE',
+    "value" INTEGER NOT NULL,
+    "minPurchase" INTEGER,
+    "maxUses" INTEGER,
+    "usedCount" INTEGER NOT NULL DEFAULT 0,
+    "maxUsesPerUser" INTEGER,
+    "productId" TEXT,
+    "startsAt" TIMESTAMP(3),
+    "expiresAt" TIMESTAMP(3),
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DiscountCode_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DiscountUsage" (
+    "id" TEXT NOT NULL,
+    "discountCodeId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "discountAmount" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "DiscountUsage_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SupportTicket" (
+    "id" TEXT NOT NULL,
+    "ticketNumber" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "status" "TicketStatus" NOT NULL DEFAULT 'OPEN',
+    "priority" "TicketPriority" NOT NULL DEFAULT 'MEDIUM',
+    "category" "TicketCategory" NOT NULL DEFAULT 'GENERAL',
+    "assignedToId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "closedAt" TIMESTAMP(3),
+
+    CONSTRAINT "SupportTicket_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SupportMessage" (
+    "id" TEXT NOT NULL,
+    "ticketId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
+    "isInternal" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SupportMessage_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -308,7 +403,13 @@ CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationTok
 CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Product_apiToken_key" ON "Product"("apiToken");
+
+-- CreateIndex
 CREATE INDEX "Product_slug_idx" ON "Product"("slug");
+
+-- CreateIndex
+CREATE INDEX "Product_apiToken_idx" ON "Product"("apiToken");
 
 -- CreateIndex
 CREATE INDEX "PluginVersion_productId_isLatest_idx" ON "PluginVersion"("productId", "isLatest");
@@ -379,6 +480,45 @@ CREATE UNIQUE INDEX "AnalyticsSummary_date_key" ON "AnalyticsSummary"("date");
 -- CreateIndex
 CREATE INDEX "AnalyticsSummary_date_idx" ON "AnalyticsSummary"("date");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "ServerStatus_ip_key" ON "ServerStatus"("ip");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DiscountCode_code_key" ON "DiscountCode"("code");
+
+-- CreateIndex
+CREATE INDEX "DiscountCode_code_idx" ON "DiscountCode"("code");
+
+-- CreateIndex
+CREATE INDEX "DiscountCode_productId_idx" ON "DiscountCode"("productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DiscountUsage_orderId_key" ON "DiscountUsage"("orderId");
+
+-- CreateIndex
+CREATE INDEX "DiscountUsage_discountCodeId_idx" ON "DiscountUsage"("discountCodeId");
+
+-- CreateIndex
+CREATE INDEX "DiscountUsage_userId_idx" ON "DiscountUsage"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SupportTicket_ticketNumber_key" ON "SupportTicket"("ticketNumber");
+
+-- CreateIndex
+CREATE INDEX "SupportTicket_ticketNumber_idx" ON "SupportTicket"("ticketNumber");
+
+-- CreateIndex
+CREATE INDEX "SupportTicket_userId_idx" ON "SupportTicket"("userId");
+
+-- CreateIndex
+CREATE INDEX "SupportTicket_status_idx" ON "SupportTicket"("status");
+
+-- CreateIndex
+CREATE INDEX "SupportMessage_ticketId_idx" ON "SupportMessage"("ticketId");
+
+-- CreateIndex
+CREATE INDEX "SupportMessage_userId_idx" ON "SupportMessage"("userId");
+
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -399,6 +539,9 @@ ALTER TABLE "LicenseActivation" ADD CONSTRAINT "LicenseActivation_licenseId_fkey
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_discountCodeId_fkey" FOREIGN KEY ("discountCodeId") REFERENCES "DiscountCode"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_licenseId_fkey" FOREIGN KEY ("licenseId") REFERENCES "License"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -426,3 +569,28 @@ ALTER TABLE "admin_activity_logs" ADD CONSTRAINT "admin_activity_logs_adminId_fk
 
 -- AddForeignKey
 ALTER TABLE "admin_activity_logs" ADD CONSTRAINT "admin_activity_logs_targetUserId_fkey" FOREIGN KEY ("targetUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DiscountCode" ADD CONSTRAINT "DiscountCode_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DiscountUsage" ADD CONSTRAINT "DiscountUsage_discountCodeId_fkey" FOREIGN KEY ("discountCodeId") REFERENCES "DiscountCode"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DiscountUsage" ADD CONSTRAINT "DiscountUsage_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DiscountUsage" ADD CONSTRAINT "DiscountUsage_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SupportMessage" ADD CONSTRAINT "SupportMessage_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "SupportTicket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SupportMessage" ADD CONSTRAINT "SupportMessage_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
