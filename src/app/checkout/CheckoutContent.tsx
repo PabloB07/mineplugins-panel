@@ -47,10 +47,11 @@ interface AppliedDiscount {
   type: "PERCENTAGE" | "FIXED";
   value: number;
   discountCLP: number;
+  discountUSD: number;
 }
 
 export function CheckoutContent({ product }: CheckoutClientProps) {
-  const { t, formatPrice } = useTranslation();
+  const { t, formatPrice, formatPriceValue, currency } = useTranslation();
   const availableMethods = getAvailablePaymentMethods();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(
     availableMethods.length > 0 ? availableMethods[0].id : "PAYKU"
@@ -65,8 +66,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
   const displayPriceCLP = product.salePriceCLP || product.priceCLP;
   const hasDiscount = !!product.salePriceUSD || !!product.salePriceCLP;
   const appliedDiscountCLP = appliedDiscount?.discountCLP || 0;
-  const appliedDiscountUSD =
-    displayPriceCLP > 0 ? (displayPriceUSD * appliedDiscountCLP) / displayPriceCLP : 0;
+  const appliedDiscountUSD = appliedDiscount?.discountUSD || 0;
   const totalCLPWithDiscount = Math.max(0, displayPriceCLP - appliedDiscountCLP);
   const totalUSDWithDiscount = Math.max(0, displayPriceUSD - appliedDiscountUSD);
 
@@ -84,7 +84,8 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
       const params = new URLSearchParams({
         code: normalizedCode,
         productId: product.id,
-        subtotal: String(Math.round(displayPriceCLP)),
+        currency,
+        subtotal: String(formatPriceValue(displayPriceUSD, displayPriceCLP).value),
       });
 
       const res = await fetch(`/api/discounts?${params.toString()}`);
@@ -107,16 +108,13 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
       }
 
       const discountValue = Number(data.discount.value || 0);
-      const discountCLP =
-        data.discount.type === "PERCENTAGE"
-          ? Math.round((displayPriceCLP * discountValue) / 100)
-          : discountValue;
 
       setAppliedDiscount({
         code: data.discount.code,
         type: data.discount.type,
         value: discountValue,
-        discountCLP: Math.max(0, Math.min(Math.round(discountCLP), Math.round(displayPriceCLP))),
+        discountCLP: Math.max(0, Math.min(Math.round(data.amounts?.discountCLP || 0), Math.round(displayPriceCLP))),
+        discountUSD: Math.max(0, Math.min(Number(data.amounts?.discountUSD || 0), displayPriceUSD)),
       });
     } catch (error) {
       setAppliedDiscount(null);
@@ -243,7 +241,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
                 <span className="text-green-400 font-medium text-sm">{t("checkout.discountApplied")}</span>
               </div>
               <span className="text-green-300 font-bold text-sm bg-green-500/20 px-3 py-1 rounded-lg">
-                -${Math.round(product.priceUSD - displayPriceUSD)} USD
+                -{formatPrice(product.priceUSD - displayPriceUSD, product.priceCLP - displayPriceCLP)}
               </span>
             </div>
           )}

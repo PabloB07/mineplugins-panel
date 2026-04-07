@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import { getDiscountCurrency } from "@/lib/discount-pricing";
 
 export async function GET(
   request: NextRequest,
@@ -65,7 +66,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { code, type, value, minPurchase, maxUses, maxUsesPerUser, productId, startsAt, expiresAt, isActive } = body;
+    const { code, type, value, currency, minPurchase, maxUses, maxUsesPerUser, productId, startsAt, expiresAt, isActive } = body;
 
     const existing = await prisma.discountCode.findUnique({ where: { id } });
     if (!existing) {
@@ -87,6 +88,7 @@ export async function PATCH(
         ...(code && { code: code.toUpperCase() }),
         ...(type && { type }),
         ...(value !== undefined && { value }),
+        ...(currency !== undefined && { currency: getDiscountCurrency(currency) }),
         ...(minPurchase !== undefined && { minPurchase }),
         ...(maxUses !== undefined && { maxUses }),
         ...(maxUsesPerUser !== undefined && { maxUsesPerUser }),

@@ -379,6 +379,7 @@ model DiscountCode {
   code              String            @unique
   type              DiscountType      @default(PERCENTAGE)
   value             Int
+  currency          String            @default("CLP") @db.VarChar(3)
   minPurchase       Int?
   maxUses           Int?
   usedCount         Int               @default(0)

@@ -3,12 +3,20 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Percent, Tag, Ticket, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
+import {
+  formatCurrencyAmount,
+  getDiscountCurrency,
+  getDiscountValueInOwnCurrency,
+  getMinPurchaseInOwnCurrency,
+  normalizeAmountForStorage,
+} from "@/lib/discount-pricing";
 
 interface DiscountCode {
   id: string;
   code: string;
   type: "PERCENTAGE" | "FIXED";
   value: number;
+  currency: "CLP" | "USD" | "EUR" | "CAD";
   minPurchase: number | null;
   maxUses: number | null;
   usedCount: number;
@@ -22,10 +30,24 @@ interface DiscountCode {
   _count: { usages: number; orders: number };
 }
 
-const initialForm = {
+type DiscountFormState = {
+  code: string;
+  type: "PERCENTAGE" | "FIXED";
+  currency: "CLP" | "USD" | "EUR" | "CAD";
+  value: string;
+  minPurchase: string;
+  maxUses: string;
+  maxUsesPerUser: string;
+  productId: string;
+  startsAt: string;
+  expiresAt: string;
+};
+
+const initialForm: DiscountFormState = {
   code: "",
   type: "PERCENTAGE",
-  value: 0,
+  currency: "CLP",
+  value: "",
   minPurchase: "",
   maxUses: "",
   maxUsesPerUser: "",
@@ -56,10 +78,11 @@ export default function AdminDiscountsPage() {
     const total = codes.length;
     const active = codes.filter((c) => c.isActive).length;
     const totalUsages = codes.reduce((acc, c) => acc + c.usedCount, 0);
+    const percentageCodes = codes.filter((c) => c.type === "PERCENTAGE");
     const avgValue =
-      codes.length === 0
+      percentageCodes.length === 0
         ? 0
-        : Math.round(codes.reduce((acc, c) => acc + c.value, 0) / codes.length);
+        : Math.round(percentageCodes.reduce((acc, c) => acc + c.value, 0) / percentageCodes.length);
     return { total, active, totalUsages, avgValue };
   }, [codes]);
 
@@ -87,8 +110,16 @@ export default function AdminDiscountsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...form,
-          minPurchase: form.minPurchase ? parseInt(form.minPurchase, 10) : null,
+          code: form.code,
+          type: form.type,
+          currency: form.currency,
+          value:
+            form.type === "PERCENTAGE"
+              ? Math.round(Number(form.value || 0))
+              : normalizeAmountForStorage(Number(form.value || 0), form.currency),
+          minPurchase: form.minPurchase
+            ? normalizeAmountForStorage(Number(form.minPurchase), form.currency)
+            : null,
           maxUses: form.maxUses ? parseInt(form.maxUses, 10) : null,
           maxUsesPerUser: form.maxUsesPerUser ? parseInt(form.maxUsesPerUser, 10) : null,
           productId: form.productId || null,
@@ -146,7 +177,7 @@ export default function AdminDiscountsPage() {
     {
       key: "avg",
       label: t("discountsPage.averageValue"),
-      value: stats.avgValue,
+      value: `${stats.avgValue}%`,
       icon: Percent,
       accent: "text-violet-400 border-violet-500/30 bg-violet-500/10",
     },
@@ -219,11 +250,16 @@ export default function AdminDiscountsPage() {
                     <p className="mt-1 text-xs text-gray-500">
                       {code.type === "PERCENTAGE"
                         ? `${code.value}% ${t("discountsPage.discountTypePercentage")}`
-                        : `${code.value.toLocaleString("es-CL")} CLP ${t("discountsPage.discountTypeFixed")}`}
+                        : `${formatCurrencyAmount(getDiscountValueInOwnCurrency(code), getDiscountCurrency(code.currency))} ${t("discountsPage.discountTypeFixed")}`}
                     </p>
                     <p className="mt-1 text-xs text-gray-500">
                       {t("discountsPage.product")}: {code.product?.name || t("discountsPage.allProducts")}
                     </p>
+                    {code.minPurchase ? (
+                      <p className="mt-1 text-xs text-gray-500">
+                        Min: {formatCurrencyAmount(getMinPurchaseInOwnCurrency(code) || 0, getDiscountCurrency(code.currency))}
+                      </p>
+                    ) : null}
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -284,7 +320,8 @@ export default function AdminDiscountsPage() {
                   <input
                     type="number"
                     value={form.value}
-                    onChange={(e) => setForm({ ...form, value: parseInt(e.target.value || "0", 10) })}
+                    step={form.type === "FIXED" && form.currency !== "CLP" ? "0.01" : "1"}
+                    onChange={(e) => setForm({ ...form, value: e.target.value })}
                     className="mt-1 w-full rounded-lg border border-[#333] bg-[#0a0a0a] px-3 py-2 text-white"
                     required
                   />
@@ -295,13 +332,28 @@ export default function AdminDiscountsPage() {
                   {t("discountsPage.type")}
                   <select
                     value={form.type}
-                    onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    onChange={(e) => setForm({ ...form, type: e.target.value as "PERCENTAGE" | "FIXED" })}
                     className="mt-1 w-full rounded-lg border border-[#333] bg-[#0a0a0a] px-3 py-2 text-white"
                   >
                     <option value="PERCENTAGE">{t("discountsPage.discountTypePercentage")}</option>
                     <option value="FIXED">{t("discountsPage.discountTypeFixed")}</option>
                   </select>
                 </label>
+                <label className="text-sm text-gray-300">
+                  Currency
+                  <select
+                    value={form.currency}
+                    onChange={(e) => setForm({ ...form, currency: e.target.value as "CLP" | "USD" | "EUR" | "CAD" })}
+                    className="mt-1 w-full rounded-lg border border-[#333] bg-[#0a0a0a] px-3 py-2 text-white"
+                  >
+                    <option value="CLP">CLP</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="CAD">CAD</option>
+                  </select>
+                </label>
+              </div>
+              <div className="grid gap-4 md:grid-cols-1">
                 <label className="text-sm text-gray-300">
                   {t("discountsPage.productId")}
                   <input
@@ -337,6 +389,7 @@ export default function AdminDiscountsPage() {
                     type="number"
                     value={form.minPurchase}
                     onChange={(e) => setForm({ ...form, minPurchase: e.target.value })}
+                    step={form.currency !== "CLP" ? "0.01" : "1"}
                     className="mt-1 w-full rounded-lg border border-[#333] bg-[#0a0a0a] px-3 py-2 text-white"
                   />
                 </label>

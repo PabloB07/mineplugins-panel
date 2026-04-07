@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CreditCard, Loader2 } from "lucide-react";
 import { type PaymentMethodId } from "@/lib/payment-methods";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface CombinedCheckoutButtonProps {
   productSlug: string;
@@ -27,6 +28,7 @@ export function CombinedCheckoutButton({
   onSuccess,
   onError,
 }: CombinedCheckoutButtonProps) {
+  const { currency } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,6 +48,7 @@ export function CombinedCheckoutButton({
           durationDays,
           discountCode,
           paymentMethod,
+          currency,
         }),
       });
 

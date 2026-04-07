@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-import { toSafeInt } from "@/lib/security";
+import {
+  calculateDiscountAmounts,
+  convertCurrencyAmount,
+  formatCurrencyAmount,
+  getDiscountCurrency,
+  getDiscountValueInOwnCurrency,
+  getMinPurchaseInOwnCurrency,
+  isSupportedCurrency,
+} from "@/lib/discount-pricing";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,11 +18,9 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get("code");
     const productId = searchParams.get("productId");
-    const subtotal = toSafeInt(searchParams.get("subtotal"), {
-      defaultValue: 0,
-      min: 0,
-      max: 1_000_000_000,
-    });
+    const currencyParam = searchParams.get("currency");
+    const subtotal = Number(searchParams.get("subtotal") || 0);
+    const currency = isSupportedCurrency(currencyParam) ? currencyParam : "CLP";
 
     if (!code) {
       return NextResponse.json(
@@ -70,9 +76,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (discount.minPurchase && subtotal > 0 && subtotal < discount.minPurchase) {
+    const discountCurrency = getDiscountCurrency(discount.currency);
+    const subtotalInDiscountCurrency = convertCurrencyAmount(
+      Number.isFinite(subtotal) ? subtotal : 0,
+      currency,
+      discountCurrency
+    );
+    const minPurchaseAmount = getMinPurchaseInOwnCurrency(discount);
+
+    if (minPurchaseAmount && subtotalInDiscountCurrency > 0 && subtotalInDiscountCurrency < minPurchaseAmount) {
       return NextResponse.json(
-        { error: "MIN_PURCHASE_NOT_REACHED", message: `Minimum purchase is ${discount.minPurchase} CLP` },
+        {
+          error: "MIN_PURCHASE_NOT_REACHED",
+          message: `Minimum purchase is ${formatCurrencyAmount(minPurchaseAmount, discountCurrency)}`,
+        },
         { status: 400 }
       );
     }
@@ -100,12 +117,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const product = productId
+      ? await prisma.product.findUnique({
+          where: { id: productId },
+          select: { priceUSD: true, priceCLP: true, salePriceUSD: true, salePriceCLP: true },
+        })
+      : null;
+
+    const subtotalUSD = product
+      ? product.salePriceUSD || product.priceUSD
+      : convertCurrencyAmount(Number.isFinite(subtotal) ? subtotal : 0, currency, "USD");
+    const subtotalCLP = product
+      ? product.salePriceCLP || product.priceCLP
+      : convertCurrencyAmount(Number.isFinite(subtotal) ? subtotal : 0, currency, "CLP");
+    const amounts = calculateDiscountAmounts(discount, subtotalUSD, subtotalCLP);
+
     return NextResponse.json({
       valid: true,
       code: discount.code,
       type: discount.type,
       value: discount.value,
+      currency: discountCurrency,
+      displayValue: getDiscountValueInOwnCurrency(discount),
       minPurchase: discount.minPurchase,
+      minPurchaseDisplay: minPurchaseAmount,
+      minPurchaseFormatted: minPurchaseAmount ? formatCurrencyAmount(minPurchaseAmount, discountCurrency) : null,
+      amounts,
       discount: discount,
     });
   } catch (error) {

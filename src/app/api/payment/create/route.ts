@@ -7,12 +7,20 @@ import { createTebexPayment, generateTebexOrderNumber } from "@/lib/tebex";
 import { createPaypalPayment, generatePaypalOrderNumber } from "@/lib/paypal";
 import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
 import { PaymentMethod } from "@prisma/client";
+import {
+  calculateDiscountAmounts,
+  convertCurrencyAmount,
+  formatCurrencyAmount,
+  getDiscountCurrency,
+  getMinPurchaseInOwnCurrency,
+} from "@/lib/discount-pricing";
 
 interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
   paymentMethod?: "FLOW_CL" | "PAYKU" | "TEBEX" | "PAYPAL";
   discountCode?: string;
+  currency?: "CLP" | "USD" | "EUR" | "CAD";
 }
 
 export async function POST(request: NextRequest) {
@@ -76,10 +84,9 @@ export async function POST(request: NextRequest) {
     const subtotalCLP = days === product.defaultDurationDays
       ? basePriceCLP
       : Math.round(basePriceCLP * (days / 365));
-    const subtotalUSDCents = days === product.defaultDurationDays
+    const subtotalUSD = days === product.defaultDurationDays
       ? basePriceUSD
-      : Math.round(basePriceUSD * (days / 365));
-    const subtotalUSD = Number((subtotalUSDCents / 100).toFixed(2));
+      : Number((basePriceUSD * (days / 365)).toFixed(2));
 
     let discountCodeId: string | null = null;
     let discountCLP = 0;
@@ -127,11 +134,23 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (discountCode.minPurchase && subtotalCLP < discountCode.minPurchase) {
-        return NextResponse.json(
-          { error: "MIN_PURCHASE_NOT_REACHED", message: `Minimum purchase is ${discountCode.minPurchase} CLP` },
-          { status: 400 }
-        );
+      const minPurchaseAmount = getMinPurchaseInOwnCurrency(discountCode);
+      if (minPurchaseAmount) {
+        const minPurchaseCurrency = getDiscountCurrency(discountCode.currency);
+        const subtotalInDiscountCurrency =
+          minPurchaseCurrency === "CLP"
+            ? subtotalCLP
+            : convertCurrencyAmount(subtotalUSD, "USD", minPurchaseCurrency);
+
+        if (subtotalInDiscountCurrency < minPurchaseAmount) {
+          return NextResponse.json(
+            {
+              error: "MIN_PURCHASE_NOT_REACHED",
+              message: `Minimum purchase is ${formatCurrencyAmount(minPurchaseAmount, minPurchaseCurrency)}`,
+            },
+            { status: 400 }
+          );
+        }
       }
 
       if (discountCode.maxUses && discountCode.usedCount >= discountCode.maxUses) {
@@ -159,19 +178,17 @@ export async function POST(request: NextRequest) {
 
       discountCodeId = discountCode.id;
 
-      if (discountCode.type === "PERCENTAGE") {
-        discountCLP = Math.round((subtotalCLP * discountCode.value) / 100);
-      } else {
-        discountCLP = discountCode.value;
-      }
-
-      discountCLP = Math.max(0, Math.min(Math.round(discountCLP), Math.round(subtotalCLP)));
-      discountUSD = Number((subtotalUSD * (discountCLP / Math.max(subtotalCLP, 1))).toFixed(2));
+      const amounts = calculateDiscountAmounts(discountCode, subtotalUSD, subtotalCLP);
+      discountCLP = amounts.discountCLP;
+      discountUSD = amounts.discountUSD;
     }
 
     const totalCLP = Math.max(0, subtotalCLP - discountCLP);
     const totalUSD = Number(Math.max(0, subtotalUSD - discountUSD).toFixed(2));
-    const total = Math.round(totalCLP);
+    const orderCurrency = paymentMethodId === "PAYKU" ? "CLP" : "USD";
+    const subtotalLegacy = orderCurrency === "CLP" ? Math.round(subtotalCLP) : Math.round(subtotalUSD);
+    const discountLegacy = orderCurrency === "CLP" ? Math.round(discountCLP) : Math.round(discountUSD);
+    const totalLegacy = orderCurrency === "CLP" ? Math.round(totalCLP) : Math.round(totalUSD);
 
     const orderNumber =
       paymentMethodId === "TEBEX"
@@ -186,10 +203,10 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         status: "PENDING",
         paymentMethod,
-        currency: "CLP",
-        subtotal: Math.round(subtotalCLP),
-        discount: Math.round(discountCLP),
-        total,
+        currency: orderCurrency,
+        subtotal: subtotalLegacy,
+        discount: discountLegacy,
+        total: totalLegacy,
         subtotalCLP: Number(subtotalCLP.toFixed(2)),
         subtotalUSD,
         discountCLP: Number(discountCLP.toFixed(2)),
@@ -202,8 +219,8 @@ export async function POST(request: NextRequest) {
         items: {
           create: {
             productId: product.id,
-            currency: "CLP",
-            unitPrice: Math.round(subtotalCLP),
+            currency: orderCurrency,
+            unitPrice: orderCurrency === "CLP" ? Math.round(subtotalCLP) : Math.round(subtotalUSD),
             unitPriceCLP: Number(subtotalCLP.toFixed(2)),
             unitPriceUSD: subtotalUSD,
             quantity: 1,

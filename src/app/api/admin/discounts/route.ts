@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { toSafeInt } from "@/lib/security";
+import { getDiscountCurrency } from "@/lib/discount-pricing";
 
 export async function GET(request: NextRequest) {
   try {
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { code, type, value, minPurchase, maxUses, maxUsesPerUser, productId, startsAt, expiresAt } = body;
+    const { code, type, value, currency, minPurchase, maxUses, maxUsesPerUser, productId, startsAt, expiresAt } = body;
 
     if (!code || !type || value === undefined) {
       return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 400 });
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
         code: code.toUpperCase(),
         type,
         value,
+        currency: getDiscountCurrency(currency),
         minPurchase,
         maxUses,
         maxUsesPerUser,
