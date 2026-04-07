@@ -2,7 +2,9 @@
 
 import { useIcon } from "@/hooks/useIcon";
 
-type IconName = Parameters<typeof useIcon>[0];
+type BaseIconName = Parameters<typeof useIcon>[0];
+type MinecraftOnlyIconName = "Sparkles";
+type IconName = BaseIconName | MinecraftOnlyIconName;
 
 const minecraftIconMap: Partial<Record<IconName, string>> = {
   Users: "icon-minecraft-player-head",
@@ -55,7 +57,8 @@ interface IconProps {
 }
 
 export function Icon({ name, className = "w-4 h-4" }: IconProps) {
-  const IconComponent = useIcon(name);
+  const lucideName: BaseIconName = name === "Sparkles" ? "Zap" : name;
+  const IconComponent = useIcon(lucideName);
   const minecraftIcon = MinecraftIcon({ name, className });
   if (minecraftIcon) return minecraftIcon;
 
