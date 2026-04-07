@@ -4,7 +4,7 @@ export default function HostedBy() {
   return (
     <section className="py-16 bg-zinc-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-zinc-900 via-zinc-800/50 to-zinc-900 border border-zinc-700/50 rounded-2xl p-8 md:p-12">
+        <div className="pixel-frame pixel-frame-neutral bg-gradient-to-r from-zinc-900 via-zinc-800/50 to-zinc-900 border border-zinc-700/50 rounded-2xl p-8 md:p-12">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
             {/* Text Content */}
             <div className="text-center md:text-left">

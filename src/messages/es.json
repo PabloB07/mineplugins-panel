@@ -108,6 +108,7 @@
   "login": {
     "title": "Bienvenido a MinePlugins",
     "subtitle": "Inicia sesión para ver tus compras, gestionar licencias y descargar actualizaciones.",
+    "badge": "Acceso de cliente",
     "chooseMethod": "Elige tu método de inicio de sesión",
     "continueWithDiscord": "Continuar con Discord",
     "signingIn": "Iniciando sesión...",
@@ -118,6 +119,8 @@
       "updates": "Obtén actualizaciones al instante"
     },
     "terms": "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad.",
+    "termsLink": "Términos",
+    "privacyLink": "Privacidad",
     "backHome": "Volver al Inicio"
   },
   "dashboard": {

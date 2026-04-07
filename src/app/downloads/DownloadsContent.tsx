@@ -59,7 +59,7 @@ export default function DownloadsContent({ session, licenses }: Props) {
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
         <DashboardNavbar user={session?.user} />
         <div className="flex-1 flex items-center justify-center p-4">
-          <div className="bg-[#111] rounded-xl border border-[#222] p-8 text-center max-w-md w-full">
+          <div className="pixel-frame bg-[#111] rounded-xl border border-[#222] p-8 text-center max-w-md w-full">
             <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-3">{t("common.accessDenied")}</h2>
             <p className="text-gray-400 mb-6">{t("downloads.loginToView")}</p>
@@ -74,7 +74,7 @@ export default function DownloadsContent({ session, licenses }: Props) {
       <DashboardNavbar user={session.user} isAdmin={isAdmin} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+        <div className="pixel-frame relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
           <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
@@ -107,7 +107,7 @@ export default function DownloadsContent({ session, licenses }: Props) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-fade-in pb-16">
         {licenses.length === 0 ? (
-          <div className="relative bg-[#111] rounded-xl border border-[#222] p-12 text-center overflow-hidden">
+          <div className="pixel-frame relative bg-[#111] rounded-xl border border-[#222] p-12 text-center overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
               <div className="w-16 h-16 bg-[#181818] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#2a2a2a]">
@@ -141,7 +141,7 @@ export default function DownloadsContent({ session, licenses }: Props) {
               const isActive = license.status === "ACTIVE";
 
               return (
-                <div key={license.id} className="group bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20">
+                <div key={license.id} className="pixel-frame group bg-[#111] hover:bg-[#151515] rounded-2xl border border-[#222] hover:border-[#22c55e]/50 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-black/20">
                   <div className="bg-[#151515] px-10 py-8 border-b border-[#222]">
                     <div className="flex items-start justify-between gap-6">
                       <div className="flex-1">

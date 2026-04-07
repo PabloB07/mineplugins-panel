@@ -132,6 +132,7 @@
   "login": {
     "title": "Welcome Back to MinePlugins",
     "subtitle": "Sign in to view your purchases, manage licenses, and download updates.",
+    "badge": "Customer Access",
     "chooseMethod": "Choose your sign-in method",
     "continueWithDiscord": "Continue with Discord",
     "signingIn": "Signing in...",
@@ -142,6 +143,8 @@
       "updates": "Get updates instantly"
     },
     "terms": "By signing in, you agree to our Terms of Service and Privacy Policy.",
+    "termsLink": "Terms",
+    "privacyLink": "Privacy",
     "backHome": "Back to Homepage"
   },
   "dashboard": {

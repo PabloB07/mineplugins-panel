@@ -140,7 +140,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#111] rounded-2xl border border-[#222] overflow-hidden shadow-2xl shadow-black/50 group">
+      <div className="pixel-frame bg-[#111] rounded-2xl border border-[#222] overflow-hidden shadow-2xl shadow-black/50 group">
         <div className="p-6 border-b border-[#222] bg-gradient-to-r from-[#111] to-[#151515] relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="flex items-start justify-between relative z-10">
@@ -250,7 +250,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
         </div>
       </div>
 
-      <div className="bg-[#111] rounded-2xl border border-[#222] overflow-hidden">
+      <div className="pixel-frame bg-[#111] rounded-2xl border border-[#222] overflow-hidden">
         <div className="p-4 border-b border-[#222] bg-[#0f0f0f]">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -30,12 +30,14 @@ export default function LoginPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-green-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="relative max-w-md mx-auto px-4 py-20 w-full z-10">
-        <div className="inline-flex items-center gap-2 bg-[#111] border border-[#222] rounded-full px-4 py-1.5 mb-6 mx-auto block w-fit">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-          </span>
-          <span className="text-gray-300 text-sm">Customer Access</span>
+        <div className="mb-6 flex justify-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#222] bg-[#111] px-4 py-1.5 text-center">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="text-sm text-gray-300">{t("login.badge")}</span>
+          </div>
         </div>
 
         <div className="text-center mb-6">
@@ -50,7 +52,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-[#111] rounded-2xl p-6 border border-[#222]">
+        <div className="pixel-frame bg-[#111] rounded-2xl p-6 border border-[#222]">
           <h2 className="text-lg font-semibold text-white mb-5 text-center">
             {t("login.chooseMethod")}
           </h2>
@@ -94,10 +96,10 @@ export default function LoginPage() {
           <p className="mt-4 text-center text-xs text-gray-500">
             {t("login.terms")}{" "}
             <Link href="/terms" className="text-green-400 hover:text-green-300">
-              Terms
+              {t("login.termsLink")}
             </Link>{" "}
             <Link href="/privacy" className="text-green-400 hover:text-green-300">
-              Privacy
+              {t("login.privacyLink")}
             </Link>
           </p>
         </div>

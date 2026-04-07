@@ -59,7 +59,7 @@ export default function OrdersContent({ session, orders }: Props) {
 
       <div className="space-y-8 animate-fade-in pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+          <div className="pixel-frame pixel-frame-blue relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
             <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
@@ -96,7 +96,7 @@ export default function OrdersContent({ session, orders }: Props) {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {orders.length === 0 ? (
-            <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
+            <div className="pixel-frame relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 max-w-md mx-auto">
                 <div className="w-16 h-16 bg-[#181818] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#2a2a2a]">
@@ -114,7 +114,7 @@ export default function OrdersContent({ session, orders }: Props) {
               </div>
             </div>
           ) : (
-            <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden">
+            <div className="pixel-frame pixel-frame-blue bg-[#111] rounded-xl border border-[#222] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#222] bg-[#151515]">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-blue-400" />

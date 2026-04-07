@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+      <div className="pixel-frame relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full -ml-32 -mb-32 blur-2xl"></div>
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -140,7 +140,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+        <div className="pixel-frame bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
           <div className="p-5 border-b border-[#222] flex justify-between items-center">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+        <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
           <div className="p-5 border-b border-[#222] flex justify-between items-center">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-[#111] border border-[#222] rounded-xl p-6 relative">
+      <div className="pixel-frame bg-[#111] border border-[#222] rounded-xl p-6 relative">
         <div className="absolute top-0 right-0 w-48 h-48 bg-green-500/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full -ml-24 -mb-24 blur-3xl"></div>
         <div className="relative z-10">
