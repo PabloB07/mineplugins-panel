@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { FormattedPrice } from "@/components/ui/FormattedPrice";
-import { useIcon } from "@/hooks/useIcon";
 import { Icon as IconComponent, IconHeader } from "@/components/ui/Icon";
 
 interface DashboardStats {
@@ -90,7 +89,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#111] via-[#0f0f0f] to-[#0a0a0a] border border-[#222]">
+      <div className="pixel-frame pixel-frame-amber relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#111] via-[#0f0f0f] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-500/15 via-transparent to-transparent rounded-full -mr-48 -mt-48 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full -ml-32 -mb-32 blur-2xl"></div>
         
@@ -128,7 +127,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-frame-blue bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
@@ -137,7 +136,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
               </div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-green-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
@@ -146,7 +145,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-bold text-white">{stats.activeLicenses}</div>
               </div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-frame-amber bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-amber-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
@@ -155,7 +154,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-bold text-white">{stats.todayOrders}</div>
               </div>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-frame-amber bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-green-400 text-xs font-medium mb-1">
@@ -173,7 +172,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <div className="xl:col-span-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-green-500/30 transition-all">
+            <div className="pixel-frame bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-green-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-green-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -186,7 +185,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
+            <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -197,7 +196,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
+            <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -208,7 +207,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
+            <div className="pixel-frame pixel-frame-amber bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-amber-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -220,7 +219,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <IconHeader name="ShoppingCart">{t("admin.recentOrders")}</IconHeader>
@@ -270,7 +269,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <IconHeader name="Activity" iconClassName="w-5 h-5 text-gray-400">
@@ -328,7 +327,7 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="xl:col-span-4 space-y-6">
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
@@ -358,7 +357,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     {servers.slice(0, 4).map((server) => (
-                      <div key={server.id} className="flex items-center justify-between p-3 rounded-lg bg-[#0a0a0a] border border-[#222] hover:border-[#333] transition-colors">
+                      <div key={server.id} className="pixel-frame flex items-center justify-between p-3 rounded-lg bg-[#0a0a0a] border border-[#222] hover:border-[#333] transition-colors">
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                             server.isOnline 
@@ -396,7 +395,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
               <div className="flex justify-between items-center">
@@ -435,23 +434,23 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] rounded-xl p-5 relative">
+          <div className="pixel-frame pixel-frame-amber bg-[#111] border border-[#222] rounded-xl p-5 relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 relative z-10">Quick Actions</h2>
             <div className="space-y-2">
-              <Link href="/admin/products/new" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-amber-500/30 transition-all group">
+              <Link href="/admin/products/new" className="pixel-frame pixel-frame-amber flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-amber-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/30">
                   <IconComponent name="Plus" className="w-4 h-4" />
                 </div>
                 <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.newProduct")}</span>
               </Link>
-              <Link href="/admin/licenses?status=REVOKED" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-red-500/30 transition-all group">
+              <Link href="/admin/licenses?status=REVOKED" className="pixel-frame flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-red-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400 group-hover:bg-red-500/30">
                   <IconComponent name="AlertTriangle" className="w-4 h-4" />
                 </div>
                 <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{t("admin.reviewRevoked")}</span>
               </Link>
-              <Link href="/admin/transfers" className="flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-purple-500/30 transition-all group">
+              <Link href="/admin/transfers" className="pixel-frame pixel-frame-blue flex items-center gap-3 p-3 rounded-lg bg-[#0a0a0a] hover:bg-[#151515] border border-[#222] hover:border-purple-500/30 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500/30">
                   <IconComponent name="ArrowRight" className="w-4 h-4" />
                 </div>

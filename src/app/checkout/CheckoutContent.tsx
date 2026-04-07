@@ -5,13 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
 import { CombinedCheckoutButton } from "@/components/CombinedCheckoutButton";
+import { Icon } from "@/components/ui/Icon";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import {
   getAvailablePaymentMethods,
   PaymentMethodId,
 } from "@/lib/payment-methods";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
-import { ArrowLeft } from "lucide-react";
 
 interface ProductData {
   id: string;
@@ -239,7 +239,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
           {hasDiscount && (
             <div className="mt-5 flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
               <div className="flex items-center gap-2">
-                <span className="icon-minecraft-sm icon-minecraft-diamond-block"></span>
+                <Icon name="Sparkles" className="h-4 w-4 text-green-400" />
                 <span className="text-green-400 font-medium text-sm">{t("checkout.discountApplied")}</span>
               </div>
               <span className="text-green-300 font-bold text-sm bg-green-500/20 px-3 py-1 rounded-lg">
@@ -253,9 +253,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
       <div className="pixel-frame bg-[#111] rounded-2xl border border-[#222] overflow-hidden">
         <div className="p-4 border-b border-[#222] bg-[#0f0f0f]">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
+            <Icon name="CreditCard" className="w-4 h-4 text-green-500" />
             {t("checkout.selectPaymentMethod")}
           </h3>
         </div>
@@ -285,9 +283,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
               </div>
               {selectedMethod === method.id && (
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 shadow-lg shadow-green-500/30">
-                  <svg className="h-3.5 w-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                  <Icon name="Check" className="h-3.5 w-3.5 text-white" />
                 </div>
               )}
             </button>
@@ -383,7 +379,7 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
           href="/store"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <Icon name="ArrowRight" className="w-4 h-4 rotate-180 transition-transform group-hover:-translate-x-1" />
           <span>{t("checkout.backToStore")}</span>
         </Link>
 
@@ -395,9 +391,7 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
               className="w-24 h-24 rounded-2xl border-4 border-green-500/30 shadow-lg shadow-green-500/20"
             />
             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-[#111] flex items-center justify-center">
-              <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
+              <Icon name="Check" className="w-3.5 h-3.5 text-white" />
             </div>
           </div>
         </div>
@@ -411,9 +405,7 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
             <div className="bg-[#111] rounded-2xl border border-[#222] overflow-hidden">
               <div className="p-4 border-b border-[#222] bg-gradient-to-r from-[#151515] to-[#111]">
                 <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
+                  <Icon name="ShoppingBag" className="w-4 h-4 text-green-500" />
                   {t("checkout.orderSummary")}
                 </h3>
               </div>
@@ -442,34 +434,26 @@ export default function CheckoutWrapper({ product }: CheckoutWrapperProps) {
             <div className="bg-[#111] rounded-2xl border border-[#222] overflow-hidden">
               <div className="p-4 border-b border-[#222] bg-gradient-to-r from-[#151515] to-[#111]">
                 <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <Icon name="CheckCircle" className="w-4 h-4 text-green-500" />
                   {t("checkout.includes")}
                 </h3>
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <div className="w-6 h-6 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Icon name="Check" className="w-3.5 h-3.5 text-green-400" />
                   </div>
                   <span className="text-gray-300">{t("checkout.instantDelivery")}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <div className="w-6 h-6 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Icon name="Check" className="w-3.5 h-3.5 text-green-400" />
                   </div>
                   <span className="text-gray-300">{t("checkout.freeUpdates")}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <div className="w-6 h-6 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Icon name="Check" className="w-3.5 h-3.5 text-green-400" />
                   </div>
                   <span className="text-gray-300">{t("checkout.premiumSupport")}</span>
                 </div>

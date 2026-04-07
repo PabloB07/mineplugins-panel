@@ -3,21 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
+import { Icon } from "@/components/ui/Icon";
 import {
-  ArrowRight,
-  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  CreditCard,
-  HelpCircle,
   Loader2,
-  MessageCircle,
-  RefreshCw,
-  Server as ServerIcon,
-  ShoppingCart,
-  Sparkles,
-  Zap,
 } from "lucide-react";
 import { Product, Session } from "./types";
 
@@ -92,15 +83,15 @@ const FAQ_DATA_EN = [
 ];
 
 const FAQ_CATEGORIES_ES = [
-  { icon: HelpCircle, label: "General", questions: [0, 3, 5] },
-  { icon: RefreshCw, label: "Licencias", questions: [1, 2] },
-  { icon: MessageCircle, label: "Soporte", questions: [4] },
+  { iconName: "Search" as const, label: "General", questions: [0, 3, 5] },
+  { iconName: "RefreshCw" as const, label: "Licencias", questions: [1, 2] },
+  { iconName: "Users" as const, label: "Soporte", questions: [4] },
 ];
 
 const FAQ_CATEGORIES_EN = [
-  { icon: HelpCircle, label: "General", questions: [0, 3, 5] },
-  { icon: RefreshCw, label: "Licenses", questions: [1, 2] },
-  { icon: MessageCircle, label: "Support", questions: [4] },
+  { iconName: "Search" as const, label: "General", questions: [0, 3, 5] },
+  { iconName: "RefreshCw" as const, label: "Licenses", questions: [1, 2] },
+  { iconName: "Users" as const, label: "Support", questions: [4] },
 ];
 
 export default function ProductGrid({ session }: ProductGridProps) {
@@ -126,14 +117,14 @@ export default function ProductGrid({ session }: ProductGridProps) {
     () =>
       locale === "es"
         ? [
-            { value: `${pagination.total || 0}+`, label: "plugins listos para producción", icon: Sparkles },
-            { value: "24/7", label: "soporte premium", icon: MessageCircle },
-            { value: "1.21+", label: "compatibilidad Paper", icon: ServerIcon },
+            { value: `${pagination.total || 0}+`, label: "plugins listos para producción", iconName: "Sparkles" as const },
+            { value: "24/7", label: "soporte premium", iconName: "Users" as const },
+            { value: "1.21+", label: "compatibilidad Paper", iconName: "Server" as const },
           ]
         : [
-            { value: `${pagination.total || 0}+`, label: "production-ready plugins", icon: Sparkles },
-            { value: "24/7", label: "premium support", icon: MessageCircle },
-            { value: "1.21+", label: "Paper compatibility", icon: ServerIcon },
+            { value: `${pagination.total || 0}+`, label: "production-ready plugins", iconName: "Sparkles" as const },
+            { value: "24/7", label: "premium support", iconName: "Users" as const },
+            { value: "1.21+", label: "Paper compatibility", iconName: "Server" as const },
           ],
     [locale, pagination.total]
   );
@@ -206,7 +197,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
   if (products.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center rounded-[28px] border border-[#222] bg-[#111] p-12 text-center">
-        <ShoppingCart className="mb-4 h-16 w-16 text-gray-500" />
+        <Icon name="ShoppingCart" className="mb-4 h-16 w-16 text-gray-500" />
         <h2 className="mb-2 text-xl font-bold text-white">{t("store.empty")}</h2>
         <p className="text-neutral-400">{t("store.emptyDesc")}</p>
       </div>
@@ -230,7 +221,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_320px] lg:items-center">
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-4 py-2 text-sm font-medium text-green-400">
-              <Zap className="h-4 w-4" />
+              <Icon name="Zap" className="h-4 w-4" />
               {t("store.premiumMinecraftPlugins")}
             </div>
 
@@ -243,12 +234,12 @@ export default function ProductGrid({ session }: ProductGridProps) {
             <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500">{heroDescription}</p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              {heroBullets.map((bullet) => (
+            {heroBullets.map((bullet) => (
                 <div
                   key={bullet}
                   className="inline-flex items-center gap-2 rounded-2xl border border-[#242424] bg-[#101010] px-4 py-2 text-sm text-gray-300"
                 >
-                  <Check className="h-4 w-4 text-green-400" />
+                  <Icon name="Check" className="h-4 w-4 text-green-400" />
                   <span>{bullet}</span>
                 </div>
               ))}
@@ -258,7 +249,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
               {storeStats.map((stat) => (
                 <div key={stat.label} className="rounded-2xl border border-[#222] bg-[#101010]/90 p-4">
                   <div className="mb-4 flex items-center">
-                    <stat.icon className="h-5 w-5 text-green-400" />
+                    <Icon name={stat.iconName} className="h-5 w-5 text-green-400" />
                   </div>
                   <div className="text-3xl leading-none text-white">{stat.value}</div>
                   <p className="mt-3 text-sm leading-6 text-gray-400">{stat.label}</p>
@@ -436,7 +427,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                           )}
                           {isOnSale && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-red-500 px-3 py-1 text-xs text-white shadow-lg shadow-red-500/25">
-                              <Zap className="h-3 w-3" />
+                              <Icon name="Zap" className="h-3 w-3 text-white" />
                               {t("store.sale")}
                             </span>
                           )}
@@ -517,7 +508,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                           </div>
 
                           <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
-                            <ServerIcon className="h-4 w-4 text-green-400" />
+                            <Icon name="Server" className="h-4 w-4 text-green-400" />
                             <span>
                               {product.maxActivations}{" "}
                               {product.maxActivations > 1 ? t("store.servers") : t("store.server")} +{" "}
@@ -532,9 +523,9 @@ export default function ProductGrid({ session }: ProductGridProps) {
                               href={`/checkout?productId=${product.id}`}
                               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-green-600 to-green-500 px-4 py-3.5 text-white transition-all hover:from-green-500 hover:to-green-400"
                             >
-                              <CreditCard className="h-4 w-4" />
+                              <Icon name="CreditCard" className="h-4 w-4 text-white" />
                               {t("store.buyNow")}
-                              <ArrowRight className="h-4 w-4" />
+                              <Icon name="ArrowRight" className="h-4 w-4 text-white" />
                             </Link>
                           ) : (
                             <Link
@@ -613,7 +604,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                 : "border border-[#333] bg-[#151515] text-gray-300 hover:bg-[#1d1d1d]"
             }`}
           >
-            <HelpCircle className="h-4 w-4" />
+            <Icon name="Search" className="h-4 w-4" />
             {t("store.all")}
           </button>
           {faqCategories.map((category, index) => {
@@ -628,7 +619,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                     : "border border-[#333] bg-[#151515] text-gray-300 hover:bg-[#1d1d1d]"
                 }`}
               >
-                <category.icon className="h-4 w-4" />
+                <Icon name={category.iconName} className="h-4 w-4" />
                 {t(labelKey)}
               </button>
             );
@@ -665,7 +656,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
             target="_blank"
             className="inline-flex items-center gap-2 rounded-2xl bg-[#5865F2] px-6 py-3 text-white transition-all hover:bg-[#4752C4]"
           >
-            <MessageCircle className="h-5 w-5" />
+            <Icon name="Users" className="h-5 w-5 text-white" />
             {t("store.contactDiscord")}
           </Link>
         </div>
