@@ -49,8 +49,7 @@ export function CurrencySwitcher() {
       {isOpen && (
         <div 
           role="listbox"
-          className="absolute left-0 right-auto mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl overflow-hidden"
-          style={{ left: 'auto', right: 0 }}
+          className="absolute top-full right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl overflow-hidden z-50"
         >
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-gray-500 font-medium uppercase tracking-wider">
