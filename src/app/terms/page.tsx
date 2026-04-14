@@ -1,19 +1,17 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { useIcon } from "@/hooks/useIcon";
+import { Icon } from "@/components/ui/Icon";
 
 export const metadata: Metadata = {
   title: "Terms of Service - MinePlugins",
 };
 
 export default function TermsPage() {
-  const ArrowLeft = useIcon("ArrowLeft");
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-300">
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
+          <Icon name="ArrowLeft" className="w-4 h-4" />
           Back to Home
         </Link>
         
