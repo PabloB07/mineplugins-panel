@@ -10,6 +10,16 @@ import { getSecuritySecret } from "./security";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+const getBaseUrl = () => {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return `http://localhost:3000`;
+};
+
 const providers = [];
 
 if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
@@ -26,6 +36,11 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "identify email",
+        },
+      },
     })
   );
 }
