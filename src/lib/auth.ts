@@ -26,13 +26,13 @@ export const authOptions: NextAuthOptions = {
   }),
   callbacks: {
     async jwt({ token, user, account }) {
-      // Set user id on first sign in
-      if (user?.id && !token.id) {
+      if (user?.id) {
         token.id = user.id;
       }
       
-      // Update Discord avatar on sign in
-      if (account?.provider === "discord" && account?.access_token && token.id) {
+      const userId = token.id as string | undefined;
+      
+      if (account?.provider === "discord" && account?.access_token && userId) {
         try {
           const response = await fetch("https://discord.com/api/users/@me", {
             headers: {
@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
               const avatarUrl = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`;
               
               await prisma.user.update({
-                where: { id: token.id },
+                where: { id: userId },
                 data: { image: avatarUrl },
               });
               
@@ -62,14 +62,15 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Ensure token has id
-      if (!token.id) {
+      const userId = token.id as string | undefined;
+      
+      if (!userId) {
         console.error("[Auth] ERROR: No token.id in session callback");
         return session;
       }
       
       if (session.user) {
-        session.user.id = token.id;
+        session.user.id = userId;
         
         if (token.picture) {
           session.user.image = token.picture as string;
@@ -77,7 +78,7 @@ export const authOptions: NextAuthOptions = {
         
         try {
           const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
+            where: { id: userId },
             select: { role: true },
           });
           
