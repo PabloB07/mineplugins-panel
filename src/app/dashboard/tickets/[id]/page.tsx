@@ -49,19 +49,23 @@ export default function DashboardTicketDetailPage() {
     }
   };
 
-  const fetchTicket = useCallback(async () => {
-    setLoading(true);
+  const fetchTicket = useCallback(async (isPolling = false) => {
+    if (!isPolling) setLoading(true);
     try {
       const res = await fetch(`/api/tickets/${params.id}`);
       const data = await res.json();
       setTicket(data.ticket || null);
     } finally {
-      setLoading(false);
+      if (!isPolling) setLoading(false);
     }
   }, [params.id]);
 
   useEffect(() => {
-    if (params.id) fetchTicket();
+    if (params.id) {
+      fetchTicket(false);
+      const interval = setInterval(() => fetchTicket(true), 3000);
+      return () => clearInterval(interval);
+    }
   }, [params.id, fetchTicket]);
 
   const sendMessage = async (e: FormEvent) => {

@@ -34,7 +34,7 @@ export async function handleFileUpload(formData: FormData): Promise<{ url: strin
   }
 
   // Check for blob token
-  const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN");
+  const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN", { allowEmptyInDev: true });
 
   try {
     const blobFileName = safeFileName;
@@ -83,7 +83,7 @@ export async function handleImageUpload(formData: FormData): Promise<{ url: stri
     throw new Error(`Image size must be less than ${Math.round(MAX_IMAGE_SIZE / 1024 / 1024)}MB`);
   }
 
-  const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN");
+  const blobToken = getRequiredEnv("BLOB_READ_WRITE_TOKEN", { allowEmptyInDev: true });
   const extension = file.name.split(".").pop() || "png";
 
   try {

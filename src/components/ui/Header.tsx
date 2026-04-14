@@ -40,6 +40,7 @@ export default function Header() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const showCurrencySwitcher = pathname?.startsWith('/store') || pathname?.startsWith('/checkout');
 
   const isLoading = status === "loading";
 
@@ -78,7 +79,7 @@ export default function Header() {
               <div className="w-20 h-10 bg-[#181818] border border-[#333] rounded-xl animate-pulse"></div>
             ) : session ? (
               <div className="flex items-center gap-4">
-                <CurrencySwitcher />
+                {showCurrencySwitcher && <CurrencySwitcher />}
                 <LanguageSwitcher />
                 <Link href="/dashboard" className="text-[#a3a3a3] hover:text-white transition-colors text-sm font-medium px-4 py-2">
                   {t("nav.dashboard")}
@@ -108,7 +109,7 @@ export default function Header() {
               </div>
             ) : (
               <>
-                <CurrencySwitcher />
+                {showCurrencySwitcher && <CurrencySwitcher />}
                 <LanguageSwitcher />
                 <Link href="/login" className="group bg-[#22c55e] hover:bg-[#16a34a] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] inline-flex items-center gap-2">
                   <span>{t("nav.getStarted")}</span>

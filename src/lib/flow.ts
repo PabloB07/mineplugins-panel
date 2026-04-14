@@ -6,8 +6,8 @@ const FLOW_API_URL =
     ? "https://www.flow.cl/api"
     : "https://sandbox.flow.cl/api";
 
-const FLOW_API_KEY = getRequiredEnv("FLOW_API_KEY");
-const FLOW_SECRET_KEY = getRequiredEnv("FLOW_SECRET_KEY");
+const FLOW_API_KEY = getRequiredEnv("FLOW_API_KEY", { allowEmptyInDev: true });
+const FLOW_SECRET_KEY = getRequiredEnv("FLOW_SECRET_KEY", { allowEmptyInDev: true });
 
 export interface FlowPaymentCreate {
   commerceOrder: string;
