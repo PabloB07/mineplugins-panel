@@ -19,37 +19,28 @@ export const authOptions: NextAuthOptions = {
   secret: getSecuritySecret("NEXTAUTH_SECRET", {
     devFallback: "dev-nextauth-secret-change-me-now",
   }),
+  session: {
+    strategy: "database",
+  },
   callbacks: {
     async jwt({ token, user }) {
-      // Ensure user id is in token
       if (user?.id) {
         token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      // Copy user id to session
       if (token.id && session.user) {
         session.user.id = token.id as string;
         
-        // Get user role from database
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { role: true, image: true },
-          });
-          
-          if (dbUser) {
-            session.user.role = dbUser.role || UserRole.CUSTOMER;
-            if (dbUser.image) {
-              session.user.image = dbUser.image;
-            }
-          } else {
-            session.user.role = UserRole.CUSTOMER;
-          }
-        } catch (e) {
-          console.error("Session error:", e);
-          session.user.role = UserRole.CUSTOMER;
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true, image: true },
+        });
+        
+        session.user.role = dbUser?.role || UserRole.CUSTOMER;
+        if (dbUser?.image) {
+          session.user.image = dbUser.image;
         }
       }
       return session;
@@ -57,9 +48,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-  },
-  session: {
-    strategy: "database",
   },
   useSecureCookies: isProduction,
 };
