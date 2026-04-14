@@ -14,87 +14,49 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID || "",
       clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
-      authorization: {
-        params: {
-          scope: "identify email",
-        },
-      },
     }),
   ],
   secret: getSecuritySecret("NEXTAUTH_SECRET", {
     devFallback: "dev-nextauth-secret-change-me-now",
   }),
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
+      // Ensure user id is in token
       if (user?.id) {
         token.id = user.id;
       }
-      
-      const userId = token.id as string | undefined;
-      
-      if (account?.provider === "discord" && account?.access_token && userId) {
-        try {
-          const response = await fetch("https://discord.com/api/users/@me", {
-            headers: {
-              Authorization: `Bearer ${account.access_token}`,
-            },
-          });
-          
-          if (response.ok) {
-            const discordUser = await response.json();
-            
-            if (discordUser.avatar) {
-              const avatarUrl = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`;
-              
-              await prisma.user.update({
-                where: { id: userId },
-                data: { image: avatarUrl },
-              });
-              
-              token.picture = avatarUrl;
-            }
-          }
-        } catch (error) {
-          console.error("[Auth] Discord avatar error:", error);
-        }
-      }
-      
       return token;
     },
     async session({ session, token }) {
-      const userId = token.id as string | undefined;
-      
-      if (!userId) {
-        console.error("[Auth] ERROR: No token.id in session callback");
-        return session;
-      }
-      
-      if (session.user) {
-        session.user.id = userId;
+      // Copy user id to session
+      if (token.id && session.user) {
+        session.user.id = token.id as string;
         
-        if (token.picture) {
-          session.user.image = token.picture as string;
-        }
-        
+        // Get user role from database
         try {
           const dbUser = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { role: true },
+            where: { id: token.id as string },
+            select: { role: true, image: true },
           });
           
-          session.user.role = dbUser?.role || UserRole.CUSTOMER;
-        } catch (error) {
-          console.error("[Auth] Session error:", error);
+          if (dbUser) {
+            session.user.role = dbUser.role || UserRole.CUSTOMER;
+            if (dbUser.image) {
+              session.user.image = dbUser.image;
+            }
+          } else {
+            session.user.role = UserRole.CUSTOMER;
+          }
+        } catch (e) {
+          console.error("Session error:", e);
           session.user.role = UserRole.CUSTOMER;
         }
       }
-      
       return session;
     },
   },
   pages: {
     signIn: "/login",
-    error: "/login",
   },
   session: {
     strategy: "database",
