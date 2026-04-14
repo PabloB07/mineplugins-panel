@@ -8,23 +8,12 @@ import { getSecuritySecret } from "./security";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const discordClientId = process.env.DISCORD_CLIENT_ID;
-const discordClientSecret = process.env.DISCORD_CLIENT_SECRET;
-
-console.log("[Auth] Discord Client ID configured:", !!discordClientId);
-console.log("[Auth] Discord Client Secret configured:", !!discordClientSecret);
-console.log("[Auth] NextAuth URL:", process.env.NEXTAUTH_URL);
-
-if (!discordClientId || !discordClientSecret) {
-  console.error("[Auth] ERROR: Discord credentials not configured!");
-}
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     DiscordProvider({
-      clientId: discordClientId || "missing",
-      clientSecret: discordClientSecret || "missing",
+      clientId: process.env.DISCORD_CLIENT_ID || "",
+      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
       authorization: {
         params: {
           scope: "identify email",
@@ -37,9 +26,13 @@ export const authOptions: NextAuthOptions = {
   }),
   callbacks: {
     async jwt({ token, user, account }) {
-      console.log("[Auth] JWT callback - provider:", account?.provider);
+      // Set user id on first sign in
+      if (user?.id && !token.id) {
+        token.id = user.id;
+      }
       
-      if (account?.provider === "discord" && account?.access_token) {
+      // Update Discord avatar on sign in
+      if (account?.provider === "discord" && account?.access_token && token.id) {
         try {
           const response = await fetch("https://discord.com/api/users/@me", {
             headers: {
@@ -49,19 +42,16 @@ export const authOptions: NextAuthOptions = {
           
           if (response.ok) {
             const discordUser = await response.json();
-            console.log("[Auth] Discord user fetched:", discordUser.username);
             
-            if (discordUser.avatar && (token.sub || user?.id)) {
-              const targetUserId = token.sub || user?.id;
+            if (discordUser.avatar) {
               const avatarUrl = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`;
               
               await prisma.user.update({
-                where: { id: targetUserId },
+                where: { id: token.id },
                 data: { image: avatarUrl },
               });
               
               token.picture = avatarUrl;
-              console.log("[Auth] Avatar updated for user:", targetUserId);
             }
           }
         } catch (error) {
@@ -69,28 +59,33 @@ export const authOptions: NextAuthOptions = {
         }
       }
       
-      if (user) {
-        token.id = user.id;
-      }
       return token;
     },
     async session({ session, token }) {
-      console.log("[Auth] Session callback - user id:", token.id);
+      // Ensure token has id
+      if (!token.id) {
+        console.error("[Auth] ERROR: No token.id in session callback");
+        return session;
+      }
       
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = token.id;
         
         if (token.picture) {
           session.user.image = token.picture as string;
         }
         
-        const dbUser = await prisma.user.findUnique({
-          where: { id: session.user.id },
-          select: { role: true },
-        });
-        
-        session.user.role = dbUser?.role || UserRole.CUSTOMER;
-        console.log("[Auth] User role:", session.user.role);
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true },
+          });
+          
+          session.user.role = dbUser?.role || UserRole.CUSTOMER;
+        } catch (error) {
+          console.error("[Auth] Session error:", error);
+          session.user.role = UserRole.CUSTOMER;
+        }
       }
       
       return session;
@@ -104,7 +99,6 @@ export const authOptions: NextAuthOptions = {
     strategy: "database",
   },
   useSecureCookies: isProduction,
-  debug: !isProduction,
 };
 
 declare module "next-auth" {
