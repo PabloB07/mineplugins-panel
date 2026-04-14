@@ -159,7 +159,7 @@ export default function OrdersContent({ session, orders }: Props) {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm font-semibold text-[#22c55e]">
-                            {formatCLPValue(order.total || 199900)}
+                            {formatCLPValue(order.total ?? 0)}
                           </div>
                         </td>
                         <td className="px-6 py-4">

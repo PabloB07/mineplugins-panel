@@ -16,19 +16,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "discord" && user.email) {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+        if (existingUser && user.image) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              name: user.name || existingUser.name,
+              image: user.image,
+            },
+          });
+        }
+      }
+      return true;
+    },
     async session({ session, user }) {
       if (user && session.user) {
         session.user.id = user.id;
 
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { role: true, image: true },
+          select: { role: true, image: true, name: true },
         });
 
         session.user.role = dbUser?.role || "CUSTOMER";
-        if (dbUser?.image) {
-          session.user.image = dbUser.image;
-        }
+        session.user.image = dbUser?.image || user.image;
+        session.user.name = dbUser?.name || user.name;
       }
       return session;
     },
