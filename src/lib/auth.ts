@@ -8,12 +8,28 @@ import { getSecuritySecret } from "./security";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+const discordClientId = process.env.DISCORD_CLIENT_ID;
+const discordClientSecret = process.env.DISCORD_CLIENT_SECRET;
+
+console.log("[Auth] Discord Client ID configured:", !!discordClientId);
+console.log("[Auth] Discord Client Secret configured:", !!discordClientSecret);
+console.log("[Auth] NextAuth URL:", process.env.NEXTAUTH_URL);
+
+if (!discordClientId || !discordClientSecret) {
+  console.error("[Auth] ERROR: Discord credentials not configured!");
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID || "",
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
+      clientId: discordClientId || "missing",
+      clientSecret: discordClientSecret || "missing",
+      authorization: {
+        params: {
+          scope: "identify email",
+        },
+      },
     }),
   ],
   secret: getSecuritySecret("NEXTAUTH_SECRET", {
@@ -21,6 +37,8 @@ export const authOptions: NextAuthOptions = {
   }),
   callbacks: {
     async jwt({ token, user, account }) {
+      console.log("[Auth] JWT callback - provider:", account?.provider);
+      
       if (account?.provider === "discord" && account?.access_token) {
         try {
           const response = await fetch("https://discord.com/api/users/@me", {
@@ -28,34 +46,53 @@ export const authOptions: NextAuthOptions = {
               Authorization: `Bearer ${account.access_token}`,
             },
           });
+          
           if (response.ok) {
             const discordUser = await response.json();
+            console.log("[Auth] Discord user fetched:", discordUser.username);
+            
             if (discordUser.avatar && (token.sub || user?.id)) {
+              const targetUserId = token.sub || user?.id;
               const avatarUrl = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`;
+              
               await prisma.user.update({
-                where: { id: token.sub || user?.id },
+                where: { id: targetUserId },
                 data: { image: avatarUrl },
               });
+              
               token.picture = avatarUrl;
+              console.log("[Auth] Avatar updated for user:", targetUserId);
             }
           }
         } catch (error) {
-          console.error("Discord avatar error:", error);
+          console.error("[Auth] Discord avatar error:", error);
         }
       }
-      if (user) token.id = user.id;
+      
+      if (user) {
+        token.id = user.id;
+      }
       return token;
     },
     async session({ session, token }) {
+      console.log("[Auth] Session callback - user id:", token.id);
+      
       if (session.user) {
         session.user.id = token.id as string;
-        if (token.picture) session.user.image = token.picture as string;
+        
+        if (token.picture) {
+          session.user.image = token.picture as string;
+        }
+        
         const dbUser = await prisma.user.findUnique({
           where: { id: session.user.id },
           select: { role: true },
         });
+        
         session.user.role = dbUser?.role || UserRole.CUSTOMER;
+        console.log("[Auth] User role:", session.user.role);
       }
+      
       return session;
     },
   },
@@ -67,6 +104,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "database",
   },
   useSecureCookies: isProduction,
+  debug: !isProduction,
 };
 
 declare module "next-auth" {
