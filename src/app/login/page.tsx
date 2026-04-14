@@ -1,17 +1,47 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/i18n/useTranslation";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [discordConfigured, setDiscordConfigured] = useState(true);
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+
+  useEffect(() => {
+    fetch("/api/auth/providers")
+      .then(res => res.json())
+      .then(providers => {
+        if (!providers.discord) {
+          setDiscordConfigured(false);
+        }
+      })
+      .catch(() => setDiscordConfigured(false));
+  }, []);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Auth error:", error);
+    }
+  }, [error]);
 
   const handleSignIn = async () => {
+    if (!discordConfigured) {
+      alert("Discord login is not configured. Please contact the administrator.");
+      return;
+    }
     setIsLoading(true);
-    await signIn("discord", { callbackUrl: "/dashboard" });
+    try {
+      await signIn("discord", { callbackUrl: "/dashboard" });
+    } catch (err) {
+      console.error("Sign in error:", err);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,6 +83,17 @@ export default function LoginPage() {
         </div>
 
         <div className="pixel-frame bg-[#111] rounded-2xl p-6 border border-[#222]">
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm text-center">
+              {error === "Configuration" 
+                ? "Authentication is not configured. Please contact support."
+                : error === "OAuthSignin" 
+                ? "Error starting sign in. Please try again."
+                : error === "OAuthCallback"
+                ? "Error during callback. Please try again."
+                : "Authentication failed. Please try again."}
+            </div>
+          )}
           <h2 className="text-lg font-semibold text-white mb-5 text-center">
             {t("login.chooseMethod")}
           </h2>
