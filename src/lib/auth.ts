@@ -7,11 +7,6 @@ import { UserRole } from "@prisma/client";
 import { getSecuritySecret } from "./security";
 
 const isProduction = process.env.NODE_ENV === "production";
-const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
-
-console.log("[Auth] Initializing with baseUrl:", baseUrl);
-console.log("[Auth] Discord Client ID set:", !!process.env.DISCORD_CLIENT_ID);
-console.log("[Auth] Discord Client Secret set:", !!process.env.DISCORD_CLIENT_SECRET);
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -30,23 +25,26 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account, trigger }) {
-      console.log("[Auth] JWT callback", { trigger, accountProvider: account?.provider, hasUser: !!user });
-      
-      if (user?.id) {
+      // On initial sign in, user will have id
+      if (user) {
         token.id = user.id;
+      }
+      // If we have an account but no token.id yet, try to get it from account
+      if (!token.id && account) {
+        // The sub from account should contain the user id
+        token.id = account.providerAccountId;
       }
       return token;
     },
     async session({ session, token }) {
-      console.log("[Auth] Session callback", { hasToken: !!token, hasSession: !!session.user });
-      
-      if (!token.id) {
-        console.error("[Auth] ERROR: token.id is missing!");
+      // Make sure we have a valid token id
+      if (!token || !token.id) {
+        console.error("[Auth] No token or token.id in session");
         return session;
       }
       
       if (session.user) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
         
         try {
           const dbUser = await prisma.user.findUnique({
@@ -54,13 +52,16 @@ export const authOptions: NextAuthOptions = {
             select: { role: true, image: true },
           });
           
-          session.user.role = dbUser?.role || UserRole.CUSTOMER;
-          if (dbUser?.image) {
-            session.user.image = dbUser.image;
+          if (dbUser) {
+            session.user.role = dbUser.role || UserRole.CUSTOMER;
+            if (dbUser.image) {
+              session.user.image = dbUser.image;
+            }
+          } else {
+            session.user.role = UserRole.CUSTOMER;
           }
-          console.log("[Auth] User role set:", session.user.role);
         } catch (e) {
-          console.error("[Auth] Error fetching user:", e);
+          console.error("[Auth] Error:", e);
           session.user.role = UserRole.CUSTOMER;
         }
       }
@@ -69,20 +70,8 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-    error: "/login",
   },
   useSecureCookies: isProduction,
-  cookies: {
-    sessionToken: {
-      name: isProduction ? "__Secure-session" : "session",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: isProduction,
-      },
-    },
-  },
 };
 
 declare module "next-auth" {
