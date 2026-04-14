@@ -1,8 +1,7 @@
 "use server";
 
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { isAdminRole } from "@/lib/authz";
 import { isSafeHttpUrl, toOptionalTrimmedString, toSafeInt } from "@/lib/security";
 
@@ -19,7 +18,7 @@ export async function createVersion(data: {
   isLatest: boolean;
   isMandatory: boolean;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id || !isAdminRole(session.user.role)) {
     throw new Error("Unauthorized");
   }

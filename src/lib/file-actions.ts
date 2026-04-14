@@ -1,8 +1,7 @@
 "use server";
 
 import { put } from "@vercel/blob";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { isAdminRole } from "@/lib/authz";
 import {
   getRequiredEnv,
@@ -10,7 +9,7 @@ import {
 } from "@/lib/security";
 
 export async function handleFileUpload(formData: FormData): Promise<{ url: string; size: number; name: string }> {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id || !isAdminRole(session.user.role)) {
     throw new Error("Unauthorized");
   }
@@ -65,7 +64,7 @@ const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function handleImageUpload(formData: FormData): Promise<{ url: string; size: number; name: string }> {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id || !isAdminRole(session.user.role)) {
     throw new Error("Unauthorized");
   }

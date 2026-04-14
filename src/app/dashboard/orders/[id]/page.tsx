@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -12,7 +11,7 @@ interface PageProps {
 }
 
 export default async function OrderPage({ params, searchParams }: PageProps) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const { id } = await params;
   const { success, error } = await searchParams;
 

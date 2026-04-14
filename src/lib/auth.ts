@@ -1,44 +1,31 @@
+import NextAuth from "next-auth";
+import Discord from "next-auth/providers/discord";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import type { Adapter } from "next-auth/adapters";
 import { prisma } from "./prisma";
-import { UserRole } from "@prisma/client";
-import { getSecuritySecret } from "./security";
 
-const isProduction = process.env.NODE_ENV === "production";
-
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID || "",
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
+    Discord({
+      clientId: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
     }),
   ],
-  secret: getSecuritySecret("NEXTAUTH_SECRET", {
-    devFallback: "dev-nextauth-secret-change-me-now",
-  }),
   session: {
     strategy: "database",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.id) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.id && session.user) {
-        session.user.id = token.id as string;
-        
+    async session({ session, user }) {
+      if (user && session.user) {
+        session.user.id = user.id;
+
         const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
+          where: { id: user.id },
           select: { role: true, image: true },
         });
-        
-        session.user.role = dbUser?.role || UserRole.CUSTOMER;
+
+        session.user.role = dbUser?.role || "CUSTOMER";
         if (dbUser?.image) {
           session.user.image = dbUser.image;
         }
@@ -49,23 +36,4 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
-  useSecureCookies: isProduction,
-};
-
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-      role: UserRole;
-    };
-  }
-}
-
-declare module "next-auth/adapters" {
-  interface AdapterUser {
-    role: UserRole;
-  }
-}
+});

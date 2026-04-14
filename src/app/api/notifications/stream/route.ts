@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { UserRole } from "@prisma/client";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { getAdminNotificationPayload, getClientNotificationPayload } from "@/lib/notifications";
 
 export const runtime = "nodejs";
@@ -18,7 +17,7 @@ async function resolvePayload(scope: StreamScope, userId: string) {
 }
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }

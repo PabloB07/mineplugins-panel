@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import {
   calculateDiscountAmounts,
   convertCurrencyAmount,
@@ -14,7 +13,7 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get("code");
     const productId = searchParams.get("productId");

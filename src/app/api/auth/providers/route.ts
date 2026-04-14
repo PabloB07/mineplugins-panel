@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
-import { authOptions } from "@/lib/auth";
 
 export async function GET() {
-  const providers: Record<string, boolean> = {};
-  
-  authOptions.providers.forEach((provider: { id: string }) => {
-    providers[provider.id] = true;
-  });
-  
+  // Returns the available auth providers for the login page
+  const providers: Record<string, boolean> = {
+    discord: true,
+  };
+
   return NextResponse.json(providers);
 }

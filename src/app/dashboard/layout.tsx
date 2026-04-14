@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 export default async function DashboardLayout({
@@ -8,14 +7,14 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session) {
     redirect("/login");
   }
 
   const isAdmin =
-    session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
+    session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN";
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">

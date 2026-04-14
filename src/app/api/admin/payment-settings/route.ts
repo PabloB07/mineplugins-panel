@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 import { getGatewaySettings, maskSecret, upsertGatewaySettings } from "@/lib/payment-gateway-settings";
 import { toOptionalTrimmedString } from "@/lib/security";
@@ -13,7 +12,7 @@ function parseEnvironment(value: unknown, fallback: GatewayEnvironment): Gateway
 }
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id) return null;
   const isAdmin =
     session.user.role === UserRole.ADMIN || session.user.role === UserRole.SUPER_ADMIN;

@@ -1,10 +1,9 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import Header from "@/components/ui/Header";
 import StoreContent from "@/components/store/StoreContent";
 
 export default async function BuyPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
