@@ -1,8 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type NextAuthOptions } from "next-auth";
-import GithubProvider from "next-auth/providers/github";
 import DiscordProvider from "next-auth/providers/discord";
-import GoogleProvider from "next-auth/providers/google";
 import type { Adapter } from "next-auth/adapters";
 import { prisma } from "./prisma";
 import { UserRole } from "@prisma/client";
@@ -10,53 +8,14 @@ import { getSecuritySecret } from "./security";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const getBaseUrl = () => {
-  if (process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL;
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return `http://localhost:3000`;
-};
-
-const providers = [];
-
-if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
-  providers.push(
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    })
-  );
-}
-
-if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
-  providers.push(
-    DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET,
-      authorization: {
-        params: {
-          scope: "identify email",
-        },
-      },
-    })
-  );
-}
-
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  providers.push(
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    })
-  );
-}
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
-  providers,
+  providers: [
+    DiscordProvider({
+      clientId: process.env.DISCORD_CLIENT_ID || "",
+      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
+    }),
+  ],
   secret: getSecuritySecret("NEXTAUTH_SECRET", {
     devFallback: "dev-nextauth-secret-change-me-now",
   }),
@@ -71,35 +30,26 @@ export const authOptions: NextAuthOptions = {
           });
           if (response.ok) {
             const discordUser = await response.json();
-            if (discordUser.avatar) {
-              const targetUserId = token.sub || user?.id;
-              if (targetUserId) {
-                const avatarHash = discordUser.avatar;
-                const discordUserId = discordUser.id;
-                const newAvatarUrl = `https://cdn.discordapp.com/avatars/${discordUserId}/${avatarHash}.png?size=128`;
-                await prisma.user.update({
-                  where: { id: targetUserId },
-                  data: { image: newAvatarUrl },
-                });
-                token.picture = newAvatarUrl;
-              }
+            if (discordUser.avatar && (token.sub || user?.id)) {
+              const avatarUrl = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`;
+              await prisma.user.update({
+                where: { id: token.sub || user?.id },
+                data: { image: avatarUrl },
+              });
+              token.picture = avatarUrl;
             }
           }
         } catch (error) {
-          console.error("Failed to update Discord avatar:", error);
+          console.error("Discord avatar error:", error);
         }
       }
-      if (user) {
-        token.id = user.id;
-      }
+      if (user) token.id = user.id;
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        if (token.picture) {
-          session.user.image = token.picture as string;
-        }
+        if (token.picture) session.user.image = token.picture as string;
         const dbUser = await prisma.user.findUnique({
           where: { id: session.user.id },
           select: { role: true },
@@ -116,22 +66,9 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "database",
   },
-  debug: !isProduction,
   useSecureCookies: isProduction,
-  cookies: {
-    state: {
-      name: `next-auth.state`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: isProduction,
-      },
-    },
-  },
 };
 
-// Type augmentation for next-auth
 declare module "next-auth" {
   interface Session {
     user: {
