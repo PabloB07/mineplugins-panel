@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useIcon } from "@/hooks/useIcon";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - TownyFaith",
+  title: "Privacy Policy - MinePlugins",
 };
 
 export default function PrivacyPage() {
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           Back to Home
         </Link>
         
-        <h1 className="text-4xl font-bold text-white mb-8">Privacy Policy</h1>
+        <h1 className="text-4xl font-bold text-white mb-8">Privacy Policy - MinePlugins</h1>
         
         <div className="prose prose-invert max-w-none space-y-6">
           <p className="text-gray-400">Last updated: {new Date().toLocaleDateString()}</p>

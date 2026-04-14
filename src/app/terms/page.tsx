@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useIcon } from "@/hooks/useIcon";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - TownyFaith",
+  title: "Terms of Service - MinePlugins",
 };
 
 export default function TermsPage() {
@@ -17,7 +17,7 @@ export default function TermsPage() {
           Back to Home
         </Link>
         
-        <h1 className="text-4xl font-bold text-white mb-8">Terms of Service</h1>
+        <h1 className="text-4xl font-bold text-white mb-8">Terms of Service - MinePlugins</h1>
         
         <div className="prose prose-invert max-w-none space-y-6">
           <p className="text-gray-400">Last updated: {new Date().toLocaleDateString()}</p>
