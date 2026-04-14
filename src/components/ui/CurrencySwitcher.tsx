@@ -33,23 +33,25 @@ export function CurrencySwitcher() {
   const currentCurrency = currencies.find(c => c.id === currency) || currencies[0];
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        type="button"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
-      >
-        <Globe className="w-4 h-4 text-gray-400" />
-        <span className="text-white font-medium">{currentCurrency.shortName}</span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+    <div className="relative inline-block text-left" ref={dropdownRef}>
+      <div>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
+        >
+          <Globe className="w-4 h-4 text-gray-400" />
+          <span className="text-white font-medium">{currentCurrency.shortName}</span>
+          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        </button>
+      </div>
 
       {isOpen && (
         <div 
           role="listbox"
-          className="absolute top-full right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl overflow-hidden z-50"
+          className="absolute right-0 top-[calc(100%+0.5rem)] z-[9999] w-56 origin-top-right rounded-xl bg-[#111] border border-[#333] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] overflow-hidden"
         >
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -65,7 +67,7 @@ export function CurrencySwitcher() {
                   setCurrency(curr.id);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all text-left ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all text-left mt-1 ${
                   currency === curr.id
                     ? "bg-[#22c55e]/10 text-[#22c55e]"
                     : "text-gray-300 hover:bg-[#1a1a1a] hover:text-white"
@@ -83,8 +85,8 @@ export function CurrencySwitcher() {
               </button>
             ))}
           </div>
-          <div className="px-3 py-2 border-t border-[#222]">
-            <p className="text-[10px] text-gray-500">
+          <div className="px-3 py-2 border-t border-[#222] bg-[#0a0a0a]/50">
+            <p className="text-[10px] leading-tight text-gray-500">
               Prices shown in USD/CLP are exact. Other currencies are approximate based on current exchange rates.
             </p>
           </div>
