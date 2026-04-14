@@ -33,26 +33,18 @@ export function CurrencySwitcher() {
   const currentCurrency = currencies.find(c => c.id === currency) || currencies[0];
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
-      <div>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          type="button"
-          aria-expanded={isOpen}
-          aria-haspopup="listbox"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
-        >
-          <Globe className="w-4 h-4 text-gray-400" />
-          <span className="text-white font-medium">{currentCurrency.shortName}</span>
-          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-        </button>
-      </div>
+    <div className="relative z-[200]" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#222]"
+      >
+        <Globe className="w-4 h-4" />
+        <span className="text-sm font-medium">{currentCurrency.shortName}</span>
+        <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+      </button>
 
       {isOpen && (
-        <div 
-          role="listbox"
-          className="absolute right-0 top-[calc(100%+0.5rem)] z-[9999] w-56 origin-top-right rounded-xl bg-[#111] border border-[#333] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] overflow-hidden"
-        >
+        <div className="absolute right-0 mt-1 w-56 bg-[#111] border border-[#222] rounded-lg shadow-xl z-[201] overflow-hidden">
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-gray-500 font-medium uppercase tracking-wider">
               {t("currency.selectCurrency")}
@@ -60,34 +52,29 @@ export function CurrencySwitcher() {
             {currencies.map((curr) => (
               <button
                 key={curr.id}
-                type="button"
-                role="option"
-                aria-selected={currency === curr.id}
                 onClick={() => {
                   setCurrency(curr.id);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all text-left mt-1 ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm hover:bg-[#222] transition-colors ${
                   currency === curr.id
-                    ? "bg-[#22c55e]/10 text-[#22c55e]"
-                    : "text-gray-300 hover:bg-[#1a1a1a] hover:text-white"
+                    ? "text-green-400 bg-green-400/5"
+                    : "text-gray-300"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-[#0a0a0a] border border-[#222] flex items-center justify-center text-sm font-bold">
+                  <span className="w-6 h-6 rounded-md bg-[#0a0a0a] border border-[#222] flex items-center justify-center text-xs font-bold font-mono">
                     {curr.symbol}
                   </span>
-                  <span className="font-medium">{t(`currency.${curr.id}`)}</span>
+                  <span>{t(`currency.${curr.id}`)}</span>
                 </div>
-                {currency === curr.id && (
-                  <Check className="w-4 h-4" />
-                )}
+                {currency === curr.id && <Check className="w-4 h-4" />}
               </button>
             ))}
           </div>
           <div className="px-3 py-2 border-t border-[#222] bg-[#0a0a0a]/50">
             <p className="text-[10px] leading-tight text-gray-500">
-              Prices shown in USD/CLP are exact. Other currencies are approximate based on current exchange rates.
+              Prices shown in USD/CLP are exact. Other currencies are approximate.
             </p>
           </div>
         </div>
