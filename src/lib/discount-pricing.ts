@@ -103,6 +103,11 @@ export function getMinPurchaseInOwnCurrency(discount: DiscountLike): number | nu
   return denormalizeStoredAmount(discount.minPurchase, getDiscountCurrency(discount.currency));
 }
 
+export function getMinPurchaseUSD(discount: Pick<DiscountLike, "minPurchase">): number | null {
+  if (!discount.minPurchase) return null;
+  return denormalizeStoredAmount(discount.minPurchase, "USD");
+}
+
 export function calculateDiscountAmounts(
   discount: DiscountLike,
   subtotalUSD: number,

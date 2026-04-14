@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 
 interface PaykuButtonProps {
   productSlug: string;
@@ -76,7 +76,7 @@ export function PaykuButton({
       >
         {isLoading ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Icon name="Loader2" className="w-5 h-5 animate-spin" />
             Processing...
           </>
         ) : (

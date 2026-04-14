@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Download, CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { formatUSD, formatCLPValue } from "@/lib/pricing";
 
 interface PageProps {
@@ -57,15 +57,15 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
+        return <Icon name="CheckCircle" className="w-5 h-5 text-green-400" />;
       case "FAILED":
-        return <XCircle className="w-5 h-5 text-red-400" />;
+        return <Icon name="XCircle" className="w-5 h-5 text-red-400" />;
       case "CANCELLED":
-        return <XCircle className="w-5 h-5 text-gray-400" />;
+        return <Icon name="XCircle" className="w-5 h-5 text-gray-400" />;
       case "PENDING":
-        return <Clock className="w-5 h-5 text-yellow-400" />;
+        return <Icon name="Clock" className="w-5 h-5 text-yellow-400" />;
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-400" />;
+        return <Icon name="AlertCircle" className="w-5 h-5 text-gray-400" />;
     }
   };
 
@@ -90,7 +90,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       {success === "true" && (
         <div className="bg-emerald-900/50 border border-emerald-700 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <CheckCircle className="w-5 h-5 text-emerald-400" />
+            <Icon name="CheckCircle" className="w-5 h-5 text-emerald-400" />
             <div>
               <h3 className="text-emerald-300 font-semibold">Payment Successful!</h3>
               <p className="text-emerald-200 text-sm">Your order has been processed successfully.</p>
@@ -102,7 +102,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       {error && (
         <div className="bg-red-900/50 border border-red-700 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <XCircle className="w-5 h-5 text-red-400" />
+            <Icon name="XCircle" className="w-5 h-5 text-red-400" />
             <div>
               <h3 className="text-red-300 font-semibold">Payment Issue</h3>
               <p className="text-red-200 text-sm">
@@ -126,7 +126,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
               href="/dashboard/orders"
               className="text-gray-400 hover:text-white transition-colors mt-1"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <Icon name="ArrowLeft" className="w-6 h-6" />
             </Link>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Order Details</h1>
@@ -253,7 +253,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                             href={`/dashboard/licenses/${item.license.id}`}
                             className="inline-flex items-center gap-2 bg-[#22c55e] hover:bg-[#16a34a] text-black text-sm font-semibold py-2 px-4 rounded-lg transition-all"
                           >
-                            <Download className="w-4 h-4" />
+                            <Icon name="Download" className="w-4 h-4" />
                             View License
                           </Link>
                         </div>

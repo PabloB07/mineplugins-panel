@@ -3,18 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import {
-    LayoutDashboard,
-    Key,
-    Download,
-    ShieldAlert,
-    Menu,
-    X,
-    User,
-    LogOut,
-    Server,
-    LifeBuoy,
-} from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -35,11 +24,11 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
-        { href: "/dashboard", label: t("dashboard.title"), icon: LayoutDashboard },
-        { href: "/dashboard/licenses", label: t("dashboard.yourPlugins"), icon: Key },
-        { href: "/dashboard/downloads", label: t("dashboard.downloads"), icon: Download },
-        { href: "/dashboard/servers", label: t("admin.servers"), icon: Server },
-        { href: "/dashboard/tickets", label: t("tickets.navLabel"), icon: LifeBuoy },
+        { href: "/dashboard", label: t("dashboard.title"), icon: "BarChart3" },
+        { href: "/dashboard/licenses", label: t("dashboard.yourPlugins"), icon: "Key" },
+        { href: "/dashboard/downloads", label: t("dashboard.downloads"), icon: "Download" },
+        { href: "/dashboard/servers", label: t("admin.servers"), icon: "Server" },
+        { href: "/dashboard/tickets", label: t("tickets.navLabel"), icon: "LifeBuoy" },
     ];
 
     const isActive = (path: string) => pathname === path;
@@ -60,7 +49,6 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                     <div className="hidden xl:flex items-center gap-1">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
-                            const Icon = item.icon;
 
                             return (
                                 <Link
@@ -71,7 +59,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon className={`w-3.5 h-3.5 ${active ? "text-green-400" : "text-gray-500"}`} />
+                                    <Icon name={item.icon as any} className={`w-3.5 h-3.5 ${active ? "text-green-400" : "text-gray-500"}`} />
                                     {item.label}
                                 </Link>
                             );
@@ -84,7 +72,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                     href="/admin"
                                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/20 transition-all duration-200 whitespace-nowrap"
                                 >
-                                    <ShieldAlert className="w-3.5 h-3.5" />
+                                    <Icon name="Shield" className="w-3.5 h-3.5" />
                                     Admin
                                 </Link>
                             </>
@@ -109,7 +97,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                     />
                                 ) : (
                                     <div className="w-9 h-9 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-gray-400">
-                                        <User className="w-4 h-4" />
+                                        <Icon name="User" className="w-4 h-4" />
                                     </div>
                                 )}
                                 <button
@@ -118,7 +106,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                     className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
                                     title="Sign out"
                                 >
-                                    <LogOut className="w-4 h-4" />
+                                    <Icon name="LogOut" className="w-4 h-4" />
                                 </button>
                             </div>
                         ) : (
@@ -133,9 +121,9 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                 className="text-gray-400 hover:text-green-400 p-2 rounded-lg hover:bg-[#111] transition-all duration-200"
                             >
                                 {isMobileMenuOpen ? (
-                                    <X className="w-6 h-6" />
+                                    <Icon name="X" className="w-6 h-6" />
                                 ) : (
-                                    <Menu className="w-6 h-6" />
+                                    <Icon name="ChevronDown" className="w-6 h-6" />
                                 )}
                             </button>
                         </div>
@@ -149,7 +137,6 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
-                            const Icon = item.icon;
 
                             return (
                                 <Link
@@ -161,7 +148,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon className={`w-5 h-5 ${active ? "text-green-400" : "text-gray-500"}`} />
+                                    <Icon name={item.icon as any} className={`w-5 h-5 ${active ? "text-green-400" : "text-gray-500"}`} />
                                     {item.label}
                                 </Link>
                             );
@@ -173,7 +160,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center gap-3 px-4 py-3 text-yellow-500 font-medium hover:bg-yellow-500/10 rounded-xl border border-yellow-500/20 hover:border-yellow-500/30 transition-all duration-200"
                             >
-                                <ShieldAlert className="w-5 h-5" />
+                                <Icon name="Shield" className="w-5 h-5" />
                                 Admin Panel
                             </Link>
                         )}
@@ -186,7 +173,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                             <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full border-2 border-green-500/30" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-[#111] border border-[#333] flex items-center justify-center">
-                                                <User className="w-5 h-5 text-gray-400" />
+                                                <Icon name="User" className="w-5 h-5 text-gray-400" />
                                             </div>
                                         )}
                                         <div>
@@ -202,7 +189,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                         }}
                                         className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                                     >
-                                        <LogOut className="w-5 h-5" />
+                                        <Icon name="LogOut" className="w-5 h-5" />
                                         Sign out
                                     </button>
                                 </>

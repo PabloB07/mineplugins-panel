@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, X, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import minecraftIcons from "@/messages/minecraft-block-and-entity.json";
 
 interface MinecraftIconPickerProps {
@@ -65,7 +65,7 @@ export default function MinecraftIconPicker({
             onClick={() => setValue("")}
             className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <Icon name="X" className="w-4 h-4" />
           </button>
         </div>
       ) : (
@@ -87,13 +87,13 @@ export default function MinecraftIconPicker({
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-[#222] rounded-lg transition-colors text-gray-400 hover:text-white"
               >
-                <X className="w-5 h-5" />
+                <Icon name="X" className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-4 border-b border-[#222]">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                 <input
                   type="text"
                   value={search}

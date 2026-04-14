@@ -2,54 +2,22 @@
 
 import { useIcon } from "@/hooks/useIcon";
 
-type BaseIconName = Parameters<typeof useIcon>[0];
-type MinecraftOnlyIconName = "Sparkles";
-type IconName = BaseIconName | MinecraftOnlyIconName;
-
-const minecraftIconMap: Partial<Record<IconName, string>> = {
-  Users: "icon-minecraft-player-head",
-  Key: "icon-minecraft-trial-key",
-  ShoppingCart: "icon-minecraft-barrel",
-  DollarSign: "icon-minecraft-diamond-block",
-  Activity: "icon-minecraft-observer",
-  ArrowRight: "icon-minecraft-arrow",
-  Package: "icon-minecraft-barrel",
-  Clock: "icon-minecraft-clock",
-  Server: "icon-minecraft-grass-block",
-  CheckCircle: "icon-minecraft-emerald-block",
-  XCircle: "icon-minecraft-tnt",
-  TrendingUp: "icon-minecraft-compass",
-  AlertTriangle: "icon-minecraft-tnt",
-  Plus: "icon-minecraft-green-stone-button",
-  Download: "icon-minecraft-paper",
-  Search: "icon-minecraft-compass",
-  Globe: "icon-minecraft-globe-banner-pattern",
-  Calendar: "icon-minecraft-clock",
-  ShoppingBag: "icon-minecraft-barrel",
-  Monitor: "icon-minecraft-observer",
-  MapPin: "icon-minecraft-compass",
-  Check: "icon-minecraft-emerald-block",
-  CreditCard: "icon-minecraft-paper",
-  Zap: "icon-minecraft-diamond",
-  Sparkles: "icon-minecraft-diamond-block",
-  RefreshCw: "icon-minecraft-clock",
-};
-
-function MinecraftIcon({ name, className = "w-4 h-4" }: IconProps) {
-  const minecraftClass = minecraftIconMap[name];
-  if (!minecraftClass) return null;
-
-  const useLargeSprite = /\b(?:w|h)-(6|7|8|9|10|11|12)\b/.test(className);
-  const spriteBaseClass = useLargeSprite ? "icon-minecraft" : "icon-minecraft-sm";
-  const cleanedClassName = className.replace(/\b(?:w|h)-\d+\b/g, "").trim();
-
-  return (
-    <span
-      aria-hidden="true"
-      className={`${spriteBaseClass} ${minecraftClass} inline-block shrink-0 ${cleanedClassName}`.trim()}
-    />
-  );
-}
+type IconName =
+  | "Users" | "Key" | "ShoppingCart" | "DollarSign" | "Activity"
+  | "ArrowRight" | "Package" | "Clock" | "Server" | "CheckCircle"
+  | "XCircle" | "TrendingUp" | "AlertTriangle" | "Plus" | "Download"
+  | "Shield" | "Crown" | "Search" | "UserPlus" | "Link" | "Ban"
+  | "Globe" | "ChevronDown" | "Check" | "Zap" | "ArrowLeft"
+  | "CreditCard" | "Loader2" | "Upload" | "X" | "Save" | "Trash2"
+  | "ExternalLink" | "Star" | "AlertCircle" | "Wifi" | "WifiOff"
+  | "CloudUpload" | "RefreshCw" | "Edit2" | "LogOut" | "User"
+  | "Copy" | "UploadCloud" | "Power" | "Edit" | "Eye" | "EyeOff"
+  | "Filter" | "ChevronLeft" | "ChevronRight" | "ShieldX"
+  | "Mail" | "Calendar" | "ShoppingBag" | "RotateCcw"
+  | "BarChart3" | "Monitor" | "MapPin" | "Sparkles" | "FileText"
+  | "Bell" | "MessagesSquare" | "Timer" | "TriangleAlert"
+  | "LifeBuoy" | "MessageCircle" | "PlusCircle" | "KeyRound"
+  | "Percent" | "Tag" | "Ticket" | "Wallet";
 
 interface IconProps {
   name: IconName;
@@ -57,11 +25,7 @@ interface IconProps {
 }
 
 export function Icon({ name, className = "w-4 h-4" }: IconProps) {
-  const lucideName: BaseIconName = name === "Sparkles" ? "Zap" : name;
-  const IconComponent = useIcon(lucideName);
-  const minecraftIcon = MinecraftIcon({ name, className });
-  if (minecraftIcon) return minecraftIcon;
-
+  const IconComponent = useIcon(name);
   return <IconComponent className={className} />;
 }
 

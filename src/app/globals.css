@@ -169,6 +169,10 @@ span {
 
 [class*="bg-[#111]"][class*="border-[#222]"][class*="rounded-xl"],
 [class*="bg-[#111]"][class*="border-[#222]"][class*="rounded-2xl"],
+[class*="bg-[#111]"][class*="border-[#333]"][class*="rounded-xl"],
+[class*="bg-[#111]"][class*="border-[#333]"][class*="rounded-2xl"],
+[class*="bg-[#151515]"][class*="border-[#333]"][class*="rounded-xl"],
+[class*="bg-[#151515]"][class*="border-[#333]"][class*="rounded-2xl"],
 [class*="bg-[#101010]"][class*="border-[#222]"][class*="rounded-xl"],
 [class*="bg-[#101010]"][class*="border-[#222]"][class*="rounded-2xl"] {
   position: relative;
@@ -177,6 +181,10 @@ span {
 
 [class*="bg-[#111]"][class*="border-[#222]"][class*="rounded-xl"]::before,
 [class*="bg-[#111]"][class*="border-[#222]"][class*="rounded-2xl"]::before,
+[class*="bg-[#111]"][class*="border-[#333]"][class*="rounded-xl"]::before,
+[class*="bg-[#111]"][class*="border-[#333]"][class*="rounded-2xl"]::before,
+[class*="bg-[#151515]"][class*="border-[#333]"][class*="rounded-xl"]::before,
+[class*="bg-[#151515]"][class*="border-[#333]"][class*="rounded-2xl"]::before,
 [class*="bg-[#101010]"][class*="border-[#222]"][class*="rounded-xl"]::before,
 [class*="bg-[#101010]"][class*="border-[#222]"][class*="rounded-2xl"]::before {
   content: "";
@@ -187,4 +195,22 @@ span {
   clip-path: polygon(12px 0, calc(100% - 12px) 0, calc(100% - 12px) 5px, calc(100% - 5px) 5px, calc(100% - 5px) 12px, 100% 12px, 100% calc(100% - 12px), calc(100% - 5px) calc(100% - 12px), calc(100% - 5px) calc(100% - 5px), calc(100% - 12px) calc(100% - 5px), calc(100% - 12px) 100%, 12px 100%, 12px calc(100% - 5px), 5px calc(100% - 5px), 5px calc(100% - 12px), 0 calc(100% - 12px), 0 12px, 5px 12px, 5px 5px, 12px 5px);
   background: rgba(34, 197, 94, 0.08);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+[class*="fixed"][class*="inset-0"][class*="z-50"] > [class*="rounded-2xl"][class*="border"],
+[class*="fixed"][class*="inset-0"][class*="z-50"] > div > [class*="rounded-2xl"][class*="border"] {
+  position: relative;
+  isolation: isolate;
+}
+
+[class*="fixed"][class*="inset-0"][class*="z-50"] > [class*="rounded-2xl"][class*="border"]::before,
+[class*="fixed"][class*="inset-0"][class*="z-50"] > div > [class*="rounded-2xl"][class*="border"]::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  pointer-events: none;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, calc(100% - 14px) 6px, calc(100% - 6px) 6px, calc(100% - 6px) 14px, 100% 14px, 100% calc(100% - 14px), calc(100% - 6px) calc(100% - 14px), calc(100% - 6px) calc(100% - 6px), calc(100% - 14px) calc(100% - 6px), calc(100% - 14px) 100%, 14px 100%, 14px calc(100% - 6px), 6px calc(100% - 6px), 6px calc(100% - 14px), 0 calc(100% - 14px), 0 14px, 6px 14px, 6px 6px, 14px 6px);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.2);
 }

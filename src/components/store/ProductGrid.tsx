@@ -4,12 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Icon } from "@/components/ui/Icon";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
 import { Product, Session } from "./types";
 
 interface ProductGridProps {
@@ -371,7 +365,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
       <section className="mt-8 mb-16">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+            <Icon name="Loader2" className="w-8 h-8 animate-spin text-green-500" />
           </div>
         ) : (
           <>
@@ -550,7 +544,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                   disabled={pagination.page === 1}
                   className="rounded-xl border border-[#333] bg-[#1a1a1a] p-2 text-gray-300 hover:bg-[#222] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <Icon name="ChevronLeft" className="w-5 h-5" />
                 </button>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, index) => {
@@ -580,7 +574,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                   disabled={pagination.page === pagination.totalPages}
                   className="rounded-xl border border-[#333] bg-[#1a1a1a] p-2 text-gray-300 hover:bg-[#222] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <ChevronRight className="h-5 w-5" />
+                  <Icon name="ChevronRight" className="w-5 h-5" />
                 </button>
               </div>
             )}
@@ -634,8 +628,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
                 className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-[#151515]"
               >
                 <span className="text-sm text-white sm:text-base">{faq.question}</span>
-                <ChevronDown
-                  className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${
+                <Icon name="ChevronDown" className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${
                     expandedFaq === index ? "rotate-180" : ""
                   }`}
                 />

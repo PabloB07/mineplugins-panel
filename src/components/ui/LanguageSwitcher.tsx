@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Globe, ChevronDown, Check } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const locales = [
@@ -35,9 +35,9 @@ export default function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#222]"
       >
-        <Globe className="w-4 h-4" />
+        <Icon name="Globe" className="w-4 h-4" />
         <span className="text-sm uppercase">{locale}</span>
-        <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <Icon name="ChevronDown" className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
       {isOpen && (
@@ -53,7 +53,7 @@ export default function LanguageSwitcher() {
               <span className="text-lg">{loc.flag}</span>
               <span className="flex-1 text-left">{loc.name}</span>
               <span className="text-xs text-gray-500">{loc.currency}</span>
-              {locale === loc.code && <Check className="w-4 h-4" />}
+              {locale === loc.code && <Icon name="Check" className="w-4 h-4" />}
             </button>
           ))}
         </div>

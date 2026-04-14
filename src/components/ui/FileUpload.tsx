@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useId } from "react";
-import { CloudUpload, X } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 
 interface FileUploadProps {
   accept?: string;
@@ -152,7 +152,7 @@ export default function FileUpload({
           className="hidden"
         />
         
-        <CloudUpload className="mx-auto h-12 w-12 text-gray-400" />
+        <Icon name="CloudUpload" className="w-12 h-12 mx-auto text-gray-400" />
         
         <div className="mt-4">
           <p className="text-sm font-medium text-white">{label}</p>
@@ -200,7 +200,7 @@ export default function FileUpload({
                   onClick={() => removeFile(index)}
                   className="ml-3 text-gray-400 hover:text-red-400 transition-colors"
                 >
-                  <X className="h-5 w-5" />
+                  <Icon name="X" className="w-5 h-5" />
                 </button>
               )}
             </div>

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { LifeBuoy, MessageCircle, PlusCircle } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { Icon } from "@/components/ui/Icon";
 
 interface Ticket {
   id: string;
@@ -82,7 +82,7 @@ export default function DashboardTicketsPage() {
             <p className="mt-1 text-sm text-gray-400">{t("tickets.subtitle")}</p>
           </div>
           <div className="rounded-lg border border-[#3a3a3a] bg-[#121212] p-2.5">
-            <LifeBuoy className="h-5 w-5 text-green-400" />
+            <Icon name="LifeBuoy" className="h-5 w-5 text-green-400" />
           </div>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -104,7 +104,7 @@ export default function DashboardTicketsPage() {
       <div className="grid gap-6 xl:grid-cols-5">
         <form onSubmit={createTicket} className="rounded-xl border border-[#333] bg-[#111] p-5 space-y-4 xl:col-span-2">
           <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            <PlusCircle className="h-4 w-4 text-green-400" />
+            <Icon name="PlusCircle" className="h-4 w-4 text-green-400" />
             {t("tickets.newTicket")}
           </h2>
           <input
@@ -156,7 +156,7 @@ export default function DashboardTicketsPage() {
 
         <div className="rounded-xl border border-[#333] bg-[#111] p-5 xl:col-span-3">
           <h2 className="mb-4 text-lg font-semibold text-white flex items-center gap-2">
-            <MessageCircle className="h-4 w-4 text-blue-400" />
+            <Icon name="MessageCircle" className="h-4 w-4 text-blue-400" />
             {t("tickets.myTickets")}
           </h2>
           {loading ? <p className="text-sm text-gray-400">{t("common.loading")}</p> : null}

@@ -1,13 +1,13 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Percent, Tag, Ticket, TrendingUp } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
   formatCurrencyAmount,
   getDiscountCurrency,
   getDiscountValueInOwnCurrency,
-  getMinPurchaseInOwnCurrency,
+  getMinPurchaseUSD,
   normalizeAmountForStorage,
 } from "@/lib/discount-pricing";
 
@@ -30,6 +30,12 @@ interface DiscountCode {
   _count: { usages: number; orders: number };
 }
 
+interface ProductOption {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 type DiscountFormState = {
   code: string;
   type: "PERCENTAGE" | "FIXED";
@@ -46,7 +52,7 @@ type DiscountFormState = {
 const initialForm: DiscountFormState = {
   code: "",
   type: "PERCENTAGE",
-  currency: "CLP",
+  currency: "USD",
   value: "",
   minPurchase: "",
   maxUses: "",
@@ -63,6 +69,10 @@ export default function AdminDiscountsPage() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [search, setSearch] = useState("");
+  const [productQuery, setProductQuery] = useState("");
+  const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductOption | null>(null);
 
   const filteredCodes = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -103,6 +113,51 @@ export default function AdminDiscountsPage() {
     fetchCodes();
   }, []);
 
+  useEffect(() => {
+    if (!showModal) return;
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(async () => {
+      setLoadingProducts(true);
+      try {
+        const params = new URLSearchParams({
+          showAll: "true",
+          limit: "8",
+        });
+        if (productQuery.trim()) {
+          params.set("search", productQuery.trim());
+        }
+
+        const res = await fetch(`/api/products?${params.toString()}`, {
+          signal: controller.signal,
+        });
+        const data = await res.json();
+        if (!cancelled) {
+          setProductOptions((data.products || []).map((product: ProductOption) => ({
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+          })));
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error(error);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingProducts(false);
+        }
+      }
+    }, 200);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [productQuery, showModal]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -118,7 +173,7 @@ export default function AdminDiscountsPage() {
               ? Math.round(Number(form.value || 0))
               : normalizeAmountForStorage(Number(form.value || 0), form.currency),
           minPurchase: form.minPurchase
-            ? normalizeAmountForStorage(Number(form.minPurchase), form.currency)
+            ? normalizeAmountForStorage(Number(form.minPurchase), "USD")
             : null,
           maxUses: form.maxUses ? parseInt(form.maxUses, 10) : null,
           maxUsesPerUser: form.maxUsesPerUser ? parseInt(form.maxUsesPerUser, 10) : null,
@@ -130,6 +185,8 @@ export default function AdminDiscountsPage() {
       if (res.ok) {
         setShowModal(false);
         setForm(initialForm);
+        setProductQuery("");
+        setSelectedProduct(null);
         fetchCodes();
       }
     } catch (e) {
@@ -157,42 +214,47 @@ export default function AdminDiscountsPage() {
       key: "total",
       label: t("discountsPage.totalCodes"),
       value: stats.total,
-      icon: Ticket,
+      icon: "Ticket" as const,
       accent: "text-blue-400 border-blue-500/30 bg-blue-500/10",
     },
     {
       key: "active",
       label: t("discountsPage.activeCodes"),
       value: stats.active,
-      icon: Tag,
+      icon: "Tag" as const,
       accent: "text-green-400 border-green-500/30 bg-green-500/10",
     },
     {
       key: "usage",
       label: t("discountsPage.totalUses"),
       value: stats.totalUsages,
-      icon: TrendingUp,
+      icon: "TrendingUp" as const,
       accent: "text-orange-400 border-orange-500/30 bg-orange-500/10",
     },
     {
       key: "avg",
       label: t("discountsPage.averageValue"),
       value: `${stats.avgValue}%`,
-      icon: Percent,
+      icon: "Percent" as const,
       accent: "text-violet-400 border-violet-500/30 bg-violet-500/10",
     },
   ];
 
   return (
     <div className="space-y-6 p-6">
-      <div className="rounded-2xl border border-[#2f2f2f] bg-gradient-to-br from-[#151515] to-[#0d0d0d] p-6">
+      <div className="pixel-frame pixel-frame-neutral rounded-2xl border border-[#2f2f2f] bg-gradient-to-br from-[#151515] to-[#0d0d0d] p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white">{t("discountsPage.title")}</h1>
             <p className="mt-1 text-sm text-gray-400">{t("discountsPage.subtitle")}</p>
           </div>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setForm(initialForm);
+              setProductQuery("");
+              setSelectedProduct(null);
+              setShowModal(true);
+            }}
             className="rounded-xl bg-[#f59e0b] px-4 py-2 text-sm font-semibold text-black hover:bg-[#d97706]"
           >
             + {t("discountsPage.createCode")}
@@ -202,21 +264,21 @@ export default function AdminDiscountsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map((card) => (
-          <div key={card.key} className="rounded-xl border border-[#333] bg-[#111] p-4">
+          <div key={card.key} className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs uppercase tracking-wide text-gray-500">{card.label}</p>
                 <p className="mt-1 text-2xl font-bold text-white">{card.value}</p>
               </div>
               <div className={`rounded-lg border p-2 ${card.accent}`}>
-                <card.icon className="h-4 w-4" />
+                <Icon name={card.icon as any} className="w-4 h-4" />
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+      <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -233,7 +295,7 @@ export default function AdminDiscountsPage() {
             const usageRatio = code.maxUses ? Math.min(100, Math.round((code.usedCount / code.maxUses) * 100)) : 0;
             const isExpired = code.expiresAt ? new Date(code.expiresAt) < new Date() : false;
             return (
-              <div key={code.id} className="rounded-xl border border-[#333] bg-[#111] p-4 hover:border-[#f59e0b]/40">
+              <div key={code.id} className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4 hover:border-[#f59e0b]/40">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
@@ -257,7 +319,7 @@ export default function AdminDiscountsPage() {
                     </p>
                     {code.minPurchase ? (
                       <p className="mt-1 text-xs text-gray-500">
-                        Min: {formatCurrencyAmount(getMinPurchaseInOwnCurrency(code) || 0, getDiscountCurrency(code.currency))}
+                        Min: {formatCurrencyAmount(getMinPurchaseUSD(code) || 0, "USD")}
                       </p>
                     ) : null}
                   </div>
@@ -292,7 +354,7 @@ export default function AdminDiscountsPage() {
             );
           })}
           {!loading && filteredCodes.length === 0 ? (
-            <div className="rounded-xl border border-[#333] bg-[#111] p-8 text-center text-gray-500 xl:col-span-2">
+            <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-8 text-center text-gray-500 xl:col-span-2">
               {t("discountsPage.empty")}
             </div>
           ) : null}
@@ -301,7 +363,7 @@ export default function AdminDiscountsPage() {
 
       {showModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
-          <div className="w-full max-w-2xl rounded-2xl border border-[#333] bg-[#111] p-6">
+          <div className="pixel-frame pixel-frame-neutral w-full max-w-2xl rounded-2xl border border-[#333] bg-[#111] p-6">
             <h2 className="text-xl font-bold text-white">{t("discountsPage.createTitle")}</h2>
             <p className="mt-1 text-sm text-gray-500">{t("discountsPage.createSubtitle")}</p>
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
@@ -357,11 +419,71 @@ export default function AdminDiscountsPage() {
                 <label className="text-sm text-gray-300">
                   {t("discountsPage.productId")}
                   <input
-                    value={form.productId}
-                    onChange={(e) => setForm({ ...form, productId: e.target.value })}
+                    value={productQuery}
+                    onChange={(e) => {
+                      setProductQuery(e.target.value);
+                      if (form.productId) {
+                        setForm({ ...form, productId: "" });
+                        setSelectedProduct(null);
+                      }
+                    }}
                     className="mt-1 w-full rounded-lg border border-[#333] bg-[#0a0a0a] px-3 py-2 text-white"
                     placeholder={t("discountsPage.productIdPlaceholder")}
                   />
+                  {selectedProduct ? (
+                    <div className="mt-2 flex items-center justify-between rounded-lg border border-green-500/20 bg-green-500/8 px-3 py-2 text-xs text-green-300">
+                      <span className="truncate">
+                        {selectedProduct.name} ({selectedProduct.slug})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm({ ...form, productId: "" });
+                          setSelectedProduct(null);
+                        }}
+                        className="ml-3 text-gray-400 hover:text-white"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  ) : null}
+                  <div className="mt-2 max-h-40 overflow-auto rounded-lg border border-[#262626] bg-[#0d0d0d]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm({ ...form, productId: "" });
+                        setProductQuery("");
+                        setSelectedProduct(null);
+                      }}
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors ${
+                        !form.productId ? "bg-green-500/10 text-green-300" : "text-gray-300 hover:bg-[#171717]"
+                      }`}
+                    >
+                      <span>{t("discountsPage.allProducts")}</span>
+                    </button>
+                    {productOptions.map((product) => (
+                      <button
+                        key={product.id}
+                        type="button"
+                        onClick={() => {
+                          setForm({ ...form, productId: product.id });
+                          setProductQuery("");
+                          setSelectedProduct(product);
+                        }}
+                        className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors ${
+                          form.productId === product.id
+                            ? "bg-green-500/10 text-green-300"
+                            : "text-gray-300 hover:bg-[#171717]"
+                        }`}
+                      >
+                        <span className="truncate">{product.name}</span>
+                        <span className="text-xs text-gray-500">{product.slug}</span>
+                      </button>
+                    ))}
+                    {loadingProducts ? (
+                      <div className="px-3 py-2 text-xs text-gray-500">{t("common.loading")}</div>
+                    ) : null}
+                  </div>
                 </label>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
@@ -384,12 +506,12 @@ export default function AdminDiscountsPage() {
                   />
                 </label>
                 <label className="text-sm text-gray-300">
-                  {t("discountsPage.minPurchase")}
+                  {t("discountsPage.minPurchase")} (USD)
                   <input
                     type="number"
                     value={form.minPurchase}
                     onChange={(e) => setForm({ ...form, minPurchase: e.target.value })}
-                    step={form.currency !== "CLP" ? "0.01" : "1"}
+                    step="0.01"
                     className="mt-1 w-full rounded-lg border border-[#333] bg-[#0a0a0a] px-3 py-2 text-white"
                   />
                 </label>
@@ -417,7 +539,12 @@ export default function AdminDiscountsPage() {
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false);
+                    setForm(initialForm);
+                    setProductQuery("");
+                    setSelectedProduct(null);
+                  }}
                   className="flex-1 rounded-lg border border-[#333] bg-[#1a1a1a] py-2 text-sm text-gray-300"
                 >
                   {t("common.cancel")}

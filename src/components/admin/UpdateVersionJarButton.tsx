@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UploadCloud, X, Save } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import FileUpload from "@/components/ui/FileUpload";
 import { handleFileUpload } from "@/lib/file-actions";
 import { updateVersionJar } from "@/app/admin/products/[id]/versions/actions";
@@ -87,7 +87,7 @@ export function UpdateVersionJarButton({
         className="text-[#f59e0b] hover:text-[#d97706] p-2 hover:bg-[#f59e0b]/10 rounded-lg transition-colors border border-transparent hover:border-[#f59e0b]/20"
         title="Update JAR"
       >
-        <UploadCloud className="w-4 h-4" />
+        <Icon name="UploadCloud" className="w-4 h-4" />
       </button>
 
       {open && (
@@ -98,7 +98,7 @@ export function UpdateVersionJarButton({
               <div className="px-6 py-5 border-b border-[#222] flex items-center justify-between bg-[#0f0f0f]">
                 <div>
                   <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                    <UploadCloud className="w-5 h-5 text-[#f59e0b]" />
+                    <Icon name="UploadCloud" className="w-5 h-5 text-[#f59e0b]" />
                     Update Plugin
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">
@@ -111,7 +111,7 @@ export function UpdateVersionJarButton({
                   className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-[#1a1a1a] transition-colors"
                   aria-label="Close"
                 >
-                  <X className="w-4 h-4" />
+                  <Icon name="X" className="w-4 h-4" />
                 </button>
               </div>
 
@@ -204,7 +204,7 @@ export function UpdateVersionJarButton({
                       disabled={isSubmitting}
                       className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] px-4 py-2 rounded-lg font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <Save className="w-4 h-4" />
+                      <Icon name="Save" className="w-4 h-4" />
                       {isSubmitting ? "Updating..." : "Update JAR"}
                     </button>
                   </div>

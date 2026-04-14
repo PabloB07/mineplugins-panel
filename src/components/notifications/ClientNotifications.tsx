@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Bell } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { Icon } from "@/components/ui/Icon";
 
 interface ClientNotificationCounts {
   ticketsToReply: number;
@@ -120,7 +120,7 @@ export function ClientNotifications() {
         className="relative rounded-lg p-2 text-gray-400 hover:bg-[#111] hover:text-white"
         title={t("notifications.title")}
       >
-        <Bell className="h-5 w-5" />
+        <Icon name="Bell" className="h-5 w-5" />
         {!loading && unreadTotal > 0 ? (
           <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-red-500 px-1 text-center text-[10px] font-bold text-white">
             {unreadTotal > 99 ? "99+" : unreadTotal}

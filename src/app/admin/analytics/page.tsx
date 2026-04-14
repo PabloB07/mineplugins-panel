@@ -1,16 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import AnalyticsCharts, { DailyValidation, LicenseStatusItem } from "@/components/AnalyticsCharts";
 import Link from "next/link";
-import { 
-  BarChart3,
-  Download,
-  Activity,
-  CheckCircle,
-  XCircle,
-  Key,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { LicenseStatus } from "@prisma/client";
 
 function getStartOfDay(date: Date) {
@@ -126,7 +117,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <BarChart3 className="w-8 h-8 text-[#f59e0b]" />
+              <Icon name="BarChart3" className="w-8 h-8 text-[#f59e0b]" />
               Analytics Dashboard
             </h1>
             <p className="text-gray-400 mt-2">
@@ -159,7 +150,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
-            <ShoppingCart className="w-4 h-4" />
+            <Icon name="ShoppingCart" className="w-4 h-4" />
             Completed Orders ({selectedRangeDays}d)
           </div>
           <div className="text-3xl font-bold text-white">{completedOrders}</div>
@@ -167,7 +158,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
 
         <div className="bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
-            <Users className="w-4 h-4" />
+            <Icon name="Users" className="w-4 h-4" />
             Customers
           </div>
           <div className="text-3xl font-bold text-white">{totalUsers}</div>
@@ -175,7 +166,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
 
         <div className="bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
-            <Key className="w-4 h-4" />
+            <Icon name="Key" className="w-4 h-4" />
             Active Licenses
           </div>
           <div className="text-3xl font-bold text-white">{activeLicenses}</div>
@@ -184,7 +175,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
 
         <div className="bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
-            <Download className="w-4 h-4" />
+            <Icon name="Download" className="w-4 h-4" />
             Downloads ({selectedRangeDays}d)
           </div>
           <div className="text-3xl font-bold text-white">{downloadsInRange}</div>
@@ -198,21 +189,21 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div className="bg-[#181818] border border-[#2a2a2a] rounded-lg p-3">
               <div className="text-gray-500 mb-1 flex items-center gap-2">
-                <Activity className="w-4 h-4" />
+                <Icon name="Activity" className="w-4 h-4" />
                 Validations ({selectedRangeDays}d)
               </div>
               <div className="text-white font-semibold">{validationsInRange}</div>
             </div>
             <div className="bg-[#181818] border border-[#2a2a2a] rounded-lg p-3">
               <div className="text-gray-500 mb-1 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
+                <Icon name="CheckCircle" className="w-4 h-4 text-green-400" />
                 Successful
               </div>
               <div className="text-green-400 font-semibold">{successfulInRange}</div>
             </div>
             <div className="bg-[#181818] border border-[#2a2a2a] rounded-lg p-3">
               <div className="text-gray-500 mb-1 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-red-400" />
+                <Icon name="XCircle" className="w-4 h-4 text-red-400" />
                 Failed
               </div>
               <div className="text-red-400 font-semibold">{failedInRange}</div>

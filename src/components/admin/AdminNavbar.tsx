@@ -3,23 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import {
-    LayoutDashboard,
-    Package,
-    ShoppingCart,
-    Key,
-    Users,
-    BarChart3,
-    Wallet,
-    LogOut,
-    Menu,
-    X,
-    User,
-    Server,
-    Ticket,
-    Download,
-    Tag,
-} from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -48,27 +32,27 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const usersDropdownRef = useRef<HTMLDivElement | null>(null);
 
     const navItems = [
-        { href: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard },
-        { href: "/admin/servers", label: t("admin.servers"), icon: Server },
+        { href: "/admin", label: t("admin.dashboard"), icon: "BarChart3" },
+        { href: "/admin/servers", label: t("admin.servers"), icon: "Server" },
     ];
 
     const productsItems = [
-        { href: "/admin/products", label: t("admin.products"), icon: Package },
-        { href: "/admin/orders", label: t("admin.orders"), icon: ShoppingCart },
-        { href: "/admin/servers", label: t("admin.servers"), icon: Server },
+        { href: "/admin/products", label: t("admin.products"), icon: "Package" },
+        { href: "/admin/orders", label: t("admin.orders"), icon: "ShoppingCart" },
+        { href: "/admin/servers", label: t("admin.servers"), icon: "Server" },
     ];
 
     const licensesItems = [
-        { href: "/admin/licenses", label: t("admin.licenses"), icon: Key },
-        { href: "/admin/discounts", label: t("admin.discounts"), icon: Tag },
-        { href: "/admin/tickets", label: t("admin.tickets"), icon: Ticket },
-        { href: "/admin/export", label: t("admin.export"), icon: Download },
+        { href: "/admin/licenses", label: t("admin.licenses"), icon: "Key" },
+        { href: "/admin/discounts", label: t("admin.discounts"), icon: "Tag" },
+        { href: "/admin/tickets", label: t("admin.tickets"), icon: "Ticket" },
+        { href: "/admin/export", label: t("admin.export"), icon: "Download" },
     ];
 
     const usersItems = [
-        { href: "/admin/users", label: t("admin.users"), icon: Users },
-        { href: "/admin/analytics", label: t("admin.analytics"), icon: BarChart3 },
-        { href: "/admin/payments", label: t("admin.payments"), icon: Wallet },
+        { href: "/admin/users", label: t("admin.users"), icon: "Users" },
+        { href: "/admin/analytics", label: t("admin.analytics"), icon: "BarChart3" },
+        { href: "/admin/payments", label: t("admin.payments"), icon: "Wallet" },
     ];
 
     const isActive = (path: string) => {
@@ -143,7 +127,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                         >
-                            <LayoutDashboard className="w-3.5 h-3.5" />
+                            <Icon name="BarChart3" className="w-3.5 h-3.5" />
                             {t("admin.dashboard")}
                         </Link>
 
@@ -157,7 +141,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                             >
-                                <Package className="w-3.5 h-3.5" />
+                                <Icon name="Package" className="w-3.5 h-3.5" />
                                 {t("admin.products")}
                                 <svg className={`w-3 h-3 transition-transform ${productsOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -172,7 +156,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                             onClick={() => setProductsOpen(false)}
                                             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
                                         >
-                                            <item.icon className="w-3.5 h-3.5" />
+                                            <Icon name={item.icon as any} className="w-3.5 h-3.5" />
                                             {item.label}
                                         </Link>
                                     ))}
@@ -190,7 +174,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                             >
-                                <Key className="w-3.5 h-3.5" />
+                                <Icon name="Key" className="w-3.5 h-3.5" />
                                 {t("admin.licenses")}
                                 <svg className={`w-3 h-3 transition-transform ${licensesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -205,7 +189,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                             onClick={() => setLicensesOpen(false)}
                                             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
                                         >
-                                            <item.icon className="w-3.5 h-3.5" />
+                                            <Icon name={item.icon as any} className="w-3.5 h-3.5" />
                                             {item.label}
                                         </Link>
                                     ))}
@@ -223,7 +207,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                             >
-                                <Users className="w-3.5 h-3.5" />
+                                <Icon name="Users" className="w-3.5 h-3.5" />
                                 {t("admin.users")}
                                 <svg className={`w-3 h-3 transition-transform ${usersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -238,7 +222,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                             onClick={() => setUsersOpen(false)}
                                             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
                                         >
-                                            <item.icon className="w-3.5 h-3.5" />
+                                            <Icon name={item.icon as any} className="w-3.5 h-3.5" />
                                             {item.label}
                                         </Link>
                                     ))}
@@ -248,7 +232,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
                         {navItems.slice(2).map((item) => {
                             const active = isActive(item.href);
-                            const Icon = item.icon;
 
                             return (
                                 <Link
@@ -259,7 +242,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon className={`w-3.5 h-3.5 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
+                                    <Icon name={item.icon as any} className={`w-3.5 h-3.5 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
                                     {item.label}
                                 </Link>
                             );
@@ -294,7 +277,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 />
                             ) : (
                                 <div className="w-9 h-9 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-gray-400">
-                                    <User className="w-4 h-4" />
+                                    <Icon name="User" className="w-4 h-4" />
                                 </div>
                             )}
 
@@ -304,7 +287,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
                                 title={t("admin.signOut")}
                             >
-                                <LogOut className="w-4 h-4" />
+                                <Icon name="LogOut" className="w-4 h-4" />
                             </button>
                         </div>
 
@@ -315,9 +298,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 className="text-gray-400 hover:text-[#f59e0b] p-2 rounded-lg hover:bg-[#111] transition-all duration-200"
                             >
                                 {isMobileMenuOpen ? (
-                                    <X className="w-6 h-6" />
+                                    <Icon name="X" className="w-6 h-6" />
                                 ) : (
-                                    <Menu className="w-6 h-6" />
+                                    <Icon name="ChevronDown" className="w-6 h-6" />
                                 )}
                             </button>
                         </div>
@@ -331,7 +314,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
-                            const Icon = item.icon;
 
                             return (
                                 <Link
@@ -343,7 +325,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon className={`w-5 h-5 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                    <Icon name={item.icon as any} className={`w-5 h-5 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
                                     {item.label}
                                 </Link>
                             );
@@ -359,7 +341,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             }`}
                         >
                             <span className="flex items-center gap-3">
-                                <Key className={`w-5 h-5 ${pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export") ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                <Icon name="Key" className={`w-5 h-5 ${pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export") ? "text-[#f59e0b]" : "text-gray-500"}`} />
                                 {t("admin.licenses")}
                             </span>
                             <svg className={`w-4 h-4 transition-transform ${mobileLicensesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -369,7 +351,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         {mobileLicensesOpen && (
                             <div className="space-y-1 pl-4">
                                 {licensesItems.map((item) => {
-                                    const Icon = item.icon;
                                     const active = isActive(item.href);
                                     return (
                                         <Link
@@ -382,7 +363,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                                     : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                             }`}
                                         >
-                                            <Icon className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                            <Icon name={item.icon as any} className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
                                             {item.label}
                                         </Link>
                                     );
@@ -400,7 +381,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             }`}
                         >
                             <span className="flex items-center gap-3">
-                                <Users className={`w-5 h-5 ${pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/analytics") || pathname?.startsWith("/admin/payments") ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                <Icon name="Users" className={`w-5 h-5 ${pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/analytics") || pathname?.startsWith("/admin/payments") ? "text-[#f59e0b]" : "text-gray-500"}`} />
                                 {t("admin.users")}
                             </span>
                             <svg className={`w-4 h-4 transition-transform ${mobileUsersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -410,7 +391,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         {mobileUsersOpen && (
                             <div className="space-y-1 pl-4">
                                 {usersItems.map((item) => {
-                                    const Icon = item.icon;
                                     const active = isActive(item.href);
                                     return (
                                         <Link
@@ -423,7 +403,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                                     : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                             }`}
                                         >
-                                            <Icon className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                            <Icon name={item.icon as any} className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
                                             {item.label}
                                         </Link>
                                     );
@@ -437,7 +417,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center gap-3 px-4 py-3 text-blue-400 font-medium hover:bg-blue-400/10 rounded-xl transition-all duration-200"
                             >
-                                <LayoutDashboard className="w-5 h-5" />
+                                <Icon name="BarChart3" className="w-5 h-5" />
                                 {t("admin.customerView")}
                             </Link>
                             <button
@@ -448,7 +428,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 }}
                                 className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                             >
-                                <LogOut className="w-5 h-5" />
+                                <Icon name="LogOut" className="w-5 h-5" />
                                 {t("admin.signOut")}
                             </button>
                         </div>

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MessagesSquare, Timer, TriangleAlert } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { Icon } from "@/components/ui/Icon";
 
 interface Ticket {
   id: string;
@@ -107,7 +107,7 @@ export default function AdminTicketsPage() {
               <p className="mt-1 text-2xl font-bold text-white">{stats.total}</p>
             </div>
             <div className="rounded-lg border border-blue-500/40 bg-blue-500/10 p-2 text-blue-300">
-              <MessagesSquare className="h-4 w-4" />
+              <Icon name="MessagesSquare" className="h-4 w-4" />
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function AdminTicketsPage() {
               <p className="mt-1 text-2xl font-bold text-white">{stats.open}</p>
             </div>
             <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-2 text-orange-300">
-              <Timer className="h-4 w-4" />
+              <Icon name="Timer" className="h-4 w-4" />
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function AdminTicketsPage() {
               <p className="mt-1 text-2xl font-bold text-white">{stats.urgent}</p>
             </div>
             <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-2 text-red-300">
-              <TriangleAlert className="h-4 w-4" />
+              <Icon name="TriangleAlert" className="h-4 w-4" />
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { handleImageUpload } from "@/lib/file-actions";
 
 interface ImageUploadProps {
@@ -64,7 +64,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
             onClick={handleRemove}
             className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <Icon name="X" className="w-4 h-4" />
           </button>
         </div>
       ) : (
@@ -76,12 +76,12 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
         >
           {isUploading ? (
             <>
-              <Loader2 className="w-6 h-6 animate-spin" />
+              <Icon name="Loader2" className="w-6 h-6 animate-spin" />
               <span className="text-sm">Uploading...</span>
             </>
           ) : (
             <>
-              <Upload className="w-6 h-6" />
+              <Icon name="Upload" className="w-6 h-6" />
               <span className="text-sm">Click to upload image</span>
             </>
           )}

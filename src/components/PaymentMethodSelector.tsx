@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { PAYMENT_METHODS, type PaymentMethodId } from "@/lib/payment-methods";
 
 interface PaymentMethodSelectorProps {
@@ -39,7 +39,7 @@ export function PaymentMethodSelector({
           >
             {isSelected && (
               <span className="absolute right-3 top-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white">
-                <Check className="h-3.5 w-3.5" />
+                <Icon name="Check" className="w-3.5 h-3.5" />
               </span>
             )}
 

@@ -11,8 +11,7 @@ import {
   calculateDiscountAmounts,
   convertCurrencyAmount,
   formatCurrencyAmount,
-  getDiscountCurrency,
-  getMinPurchaseInOwnCurrency,
+  getMinPurchaseUSD,
 } from "@/lib/discount-pricing";
 
 interface PaymentCreateRequest {
@@ -134,19 +133,15 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const minPurchaseAmount = getMinPurchaseInOwnCurrency(discountCode);
+      const minPurchaseAmount = getMinPurchaseUSD(discountCode);
       if (minPurchaseAmount) {
-        const minPurchaseCurrency = getDiscountCurrency(discountCode.currency);
-        const subtotalInDiscountCurrency =
-          minPurchaseCurrency === "CLP"
-            ? subtotalCLP
-            : convertCurrencyAmount(subtotalUSD, "USD", minPurchaseCurrency);
+        const subtotalInDiscountCurrency = convertCurrencyAmount(subtotalUSD, "USD", "USD");
 
         if (subtotalInDiscountCurrency < minPurchaseAmount) {
           return NextResponse.json(
             {
               error: "MIN_PURCHASE_NOT_REACHED",
-              message: `Minimum purchase is ${formatCurrencyAmount(minPurchaseAmount, minPurchaseCurrency)}`,
+              message: `Minimum purchase is ${formatCurrencyAmount(minPurchaseAmount, "USD")}`,
             },
             { status: 400 }
           );

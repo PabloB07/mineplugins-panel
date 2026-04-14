@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Save, Package, DollarSign, Server, Upload, Plus } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import ProductImageField from "@/components/admin/ProductImageField";
 import MinecraftIconPicker from "@/components/admin/MinecraftIconPicker";
 
@@ -86,7 +86,7 @@ export default async function EditProductPage({ params }: PageProps) {
               href="/admin/products"
               className="text-gray-400 hover:text-white transition-colors mt-1"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <Icon name="ArrowLeft" className="w-6 h-6" />
             </Link>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Edit Product</h1>
@@ -102,7 +102,7 @@ export default async function EditProductPage({ params }: PageProps) {
           {/* Basic Information */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Package className="w-5 h-5" />
+              <Icon name="Package" className="w-5 h-5" />
               Basic Information
             </h2>
             
@@ -166,7 +166,7 @@ export default async function EditProductPage({ params }: PageProps) {
           {/* Pricing */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
+              <Icon name="DollarSign" className="w-5 h-5" />
               Pricing
             </h2>
 
@@ -258,7 +258,7 @@ export default async function EditProductPage({ params }: PageProps) {
           {/* License Configuration */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Server className="w-5 h-5" />
+              <Icon name="Server" className="w-5 h-5" />
               License Configuration
             </h2>
             
@@ -319,7 +319,7 @@ export default async function EditProductPage({ params }: PageProps) {
               type="submit"
               className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-bold py-2.5 px-6 rounded-lg transition-all"
             >
-              <Save className="w-4 h-4" />
+              <Icon name="Save" className="w-4 h-4" />
               Update Product
             </button>
             <Link
@@ -336,7 +336,7 @@ export default async function EditProductPage({ params }: PageProps) {
       <div className="bg-[#111] rounded-xl border border-[#222] p-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-            <Package className="w-5 h-5" />
+            <Icon name="Package" className="w-5 h-5" />
             Plugin Versions ({product.versions.length})
           </h2>
           <div className="flex flex-wrap gap-3">
@@ -350,7 +350,7 @@ export default async function EditProductPage({ params }: PageProps) {
               href={`/admin/products/${id}/versions/new`}
               className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-semibold py-2 px-4 rounded-lg transition-all"
             >
-              <Plus className="w-4 h-4" />
+              <Icon name="Plus" className="w-4 h-4" />
               Add Version
             </Link>
           </div>
@@ -358,7 +358,7 @@ export default async function EditProductPage({ params }: PageProps) {
 
         {product.versions.length === 0 ? (
           <div className="text-center py-8">
-            <Package className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+            <Icon name="Package" className="w-12 h-12 text-gray-500 mx-auto mb-3" />
             <p className="text-gray-400">No versions uploaded yet</p>
           </div>
         ) : (
@@ -413,7 +413,7 @@ export default async function EditProductPage({ params }: PageProps) {
                             className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-colors border border-transparent hover:border-blue-500/20"
                             title="Download"
                           >
-                            <Upload className="w-4 h-4" />
+                            <Icon name="Upload" className="w-4 h-4" />
                           </a>
                         </div>
                       </td>

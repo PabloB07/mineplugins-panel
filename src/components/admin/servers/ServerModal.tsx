@@ -1,7 +1,7 @@
 "use client";
 
 import { ServerStatus, ServerFormData } from "./types";
-import { Server, X } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { useState } from "react";
 
 interface ServerModalProps {
@@ -41,14 +41,14 @@ export default function ServerModal({
       <div className="bg-[#111] rounded-xl border border-[#222] w-full max-w-md p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Server className="w-5 h-5 text-blue-400" />
+            <Icon name="Server" className="w-5 h-5 text-blue-400" />
             {editingServer ? "Edit Server" : "Add New Server"}
           </h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-[#222] text-gray-400 hover:text-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <Icon name="X" className="w-5 h-5" />
           </button>
         </div>
 

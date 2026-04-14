@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, ChevronDown, Package, ExternalLink } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 
 interface Version {
   id: string;
@@ -57,7 +57,7 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
             disabled={downloading === latestVersion.id || !latestVersion.downloadUrl}
             className="flex items-center gap-2 bg-[#22c55e]/10 hover:bg-[#22c55e]/20 border border-[#22c55e]/30 text-[#22c55e] px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
           >
-            <Download className={`w-4 h-4 ${downloading === latestVersion.id ? "animate-bounce" : ""}`} />
+            <Icon name="Download" className={`w-4 h-4 ${downloading === latestVersion.id ? "animate-bounce" : ""}`} />
             v{latestVersion.version}
             {latestVersion.isBeta && (
               <span className="px-1 py-0.5 bg-yellow-500/20 text-yellow-300 text-xs rounded">Beta</span>
@@ -71,7 +71,7 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
             className="p-1.5 hover:bg-[#222] rounded-lg transition-all text-gray-400 hover:text-white"
             title="More versions"
           >
-            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+            <Icon name="ChevronDown" className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
           </button>
         </div>
       )}
@@ -87,7 +87,7 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
                 className="w-full flex items-center justify-between px-3 py-2 hover:bg-[#1a1a1a] transition-colors text-left disabled:opacity-50"
               >
                 <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-gray-500" />
+                  <Icon name="Package" className="w-4 h-4 text-gray-500" />
                   <span className="text-white text-sm font-mono">
                     v{version.version}
                   </span>
@@ -102,7 +102,7 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
                   )}
                 </div>
                 {version.downloadUrl ? (
-                  <Download className={`w-4 h-4 text-gray-400 ${downloading === version.id ? "animate-bounce" : ""}`} />
+                  <Icon name="Download" className={`w-4 h-4 text-gray-400 ${downloading === version.id ? "animate-bounce" : ""}`} />
                 ) : (
                   <span className="text-xs text-gray-500">No URL</span>
                 )}
@@ -114,7 +114,7 @@ export default function ProductVersionSelector({ versions, productId }: ProductV
               href={`/admin/products/${productId}/versions`}
               className="flex items-center gap-1 text-xs text-[#f59e0b] hover:text-[#d97706] hover:underline"
             >
-              <ExternalLink className="w-3 h-3" />
+              <Icon name="ExternalLink" className="w-3 h-3" />
               Manage Versions
             </a>
           </div>

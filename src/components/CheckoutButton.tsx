@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CreditCard, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 
 interface CheckoutButtonProps {
   productSlug: string;
@@ -61,12 +61,12 @@ export function CheckoutButton({ productSlug, durationDays }: CheckoutButtonProp
       >
         {isLoading ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Icon name="Loader2" className="w-5 h-5 animate-spin" />
             Processing...
           </>
         ) : (
           <>
-            <CreditCard className="w-5 h-5" />
+            <Icon name="CreditCard" className="w-5 h-5" />
             Pay Now with Flow.cl
           </>
         )}

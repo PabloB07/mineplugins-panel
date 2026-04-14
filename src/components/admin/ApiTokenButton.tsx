@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Key, Copy, RefreshCw, Plus } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 
 interface ApiTokenButtonProps {
   productId: string;
@@ -60,7 +60,7 @@ export default function ApiTokenButton({ productId, apiToken }: ApiTokenButtonPr
         }`}
         title={token ? "View API Key" : "Generate API Key"}
       >
-        {token ? <Key className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        {token ? <Icon name="Key" className="w-4 h-4" /> : <Icon name="Plus" className="w-4 h-4" />}
       </button>
       
       {showToken && token && (
@@ -73,7 +73,7 @@ export default function ApiTokenButton({ productId, apiToken }: ApiTokenButtonPr
             className="text-gray-400 hover:text-white"
             title="Copy"
           >
-            {copied ? <span className="text-xs text-green-400">✓</span> : <Copy className="w-3 h-3" />}
+            {copied ? <span className="text-xs text-green-400">✓</span> : <Icon name="Copy" className="w-3 h-3" />}
           </button>
           <button
             onClick={handleGenerateOrRegenerate}
@@ -81,7 +81,7 @@ export default function ApiTokenButton({ productId, apiToken }: ApiTokenButtonPr
             className="text-gray-400 hover:text-yellow-400"
             title="Regenerate"
           >
-            <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} />
+            <Icon name="RefreshCw" className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} />
           </button>
         </div>
       )}

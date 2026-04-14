@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CreditCard, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { type PaymentMethodId } from "@/lib/payment-methods";
 import { useTranslation } from "@/i18n/useTranslation";
 
@@ -99,12 +99,12 @@ export function CombinedCheckoutButton({
       >
         {isLoading ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Icon name="Loader2" className="w-5 h-5 animate-spin" />
             {getButtonText()}
           </>
         ) : (
           <>
-            <CreditCard className="w-5 h-5" />
+            <Icon name="CreditCard" className="w-5 h-5" />
             {getButtonText()}
           </>
         )}

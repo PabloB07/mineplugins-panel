@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Currency } from "@/i18n/I18nProvider";
-import { Globe, ChevronDown, Check } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 
 const currencies: { id: Currency; symbol: string; shortName: string; description: string }[] = [
   { id: 'USD', symbol: '$', shortName: 'USD', description: 'US Dollar (exact price)' },
@@ -35,9 +35,9 @@ export function CurrencySwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
       >
-        <Globe className="w-4 h-4 text-gray-400" />
+        <Icon name="Globe" className="w-4 h-4 text-gray-400" />
         <span className="text-white font-medium">{currentCurrency.shortName}</span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <Icon name="ChevronDown" className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -66,7 +66,7 @@ export function CurrencySwitcher() {
                   <span className="font-medium">{t(`currency.${curr.id}`)}</span>
                 </div>
                 {currency === curr.id && (
-                  <Check className="w-4 h-4" />
+                  <Icon name="Check" className="w-4 h-4" />
                 )}
               </button>
             ))}

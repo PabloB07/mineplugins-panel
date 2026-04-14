@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import VersionForm from "./VersionForm";
 
 interface PageProps {
@@ -29,7 +29,7 @@ export default async function NewVersionPage({ params }: PageProps) {
               href={`/admin/products/${id}/versions`}
               className="text-gray-400 hover:text-white transition-colors mt-1"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <Icon name="ArrowLeft" className="w-6 h-6" />
             </Link>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Add Version</h1>

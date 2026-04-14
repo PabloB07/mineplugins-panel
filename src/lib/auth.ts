@@ -46,12 +46,47 @@ export const authOptions: NextAuthOptions = {
     devFallback: "dev-nextauth-secret-change-me-now",
   }),
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, user, account }) {
+      if (account?.provider === "discord" && account?.access_token) {
+        try {
+          const response = await fetch("https://discord.com/api/users/@me", {
+            headers: {
+              Authorization: `Bearer ${account.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const discordUser = await response.json();
+            if (discordUser.avatar) {
+              const targetUserId = token.sub || user?.id;
+              if (targetUserId) {
+                const avatarHash = discordUser.avatar;
+                const discordUserId = discordUser.id;
+                const newAvatarUrl = `https://cdn.discordapp.com/avatars/${discordUserId}/${avatarHash}.png?size=128`;
+                await prisma.user.update({
+                  where: { id: targetUserId },
+                  data: { image: newAvatarUrl },
+                });
+                token.picture = newAvatarUrl;
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Failed to update Discord avatar:", error);
+        }
+      }
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
-        // Fetch user role from database
+        session.user.id = token.id as string;
+        if (token.picture) {
+          session.user.image = token.picture as string;
+        }
         const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
+          where: { id: session.user.id },
           select: { role: true },
         });
         session.user.role = dbUser?.role || UserRole.CUSTOMER;

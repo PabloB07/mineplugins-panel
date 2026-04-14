@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { useTransition } from "react";
 
 interface DeleteVersionButtonProps {
@@ -28,7 +28,7 @@ export function DeleteVersionButton({ versionId, productId, deleteAction }: Dele
       className="text-red-400 hover:text-red-300 p-2 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/20 disabled:opacity-50"
       title="Delete"
     >
-      <Trash2 className="w-4 h-4" />
+      <Icon name="Trash2" className="w-4 h-4" />
     </button>
   );
 }

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Plus, Package, Download, Star, AlertTriangle } from "lucide-react";
+import { Icon } from "@/components/ui/Icon";
 import { revalidatePath } from "next/cache";
 import { DeleteVersionButton } from "@/components/DeleteVersionButton";
 import { UpdateVersionJarButton } from "@/components/admin/UpdateVersionJarButton";
@@ -87,7 +87,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
               href={`/admin/products/${id}`}
               className="text-gray-400 hover:text-white transition-colors mt-1"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <Icon name="ArrowLeft" className="w-6 h-6" />
             </Link>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Versions</h1>
@@ -99,7 +99,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
               href={`/admin/products/${id}/versions/new`}
               className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] px-6 py-3 rounded-xl font-bold transition-transform hover:scale-105 shadow-lg shadow-[#f59e0b]/20"
             >
-              <Plus className="w-5 h-5" />
+              <Icon name="Plus" className="w-5 h-5" />
               Add Version
             </Link>
           </div>
@@ -111,7 +111,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#f59e0b]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
           <div className="relative z-10">
             <div className="w-20 h-20 bg-[#0a0a0a] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#222]">
-              <Package className="w-10 h-10 text-gray-500" />
+              <Icon name="Package" className="w-10 h-10 text-gray-500" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-3">No Versions Yet</h3>
             <p className="text-gray-400 mb-6 text-lg">Upload your first plugin version.</p>
@@ -119,7 +119,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
               href={`/admin/products/${id}/versions/new`}
               className="inline-flex items-center gap-2 bg-[#f59e0b] text-black hover:bg-[#d97706] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#f59e0b]/20"
             >
-              <Plus className="w-5 h-5" />
+              <Icon name="Plus" className="w-5 h-5" />
               Add Version
             </Link>
           </div>
@@ -167,7 +167,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                       <div className="flex flex-wrap gap-2">
                         {version.isLatest && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs rounded">
-                            <Star className="w-3 h-3" />
+                            <Icon name="Star" className="w-3 h-3" />
                             Latest
                           </span>
                         )}
@@ -178,7 +178,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                         )}
                         {version.isMandatory && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded">
-                            <AlertTriangle className="w-3 h-3" />
+                            <Icon name="AlertTriangle" className="w-3 h-3" />
                             Required
                           </span>
                         )}
@@ -201,7 +201,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                           className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/10 rounded-lg transition-colors border border-transparent hover:border-blue-500/20"
                           title="Download"
                         >
-                          <Download className="w-4 h-4" />
+                          <Icon name="Download" className="w-4 h-4" />
                         </a>
                         <UpdateVersionJarButton
                           versionId={version.id}
@@ -220,7 +220,7 @@ export default async function ProductVersionsPage({ params }: PageProps) {
                               className="text-yellow-400 hover:text-yellow-300 p-2 hover:bg-yellow-500/10 rounded-lg transition-colors border border-transparent hover:border-yellow-500/20"
                               title="Set as Latest"
                             >
-                              <Star className="w-4 h-4" />
+                              <Icon name="Star" className="w-4 h-4" />
                             </button>
                           </form>
                         )}

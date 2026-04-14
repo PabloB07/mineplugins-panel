@@ -8,7 +8,7 @@ import {
   formatCurrencyAmount,
   getDiscountCurrency,
   getDiscountValueInOwnCurrency,
-  getMinPurchaseInOwnCurrency,
+  getMinPurchaseUSD,
   isSupportedCurrency,
 } from "@/lib/discount-pricing";
 
@@ -77,18 +77,18 @@ export async function GET(request: NextRequest) {
     }
 
     const discountCurrency = getDiscountCurrency(discount.currency);
-    const subtotalInDiscountCurrency = convertCurrencyAmount(
+    const subtotalInUSD = convertCurrencyAmount(
       Number.isFinite(subtotal) ? subtotal : 0,
       currency,
-      discountCurrency
+      "USD"
     );
-    const minPurchaseAmount = getMinPurchaseInOwnCurrency(discount);
+    const minPurchaseAmount = getMinPurchaseUSD(discount);
 
-    if (minPurchaseAmount && subtotalInDiscountCurrency > 0 && subtotalInDiscountCurrency < minPurchaseAmount) {
+    if (minPurchaseAmount && subtotalInUSD > 0 && subtotalInUSD < minPurchaseAmount) {
       return NextResponse.json(
         {
           error: "MIN_PURCHASE_NOT_REACHED",
-          message: `Minimum purchase is ${formatCurrencyAmount(minPurchaseAmount, discountCurrency)}`,
+          message: `Minimum purchase is ${formatCurrencyAmount(minPurchaseAmount, "USD")}`,
         },
         { status: 400 }
       );
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
       displayValue: getDiscountValueInOwnCurrency(discount),
       minPurchase: discount.minPurchase,
       minPurchaseDisplay: minPurchaseAmount,
-      minPurchaseFormatted: minPurchaseAmount ? formatCurrencyAmount(minPurchaseAmount, discountCurrency) : null,
+      minPurchaseFormatted: minPurchaseAmount ? formatCurrencyAmount(minPurchaseAmount, "USD") : null,
       amounts,
       discount: discount,
     });
