@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Currency } from "@/i18n/I18nProvider";
-import { Icon } from "@/components/ui/Icon";
+import { useIcon } from "@/hooks/useIcon";
 
 const currencies: { id: Currency; symbol: string; shortName: string; description: string }[] = [
   { id: 'USD', symbol: '$', shortName: 'USD', description: 'US Dollar (exact price)' },
@@ -16,6 +16,9 @@ export function CurrencySwitcher() {
   const { currency, setCurrency, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const Globe = useIcon("Globe");
+  const ChevronDown = useIcon("ChevronDown");
+  const Check = useIcon("Check");
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -30,18 +33,19 @@ export function CurrencySwitcher() {
   const currentCurrency = currencies.find(c => c.id === currency) || currencies[0];
 
   return (
-    <div className="relative z-[200]" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        type="button"
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
       >
-        <Icon name="Globe" className="w-4 h-4 text-gray-400" />
+        <Globe className="w-4 h-4 text-gray-400" />
         <span className="text-white font-medium">{currentCurrency.shortName}</span>
-        <Icon name="ChevronDown" className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl shadow-black/50 overflow-hidden z-[201]">
+        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl overflow-hidden">
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-gray-500 font-medium uppercase tracking-wider">
               {t("currency.selectCurrency")}
@@ -49,11 +53,12 @@ export function CurrencySwitcher() {
             {currencies.map((curr) => (
               <button
                 key={curr.id}
+                type="button"
                 onClick={() => {
                   setCurrency(curr.id);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all text-left ${
                   currency === curr.id
                     ? "bg-[#22c55e]/10 text-[#22c55e]"
                     : "text-gray-300 hover:bg-[#1a1a1a] hover:text-white"
@@ -66,7 +71,7 @@ export function CurrencySwitcher() {
                   <span className="font-medium">{t(`currency.${curr.id}`)}</span>
                 </div>
                 {currency === curr.id && (
-                  <Icon name="Check" className="w-4 h-4" />
+                  <Check className="w-4 h-4" />
                 )}
               </button>
             ))}
