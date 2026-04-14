@@ -37,6 +37,8 @@ export function CurrencySwitcher() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         type="button"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181818] border border-[#333] hover:border-[#444] transition-all text-sm"
       >
         <Globe className="w-4 h-4 text-gray-400" />
@@ -45,7 +47,11 @@ export function CurrencySwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl overflow-hidden">
+        <div 
+          role="listbox"
+          className="absolute left-0 right-auto mt-2 w-56 rounded-xl bg-[#111] border border-[#333] shadow-xl overflow-hidden"
+          style={{ left: 'auto', right: 0 }}
+        >
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-gray-500 font-medium uppercase tracking-wider">
               {t("currency.selectCurrency")}
@@ -54,6 +60,8 @@ export function CurrencySwitcher() {
               <button
                 key={curr.id}
                 type="button"
+                role="option"
+                aria-selected={currency === curr.id}
                 onClick={() => {
                   setCurrency(curr.id);
                   setIsOpen(false);
