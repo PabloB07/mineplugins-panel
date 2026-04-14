@@ -21,48 +21,26 @@ export const authOptions: NextAuthOptions = {
   }),
   session: {
     strategy: "database",
-    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user, account, trigger }) {
-      // On initial sign in, user will have id
-      if (user) {
+    async jwt({ token, user }) {
+      if (user?.id) {
         token.id = user.id;
-      }
-      // If we have an account but no token.id yet, try to get it from account
-      if (!token.id && account) {
-        // The sub from account should contain the user id
-        token.id = account.providerAccountId;
       }
       return token;
     },
     async session({ session, token }) {
-      // Make sure we have a valid token id
-      if (!token || !token.id) {
-        console.error("[Auth] No token or token.id in session");
-        return session;
-      }
-      
-      if (session.user) {
+      if (token.id && session.user) {
         session.user.id = token.id as string;
         
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { role: true, image: true },
-          });
-          
-          if (dbUser) {
-            session.user.role = dbUser.role || UserRole.CUSTOMER;
-            if (dbUser.image) {
-              session.user.image = dbUser.image;
-            }
-          } else {
-            session.user.role = UserRole.CUSTOMER;
-          }
-        } catch (e) {
-          console.error("[Auth] Error:", e);
-          session.user.role = UserRole.CUSTOMER;
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true, image: true },
+        });
+        
+        session.user.role = dbUser?.role || UserRole.CUSTOMER;
+        if (dbUser?.image) {
+          session.user.image = dbUser.image;
         }
       }
       return session;
