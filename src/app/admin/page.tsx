@@ -329,7 +329,7 @@ export default function AdminDashboardPage() {
         <div className="xl:col-span-4 space-y-6">
           <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-            <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
+            <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent relative z-10">
               <div className="flex justify-between items-center">
                 <IconHeader name="Server" iconClassName="w-5 h-5 text-blue-400">{t("admin.servers")}</IconHeader>
                 <Link href="/admin/servers" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
@@ -397,7 +397,7 @@ export default function AdminDashboardPage() {
 
           <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-            <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent">
+            <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent relative z-10">
               <div className="flex justify-between items-center">
                 <IconHeader name="Key" iconClassName="w-5 h-5 text-purple-400">{t("admin.allLicenses")}</IconHeader>
                 <Link href="/admin/licenses" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
