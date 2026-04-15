@@ -91,7 +91,6 @@
       }
     }
   },
-
   "login": {
     "title": "Bienvenido a MinePlugins",
     "subtitle": "Inicia sesión para ver tus compras, gestionar licencias y descargar actualizaciones.",
@@ -171,7 +170,6 @@
     "users": "Usuarios",
     "analytics": "Análisis",
     "transfers": "Transferencias",
-    "servers": "Servidores",
     "payments": "Pagos",
     "dashboard": "Panel",
     "customerView": "Cliente",
@@ -268,7 +266,6 @@
     "order": "Pedido",
     "customer": "Cliente",
     "items": "Artículos",
-    "total": "Total",
     "license": "Licencia",
     "noLicense": "Sin licencia",
     "paid": "Pagado",
@@ -586,8 +583,8 @@
     "freeUpdates": "Actualizaciones Gratis",
     "premiumSupport": "Soporte Premium",
     "version": "Versión",
-    "server": "servidor",
-    "servers": "servidores",
+    "server": "Servidor",
+    "servers": "Servidores",
     "premiumSupportText": "Soporte premium",
     "buyNow": "Comprar Ahora",
     "loginToBuy": "Iniciar Sesión para Comprar",
@@ -597,8 +594,7 @@
     "noAnswer": "¿No encontraste tu respuesta?",
     "contactDiscord": "Contactar en Discord",
     "general": "General",
-    "licenses": "Licencias",
-    "support": "Soporte"
+    "licenses": "Licencias"
   },
   "checkout": {
     "title": "Pago",
