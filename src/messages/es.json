@@ -91,20 +91,7 @@
       }
     }
   },
-  "store": {
-    "title": "Plugins Premium Paper 1.21",
-    "subtitle": "Descubre plugins de alta calidad, compra de forma segura y obtén descargas instantáneas con MinePlugins.",
-    "empty": "Tienda Vacía",
-    "emptyDesc": "No hay productos disponibles actualmente para compra.",
-    "latestVersion": "Última Versión",
-    "activations": "Activación de Servidor",
-    "activations_plural": "Activaciones de Servidor",
-    "support": "Soporte y Actualizaciones Rápidas",
-    "purchase": "Comprar Plugin",
-    "loginToPurchase": "Iniciar Sesión para Comprar",
-    "sale": "OFERTA",
-    "chileOnly": "(Solo Chile)"
-  },
+
   "login": {
     "title": "Bienvenido a MinePlugins",
     "subtitle": "Inicia sesión para ver tus compras, gestionar licencias y descargar actualizaciones.",
@@ -202,6 +189,14 @@
     "search": "Buscar",
     "searchPlaceholder": "Buscar por número de pedido, email...",
     "all": "Todos",
+    "productManagementTitle": "Gestión de Productos",
+    "manageProducts": "Administra y configura tus productos de Minecraft.",
+    "totalProductsCount": "{count} Productos totales",
+    "searchProduct": "Buscar producto...",
+    "filterByStatus": "Filtrar por estado:",
+    "allStatus": "Todos",
+    "activeStatus": "Activos",
+    "inactiveStatus": "Inactivos",
     "totalProducts": "Total de Productos",
     "totalLicenses": "Total de Licencias",
     "newProduct": "Nuevo Producto",

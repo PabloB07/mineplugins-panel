@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
           maxActivations: true,
           isActive: true,
           apiToken: true,
+          createdAt: true,
           versions: {
             orderBy: { publishedAt: "desc" },
             take: 5,
