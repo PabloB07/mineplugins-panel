@@ -33,13 +33,12 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
 
     const navItems = [
         { href: "/admin", label: t("admin.dashboard"), iconClass: "icon-minecraft-sm icon-minecraft-grass-block" },
-        { href: "/admin/servers", label: t("admin.servers"), iconClass: "icon-minecraft-sm icon-minecraft-compass" },
     ];
     
     const productsItems = [
         { href: "/admin/products", label: t("admin.products"), iconClass: "icon-minecraft-sm icon-minecraft-chest" },
-        { href: "/admin/products/new", label: t("admin.newProduct"), iconClass: "icon-minecraft-sm icon-minecraft-crafting-table" },
         { href: "/admin/orders", label: t("admin.orders"), iconClass: "icon-minecraft-sm icon-minecraft-paper" },
+        { href: "/admin/servers", label: t("admin.servers"), iconClass: "icon-minecraft-sm icon-minecraft-compass" },
     ];
     
     const licensesItems = [
@@ -129,17 +128,6 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         >
                             <span className="icon-minecraft-sm icon-minecraft-grass-block" />
                             {t("admin.dashboard")}
-                        </Link>
-
-                        <Link
-                            href="/admin/servers"
-                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${isActive("/admin/servers")
-                                ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
-                                : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
-                                }`}
-                        >
-                            <span className="icon-minecraft-sm icon-minecraft-compass" />
-                            {t("admin.servers")}
                         </Link>
 
                         {/* Products Dropdown */}

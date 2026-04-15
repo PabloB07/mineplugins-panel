@@ -123,8 +123,15 @@ export default function AdminProductsPage() {
             </h1>
             <p className="text-gray-400 mt-1">{t("admin.manageProducts")}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-400 bg-[#1a1a1a] px-3 py-2 rounded-lg border border-[#333]">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin/products/new"
+              className="flex items-center gap-2 bg-[#f59e0b] hover:bg-[#d97706] text-black px-4 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-[#f59e0b]/20"
+            >
+              <Plus className="w-5 h-5" />
+              {t("admin.newProduct")}
+            </Link>
+            <div className="text-sm text-gray-400 bg-[#1a1a1a] px-3 py-2.5 rounded-lg border border-[#333] h-[46px] flex items-center">
               {t("admin.totalProductsCount").replace("{count}", totalProducts.toString())}
             </div>
           </div>
