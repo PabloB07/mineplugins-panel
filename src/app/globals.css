@@ -22,7 +22,9 @@ body {
   background-color: #09090b;
   background-image: 
     linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h8v8H0V0zm8 8h8v8H8V8zm0 16h8v8H8v-8zm8-8h8v8h-8V8zm16 0h8v8h-8V8zm8 8h8v8h-8v-8zm0 16h8v8h-8v-8zM16 32h8v8h-8v-8zm-8 8h8v8H8v-8zm24 0h8v8h-8v-8zm8 8h8v8h-8v-8zM0 48h8v8H0v-8zm8 8h8v8H8v-8z' fill='%23222' fill-opacity='0.4'/%3E%3C/svg%3E");
+    url("/bedrock.png");
+  background-repeat: repeat;
+  background-size: 256px auto;
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-minecraft), system-ui, -apple-system, sans-serif;
