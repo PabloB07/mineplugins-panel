@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div className="pixel-frame pixel-frame-blue bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-frame-blue pixel-jagged-bottom pixel-jagged-blue bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
               </div>
             </div>
-            <div className="pixel-frame bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-jagged-bottom pixel-jagged-green bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-green-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
@@ -145,7 +145,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-bold text-white">{stats.activeLicenses}</div>
               </div>
             </div>
-            <div className="pixel-frame pixel-frame-amber bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-frame-amber pixel-jagged-bottom pixel-jagged-amber bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-amber-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-1">
@@ -154,7 +154,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-bold text-white">{stats.todayOrders}</div>
               </div>
             </div>
-            <div className="pixel-frame pixel-frame-amber bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
+            <div className="pixel-frame pixel-frame-amber pixel-jagged-bottom pixel-jagged-amber bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/20 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-green-400 text-xs font-medium mb-1">
@@ -172,7 +172,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <div className="xl:col-span-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="pixel-frame bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-green-500/30 transition-all">
+            <div className="pixel-frame pixel-jagged-bottom pixel-jagged-green bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-green-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-green-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
+            <div className="pixel-frame pixel-frame-blue pixel-jagged-bottom pixel-jagged-blue bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -196,7 +196,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
+            <div className="pixel-frame pixel-frame-blue pixel-jagged-bottom pixel-jagged-blue bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -207,7 +207,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="pixel-frame pixel-frame-amber bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
+            <div className="pixel-frame pixel-frame-amber pixel-jagged-bottom pixel-jagged-amber bg-[#111] border border-[#222] rounded-xl p-5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
               <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-amber-500/10 transition-all"></div>
               <div className="relative">
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-medium mb-2">
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="pixel-frame bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-jagged-bottom pixel-jagged-green bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <IconHeader name="ShoppingCart">{t("admin.recentOrders")}</IconHeader>
@@ -269,7 +269,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-frame-blue pixel-jagged-bottom pixel-jagged-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] flex justify-between items-center bg-gradient-to-r from-[#151515] to-transparent">
               <IconHeader name="Activity" iconClassName="w-5 h-5 text-gray-400">
@@ -327,7 +327,7 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="xl:col-span-4 space-y-6">
-          <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-frame-blue pixel-jagged-bottom pixel-jagged-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent relative z-10">
               <div className="flex justify-between items-center">
@@ -395,7 +395,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="pixel-frame pixel-frame-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
+          <div className="pixel-frame pixel-frame-blue pixel-jagged-bottom pixel-jagged-blue bg-[#111] border border-[#222] rounded-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="p-5 border-b border-[#222] bg-gradient-to-r from-[#151515] to-transparent relative z-10">
               <div className="flex justify-between items-center">
