@@ -37,6 +37,8 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     ];
 
     const productsItems = [
+        { href: "/admin/products", label: t("admin.products"), icon: "Package" },
+        { href: "/admin/products/new", label: t("admin.newProduct"), icon: "Plus" },
         { href: "/admin/orders", label: t("admin.orders"), icon: "ShoppingCart" },
     ];
 
