@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/useTranslation";
+import { MinecraftIcon } from "@/components/ui/MinecraftIcon";
 
 const features = [
   {
@@ -37,10 +38,10 @@ export default function Features() {
   const { t } = useTranslation();
 
   return (
-    <section id="features" className="py-24 bg-zinc-900">
+    <section id="features" className="py-24 bg-zinc-900 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 animate-fade-in">
           <span className="text-emerald-400 text-sm font-semibold uppercase tracking-wider">{t("features.label")}</span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
             {t("features.title")}
@@ -57,15 +58,23 @@ export default function Features() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group bg-[#111] border border-[#222] rounded-2xl p-6 hover:border-emerald-500/30 transition-all duration-300"
+              className="group bg-[#111] border border-[#222] rounded-2xl p-8 hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-2"
             >
-              <div className="mb-4 flex justify-center">
-                <div className={`icon-minecraft icon-minecraft-${feature.sprite} scale-[2.5]`}></div>
+              <div className="mb-8 flex justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-emerald-500/5 blur-2xl rounded-full group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
+                  <MinecraftIcon
+                    sprite={feature.sprite}
+                    scale={2.5}
+                    glow
+                    className="group-hover:rotate-6 transition-transform duration-500 ease-out"
+                  />
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-emerald-400 transition-colors text-center">
                 {t(`features.items.${feature.key}.title`)}
               </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className="text-zinc-400 text-sm leading-relaxed text-center">
                 {t(`features.items.${feature.key}.description`)}
               </p>
             </div>

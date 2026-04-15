@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
+import { MinecraftIcon } from "@/components/ui/MinecraftIcon";
 
 function PixelParticles() {
   const particles = [
@@ -49,8 +50,8 @@ export default function Hero() {
         className="absolute inset-0 opacity-20"
         style={{
           backgroundImage: `
-            linear-gradient(to right, #22c55e22 1px, transparent 1px),
-            linear-gradient(to bottom, #22c55e22 1px, transparent 1px)
+            linear-gradient(to right, #22c55e11 1px, transparent 1px),
+            linear-gradient(to bottom, #22c55e11 1px, transparent 1px)
           `,
           backgroundSize: '32px 32px',
         }}
@@ -59,19 +60,19 @@ export default function Hero() {
       {/* Animated Minecraft Icons Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-[10%] animate-pulse-slow">
-          <div className="icon-minecraft icon-minecraft-grass-block opacity-30"></div>
+          <MinecraftIcon sprite="grass-block" scale={1.5} className="opacity-20" />
         </div>
         <div className="absolute top-40 right-[15%] animate-pulse-slow" style={{ animationDelay: "0.5s" }}>
-          <div className="icon-minecraft icon-minecraft-grass-block opacity-20 scale-75"></div>
+          <MinecraftIcon sprite="diamond-ore" scale={1.2} className="opacity-15" />
         </div>
         <div className="absolute bottom-40 left-[20%] animate-pulse-slow" style={{ animationDelay: "1s" }}>
-          <div className="icon-minecraft icon-minecraft-diamond-sword opacity-20 scale-75"></div>
+          <MinecraftIcon sprite="diamond-sword" scale={1.5} className="opacity-20 rotate-45" />
         </div>
         <div className="absolute top-[60%] right-[25%] animate-pulse-slow" style={{ animationDelay: "1.5s" }}>
-          <div className="icon-minecraft icon-minecraft-creeper-head opacity-20 scale-100"></div>
+          <MinecraftIcon sprite="creeper-head" scale={2} className="opacity-10" />
         </div>
         <div className="absolute bottom-20 right-[10%] animate-pulse-slow" style={{ animationDelay: "2s" }}>
-          <div className="icon-minecraft icon-minecraft-grass-block opacity-15 scale-125"></div>
+          <MinecraftIcon sprite="emerald-block" scale={2.5} className="opacity-10" />
         </div>
         <PixelParticles />
       </div>
@@ -81,11 +82,17 @@ export default function Hero() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10">
         {/* Animated Minecraft Logo */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative">
-            <div className="absolute inset-0 animate-ping bg-green-500/30 blur-xl rounded-full"></div>
-            <div className="relative bg-gradient-to-br from-green-600 to-green-700 p-2 rounded-lg shadow-[0_0_30px_rgba(34,197,94,0.4)] animate-bounce-subtle">
-              <div className="icon-minecraft icon-minecraft-grass-block"></div>
+        <div className="mb-10 flex justify-center">
+          <div className="relative group">
+            <div className="absolute inset-0 animate-ping group-hover:animate-none bg-green-500/20 blur-2xl rounded-full"></div>
+            <div className="relative bg-[#1a1a1a] border border-[#333] p-4 rounded-2xl shadow-2xl group-hover:border-emerald-500/50 transition-colors duration-500">
+              <MinecraftIcon 
+                sprite="grass-block" 
+                scale={2} 
+                glow={true} 
+                glowColor="rgba(34, 197, 94, 0.4)"
+                className="animate-bounce-subtle"
+              />
             </div>
           </div>
         </div>
@@ -100,8 +107,9 @@ export default function Hero() {
         </div>
 
         {/* Main heading */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 leading-tight tracking-tight" style={{ fontFamily: "var(--font-minecraft)" }}>
-          Premium Paper 1.21 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">Plugins</span>
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
+          Premium Paper 1.21 <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Plugins Store</span>
         </h1>
 
         {/* Subtitle */}
@@ -110,28 +118,35 @@ export default function Hero() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24">
           <Link
             href="/store"
-            className="group relative w-full sm:w-auto bg-[#22c55e] hover:bg-[#16a34a] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(34,197,94,0.5)] flex items-center justify-center gap-3"
+            className="group relative w-full sm:w-auto bg-[#22c55e] hover:bg-[#16a34a] text-white px-10 py-5 rounded-2xl text-xl font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(34,197,94,0.6)] flex items-center justify-center gap-4"
           >
-            <div className="icon-minecraft icon-minecraft-creeper-head scale-125"></div>
+            <MinecraftIcon sprite="creeper-head" isSmall scale={2} className="group-hover:rotate-12 transition-transform" />
             <span>{t("home.cta")}</span>
-            <span className="absolute top-0 right-0 w-3 h-3 bg-green-300 animate-ping opacity-50"></span>
+            <span className="absolute -top-2 -right-2 w-4 h-4 bg-green-300 rounded-full animate-ping opacity-30"></span>
           </Link>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto border-t border-[#222] pt-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto border-t border-[#222] pt-16">
           {[
-            { value: "1.21+", label: t("home.stats.versions"), color: "text-green-500" },
-            { value: "Premium", label: t("home.stats.quality"), color: "text-blue-500" },
-            { value: "99.9%", label: t("home.stats.satisfaction"), color: "text-purple-500" },
-            { value: "24/7", label: t("home.stats.support"), color: "text-orange-500" },
+            { value: "1.21+", label: t("home.stats.versions"), icon: "paper", color: "from-green-500 to-emerald-600" },
+            { value: "Premium", label: t("home.stats.quality"), icon: "diamond", color: "from-blue-500 to-cyan-600" },
+            { value: "99.9%", label: t("home.stats.satisfaction"), icon: "heart", color: "from-purple-500 to-pink-600" },
+            { value: "24/7", label: t("home.stats.support"), icon: "clock", color: "from-orange-500 to-yellow-600" },
           ].map((stat, index) => (
-            <div key={index} className="text-center group">
-              <div className={`text-3xl sm:text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300`}>{stat.value}</div>
-              <div className="text-gray-500 text-sm font-medium uppercase tracking-wider">{stat.label}</div>
+            <div key={index} className="text-center group flex flex-col items-center">
+              <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                <MinecraftIcon sprite={stat.icon} isSmall scale={1.5} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${stat.color} mb-1`}>
+                {stat.value}
+              </div>
+              <div className="text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em]">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>

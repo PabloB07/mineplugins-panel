@@ -2,15 +2,21 @@
 
 import { useTranslation } from "@/i18n/useTranslation";
 import Image from "next/image";
+import { MinecraftIcon } from "@/components/ui/MinecraftIcon";
 
 export default function HostedBy() {
   const { t } = useTranslation();
 
   return (
-    <section className="py-24 bg-zinc-950">
+    <section className="py-24 bg-zinc-950 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="pixel-frame pixel-frame-neutral bg-gradient-to-r from-zinc-900 via-zinc-800/50 to-zinc-900 border border-zinc-700/50 rounded-2xl p-8 md:p-12">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+        <div className="relative group bg-gradient-to-r from-zinc-900 via-zinc-800/50 to-zinc-900 border border-zinc-700/50 rounded-3xl p-8 md:p-12 shadow-2xl">
+          {/* Decorative Icon */}
+          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+            <MinecraftIcon sprite="beacon" scale={4} glow />
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 relative z-10">
             {/* Text Content */}
             <div className="text-center md:text-left">
               <span className="text-zinc-500 text-sm font-medium uppercase tracking-wider">
