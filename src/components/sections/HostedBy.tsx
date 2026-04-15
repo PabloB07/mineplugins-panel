@@ -1,23 +1,27 @@
+"use client";
+
+import { useTranslation } from "@/i18n/useTranslation";
 import Image from "next/image";
 
 export default function HostedBy() {
+  const { t } = useTranslation();
+
   return (
-    <section className="py-16 bg-zinc-950">
+    <section className="py-24 bg-zinc-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="pixel-frame pixel-frame-neutral bg-gradient-to-r from-zinc-900 via-zinc-800/50 to-zinc-900 border border-zinc-700/50 rounded-2xl p-8 md:p-12">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
             {/* Text Content */}
             <div className="text-center md:text-left">
               <span className="text-zinc-500 text-sm font-medium uppercase tracking-wider">
-                Proudly Hosted By
+                {t("home.hostedBy.label")}
               </span>
               <h3 className="text-2xl md:text-3xl font-bold text-white mt-2 mb-3">
-                Our server runs on{" "}
-                <span className="text-green-400">LatamServers.net</span>
+                {t("home.hostedBy.title")}{" "}
+                <span className="text-green-400">{t("home.hostedBy.provider")}</span>
               </h3>
               <p className="text-zinc-400 max-w-md">
-                High-performance Minecraft hosting with DDoS protection,
-                instant setup, and 24/7 support. Get your server running today!
+                {t("home.hostedBy.description")}
               </p>
               <a
                 href="https://www.latamservers.net/"
@@ -25,7 +29,7 @@ export default function HostedBy() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 mt-6 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Visit LatamServers.net
+                {t("home.hostedBy.button")}
                 <svg
                   className="w-4 h-4"
                   fill="none"

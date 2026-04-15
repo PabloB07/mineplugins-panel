@@ -56,10 +56,67 @@
       "quality": "Quality Code",
       "satisfaction": "Satisfaction",
       "support": "Expert Support"
+    },
+    "howItWorks": {
+      "label": "Simple Process",
+      "title": "How It Works",
+      "subtitle": "Get your premium plugins in just 4 simple steps",
+      "steps": {
+        "browse": {
+          "title": "Browse Plugins",
+          "description": "Explore our collection of premium Minecraft plugins designed for Paper 1.21+"
+        },
+        "purchase": {
+          "title": "Secure Purchase",
+          "description": "Complete your purchase with our secure payment system supporting multiple currencies"
+        },
+        "download": {
+          "title": "Instant Download",
+          "description": "Get immediate access to your plugins with version history and updates"
+        },
+        "activate": {
+          "title": "Activate License",
+          "description": "Activate your license on your server and start using your premium plugins"
+        }
+      }
+    },
+    "testimonials": {
+      "label": "Testimonials",
+      "title": "What Our Customers Say",
+      "subtitle": "Trusted by server owners and community managers worldwide",
+      "carlos": {
+        "content": "Excellent plugins and even better support. The license system works flawlessly and updates are always smooth."
+      },
+      "alex": {
+        "content": "Best premium plugins I've used for Paper. The performance improvements are noticeable immediately."
+      },
+      "maria": {
+        "content": "Easy to purchase, quick downloads, and the customer portal makes managing licenses a breeze. Highly recommended!"
+      }
+    },
+    "ctaSection": {
+      "title": "Ready to Upgrade Your Server?",
+      "description": "Join hundreds of server owners using our premium plugins. Get instant access to exclusive features and dedicated support.",
+      "primaryButton": "Browse Store",
+      "secondaryButton": "Learn More",
+      "badges": {
+        "instant": "Instant Delivery",
+        "secure": "Secure Payment",
+        "support": "24/7 Support"
+      }
+    },
+    "hostedBy": {
+      "label": "Proudly Hosted By",
+      "title": "Our server runs on",
+      "provider": "LatamServers.net",
+      "description": "High-performance Minecraft hosting with DDoS protection, instant setup, and 24/7 support. Get your server running today!",
+      "button": "Visit LatamServers.net"
     }
   },
   "features": {
     "title": "Everything you need",
+    "label": "Features",
+    "subtitleHighlight": "buy Paper 1.21+ plugins",
     "subtitle": "MinePlugins is the official store to buy plugins with licenses, and download Minecraft Paper 1.21 plugins.",
     "items": {
       "official": {

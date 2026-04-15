@@ -104,7 +104,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                     type="button"
                                     onClick={() => signOut({ callbackUrl: "/" })}
                                     className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
-                                    title="Sign out"
+                                    title={t("nav.signOut")}
                                 >
                                     <Icon name="LogOut" className="w-4 h-4" />
                                 </button>
@@ -190,7 +190,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                         className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                                     >
                                         <Icon name="LogOut" className="w-5 h-5" />
-                                        Sign out
+                                        {t("nav.signOut")}
                                     </button>
                                 </>
                             ) : null}
