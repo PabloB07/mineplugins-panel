@@ -32,27 +32,27 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     const usersDropdownRef = useRef<HTMLDivElement | null>(null);
 
     const navItems = [
-        { href: "/admin", label: t("admin.dashboard"), icon: "BarChart3" },
-        { href: "/admin/servers", label: t("admin.servers"), icon: "Server" },
+        { href: "/admin", label: t("admin.dashboard"), iconClass: "icon-minecraft-sm icon-minecraft-grass-block" },
+        { href: "/admin/servers", label: t("admin.servers"), iconClass: "icon-minecraft-sm icon-minecraft-compass" },
     ];
-
+    
     const productsItems = [
-        { href: "/admin/products", label: t("admin.products"), icon: "Package" },
-        { href: "/admin/products/new", label: t("admin.newProduct"), icon: "Plus" },
-        { href: "/admin/orders", label: t("admin.orders"), icon: "ShoppingCart" },
+        { href: "/admin/products", label: t("admin.products"), iconClass: "icon-minecraft-sm icon-minecraft-chest" },
+        { href: "/admin/products/new", label: t("admin.newProduct"), iconClass: "icon-minecraft-sm icon-minecraft-crafting-table" },
+        { href: "/admin/orders", label: t("admin.orders"), iconClass: "icon-minecraft-sm icon-minecraft-paper" },
     ];
-
+    
     const licensesItems = [
-        { href: "/admin/licenses", label: t("admin.licenses"), icon: "Key" },
-        { href: "/admin/discounts", label: t("admin.discounts"), icon: "Tag" },
-        { href: "/admin/tickets", label: t("admin.tickets"), icon: "Ticket" },
-        { href: "/admin/export", label: t("admin.export"), icon: "Download" },
+        { href: "/admin/licenses", label: t("admin.licenses"), iconClass: "icon-minecraft-sm icon-minecraft-tripwire-hook" },
+        { href: "/admin/discounts", label: t("admin.discounts"), iconClass: "icon-minecraft-sm icon-minecraft-emerald" },
+        { href: "/admin/tickets", label: t("admin.tickets"), iconClass: "icon-minecraft-sm icon-minecraft-writable-book" },
+        { href: "/admin/export", label: t("admin.export"), iconClass: "icon-minecraft-sm icon-minecraft-filled-map" },
     ];
-
+    
     const usersItems = [
-        { href: "/admin/users", label: t("admin.users"), icon: "Users" },
-        { href: "/admin/analytics", label: t("admin.analytics"), icon: "BarChart3" },
-        { href: "/admin/payments", label: t("admin.payments"), icon: "Wallet" },
+        { href: "/admin/users", label: t("admin.users"), iconClass: "icon-minecraft-sm icon-minecraft-creeper-head" },
+        { href: "/admin/analytics", label: t("admin.analytics"), iconClass: "icon-minecraft-sm icon-minecraft-experience-bottle" },
+        { href: "/admin/payments", label: t("admin.payments"), iconClass: "icon-minecraft-sm icon-minecraft-gold-ingot" },
     ];
 
     const isActive = (path: string) => {
@@ -127,21 +127,31 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                         >
-                            <Icon name="BarChart3" className="w-3.5 h-3.5" />
+                            <span className="icon-minecraft-sm icon-minecraft-grass-block" />
                             {t("admin.dashboard")}
+                        </Link>
+
+                        <Link
+                            href="/admin/servers"
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${isActive("/admin/servers")
+                                ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                }`}
+                        >
+                            <span className="icon-minecraft-sm icon-minecraft-compass" />
+                            {t("admin.servers")}
                         </Link>
 
                         {/* Products Dropdown */}
                         <div className="relative" ref={productsDropdownRef}>
                             <button
                                 onClick={() => setProductsOpen(!productsOpen)}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
-                                    pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/orders")
-                                        ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
-                                        : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
-                                }`}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/orders")
+                                    ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                    : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                    }`}
                             >
-                                <Icon name="Package" className="w-3.5 h-3.5" />
+                                <span className="icon-minecraft-sm icon-minecraft-chest" />
                                 {t("admin.products")}
                                 <svg className={`w-3 h-3 transition-transform ${productsOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -156,7 +166,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                             onClick={() => setProductsOpen(false)}
                                             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
                                         >
-                                            <Icon name={item.icon as any} className="w-3.5 h-3.5" />
+                                            <span className={item.iconClass} />
                                             {item.label}
                                         </Link>
                                     ))}
@@ -174,7 +184,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                             >
-                                <Icon name="Key" className="w-3.5 h-3.5" />
+                                <span className="icon-minecraft-sm icon-minecraft-tripwire-hook" />
                                 {t("admin.licenses")}
                                 <svg className={`w-3 h-3 transition-transform ${licensesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -189,7 +199,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                             onClick={() => setLicensesOpen(false)}
                                             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
                                         >
-                                            <Icon name={item.icon as any} className="w-3.5 h-3.5" />
+                                            <span className={item.iconClass} />
                                             {item.label}
                                         </Link>
                                     ))}
@@ -207,7 +217,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
                             >
-                                <Icon name="Users" className="w-3.5 h-3.5" />
+                                <span className="icon-minecraft-sm icon-minecraft-creeper-head" />
                                 {t("admin.users")}
                                 <svg className={`w-3 h-3 transition-transform ${usersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -222,7 +232,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                             onClick={() => setUsersOpen(false)}
                                             className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-[#222] transition-colors"
                                         >
-                                            <Icon name={item.icon as any} className="w-3.5 h-3.5" />
+                                            <span className={item.iconClass} />
                                             {item.label}
                                         </Link>
                                     ))}
@@ -242,7 +252,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon name={item.icon as any} className={`w-3.5 h-3.5 ${active ? "text-[#f59e0b]" : "text-gray-500 group-hover:text-gray-300"}`} />
+                                    <span className={item.iconClass} />
                                     {item.label}
                                 </Link>
                             );
@@ -325,7 +335,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                         }`}
                                 >
-                                    <Icon name={item.icon as any} className={`w-5 h-5 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                    <span className={item.iconClass} />
                                     {item.label}
                                 </Link>
                             );
@@ -341,7 +351,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             }`}
                         >
                             <span className="flex items-center gap-3">
-                                <Icon name="Key" className={`w-5 h-5 ${pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export") ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                <span className="icon-minecraft-sm icon-minecraft-tripwire-hook" />
                                 {t("admin.licenses")}
                             </span>
                             <svg className={`w-4 h-4 transition-transform ${mobileLicensesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -363,7 +373,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                                     : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                             }`}
                                         >
-                                            <Icon name={item.icon as any} className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                            <span className={item.iconClass} />
                                             {item.label}
                                         </Link>
                                     );
@@ -381,7 +391,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             }`}
                         >
                             <span className="flex items-center gap-3">
-                                <Icon name="Users" className={`w-5 h-5 ${pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/analytics") || pathname?.startsWith("/admin/payments") ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                <span className="icon-minecraft-sm icon-minecraft-creeper-head" />
                                 {t("admin.users")}
                             </span>
                             <svg className={`w-4 h-4 transition-transform ${mobileUsersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -403,7 +413,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                                     : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                             }`}
                                         >
-                                            <Icon name={item.icon as any} className={`w-4 h-4 ${active ? "text-[#f59e0b]" : "text-gray-500"}`} />
+                                            <span className={item.iconClass} />
                                             {item.label}
                                         </Link>
                                     );
@@ -417,7 +427,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center gap-3 px-4 py-3 text-blue-400 font-medium hover:bg-blue-400/10 rounded-xl transition-all duration-200"
                             >
-                                <Icon name="BarChart3" className="w-5 h-5" />
+                                <span className="icon-minecraft-sm icon-minecraft-spawn-egg-allay" />
                                 {t("admin.customerView")}
                             </Link>
                             <button
@@ -426,9 +436,9 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                     setIsMobileMenuOpen(false);
                                     signOut({ callbackUrl: "/" });
                                 }}
-                                className="flex items-center gap-3 px-4 py-3 text-red-400 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
+                                className="flex items-center gap-3 px-4 py-3 text-red-500/80 font-medium hover:bg-red-500/10 rounded-xl transition-all duration-200"
                             >
-                                <Icon name="LogOut" className="w-5 h-5" />
+                                <span className="icon-minecraft-sm icon-minecraft-oak-door" />
                                 {t("admin.signOut")}
                             </button>
                         </div>
