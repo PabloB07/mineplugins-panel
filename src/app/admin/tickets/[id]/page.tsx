@@ -7,6 +7,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 interface TicketMessage {
   id: string;
   content: string;
+  attachmentUrl?: string | null;
   isAdmin: boolean;
   isInternal: boolean;
   createdAt: string;
@@ -35,6 +36,7 @@ export default function AdminTicketDetailPage() {
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
   const [isInternal, setIsInternal] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -84,20 +86,33 @@ export default function AdminTicketDetailPage() {
 
   const sendMessage = async (e: FormEvent) => {
     e.preventDefault();
-    if (!ticket || !message.trim()) return;
+    if (!ticket || (!message.trim() && !attachment)) return;
     setSending(true);
     try {
+      let attachmentUrl = null;
+      if (attachment) {
+        const formData = new FormData();
+        formData.append("file", attachment);
+        const { handleTicketAttachmentUpload } = await import("@/lib/file-actions");
+        const res = await handleTicketAttachmentUpload(formData);
+        attachmentUrl = res.url;
+      }
+
       await fetch(`/api/tickets/${ticket.id}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: message.trim(),
+          attachmentUrl,
           isInternal,
         }),
       });
       setMessage("");
+      setAttachment(null);
       setIsInternal(false);
       await fetchTicket();
+    } catch (err) {
+      console.error(err);
     } finally {
       setSending(false);
     }
@@ -195,7 +210,12 @@ export default function AdminTicketDetailPage() {
               <span className="font-medium">{msg.user.name || msg.user.email}</span>
               <span>{new Date(msg.createdAt).toLocaleString()}</span>
             </div>
-            <p className="whitespace-pre-wrap text-sm text-gray-200">{msg.content}</p>
+            {msg.content && <p className="whitespace-pre-wrap text-sm text-gray-200">{msg.content}</p>}
+            {msg.attachmentUrl && (
+              <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer">
+                <img src={msg.attachmentUrl} alt="Attachment" className="mt-2 max-w-sm rounded border border-[#333] hover:opacity-80 transition-opacity" />
+              </a>
+            )}
           </div>
         ))}
         {ticket.messages.length === 0 ? (
@@ -209,8 +229,16 @@ export default function AdminTicketDetailPage() {
           onChange={(e) => setMessage(e.target.value)}
           className="min-h-28 w-full rounded-lg border border-[#333] bg-[#0b0b0b] p-3 text-sm text-white"
           placeholder={t("tickets.writeReply")}
-          required
         />
+        <div className="flex items-center gap-3">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+            className="text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#f59e0b]/10 file:text-[#f59e0b] hover:file:bg-[#f59e0b]/20"
+            disabled={sending}
+          />
+        </div>
         <label className="flex items-center gap-2 text-sm text-gray-300">
           <input
             type="checkbox"

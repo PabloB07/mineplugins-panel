@@ -440,11 +440,13 @@ model SupportMessage {
   ticketId    String
   userId      String
   content     String
+  attachmentUrl String?
   isAdmin     Boolean       @default(false)
   isInternal  Boolean       @default(false)
   createdAt   DateTime      @default(now())
   ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   user        User          @relation(fields: [userId], references: [id])
+
 
   @@index([ticketId])
   @@index([userId])

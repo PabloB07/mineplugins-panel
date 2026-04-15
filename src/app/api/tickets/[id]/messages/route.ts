@@ -15,9 +15,9 @@ export async function POST(
 
     const { id: ticketId } = await params;
     const body = await request.json();
-    const { content, isInternal } = body;
+    const { content, isInternal, attachmentUrl } = body;
 
-    if (!content) {
+    if (!content && !attachmentUrl) {
       return NextResponse.json({ error: "MISSING_CONTENT" }, { status: 400 });
     }
 
@@ -37,7 +37,8 @@ export async function POST(
       data: {
         ticketId: ticket.id,
         userId: session.user.id,
-        content,
+        content: content || "",
+        attachmentUrl: attachmentUrl || null,
         isAdmin,
         isInternal: isInternal && isAdmin ? true : false,
       },

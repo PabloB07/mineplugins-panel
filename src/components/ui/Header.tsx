@@ -96,6 +96,7 @@ export default function Header() {
                       src={session.user.image} 
                       alt="Profile" 
                       className="w-9 h-9 rounded-full border-2 border-green-500/30 hover:border-green-500/50 transition-colors"
+                      referrerPolicy="no-referrer"
                     />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-gray-400">
@@ -149,7 +150,7 @@ export default function Header() {
                   <>
                     <div className="flex items-center gap-3 mb-3 px-2">
                       {session.user?.image ? (
-                        <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full border-2 border-green-500/30" />
+                        <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full border-2 border-green-500/30" referrerPolicy="no-referrer" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-[#111] border border-[#333] flex items-center justify-center">
                           <Icon name="User" className="w-5 h-5 text-gray-400" />
