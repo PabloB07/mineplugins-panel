@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslation } from "@/i18n/useTranslation";
-import { useIcon } from "@/hooks/useIcon";
 
 const testimonials = [
   {
@@ -26,8 +25,6 @@ const testimonials = [
 
 export default function Testimonials() {
   const { t } = useTranslation();
-  const Star = useIcon("Star");
-  const Quote = useIcon("MessageCircle");
 
   return (
     <section className="py-24 bg-zinc-900">
@@ -52,16 +49,15 @@ export default function Testimonials() {
               key={index}
               className="bg-[#111] border border-[#222] rounded-2xl p-8 hover:border-emerald-500/30 transition-all duration-300 group relative"
             >
-              {/* Quote Icon */}
-              <Quote className="w-10 h-10 text-emerald-500/20 absolute top-6 right-6" />
+              {/* Minecraft Quote Icon */}
+              <div className="absolute top-6 right-6">
+                <div className="icon-minecraft icon-minecraft-player-head scale-150 opacity-20"></div>
+              </div>
 
-              {/* Rating */}
+              {/* Rating - Minecraft Hearts */}
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-5 h-5 text-yellow-400 fill-yellow-400"
-                  />
+                  <div key={i} className="icon-minecraft-sm icon-minecraft-heart scale-150"></div>
                 ))}
               </div>
 
