@@ -132,33 +132,21 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                         </Link>
 
                         {/* Products Dropdown */}
-                        <div className="relative group/nav-item" ref={productsDropdownRef}>
-                            <div className="flex items-center">
-                                <Link
-                                    href="/admin/products"
-                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-l-lg text-xs font-medium transition-all duration-200 whitespace-nowrap border-r border-white/5 ${
-                                        pathname?.startsWith("/admin/products")
-                                            ? "bg-[#f59e0b]/20 text-[#f59e0b] border-y border-l border-[#f59e0b]/30"
-                                            : "text-gray-400 hover:text-white hover:bg-[#111] border-transparent"
-                                    }`}
-                                >
-                                    <Icon name="Package" className="w-3.5 h-3.5" />
-                                    {t("admin.products")}
-                                </Link>
-                                <button
-                                    onClick={() => setProductsOpen(!productsOpen)}
-                                    className={`px-2 py-2 rounded-r-lg transition-all duration-200 ${
-                                        pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/orders")
-                                            ? "bg-[#f59e0b]/20 text-[#f59e0b] border-y border-r border-[#f59e0b]/30"
-                                            : "text-gray-400 hover:text-white hover:bg-[#111]"
-                                    }`}
-                                    aria-label="Toggle Products Submenu"
-                                >
-                                    <svg className={`w-3 h-3 transition-transform ${productsOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                            </div>
+                        <div className="relative" ref={productsDropdownRef}>
+                            <button
+                                onClick={() => setProductsOpen(!productsOpen)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+                                    pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/orders")
+                                        ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                                        : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
+                                }`}
+                            >
+                                <Icon name="Package" className="w-3.5 h-3.5" />
+                                {t("admin.products")}
+                                <svg className={`w-3 h-3 transition-transform ${productsOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
                             {productsOpen && (
                                 <div className="absolute top-full left-0 mt-1 bg-[#111] border border-[#333] rounded-lg shadow-xl overflow-hidden min-w-[140px]">
                                     {productsItems.map((item) => (
