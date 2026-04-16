@@ -118,7 +118,7 @@ export default function MinecraftIconPicker({
                     className="aspect-square rounded-lg bg-[#0a0a0a] border border-[#222] hover:border-[#f59e0b]/50 flex items-center justify-center transition-all hover:scale-105"
                     title={icon.label}
                   >
-                    <span className={`icon-minecraft-sm ${icon.css}`} />
+                    <span className={`icon-minecraft ${icon.css}`} />
                   </button>
                 ))}
               </div>
