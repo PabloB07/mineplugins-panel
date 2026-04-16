@@ -320,7 +320,7 @@ export default function AdminServersPage() {
       </div>
 
       {/* Action Bar */}
-      <div className="bg-[#111] rounded-xl border border-[#222] p-6 shadow-lg">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6 shadow-lg">
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
           {/* Search */}
           <div className="flex-1 lg:flex-initial lg:w-96">

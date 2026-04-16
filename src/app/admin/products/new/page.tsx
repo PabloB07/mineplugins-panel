@@ -120,7 +120,7 @@ export default function NewProductPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl">
-        <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-[#f59e0b]/20 transition-all duration-300">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] overflow-hidden hover:border-[#f59e0b]/20 transition-all duration-300">
           <div className="p-6">
             <div className="mb-8">
               <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">

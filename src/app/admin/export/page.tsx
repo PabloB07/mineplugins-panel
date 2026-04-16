@@ -49,7 +49,7 @@ export default function AdminExportPage() {
             <h1 className="text-2xl font-bold text-white">{tr("adminExport.title", "Export Data")}</h1>
             <p className="mt-1 text-sm text-gray-400">{tr("adminExport.subtitle", "Download key business datasets in one click.")}</p>
           </div>
-          <div className="rounded-xl border border-[#3a3a3a] bg-[#121212] p-2.5">
+          <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#3a3a3a] bg-[#121212] p-2.5">
             <Icon name="FileText" className="h-5 w-5 text-[#f59e0b]" />
           </div>
         </div>
@@ -86,21 +86,21 @@ export default function AdminExportPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
           <p className="text-xs uppercase tracking-wide text-gray-500">{tr("adminExport.tipTitle", "Quick tip")}</p>
           <p className="mt-1 text-sm text-gray-300">{tr("adminExport.tipBody", "Run exports in off-peak hours for very large datasets.")}</p>
         </div>
-        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
           <p className="text-xs uppercase tracking-wide text-gray-500">{tr("adminExport.formatTitle", "Format")}</p>
           <p className="mt-1 text-sm text-gray-300">{tr("adminExport.formatBody", "Use CSV for spreadsheets and JSON for integrations.")}</p>
         </div>
-        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
           <p className="text-xs uppercase tracking-wide text-gray-500">{tr("adminExport.limitTitle", "Limit")}</p>
           <p className="mt-1 text-sm text-gray-300">{tr("adminExport.limitBody", "Each export returns up to 10,000 records.")}</p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-[#333] bg-[#111] p-6">
+      <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-6">
         <h2 className="mb-4 text-white font-medium">{tr("adminExport.aboutTitle", "About export")}</h2>
         <ul className="space-y-2 text-sm text-gray-400">
           <li>• {tr("adminExport.aboutItem1", "Files are exported in CSV format")}</li>

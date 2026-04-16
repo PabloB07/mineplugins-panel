@@ -102,7 +102,7 @@ export default function DashboardTicketsPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-5">
-        <form onSubmit={createTicket} className="rounded-xl border border-[#333] bg-[#111] p-5 space-y-4 xl:col-span-2">
+        <form onSubmit={createTicket} className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-5 space-y-4 xl:col-span-2">
           <h2 className="text-lg font-semibold text-white flex items-center gap-2">
             <Icon name="PlusCircle" className="h-4 w-4 text-green-400" />
             {t("tickets.newTicket")}
@@ -154,7 +154,7 @@ export default function DashboardTicketsPage() {
           </button>
         </form>
 
-        <div className="rounded-xl border border-[#333] bg-[#111] p-5 xl:col-span-3">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-5 xl:col-span-3">
           <h2 className="mb-4 text-lg font-semibold text-white flex items-center gap-2">
             <Icon name="MessageCircle" className="h-4 w-4 text-blue-400" />
             {t("tickets.myTickets")}

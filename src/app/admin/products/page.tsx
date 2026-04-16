@@ -139,7 +139,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-[#111] rounded-xl border border-[#222] p-6 shadow-lg">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6 shadow-lg">
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
           {/* Search */}
           <form onSubmit={(e) => { e.preventDefault(); setPagination(prev => ({ ...prev, page: 1 })); }} className="flex-1 lg:flex-initial lg:w-96">
@@ -191,7 +191,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-[#1a1a1a] border-b border-[#222]">
@@ -344,7 +344,7 @@ export default function AdminProductsPage() {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="bg-[#111] rounded-xl border border-[#222] p-4 mt-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-4 mt-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-400">
               {t("admin.showPagination")} {Math.min((pagination.page - 1) * pagination.limit + 1, pagination.total)} {t("admin.to")}{" "}

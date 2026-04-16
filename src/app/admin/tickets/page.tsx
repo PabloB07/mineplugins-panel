@@ -100,7 +100,7 @@ export default function AdminTicketsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs uppercase tracking-wide text-gray-500">{t("tickets.total")}</p>
@@ -111,7 +111,7 @@ export default function AdminTicketsPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs uppercase tracking-wide text-gray-500">{t("tickets.pendingResponse")}</p>
@@ -122,7 +122,7 @@ export default function AdminTicketsPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+        <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs uppercase tracking-wide text-gray-500">{t("tickets.urgent")}</p>
@@ -164,7 +164,7 @@ export default function AdminTicketsPage() {
             <Link
               key={ticket.id}
               href={`/admin/tickets/${ticket.ticketNumber}`}
-              className="block rounded-xl border border-[#333] bg-[#111] p-4 transition-colors hover:border-[#f59e0b]/50"
+              className="pixel-frame pixel-frame-neutral block rounded-xl border border-[#333] bg-[#111] p-4 transition-colors hover:border-[#f59e0b]/50"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -186,7 +186,7 @@ export default function AdminTicketsPage() {
             </Link>
           ))}
           {filteredTickets.length === 0 ? (
-            <div className="rounded-xl border border-[#333] bg-[#111] py-10 text-center text-gray-500">
+            <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] py-10 text-center text-gray-500">
               {t("tickets.noTickets")}
             </div>
           ) : null}

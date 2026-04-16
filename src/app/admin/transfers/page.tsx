@@ -169,7 +169,7 @@ export default function AdminTransfersPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-[#111] rounded-xl border border-[#222] p-5">
+          <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-5">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">Transfer History</h2>
               <div className="relative">
@@ -229,7 +229,7 @@ export default function AdminTransfersPage() {
         </div>
 
         <div>
-          <div className="bg-[#111] rounded-xl border border-[#222] p-5">
+          <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-5">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <span className="icon-minecraft-sm icon-minecraft-paper"></span>
               New Transfer

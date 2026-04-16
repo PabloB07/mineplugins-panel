@@ -201,7 +201,7 @@ export default function LicensesPage() {
 
        {/* Licenses Grid */}
        {licenses.length === 0 ? (
-         <div className="relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
+         <div className="pixel-frame pixel-frame-neutral relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
            <div className="relative z-10 w-16 h-16 bg-[#181818] border border-[#333] rounded-full flex items-center justify-center mx-auto mb-4">
              <Server className="w-8 h-8 text-gray-500" />
@@ -468,7 +468,7 @@ export default function LicensesPage() {
         {/* Renewal Modal */}
         {renewModal.open && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] rounded-xl border border-[#222] p-6 max-w-md w-full shadow-2xl">
+            <div className="pixel-frame pixel-frame-neutral bg-gradient-to-br from-[#111] to-[#0a0a0a] rounded-xl border border-[#222] p-6 max-w-md w-full shadow-2xl">
               <h3 className="text-xl font-semibold text-white mb-4">
                 {t("dashboard.renewLicense")} - {renewModal.licenseName}
               </h3>

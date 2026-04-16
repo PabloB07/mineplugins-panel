@@ -167,7 +167,7 @@ export default function AdminLicenseDetailPage() {
       </div>
 
       {/* License Header */}
-      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6 mb-6">
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-3">
@@ -199,7 +199,7 @@ export default function AdminLicenseDetailPage() {
         </div>
 
         {/* License Key */}
-        <div className="bg-[#0a0a0a] rounded-xl p-4 mb-6 border border-[#222]">
+        <div className="pixel-frame pixel-frame-neutral bg-[#0a0a0a] rounded-xl p-4 mb-6 border border-[#222]">
           <div className="flex justify-between items-center">
             <div>
               <div className="text-gray-400 text-sm mb-1">License Key</div>

@@ -190,7 +190,7 @@ export default function AdminLicensesPage() {
         </div>
       </div>
 
-      <div className="bg-[#111] rounded-xl border border-[#222] p-4 flex flex-col md:flex-row gap-4 items-center">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-4 flex flex-col md:flex-row gap-4 items-center">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-400" />
           <span className="text-gray-400 text-sm font-medium">Status:</span>
@@ -247,7 +247,7 @@ export default function AdminLicensesPage() {
           <Loader2 className="w-8 h-8 text-[#f59e0b] animate-spin" />
         </div>
       ) : licenses.length === 0 ? (
-        <div className="bg-[#111] rounded-xl border border-[#222] p-16 text-center">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-16 text-center">
           <Key className="w-16 h-16 text-gray-500 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-white mb-2">No Licenses Found</h3>
           <p className="text-gray-400">

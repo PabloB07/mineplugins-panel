@@ -148,7 +148,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
 
       <div className="max-w-4xl space-y-6">
         {/* Order Status */}
-        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {getStatusIcon(order.status)}
@@ -191,7 +191,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
         </div>
 
         {/* Order Items */}
-        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Items Ordered</h2>
           
           <div className="space-y-4">
@@ -275,7 +275,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-[#111] rounded-xl border border-[#222] p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Order Summary</h2>
           
           {/* Calculate totals from order items */}

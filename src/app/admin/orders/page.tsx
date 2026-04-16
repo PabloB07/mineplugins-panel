@@ -254,7 +254,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg space-y-4">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-6 mb-6 shadow-lg space-y-4">
         <div className="flex items-center gap-3 mb-2">
           <Filter className="w-5 h-5 text-gray-400" />
           <span className="text-white font-semibold">{t("admin.filters")}</span>
@@ -341,7 +341,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
+      <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-[#1a1a1a] border-b border-[#222]">

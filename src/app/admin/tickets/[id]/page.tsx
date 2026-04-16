@@ -146,7 +146,7 @@ export default function AdminTicketDetailPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-[#333] bg-[#111] p-4">
+      <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4">
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm text-gray-300">
             {t("tickets.status")}

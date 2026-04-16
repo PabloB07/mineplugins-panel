@@ -148,7 +148,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
             <Icon name="ShoppingCart" className="w-4 h-4" />
             Completed Orders ({selectedRangeDays}d)
@@ -156,7 +156,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
           <div className="text-3xl font-bold text-white">{completedOrders}</div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
             <Icon name="Users" className="w-4 h-4" />
             Customers
@@ -164,7 +164,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
           <div className="text-3xl font-bold text-white">{totalUsers}</div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
             <Icon name="Key" className="w-4 h-4" />
             Active Licenses
@@ -173,7 +173,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
           <div className="text-xs text-gray-500 mt-1">of {totalLicenses} total</div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2 flex items-center gap-2">
             <Icon name="Download" className="w-4 h-4" />
             Downloads ({selectedRangeDays}d)
@@ -183,7 +183,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 bg-[#111] border border-[#222] rounded-xl p-6">
+        <div className="pixel-frame pixel-frame-neutral xl:col-span-2 bg-[#111] border border-[#222] rounded-xl p-6">
           <div className="text-sm text-gray-400 mb-2">Total Revenue ({selectedRangeDays}d)</div>
           <div className="text-4xl font-bold text-white">${((revenue._sum.total || 0) / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })} USD</div>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
@@ -211,7 +211,7 @@ export default async function AdminAnalyticsPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded-xl p-6">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-6">
           <h2 className="text-white font-semibold mb-4">License Status</h2>
           <div className="space-y-3">
             {licensesByStatus.map((item) => (

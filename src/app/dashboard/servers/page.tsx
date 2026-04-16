@@ -162,7 +162,7 @@ export default function DashboardServersPage() {
           <div className="w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin"></div>
         </div>
       ) : servers.length === 0 ? (
-        <div className="bg-[#111] border border-[#222] rounded-xl p-12 text-center">
+        <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-12 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#0a0a0a] border border-[#222] flex items-center justify-center">
             <span className="icon-minecraft icon-minecraft-grass-block opacity-50"></span>
           </div>

@@ -142,7 +142,7 @@ export default function DashboardTicketDetailPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-[#333] bg-[#111] p-4 space-y-3">
+      <div className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4 space-y-3">
         <h2 className="text-lg font-semibold text-white">{t("tickets.conversation")}</h2>
         {ticket.messages.map((msg) => (
           <div
@@ -164,7 +164,7 @@ export default function DashboardTicketDetailPage() {
       </div>
 
       {ticket.status !== "CLOSED" ? (
-        <form onSubmit={sendMessage} className="rounded-xl border border-[#333] bg-[#111] p-4 space-y-3">
+        <form onSubmit={sendMessage} className="pixel-frame pixel-frame-neutral rounded-xl border border-[#333] bg-[#111] p-4 space-y-3">
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
