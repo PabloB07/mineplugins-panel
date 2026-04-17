@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
-import { getFlowPaymentStatus, FlowPaymentStatusCodes } from "@/lib/flow";
 import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
 /**
  * Find and fix stuck orders
  * POST /api/payment/fix-stuck-orders
  * 
- * This endpoint finds orders that are PENDING but have been paid in Flow
+ * This endpoint finds orders that are PENDING
  * and automatically fixes them by creating licenses
  */
 export async function POST(request: NextRequest) {
@@ -38,12 +37,9 @@ export async function POST(request: NextRequest) {
 
     console.log(`Looking for stuck PENDING orders (dryRun: ${dryRun}, maxOrders: ${maxOrders})`);
 
-    // Find all PENDING orders with flow tokens
+    // Find all PENDING orders
     const pendingOrders = await prisma.order.findMany({
-      where: { 
-        status: "PENDING",
-        flowToken: { not: null }
-      },
+      where: { status: "PENDING" },
       include: {
         user: {
           select: { id: true, email: true, name: true },
@@ -59,80 +55,61 @@ export async function POST(request: NextRequest) {
       take: maxOrders,
     });
 
-    console.log(`Found ${pendingOrders.length} PENDING orders with Flow tokens`);
+    console.log(`Found ${pendingOrders.length} PENDING orders`);
 
     const stuckOrders = [];
     const fixedOrders = [];
 
     for (const order of pendingOrders) {
       try {
-        // Check payment status in Flow
-        const paymentStatus = await getFlowPaymentStatus(order.flowToken!);
-        
-        console.log(`Order ${order.orderNumber}: Flow status = ${paymentStatus.status}`);
+        stuckOrders.push({ order });
 
-        // If paid but order is still pending, it's stuck
-        if (paymentStatus.status === FlowPaymentStatusCodes.PAID) {
-          stuckOrders.push({
-            order,
-            flowStatus: paymentStatus,
-          });
+        if (!dryRun) {
+          const { generateSimpleLicenseKey } = await import("@/lib/license");
+          
+          for (const item of order.items) {
+            if (item.licenseId) continue;
 
-          if (!dryRun) {
-            // Create licenses for this order
-            const { generateSimpleLicenseKey } = await import("@/lib/license");
-            
-            for (const item of order.items) {
-              // Skip if license already exists
-              if (item.licenseId) continue;
+            const licenseKey = generateSimpleLicenseKey();
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + item.durationDays);
 
-              // Generate license key
-              const licenseKey = generateSimpleLicenseKey();
-
-              // Calculate expiration date
-              const expiresAt = new Date();
-              expiresAt.setDate(expiresAt.getDate() + item.durationDays);
-
-              // Create license
-              const license = await prisma.license.create({
-                data: {
-                  licenseKey,
-                  userId: order.userId,
-                  productId: item.productId,
-                  status: "ACTIVE",
-                  expiresAt,
-                  maxActivations: item.product.maxActivations,
-                },
-              });
-
-              // Link license to order item
-              await prisma.orderItem.update({
-                where: { id: item.id },
-                data: { licenseId: license.id },
-              });
-
-              console.log(`Created license ${license.id} for order ${order.orderNumber}`);
-            }
-
-            // Update order status
-            await prisma.order.update({
-              where: { id: order.id },
+            const license = await prisma.license.create({
               data: {
-                status: "COMPLETED",
-                paidAt: order.paidAt || new Date(),
+                licenseKey,
+                userId: order.userId,
+                productId: item.productId,
+                status: "ACTIVE",
+                expiresAt,
+                maxActivations: item.product.maxActivations,
               },
             });
 
-            await prisma.$transaction(async (tx) => {
-              await registerDiscountUsageOnCompletedOrder(tx, order.id);
+            await prisma.orderItem.update({
+              where: { id: item.id },
+              data: { licenseId: license.id },
             });
 
-            fixedOrders.push({
-              orderId: order.id,
-              orderNumber: order.orderNumber,
-              licensesCreated: order.items.filter(item => !item.licenseId).length,
-            });
+            console.log(`Created license ${license.id} for order ${order.orderNumber}`);
           }
+
+          await prisma.order.update({
+            where: { id: order.id },
+            data: {
+              status: "COMPLETED",
+              paidAt: order.paidAt || new Date(),
+            },
+          });
+
+          await prisma.$transaction(async (tx) => {
+            await registerDiscountUsageOnCompletedOrder(tx, order.id);
+          });
+
+          fixedOrders.push({
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            licensesCreated: order.items.filter(item => !item.licenseId).length,
+          });
         }
       } catch (error) {
         console.error(`Error checking order ${order.orderNumber}:`, error);
@@ -147,12 +124,11 @@ export async function POST(request: NextRequest) {
         ordersFixed: fixedOrders.length,
         dryRun,
       },
-      stuckOrders: stuckOrders.map(({ order, flowStatus }) => ({
+      stuckOrders: stuckOrders.map(({ order }) => ({
         id: order.id,
         orderNumber: order.orderNumber,
         createdAt: order.createdAt,
         total: order.total,
-        flowStatus: flowStatus.status,
         items: order.items.length,
         licensesAlreadyExist: order.items.filter(item => item.licenseId).length,
       })),
@@ -203,19 +179,8 @@ export async function GET() {
       _count: { id: true },
     });
 
-    // Count pending orders with and without flow tokens
-    const pendingWithToken = await prisma.order.count({
-      where: { 
-        status: "PENDING",
-        flowToken: { not: null }
-      },
-    });
-
-    const pendingWithoutToken = await prisma.order.count({
-      where: { 
-        status: "PENDING",
-        flowToken: null
-      },
+    const pendingCount = await prisma.order.count({
+      where: { status: "PENDING" },
     });
 
     // Get recent orders
@@ -236,7 +201,6 @@ export async function GET() {
       orderNumber: order.orderNumber,
       createdAt: order.createdAt,
       total: order.total,
-      flowToken: order.flowToken,
       paidAt: order.paidAt,
       itemCount: order.items.length,
       licensesCreated: order.items.filter(item => item.licenseId).length,
@@ -249,8 +213,7 @@ export async function GET() {
           acc[status] = _count.id;
           return acc;
         }, {} as Record<string, number>),
-        pendingWithToken,
-        pendingWithoutToken,
+        pendingCount,
       },
       recentPendingOrders: formattedRecentOrders,
     });
