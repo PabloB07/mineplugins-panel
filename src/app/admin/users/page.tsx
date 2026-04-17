@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useIcon } from "@/hooks/useIcon";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface User {
   id: string;
@@ -228,7 +229,7 @@ export default function AdminUsersPage() {
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-2">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
+                      <LoadingSpinner size="sm" color="blue" />
                       {t("admin.loadingUsers")}
                     </div>
                   </td>

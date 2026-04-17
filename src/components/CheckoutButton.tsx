@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface CheckoutButtonProps {
   productSlug: string;
@@ -61,7 +62,7 @@ export function CheckoutButton({ productSlug, durationDays }: CheckoutButtonProp
       >
         {isLoading ? (
           <>
-            <Icon name="Loader2" className="w-5 h-5 animate-spin" />
+            <LoadingSpinner size="sm" color="white" />
             Processing...
           </>
         ) : (

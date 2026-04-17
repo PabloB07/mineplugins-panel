@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Icon, IconHeader } from "@/components/ui/Icon";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface License {
   id: string;
@@ -61,8 +62,8 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">{t("common.loading")}</p>
+          <LoadingSpinner />
+          <p className="text-gray-400 mt-4">{t("common.loading")}</p>
         </div>
       </div>
     );

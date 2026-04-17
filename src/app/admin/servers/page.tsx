@@ -6,6 +6,7 @@ import { useIcon } from "@/hooks/useIcon";
 import { ServerStatus as ServerStatusType, ServerFormData } from "@/components/admin/servers/types";
 import ServerCard from "@/components/admin/servers/ServerCard";
 import ServerModal from "@/components/admin/servers/ServerModal";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function AdminServersPage() {
   const { t } = useTranslation();
@@ -433,7 +434,7 @@ export default function AdminServersPage() {
       {loading ? (
         <div className="bg-[#111] border border-[#222] rounded-xl p-16 text-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-2 border-[#f59e0b]/30 border-t-[#f59e0b] rounded-full animate-spin"></div>
+            <LoadingSpinner color="amber" />
             <p className="text-gray-400">{t("admin.loading")}</p>
           </div>
         </div>

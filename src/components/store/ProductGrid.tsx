@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Icon } from "@/components/ui/Icon";
 import { Product, Session } from "./types";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface ProductGridProps {
   session: Session | null;
@@ -365,7 +366,7 @@ export default function ProductGrid({ session }: ProductGridProps) {
       <section className="mt-8 mb-16">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Icon name="Loader2" className="w-8 h-8 animate-spin text-green-500" />
+            <LoadingSpinner />
           </div>
         ) : (
           <>

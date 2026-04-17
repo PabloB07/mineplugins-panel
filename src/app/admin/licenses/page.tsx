@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useIcon } from "@/hooks/useIcon";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface Product {
   id: string;
@@ -242,7 +243,7 @@ export default function AdminLicensesPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-[#f59e0b] animate-spin" />
+          <LoadingSpinner color="amber" />
         </div>
       ) : licenses.length === 0 ? (
         <div className="pixel-frame pixel-frame-neutral bg-[#111] rounded-xl border border-[#222] p-16 text-center">

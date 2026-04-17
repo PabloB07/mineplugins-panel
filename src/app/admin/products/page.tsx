@@ -10,6 +10,7 @@ import { formatCLPValue } from "@/lib/pricing";
 import ProductVersionSelector from "@/components/admin/ProductVersionSelector";
 import CopyButton from "@/components/admin/CopyButton";
 import ApiTokenButton from "@/components/admin/ApiTokenButton";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface ProductVersion {
   id: string;
@@ -216,7 +217,7 @@ export default function AdminProductsPage() {
                 <tr>
                   <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="w-6 h-6 animate-spin text-[#f59e0b]" />
+                      <LoadingSpinner size="sm" color="amber" />
                       {t("admin.loadingProducts")}
                     </div>
                   </td>

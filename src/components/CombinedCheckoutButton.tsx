@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { type PaymentMethodId } from "@/lib/payment-methods";
 import { useTranslation } from "@/i18n/useTranslation";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface CombinedCheckoutButtonProps {
   productSlug: string;
@@ -99,7 +100,7 @@ export function CombinedCheckoutButton({
       >
         {isLoading ? (
           <>
-            <Icon name="Loader2" className="w-5 h-5 animate-spin" />
+            <LoadingSpinner size="sm" color="white" />
             {getButtonText()}
           </>
         ) : (

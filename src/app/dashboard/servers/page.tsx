@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface ServerInfo {
   id: string;
@@ -156,7 +157,7 @@ export default function DashboardServersPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin"></div>
+          <LoadingSpinner />
         </div>
       ) : servers.length === 0 ? (
         <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-12 text-center">
