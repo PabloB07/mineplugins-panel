@@ -22,11 +22,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: user.email },
         });
         if (existingUser && user.image) {
+          const cleanImage = user.image.split('?')[0];
           await prisma.user.update({
             where: { id: existingUser.id },
             data: {
               name: user.name || existingUser.name,
-              image: user.image,
+              image: cleanImage,
             },
           });
         }
