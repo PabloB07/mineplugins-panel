@@ -43,6 +43,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
     
     const licensesItems = [
         { href: "/admin/licenses", label: t("admin.licenses"), iconClass: "icon-minecraft-sm icon-minecraft-tripwire-hook" },
+        { href: "/admin/transfers", label: t("admin.transfers"), iconClass: "icon-minecraft-sm icon-minecraft-repeater" },
         { href: "/admin/discounts", label: t("admin.discounts"), iconClass: "icon-minecraft-sm icon-minecraft-emerald" },
         { href: "/admin/tickets", label: t("admin.tickets"), iconClass: "icon-minecraft-sm icon-minecraft-writable-book" },
         { href: "/admin/export", label: t("admin.export"), iconClass: "icon-minecraft-sm icon-minecraft-filled-map" },
@@ -167,7 +168,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             <button
                                 onClick={() => setLicensesOpen(!licensesOpen)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
-                                    pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export")
+                                    pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/transfers") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export")
                                         ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
                                         : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                                 }`}
@@ -334,7 +335,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             type="button"
                             onClick={() => setMobileLicensesOpen(!mobileLicensesOpen)}
                             className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
-                                pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export")
+                                pathname?.startsWith("/admin/licenses") || pathname?.startsWith("/admin/transfers") || pathname?.startsWith("/admin/discounts") || pathname?.startsWith("/admin/tickets") || pathname?.startsWith("/admin/export")
                                     ? "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
                                     : "text-gray-400 hover:text-white hover:bg-[#111] border border-transparent"
                             }`}
