@@ -84,7 +84,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                         {user ? <ClientNotifications /> : null}
                         <LanguageSwitcher />
                         {user ? (
-                            <div className="hidden sm:flex items-center gap-4 pl-4 border-l border-[#222]">
+                            <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[#222]">
                                 <div className="text-right hidden md:block">
                                     <div className="text-sm font-medium text-gray-200">{user.name || "User"}</div>
                                     <div className="text-xs text-gray-500">Dashboard</div>
@@ -104,10 +104,11 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                 <button
                                     type="button"
                                     onClick={() => signOut({ callbackUrl: "/" })}
-                                    className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
+                                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-400 hover:text-white bg-[#111] hover:bg-red-500/20 border border-[#333] hover:border-red-500/30 rounded-lg transition-all duration-200"
                                     title={t("nav.signOut")}
                                 >
-                                    <Icon name="LogOut" className="w-4 h-4" />
+                                    <Icon name="LogOut" className="w-4 h-4 text-gray-500 hover:text-red-400" />
+                                    <span className="hidden lg:inline">{t("nav.signOut")}</span>
                                 </button>
                             </div>
                         ) : (
