@@ -5,6 +5,8 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { useIcon } from "@/hooks/useIcon";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 import { useTranslation } from "@/i18n/useTranslation";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type OrderItem = {
   id: string;
@@ -59,7 +61,7 @@ export default function OrdersContent({ session, orders }: Props) {
 
       <div className="space-y-8 animate-fade-in pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div className="pixel-frame pixel-frame-blue relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
+          <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
             <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
@@ -96,25 +98,14 @@ export default function OrdersContent({ session, orders }: Props) {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {orders.length === 0 ? (
-            <div className="pixel-frame relative bg-[#111] rounded-xl border border-[#222] p-16 text-center overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
-              <div className="relative z-10 max-w-md mx-auto">
-                <div className="w-16 h-16 bg-[#181818] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#2a2a2a]">
-                  <ShoppingBag className="w-8 h-8 text-gray-500" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{t("orders.noOrders")}</h3>
-                <p className="text-gray-400 mb-6">{t("orders.noOrdersDesc")}</p>
-                <Link
-                  href="/store"
-                  className="inline-flex items-center gap-2 bg-[#22c55e] text-black hover:bg-[#16a34a] font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg shadow-[#22c55e]/20"
-                >
-                  {t("orders.browseProducts")}
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
+            <EmptyState
+              icon="ShoppingBag"
+              title={t("orders.noOrders")}
+              description={t("orders.noOrdersDesc")}
+              action={{ label: t("orders.browseProducts"), href: "/store" }}
+            />
           ) : (
-            <div className="pixel-frame pixel-frame-blue bg-[#111] rounded-xl border border-[#222] overflow-hidden">
+            <div className="bg-[#111] rounded-xl border border-[#222] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#222] bg-[#151515]">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-blue-400" />
@@ -175,15 +166,7 @@ export default function OrdersContent({ session, orders }: Props) {
                                     {t("orders.viewLicense")}
                                   </Link>
                                   <div className="flex items-center gap-2">
-                                    <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                                      item.license.status === "ACTIVE"
-                                        ? "bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30"
-                                        : item.license.status === "EXPIRED"
-                                        ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                        : "bg-[#181818] text-gray-400 border border-[#333]"
-                                    }`}>
-                                      {item.license.status}
-                                    </span>
+                                    <StatusBadge status={item.license.status} showDot={false} className="text-xs" />
                                     {item.license.expiresAt && (
                                       <span className="text-xs text-gray-500">
                                         {t("orders.expires")}: {new Date(item.license.expiresAt).toLocaleDateString()}
@@ -198,28 +181,7 @@ export default function OrdersContent({ session, orders }: Props) {
                           ))}
                         </td>
                         <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${
-                              order.status === "COMPLETED"
-                                ? "bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
-                                : order.status === "PENDING"
-                                ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                              : order.status === "FAILED"
-                                ? "bg-red-500/20 text-red-400 border-red-500/30"
-                                : "bg-[#181818] text-gray-400 border-[#333]"
-                            }`}
-                          >
-                            <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 ${
-                              order.status === "COMPLETED"
-                                ? "bg-[#22c55e]"
-                                : order.status === "PENDING"
-                                ? "bg-yellow-400"
-                              : order.status === "FAILED"
-                                ? "bg-red-400"
-                                : "bg-gray-500"
-                            }`}></span>
-                            {order.status}
-                          </span>
+                          <StatusBadge status={order.status} />
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm text-gray-300">
