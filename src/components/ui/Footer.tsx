@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "@/i18n/useTranslation";
 
 const footerLinks = {
   product: [
@@ -20,6 +23,9 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const { locale } = useTranslation();
+  const isSpanish = locale === "es";
+
   return (
     <footer className="bg-[#0a0a0a] border-t border-[#333333]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -31,7 +37,10 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">MinePlugins</span>
             </Link>
             <p className="text-[#737373] text-sm mb-4">
-              Official store for Paper 1.21 plugins with secure licensing and instant updates.
+              {isSpanish 
+                ? "Tienda oficial de plugins Paper 1.21 con licencias seguras y actualizaciones instantáneas."
+                : "Official store for Paper 1.21 plugins with secure licensing and instant updates."
+              }
             </p>
             <div className="flex gap-4">
               <a
@@ -61,7 +70,9 @@ export default function Footer() {
 
           {/* Product */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Product</h3>
+            <h3 className="text-white font-semibold mb-4">
+              {isSpanish ? "Producto" : "Product"}
+            </h3>
             <ul className="space-y-2">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
@@ -78,7 +89,9 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Resources</h3>
+            <h3 className="text-white font-semibold mb-4">
+              {isSpanish ? "Recursos" : "Resources"}
+            </h3>
             <ul className="space-y-2">
               {footerLinks.resources.map((link) => (
                 <li key={link.label}>
@@ -97,7 +110,9 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Legal</h3>
+            <h3 className="text-white font-semibold mb-4">
+              {isSpanish ? "Legal" : "Legal"}
+            </h3>
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
@@ -116,10 +131,10 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-zinc-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-zinc-500 text-sm">
-            © {new Date().getFullYear()} MinePlugins. All rights reserved.
+            © {new Date().getFullYear()} MinePlugins. {isSpanish ? "Todos los derechos reservados." : "All rights reserved."}
           </p>
           <p className="text-zinc-500 text-sm">
-            Made with ❤️ by{" "}
+            {isSpanish ? "Hecho con ❤️ por" : "Made with ❤️ by"}{" "}
             <a
               href="https://blancocl.vercel.app"
               target="_blank"
@@ -128,6 +143,17 @@ export default function Footer() {
             >
               Pablo Blanco
             </a>
+          </p>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="border-t border-zinc-800 mt-8 pt-6 text-center">
+          <p className="text-zinc-600 text-xs max-w-3xl mx-auto">
+            <span className="text-zinc-500">{isSpanish ? "Aviso:" : "Disclaimer:"}</span>{" "}
+            {isSpanish
+              ? "MinePlugins no está afiliado, respaldado ni conectado con Mojang Studios, AB o Microsoft. Minecraft es una marca registrada de Mojang Studios y Microsoft."
+              : "MinePlugins is not affiliated with, endorsed by, or connected to Mojang Studios, AB, or Microsoft. Minecraft is a trademark of Mojang Studios and Microsoft."
+            }
           </p>
         </div>
       </div>
