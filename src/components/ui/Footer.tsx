@@ -33,7 +33,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">⛏️</span>
+              <span className="icon-minecraft icon-minecraft-diamond-block scale-150"></span>
               <span className="text-xl font-bold text-white">MinePlugins</span>
             </Link>
             <p className="text-[#737373] text-sm mb-4">
