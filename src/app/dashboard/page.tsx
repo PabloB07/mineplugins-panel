@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
+import { useI18n } from "@/i18n/I18nProvider";
 import { Icon, IconHeader } from "@/components/ui/Icon";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
@@ -29,6 +30,7 @@ interface Order {
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const { formatPrice } = useI18n();
   const { data: session } = useSession();
 
   const [licenses, setLicenses] = useState<License[]>([]);
@@ -223,7 +225,7 @@ export default function DashboardPage() {
                       {order.items.length} {order.items.length === 1 ? t("store.server") : t("store.servers")}
                     </span>
                     <span className="text-white font-medium">
-                      ${Math.round(order.total).toLocaleString("es-CL")} CLP
+                      {formatPrice(order.total)}
                     </span>
                   </div>
                 </div>
