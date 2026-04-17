@@ -284,11 +284,10 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                             <button
                                 type="button"
                                 onClick={() => signOut({ callbackUrl: "/" })}
-                                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-400 hover:text-white bg-[#111] hover:bg-red-500/20 border border-[#333] hover:border-red-500/30 rounded-lg transition-all duration-200"
+                                className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all duration-200"
                                 title={t("admin.signOut")}
                             >
-                                <Icon name="LogOut" className="w-4 h-4 text-gray-500 hover:text-red-400" />
-                                <span className="hidden lg:inline">{t("admin.signOut")}</span>
+                                <Icon name="Power" className="w-4 h-4" />
                             </button>
                         </div>
 
