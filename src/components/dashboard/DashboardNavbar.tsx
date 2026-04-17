@@ -93,6 +93,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                     <img
                                         src={user.image}
                                         alt="Profile"
+                                        referrerPolicy="no-referrer"
                                         className="w-9 h-9 rounded-full border-2 border-green-500/30 hover:border-green-500/50 transition-colors"
                                     />
                                 ) : (
@@ -170,7 +171,7 @@ export function DashboardNavbar({ user, isAdmin }: DashboardNavbarProps) {
                                 <>
                                     <div className="px-4 flex items-center gap-3 mb-3">
                                         {user.image ? (
-                                            <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full border-2 border-green-500/30" />
+                                            <img src={user.image} alt="Profile" referrerPolicy="no-referrer" className="w-10 h-10 rounded-full border-2 border-green-500/30" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-[#111] border border-[#333] flex items-center justify-center">
                                                 <Icon name="User" className="w-5 h-5 text-gray-400" />

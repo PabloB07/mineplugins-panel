@@ -271,6 +271,7 @@ export function AdminNavbar({ user }: AdminNavbarProps) {
                                 <img
                                     src={user.image}
                                     alt="Profile"
+                                    referrerPolicy="no-referrer"
                                     className="w-9 h-9 rounded-full border-2 border-[#f59e0b]/30 hover:border-[#f59e0b]/50 transition-colors"
                                 />
                             ) : (
