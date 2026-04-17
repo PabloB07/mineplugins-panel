@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/ui/Icon";
 import { useI18n } from "@/i18n/I18nProvider";
 
 interface LoadingSpinnerProps {
@@ -24,7 +25,7 @@ const colors = {
 export function LoadingSpinner({ size = "md", className = "", color = "green" }: LoadingSpinnerProps) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <span className={`icon-minecraft ${sizes[size]} ${colors[color]} animate-spin`} />
+      <Icon name="Loader2" className={`${sizes[size]} ${colors[color]} animate-spin`} />
     </div>
   );
 }
