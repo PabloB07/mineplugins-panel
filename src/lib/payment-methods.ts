@@ -25,7 +25,7 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
     name: "Tebex",
     checkoutLabel: "Tebex",
     description: "Global payment processor - Pay with credit card, PayPal and more",
-    logo: "/tebex-logo.svg",
+    logo: "/tebex-logo.png",
     accentClass: "text-purple-400",
     available: true, // Requires prior approval from Tebex
   },
