@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/i18n/useTranslation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Icon } from "@/components/ui/Icon";
 
 interface ServerInfo {
   id: string;
@@ -92,6 +94,7 @@ function parseMinecraftColors(text: string): React.ReactNode {
 }
 
 export default function DashboardServersPage() {
+  const { t } = useTranslation();
   const [servers, setServers] = useState<ServerInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -130,10 +133,10 @@ export default function DashboardServersPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                Server Status
+                {t("dashboard.serverStatus")}
               </h1>
               <p className="text-gray-400 text-sm mt-1">
-                View our Minecraft server status and connect info
+                {t("dashboard.serverStatusDesc")}
               </p>
             </div>
           </div>
@@ -148,8 +151,12 @@ export default function DashboardServersPage() {
               disabled={refreshing}
               className="px-4 py-2 bg-[#1a1a1a] hover:bg-[#222] text-white text-sm rounded-lg font-medium transition-all flex items-center gap-2 border border-[#333] disabled:opacity-50"
             >
-              <span className={`icon-minecraft-sm icon-minecraft-clock ${refreshing ? 'animate-spin' : ''}`} style={refreshing ? { filter: 'invert(1)' } : {}}></span>
-              Refresh
+              {refreshing ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <Icon name="RefreshCw" className="w-4 h-4" />
+              )}
+              {t("dashboard.refresh")}
             </button>
           </div>
         </div>
@@ -162,10 +169,10 @@ export default function DashboardServersPage() {
       ) : servers.length === 0 ? (
         <div className="pixel-frame pixel-frame-neutral bg-[#111] border border-[#222] rounded-xl p-12 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#0a0a0a] border border-[#222] flex items-center justify-center">
-            <span className="icon-minecraft icon-minecraft-grass-block opacity-50"></span>
+            <Icon name="Server" className="w-8 h-8 text-gray-500" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No Servers Available</h3>
-          <p className="text-gray-400 text-sm">There are no public servers configured.</p>
+          <h3 className="text-lg font-semibold text-white mb-2">{t("dashboard.noServersAvailable")}</h3>
+          <p className="text-gray-400 text-sm">{t("dashboard.noServersConfigured")}</p>
         </div>
       ) : (
         <div className="space-y-4">
