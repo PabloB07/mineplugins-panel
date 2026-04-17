@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { formatCLPValue } from "@/lib/pricing";
+import { useI18n } from "@/i18n/I18nProvider";
 import { useIcon } from "@/hooks/useIcon";
 import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -38,7 +38,7 @@ type Props = {
 };
 
 export default function OrdersContent({ session, orders }: Props) {
-  const { t } = useTranslation();
+  const { t, formatPrice } = useI18n();
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
   const ShoppingBag = useIcon("ShoppingBag");
   const Package = useIcon("Package");
@@ -159,7 +159,7 @@ export default function OrdersContent({ session, orders }: Props) {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm font-semibold text-[#22c55e]">
-                            {formatCLPValue(order.total ?? 0)}
+                            {order.total ? formatPrice(order.total) : "-"}
                           </div>
                         </td>
                         <td className="px-6 py-4">
