@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withPluginAuth, validateProductApiKey, checkRateLimit, getClientIp } from "@/lib/api-auth";
+import { validateProductApiKey, checkRateLimit, getClientIp } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { normalizePluginId } from "@/lib/license-utils";
 

@@ -48,7 +48,6 @@ export function getExchangeRates(): typeof EXCHANGE_RATES {
 }
 
 export function formatUSD(dollars: number): string {
-  const rates = getExchangeRates();
   return `$${dollars.toFixed(2)} USD`;
 }
 

@@ -51,7 +51,6 @@ export default function LicenseDetailPage() {
   const Shield = useIcon("Shield");
   const Monitor = useIcon("Monitor");
   const Zap = useIcon("Zap");
-  const MapPin = useIcon("MapPin");
   const Clock = useIcon("Clock");
   const CheckCircle = useIcon("CheckCircle");
   const XCircle = useIcon("XCircle");

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useTranslation } from "@/i18n/useTranslation";
 import { useIcon } from "@/hooks/useIcon";
 
 interface Product {
@@ -40,7 +39,6 @@ interface License {
 }
 
 export default function AdminLicensesPage() {
-  const { t } = useTranslation();
   const Key = useIcon("Key");
   const User = useIcon("User");
   const CheckCircle = useIcon("CheckCircle");
@@ -546,10 +544,7 @@ function CreateLicenseModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const { t } = useTranslation();
   const Key = useIcon("Key");
-  const Loader2 = useIcon("Loader2");
-  const ShieldX = useIcon("ShieldX");
   
   const [durationDays, setDurationDays] = useState(365);
   const [loading, setLoading] = useState(false);

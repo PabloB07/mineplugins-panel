@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashForPrivacy } from "@/lib/license";
-import { validateApiKey, checkRateLimit, getClientIp } from "@/lib/api-auth";
+import { checkRateLimit, getClientIp } from "@/lib/api-auth";
 import { loadRuntimeLicense, touchLicenseActivation } from "@/lib/paper/license-runtime";
 
 interface HeartbeatRequest {

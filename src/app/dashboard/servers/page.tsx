@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 
 interface ServerInfo {
   id: string;
@@ -92,8 +91,6 @@ function parseMinecraftColors(text: string): React.ReactNode {
 }
 
 export default function DashboardServersPage() {
-  const { t } = useTranslation();
-  
   const [servers, setServers] = useState<ServerInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

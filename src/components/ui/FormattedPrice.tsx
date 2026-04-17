@@ -4,11 +4,10 @@ import { useI18n } from "@/i18n/I18nProvider";
 
 interface FormattedPriceProps {
   value: number;
-  showCurrency?: boolean;
   className?: string;
 }
 
-export function FormattedPrice({ value, showCurrency = true, className }: FormattedPriceProps) {
+export function FormattedPrice({ value, className }: FormattedPriceProps) {
   const { currency } = useI18n();
 
   if (currency === 'CLP') {

@@ -46,8 +46,6 @@ export default function AdminLicenseDetailPage() {
   const AlertTriangle = useIcon("AlertTriangle");
   const Loader2 = useIcon("Loader2");
   const ShieldX = useIcon("ShieldX");
-  const Key = useIcon("Key");
-  const Copy = useIcon("Copy");
   
   const [license, setLicense] = useState<License | null>(null);
   const [loading, setLoading] = useState(true);

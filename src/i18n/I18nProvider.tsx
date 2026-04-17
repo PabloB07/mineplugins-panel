@@ -13,18 +13,6 @@ const messages: Record<string, any> = {
 
 export type Currency = CurrencyType;
 
-const currencyByLocale: Record<string, Currency> = {
-  en: 'USD',
-  es: 'CLP',
-};
-
-const localeByCurrency: Record<Currency, string> = {
-  USD: 'en',
-  CLP: 'es',
-  EUR: 'en',
-  CAD: 'en',
-};
-
 type I18nContextType = {
   locale: string;
   currency: Currency;

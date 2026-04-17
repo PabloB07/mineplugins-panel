@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withPluginAuth, validateProductApiKey } from "@/lib/api-auth";
+import { validateProductApiKey, checkRateLimit, getClientIp } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { verifyPaperLicenseKey } from "@/lib/license";
 import { normalizePluginId } from "@/lib/license-utils";
-import { checkRateLimit, getClientIp } from "@/lib/api-auth";
 import { eventEmitter } from "@/lib/events";
 
 function withProductAuth(

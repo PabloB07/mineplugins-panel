@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
-import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 import CheckoutWrapper from "./CheckoutContent";
 
 interface PageProps {

@@ -49,19 +49,13 @@ export default function AdminProductsPage() {
   const Package = useIcon("Package");
   const Plus = useIcon("Plus");
   const Search = useIcon("Search");
-  const Filter = useIcon("Filter");
   const Eye = useIcon("Eye");
   const EyeOff = useIcon("EyeOff");
   const Download = useIcon("Download");
   const Key = useIcon("Key");
-  const BarChart3 = useIcon("BarChart3");
   const Edit = useIcon("Edit");
   const Loader2 = useIcon("Loader2");
-  const ChevronLeft = useIcon("ChevronLeft");
-  const ChevronRight = useIcon("ChevronRight");
-  const DollarSign = useIcon("DollarSign");
   const ShoppingCart = useIcon("ShoppingCart");
-  const Trash2 = useIcon("Trash2");
   
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,8 +101,6 @@ export default function AdminProductsPage() {
   }, [filter, search]);
 
   const totalProducts = pagination.total;
-  const activeProducts = products.filter(p => p.isActive).length;
-  const totalLicenses = products.reduce((acc, p) => acc + p._count.licenses, 0);
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">

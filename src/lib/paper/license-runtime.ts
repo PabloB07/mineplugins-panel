@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { verifyPaperLicenseKey, hashForPrivacy } from "@/lib/license";
+import { verifyPaperLicenseKey } from "@/lib/license";
 import { normalizePluginId } from "@/lib/license-utils";
 
 interface RuntimeLicense {
