@@ -14,50 +14,60 @@ Minecraft Paper 1.21+ plugin store and licensing system with hardware-based lice
 ## Requirements
 
 - Node.js 20+
-- PostgreSQL database
-- PostgreSQL
+- PostgreSQL database ([Neon](https://neon.tech) recommended)
+- Nextjs
+- TypeScript
 
 ## Environment Variables
 
-```bash
-# Database
-DATABASE_URL="postgresql://user:pass@localhost:5432/mineplugins"
+Copy `.env.example` to `.env` and fill in your values.
 
-# Auth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret"
-
-# Payment Gateways
-PAYKU_API_TOKEN=""
-PAYKU_SECRET_KEY=""
-TEBEX_STORE_ID=""
-TEBEX_SECRET_KEY=""
-PAYPAL_CLIENT_ID=""
-PAYPAL_CLIENT_SECRET=""
-
-# License System
-PAPER_LICENSE_SECRET="hmac-secret-for-license-keys"
-LICENSE_SYSTEM_USER_EMAIL="fallback@email.com"
-```
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | Neon connection string (pooled) | ✅ |
+| `DIRECT_URL`   | Neon direct connection string (for migrations) | ✅ |
+| `NEXTAUTH_SECRET` | Auth secret (generate with `openssl rand -base64 32`) | ✅ |
+| `NEXTAUTH_URL` | Your application base URL | ✅ |
+| `DISCORD_CLIENT_ID` | Discord OAuth App ID | ✅ |
+| `DISCORD_CLIENT_SECRET` | Discord OAuth App Secret | ✅ |
+| `PAPER_LICENSE_SECRET` | HMAC secret for license keys | ✅ |
+| `PAYKU_API_TOKEN` / `PAYKU_SECRET_KEY` | Payku payment (Chile) | ❌ |
+| `TEBEX_STORE_ID` / `TEBEX_SECRET_KEY` | Tebex payment gateway | ❌ |
+| `PAYPAL_CLIENT_ID` / `PAYPAL_SECRET` | PayPal payment gateway | ✅ |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token | ✅ |
 
 ## Quick Start
 
+### Local Development
+
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Generate Prisma client
+# 2. Setup environment variables
+cp .env.example .env
+
+# 3. Generate Prisma client
 npx prisma generate
 
-# Run database migrations
+# 4. Run database migrations
 npx prisma db push
-# Or: psql -f migration.sql
 
-# Start development
+# 5. Start development
 npm run dev
 ```
 
 Open `http://localhost:3000` to access the panel.
+
+### Deployment (Vercel)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PabloB07/mineplugins-panel)
+
+1. **One-Click Deploy**: Use the button above to clone and deploy.
+2. **Build Configuration**:
+   - Framework Preset: Next.js
+   - Run `npx prisma migrate deploy` after the first deployment.
+3. **OAuth Setup**: Configure your Discord redirect URL to `https://your-domain.vercel.app/api/auth/callback/discord`.
 
 ## Scripts
 
