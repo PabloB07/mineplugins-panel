@@ -148,9 +148,11 @@ export async function createPaykuPayment(
 
     const responseData = await response.json();
 
+    console.log("[Payku] Response status:", response.status);
+    console.log("[Payku] Response data:", JSON.stringify(responseData));
+
     if (!response.ok) {
       console.error("Payku error response:", responseData);
-      console.error("Payku error status:", response.status);
       const errorMsg = responseData.message || responseData.message_error || responseData.error || responseData.mensaje || "Unknown error";
       throw new Error(`Payku error: ${errorMsg}`);
     }
