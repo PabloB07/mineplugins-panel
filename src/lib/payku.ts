@@ -3,8 +3,8 @@ import { getGatewaySettings, type GatewayEnvironment } from "@/lib/payment-gatew
 
 function getPaykuApiUrl(environment: GatewayEnvironment): string {
   return environment === "PRODUCTION"
-    ? "https://app.payku.cl"
-    : "https://des.payku.cl";
+    ? "https://app.payku.cl/api"
+    : "https://des.payku.cl/api";
 }
 
 async function getPaykuClientConfig() {
@@ -121,6 +121,7 @@ export async function createPaykuPayment(
       subject: data.subject.trim(),
       amount: amount,
       email: data.email.trim(),
+      currency: "CLP",
     };
 
     // Add optional fields only if they have values.
@@ -128,11 +129,13 @@ export async function createPaykuPayment(
       requestPayload.urlreturn = data.payment_url.trim();
     }
     if (data.webhook && data.webhook.trim().length > 0) {
-      requestPayload.webhook = data.webhook.trim();
+      requestPayload.urlnotify = data.webhook.trim();
     }
     if (data.additional_parameters) {
       requestPayload.additional_parameters = data.additional_parameters;
     }
+
+    console.log("[Payku] Full request payload:", JSON.stringify(requestPayload, null, 2));
 
     const response = await fetch(`${apiUrl}/api/transaction`, {
       method: "POST",
@@ -184,7 +187,7 @@ export async function getPaykuPaymentStatus(
   try {
     const { apiToken, apiUrl } = await getPaykuClientConfig();
 
-    const response = await fetch(`${apiUrl}/api/transaction/${order}`, {
+    const response = await fetch(`${apiUrl}/transaction/${order}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
