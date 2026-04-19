@@ -8,7 +8,6 @@ import {
   parseGatewayEnvironment,
   upsertGatewaySettings,
 } from "@/lib/payment-gateway-settings";
-import { syncPaymentEnvironment } from "@/lib/vercel-env";
 import { toOptionalTrimmedString } from "@/lib/security";
 
 function parseOptionalTextUpdate(value: unknown, maxLength: number): string | null | undefined {
@@ -120,10 +119,6 @@ export async function PUT(request: NextRequest) {
       paypalEnvironment: paypalEnv,
       paypalApiUrl: parseOptionalTextUpdate(paypal.apiUrl, 500),
     });
-
-    await syncPaymentEnvironment("payku", paykuEnv);
-    await syncPaymentEnvironment("tebex", tebexEnv);
-    await syncPaymentEnvironment("paypal", paypalEnv);
 
     return NextResponse.json({ success: true });
   } catch (error) {
