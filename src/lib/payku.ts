@@ -137,7 +137,7 @@ export async function createPaykuPayment(
 
     console.log("[Payku] Full request payload:", JSON.stringify(requestPayload, null, 2));
 
-    const response = await fetch(`${apiUrl}/api/transaction`, {
+    const response = await fetch(`${apiUrl}/transaction`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
