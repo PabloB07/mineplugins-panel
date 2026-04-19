@@ -235,6 +235,8 @@
     "daysLeft": "days left",
     "gracePeriod": "Grace period",
     "viewDetails": "View Details",
+    "paymentSuccess": "Payment successful!",
+    "paymentPending": "Payment pending",
     "copyLicense": "Copy License",
     "renew": "Renew",
     "expired": "Expired",
