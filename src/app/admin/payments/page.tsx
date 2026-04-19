@@ -185,11 +185,11 @@ export default function AdminPaymentsSettingsPage() {
           paypal: {
             enabled: paypalEnabled,
             source: paypalSource,
-            clientId: prepareValueForSave(paypalClientId, initialValues.paypalClientId),
-            clientSecret: prepareValueForSave(paypalClientSecret, initialValues.paypalClientSecret),
-            webhookId: prepareValueForSave(paypalWebhookId, initialValues.paypalWebhookId),
+            clientId: paypalSource === "ENV" ? undefined : (paypalClientId || undefined),
+            clientSecret: paypalSource === "ENV" ? undefined : (paypalClientSecret || undefined),
+            webhookId: paypalSource === "ENV" ? undefined : (paypalWebhookId || undefined),
             environment: paypalEnvironment,
-            apiUrl: prepareValueForSave(paypalApiUrl, initialValues.paypalApiUrl),
+            apiUrl: paypalSource === "ENV" ? undefined : (paypalApiUrl || undefined),
           },
         }),
       });
@@ -379,61 +379,6 @@ export default function AdminPaymentsSettingsPage() {
               disabled={paypalSource === "ENV"}
               placeholder="https://api-m.sandbox.paypal.com"
               className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
-            />
-          </label>
-        </div>
-      </Card>
-
-      <Card>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-white">{t("admin.tebex")}</h2>
-          <label className="flex items-center gap-2 text-sm text-gray-300">
-            <input
-              type="checkbox"
-              checked={tebexEnabled}
-              onChange={(e) => setTebexEnabled(e.target.checked)}
-              className="w-4 h-4 accent-[#f59e0b]"
-            />
-            {t("admin.enabled")}
-          </label>
-        </div>
-        <div className="space-y-4">
-          <label className="block text-sm text-gray-300">
-            {t("admin.mode")}
-            <select
-              value={paypalEnvironment}
-              onChange={(e) => setPaypalEnvironment(e.target.value as EnvMode)}
-              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
-            >
-              <option value="SANDBOX">{t("admin.sandbox")}</option>
-              <option value="PRODUCTION">{t("admin.production")}</option>
-            </select>
-          </label>
-          <label className="block text-sm text-gray-300">
-            {t("admin.clientId")}
-            <input
-              type="text"
-              value={paypalClientId}
-              onChange={(e) => setPaypalClientId(e.target.value)}
-              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
-            />
-          </label>
-          <label className="block text-sm text-gray-300">
-            {t("admin.clientSecret")}
-            <input
-              type="password"
-              value={paypalClientSecret}
-              onChange={(e) => setPaypalClientSecret(e.target.value)}
-              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
-            />
-          </label>
-          <label className="block text-sm text-gray-300">
-            {t("admin.webhookId")}
-            <input
-              type="text"
-              value={paypalWebhookId}
-              onChange={(e) => setPaypalWebhookId(e.target.value)}
-              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
             />
           </label>
         </div>

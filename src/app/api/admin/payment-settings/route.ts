@@ -101,11 +101,11 @@ export async function PUT(request: NextRequest) {
         typeof tebex.environment === "string" ? tebex.environment : undefined,
         "PRODUCTION"
       ),
-      paypalEnabled: typeof paypal.enabled === "boolean" ? paypal.enabled : undefined,
       paypalConfigSource: parseGatewayConfigSource(
         typeof paypal.source === "string" ? paypal.source : undefined,
         "ENV"
       ),
+      paypalEnabled: typeof paypal.enabled === "boolean" ? paypal.enabled : undefined,
       paypalClientId: parseOptionalTextUpdate(paypal.clientId, 1000),
       paypalClientSecret: parseOptionalTextUpdate(paypal.clientSecret, 1000),
       paypalWebhookId: parseOptionalTextUpdate(paypal.webhookId, 1000),
