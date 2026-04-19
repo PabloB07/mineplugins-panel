@@ -138,8 +138,10 @@ export async function createPaykuPayment(
     const responseData = await response.json();
 
     if (!response.ok) {
-      console.error("Payku error:", responseData);
-      throw new Error(`Payku error: ${responseData.message || responseData.error || responseData.mensaje || "Unknown error"}`);
+      console.error("Payku error response:", responseData);
+      console.error("Payku error status:", response.status);
+      const errorMsg = responseData.message || responseData.message_error || responseData.error || responseData.mensaje || "Unknown error";
+      throw new Error(`Payku error: ${errorMsg}`);
     }
 
     // Extract payment URL from various possible field names
