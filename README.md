@@ -32,6 +32,7 @@ Copy `.env.example` to `.env` and fill in your values.
 | `DISCORD_CLIENT_SECRET` | Discord OAuth App Secret | ✅ |
 | `PAPER_LICENSE_SECRET` | HMAC secret for license keys | ✅ |
 | `PAYKU_API_TOKEN` / `PAYKU_SECRET_KEY` | Payku payment (Chile) | ❌ |
+| `PAYKU_ENV` | Payku environment: `sandbox` or `production` | ❌ |
 | `TEBEX_STORE_ID` / `TEBEX_SECRET_KEY` | Tebex payment gateway | ❌ |
 | `PAYPAL_CLIENT_ID` / `PAYPAL_SECRET` | PayPal payment gateway | ✅ |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token | ✅ |
@@ -58,6 +59,17 @@ npm run dev
 ```
 
 Open `http://localhost:3000` to access the panel.
+
+Use `DATABASE_URL` with the Neon pooler for the app runtime, and `DIRECT_URL` for Prisma CLI commands such as `migrate`, `db push`, `db pull`, and `generate`.
+
+## Payment Gateway Configuration
+
+Payku supports two configuration sources:
+
+- Environment variables via `PAYKU_API_TOKEN`, `PAYKU_SECRET_KEY`, and `PAYKU_ENV`
+- Admin panel settings in `Admin -> Payment Settings`
+
+When Payku is set to `Use environment variables`, the app reads the values from Vercel or your local `.env`. When it is set to `Use panel configuration`, the saved token, secret key, and sandbox/production mode from the admin panel are used instead.
 
 ### Deployment (Vercel)
 

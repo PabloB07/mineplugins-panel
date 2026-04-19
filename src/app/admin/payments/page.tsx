@@ -7,9 +7,11 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { AlertBox } from "@/components/ui/AlertBox";
 
 type EnvMode = "SANDBOX" | "PRODUCTION";
+type ConfigSource = "ENV" | "PANEL";
 
 interface PaymentSettingsResponse {
   payku: {
+    source: ConfigSource;
     environment: EnvMode;
     hasApiToken: boolean;
     hasSecretKey: boolean;
@@ -34,6 +36,7 @@ export default function AdminPaymentsSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const [paykuSource, setPaykuSource] = useState<ConfigSource>("ENV");
   const [paykuEnvironment, setPaykuEnvironment] = useState<EnvMode>("SANDBOX");
   const [paykuApiToken, setPaykuApiToken] = useState("");
   const [paykuSecretKey, setPaykuSecretKey] = useState("");
@@ -57,6 +60,7 @@ export default function AdminPaymentsSettingsPage() {
           throw new Error(t("admin.loadConfigError"));
         }
         const data = (await response.json()) as PaymentSettingsResponse;
+        setPaykuSource(data.payku.source);
         setPaykuEnvironment(data.payku.environment);
         setTebexEnvironment(data.tebex.environment);
         setPaypalEnvironment(data.paypal.environment);
@@ -82,6 +86,7 @@ export default function AdminPaymentsSettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           payku: {
+            source: paykuSource,
             apiToken: paykuApiToken,
             secretKey: paykuSecretKey,
             environment: paykuEnvironment,
@@ -137,24 +142,39 @@ export default function AdminPaymentsSettingsPage() {
         <div className="space-y-4">
           <div className="grid gap-3 md:grid-cols-2">
             <label className="text-sm text-gray-300">
+              {t("admin.configSource")}
+              <select
+                value={paykuSource}
+                onChange={(e) => setPaykuSource(e.target.value as ConfigSource)}
+                className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
+              >
+                <option value="ENV">{t("admin.useEnvConfig")}</option>
+                <option value="PANEL">{t("admin.usePanelConfig")}</option>
+              </select>
+            </label>
+            <label className="text-sm text-gray-300">
               {t("admin.mode")}
               <select
                 value={paykuEnvironment}
                 onChange={(e) => setPaykuEnvironment(e.target.value as EnvMode)}
+                disabled={paykuSource === "ENV"}
                 className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
               >
                 <option value="SANDBOX">{t("admin.sandbox")}</option>
                 <option value="PRODUCTION">{t("admin.production")}</option>
               </select>
             </label>
-            <p className="text-xs text-gray-500 self-end pb-2">{t("admin.emptyFieldsClears")}</p>
           </div>
+          <p className="text-xs text-gray-500">
+            {paykuSource === "ENV" ? t("admin.paykuEnvModeHelp") : t("admin.paykuPanelModeHelp")}
+          </p>
           <label className="block text-sm text-gray-300">
             {t("admin.apiToken")}
             <input
               type="password"
               value={paykuApiToken}
               onChange={(e) => setPaykuApiToken(e.target.value)}
+              disabled={paykuSource === "ENV"}
               placeholder="pk_live_xxx / pk_test_xxx"
               className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
             />
@@ -165,10 +185,12 @@ export default function AdminPaymentsSettingsPage() {
               type="password"
               value={paykuSecretKey}
               onChange={(e) => setPaykuSecretKey(e.target.value)}
+              disabled={paykuSource === "ENV"}
               placeholder={t("admin.secretKeyPlaceholder")}
               className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
             />
           </label>
+          <p className="text-xs text-gray-500">{t("admin.emptyFieldsClears")}</p>
         </div>
       </Card>
 

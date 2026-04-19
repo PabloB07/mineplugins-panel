@@ -7,6 +7,16 @@ function getPaykuApiUrl(environment: GatewayEnvironment): string {
     : "https://des.payku.cl";
 }
 
+async function getPaykuClientConfig() {
+  const settings = await getGatewaySettings();
+
+  return {
+    apiToken: settings.payku.apiToken || "",
+    apiUrl: getPaykuApiUrl(settings.payku.environment),
+    secretKey: (settings.payku.secretKey || process.env.PAYKU_SECRET_KEY || "").trim(),
+  };
+}
+
 export interface PaykuPaymentCreate {
   order: string; // Número de orden único
   subject: string; // Descripción del pago
@@ -65,11 +75,9 @@ export async function createPaykuPayment(
   data: PaykuPaymentCreate
 ): Promise<PaykuPaymentResponse> {
   try {
-    const settings = await getGatewaySettings();
-    const PAYKU_API_TOKEN = settings.payku.apiToken || "";
-    const PAYKU_API_URL = getPaykuApiUrl(settings.payku.environment);
+    const { apiToken, apiUrl } = await getPaykuClientConfig();
 
-    if (!PAYKU_API_TOKEN || PAYKU_API_TOKEN === "placeholder") {
+    if (!apiToken || apiToken === "placeholder") {
       throw new Error("Payku is not configured. Please set PAYKU_API_TOKEN environment variable.");
     }
 
@@ -118,11 +126,11 @@ export async function createPaykuPayment(
       requestPayload.additional_parameters = data.additional_parameters;
     }
 
-    const response = await fetch(`${PAYKU_API_URL}/api/transaction`, {
+    const response = await fetch(`${apiUrl}/api/transaction`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
+        "Authorization": `Bearer ${apiToken}`,
       },
       body: JSON.stringify(requestPayload),
     });
@@ -164,15 +172,13 @@ export async function getPaykuPaymentStatus(
   order: string
 ): Promise<PaykuPaymentStatus> {
   try {
-    const settings = await getGatewaySettings();
-    const PAYKU_API_TOKEN = settings.payku.apiToken || "";
-    const PAYKU_API_URL = getPaykuApiUrl(settings.payku.environment);
+    const { apiToken, apiUrl } = await getPaykuClientConfig();
 
-    const response = await fetch(`${PAYKU_API_URL}/api/transaction/${order}`, {
+    const response = await fetch(`${apiUrl}/api/transaction/${order}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYKU_API_TOKEN}`,
+        "Authorization": `Bearer ${apiToken}`,
       },
     });
 
@@ -236,16 +242,15 @@ export async function verifyPaykuWebhookSignature(
   receivedSignature: string
 ): Promise<boolean> {
   try {
-    const settings = await getGatewaySettings();
-    const paykuSecret = (settings.payku.secretKey || process.env.PAYKU_SECRET_KEY || "").trim();
+    const { secretKey } = await getPaykuClientConfig();
 
-    if (!paykuSecret) {
+    if (!secretKey) {
       console.warn("Payku is not configured, skipping webhook verification");
       return false;
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", paykuSecret)
+      .createHmac("sha256", secretKey)
       .update(payload)
       .digest("hex");
 

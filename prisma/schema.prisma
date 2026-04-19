@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -21,18 +22,18 @@ model User {
   licenses      License[]
   orders        Order[]
   sessions      Session[]
-  
+
   // Admin activity relations
-  adminActivities AdminActivityLog[] @relation("AdminActivityAdmin")
+  adminActivities  AdminActivityLog[] @relation("AdminActivityAdmin")
   targetActivities AdminActivityLog[] @relation("AdminActivityTarget")
-  
+
   // Transfer relations
-  sentTransfers LicenseTransfer[] @relation("TransferFrom")
+  sentTransfers     LicenseTransfer[] @relation("TransferFrom")
   receivedTransfers LicenseTransfer[] @relation("TransferTo")
 
   // Support ticket relations
-  supportTickets SupportTicket[] @relation("TicketUser")
-  assignedTickets SupportTicket[] @relation("TicketAssignedTo")
+  supportTickets  SupportTicket[]  @relation("TicketUser")
+  assignedTickets SupportTicket[]  @relation("TicketAssignedTo")
   supportMessages SupportMessage[]
 
   // Discount relations
@@ -162,8 +163,8 @@ model LicenseActivation {
   onlineMode       Boolean?
   maxPlayers       Int?
   onlinePlayers    Int?
-  tps              Float?   // Ticks per second
-  memoryUsage      Int?     // Memory usage in MB
+  tps              Float? // Ticks per second
+  memoryUsage      Int? // Memory usage in MB
   plugins          String? // JSON string array of plugins
   isActive         Boolean  @default(true)
   firstSeenAt      DateTime @default(now())
@@ -177,33 +178,33 @@ model LicenseActivation {
 }
 
 model Order {
-  id              String        @id @default(cuid())
-  orderNumber     String        @unique
+  id              String         @id @default(cuid())
+  orderNumber     String         @unique
   userId          String
-  status          OrderStatus   @default(PENDING)
-  paymentMethod   PaymentMethod @default(FLOW_CL)
+  status          OrderStatus    @default(PENDING)
+  paymentMethod   PaymentMethod  @default(FLOW_CL)
   subtotal        Int
-  discount        Int           @default(0)
+  discount        Int            @default(0)
   total           Int
-  flowToken       String?       @unique
+  flowToken       String?        @unique
   flowOrderNumber String?
   flowPaymentUrl  String?
   customerEmail   String
   customerName    String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   paidAt          DateTime?
-  currency        String        @default("CLP") @db.VarChar(3)
+  currency        String         @default("CLP") @db.VarChar(3)
   subtotalUSD     Float?
   subtotalCLP     Float
-  discountUSD     Float?        @default(0)
-  discountCLP     Float         @default(0)
+  discountUSD     Float?         @default(0)
+  discountCLP     Float          @default(0)
   totalUSD        Float?
   totalCLP        Float
   discountCodeId  String?
-  user            User          @relation(fields: [userId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
   items           OrderItem[]
-  discountCode    DiscountCode? @relation(fields: [discountCodeId], references: [id], onDelete: SetNull)
+  discountCode    DiscountCode?  @relation(fields: [discountCodeId], references: [id], onDelete: SetNull)
   discountUsage   DiscountUsage?
 
   @@index([orderNumber])
@@ -311,31 +312,31 @@ enum PaymentMethod {
 }
 
 model LicenseTransfer {
-  id               String   @id @default(cuid())
+  id                String   @id @default(cuid())
   originalLicenseId String
-  newLicenseId    String
-  fromUserId      String
-  toUserId        String
-  transferredAt   DateTime @default(now())
-  
-  fromUser        User     @relation("TransferFrom", fields: [fromUserId], references: [id])
-  toUser          User     @relation("TransferTo", fields: [toUserId], references: [id])
+  newLicenseId      String
+  fromUserId        String
+  toUserId          String
+  transferredAt     DateTime @default(now())
+
+  fromUser User @relation("TransferFrom", fields: [fromUserId], references: [id])
+  toUser   User @relation("TransferTo", fields: [toUserId], references: [id])
 
   @@map("license_transfers")
 }
 
 model AdminActivityLog {
-  id        String   @id @default(cuid())
-  adminId    String
-  action     String
-  details    String?
+  id           String   @id @default(cuid())
+  adminId      String
+  action       String
+  details      String?
   targetUserId String?
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
 
-  admin     User     @relation("AdminActivityAdmin", fields: [adminId], references: [id], onDelete: Cascade)
-  targetUser User?    @relation("AdminActivityTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
+  admin      User  @relation("AdminActivityAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  targetUser User? @relation("AdminActivityTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
 
   @@map("admin_activity_logs")
 }
@@ -345,90 +346,96 @@ enum GatewayEnvironment {
   PRODUCTION
 }
 
+enum GatewayConfigSource {
+  ENV
+  PANEL
+}
+
 model PaymentGatewayConfig {
-  id                String             @id
-  paykuApiToken     String?
-  paykuSecretKey    String?
-  paykuEnvironment  GatewayEnvironment @default(SANDBOX)
-  tebexStoreId      String?
-  tebexSecretKey    String?
-  tebexEnvironment  GatewayEnvironment @default(PRODUCTION)
-  paypalClientId    String?
+  id                 String              @id
+  paykuApiToken      String?
+  paykuSecretKey     String?
+  paykuConfigSource  GatewayConfigSource @default(ENV)
+  paykuEnvironment   GatewayEnvironment  @default(SANDBOX)
+  tebexStoreId       String?
+  tebexSecretKey     String?
+  tebexEnvironment   GatewayEnvironment  @default(PRODUCTION)
+  paypalClientId     String?
   paypalClientSecret String?
-  paypalWebhookId   String?
-  paypalEnvironment GatewayEnvironment @default(SANDBOX)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  paypalWebhookId    String?
+  paypalEnvironment  GatewayEnvironment  @default(SANDBOX)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 }
 
 model ServerStatus {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  ip          String   @unique
-  port        Int      @default(25565)
-  isOnline    Boolean  @default(false)
+  ip          String    @unique
+  port        Int       @default(25565)
+  isOnline    Boolean   @default(false)
   lastChecked DateTime?
-  status      String   @default("active")
-  isPublic    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      String    @default("active")
+  isPublic    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model DiscountCode {
-  id                String            @id @default(cuid())
-  code              String            @unique
-  type              DiscountType      @default(PERCENTAGE)
-  value             Int
-  currency          String            @default("CLP") @db.VarChar(3)
-  minPurchase       Int?
-  maxUses           Int?
-  usedCount         Int               @default(0)
-  maxUsesPerUser    Int?
-  productId         String?
-  startsAt          DateTime?
-  expiresAt         DateTime?
-  isActive          Boolean           @default(true)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  product           Product?          @relation(fields: [productId], references: [id], onDelete: SetNull)
-  usages            DiscountUsage[]
-  orders            Order[]
+  id             String          @id @default(cuid())
+  code           String          @unique
+  type           DiscountType    @default(PERCENTAGE)
+  value          Int
+  currency       String          @default("CLP") @db.VarChar(3)
+  minPurchase    Int?
+  maxUses        Int?
+  usedCount      Int             @default(0)
+  maxUsesPerUser Int?
+  productId      String?
+  startsAt       DateTime?
+  expiresAt      DateTime?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  product        Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  usages         DiscountUsage[]
+  orders         Order[]
 
   @@index([code])
   @@index([productId])
 }
 
 model DiscountUsage {
-  id              String      @id @default(cuid())
-  discountCodeId  String
-  userId          String
-  orderId         String      @unique
-  discountAmount  Int
-  createdAt       DateTime    @default(now())
-  discountCode    DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
-  user            User        @relation(fields: [userId], references: [id])
-  order           Order       @relation(fields: [orderId], references: [id])
+  id             String       @id @default(cuid())
+  discountCodeId String
+  userId         String
+  orderId        String       @unique
+  discountAmount Int
+  createdAt      DateTime     @default(now())
+  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+  order          Order        @relation(fields: [orderId], references: [id])
 
   @@index([discountCodeId])
   @@index([userId])
 }
 
 model SupportTicket {
-  id            String            @id @default(cuid())
-  ticketNumber  String            @unique
-  userId        String
-  subject       String
-  description   String
-  status        TicketStatus      @default(OPEN)
-  priority      TicketPriority    @default(MEDIUM)
-  category      TicketCategory    @default(GENERAL)
-  assignedToId  String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  closedAt      DateTime?
-  user          User              @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
-  assignedTo    User?             @relation("TicketAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
-  messages      SupportMessage[]
+  id           String           @id @default(cuid())
+  ticketNumber String           @unique
+  userId       String
+  subject      String
+  description  String
+  status       TicketStatus     @default(OPEN)
+  priority     TicketPriority   @default(MEDIUM)
+  category     TicketCategory   @default(GENERAL)
+  assignedToId String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  closedAt     DateTime?
+  user         User             @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo   User?            @relation("TicketAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  messages     SupportMessage[]
 
   @@index([ticketNumber])
   @@index([userId])
@@ -436,17 +443,16 @@ model SupportTicket {
 }
 
 model SupportMessage {
-  id          String        @id @default(cuid())
-  ticketId    String
-  userId      String
-  content     String
+  id            String        @id @default(cuid())
+  ticketId      String
+  userId        String
+  content       String
   attachmentUrl String?
-  isAdmin     Boolean       @default(false)
-  isInternal  Boolean       @default(false)
-  createdAt   DateTime      @default(now())
-  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  user        User          @relation(fields: [userId], references: [id])
-
+  isAdmin       Boolean       @default(false)
+  isInternal    Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  ticket        SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id])
 
   @@index([ticketId])
   @@index([userId])

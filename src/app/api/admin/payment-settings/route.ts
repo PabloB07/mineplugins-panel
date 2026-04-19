@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { getGatewaySettings, maskSecret, upsertGatewaySettings } from "@/lib/payment-gateway-settings";
+import {
+  getGatewaySettings,
+  maskSecret,
+  parseGatewayConfigSource,
+  parseGatewayEnvironment,
+  upsertGatewaySettings,
+} from "@/lib/payment-gateway-settings";
 import { toOptionalTrimmedString } from "@/lib/security";
-import type { GatewayEnvironment } from "@/lib/payment-gateway-settings";
-
-function parseEnvironment(value: unknown, fallback: GatewayEnvironment): GatewayEnvironment {
-  if (value === "SANDBOX") return "SANDBOX";
-  if (value === "PRODUCTION") return "PRODUCTION";
-  return fallback;
-}
 
 async function requireAdmin() {
   const session = await auth();
@@ -30,6 +29,7 @@ export async function GET() {
 
     return NextResponse.json({
       payku: {
+        source: settings.payku.source,
         apiToken: maskSecret(settings.payku.apiToken),
         secretKey: maskSecret(settings.payku.secretKey),
         hasApiToken: !!settings.payku.apiToken,
@@ -69,16 +69,29 @@ export async function PUT(request: NextRequest) {
     const paypal = (body.paypal || {}) as Record<string, unknown>;
 
     await upsertGatewaySettings({
+      paykuConfigSource: parseGatewayConfigSource(
+        typeof payku.source === "string" ? payku.source : undefined,
+        "ENV"
+      ),
       paykuApiToken: toOptionalTrimmedString(payku.apiToken, 1000),
       paykuSecretKey: toOptionalTrimmedString(payku.secretKey, 1000),
-      paykuEnvironment: parseEnvironment(payku.environment, "SANDBOX"),
+      paykuEnvironment: parseGatewayEnvironment(
+        typeof payku.environment === "string" ? payku.environment : undefined,
+        "SANDBOX"
+      ),
       tebexStoreId: toOptionalTrimmedString(tebex.storeId, 255),
       tebexSecretKey: toOptionalTrimmedString(tebex.secretKey, 1000),
-      tebexEnvironment: parseEnvironment(tebex.environment, "PRODUCTION"),
+      tebexEnvironment: parseGatewayEnvironment(
+        typeof tebex.environment === "string" ? tebex.environment : undefined,
+        "PRODUCTION"
+      ),
       paypalClientId: toOptionalTrimmedString(paypal.clientId, 1000),
       paypalClientSecret: toOptionalTrimmedString(paypal.clientSecret, 1000),
       paypalWebhookId: toOptionalTrimmedString(paypal.webhookId, 1000),
-      paypalEnvironment: parseEnvironment(paypal.environment, "SANDBOX"),
+      paypalEnvironment: parseGatewayEnvironment(
+        typeof paypal.environment === "string" ? paypal.environment : undefined,
+        "SANDBOX"
+      ),
     });
 
     return NextResponse.json({ success: true });
@@ -87,4 +100,3 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
   }
 }
-
