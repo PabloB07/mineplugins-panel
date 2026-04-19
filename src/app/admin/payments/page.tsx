@@ -11,24 +11,30 @@ type ConfigSource = "ENV" | "PANEL";
 
 interface PaymentSettingsResponse {
   payku: {
+    enabled: boolean;
     source: ConfigSource;
     apiToken: string;
     secretKey: string;
     environment: EnvMode;
+    apiUrl: string;
     hasApiToken: boolean;
     hasSecretKey: boolean;
   };
   tebex: {
+    enabled: boolean;
     storeId: string;
     secretKey: string;
     environment: EnvMode;
     hasSecretKey: boolean;
   };
   paypal: {
+    enabled: boolean;
+    source: ConfigSource;
     clientId: string;
     clientSecret: string;
     webhookId: string;
     environment: EnvMode;
+    apiUrl: string;
     hasClientSecret: boolean;
   };
 }
@@ -36,21 +42,25 @@ interface PaymentSettingsResponse {
 interface PaymentSettingsSnapshot {
   paykuApiToken: string;
   paykuSecretKey: string;
+  paykuApiUrl: string;
   tebexStoreId: string;
   tebexSecretKey: string;
   paypalClientId: string;
   paypalClientSecret: string;
   paypalWebhookId: string;
+  paypalApiUrl: string;
 }
 
 const EMPTY_SNAPSHOT: PaymentSettingsSnapshot = {
   paykuApiToken: "",
   paykuSecretKey: "",
+  paykuApiUrl: "",
   tebexStoreId: "",
   tebexSecretKey: "",
   paypalClientId: "",
   paypalClientSecret: "",
   paypalWebhookId: "",
+  paypalApiUrl: "",
 };
 
 export default function AdminPaymentsSettingsPage() {
@@ -61,40 +71,54 @@ export default function AdminPaymentsSettingsPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [initialValues, setInitialValues] = useState<PaymentSettingsSnapshot>(EMPTY_SNAPSHOT);
 
-  const [paykuSource, setPaykuSource] = useState<ConfigSource>("ENV");
-  const [paykuEnvironment, setPaykuEnvironment] = useState<EnvMode>("SANDBOX");
-  const [paykuApiToken, setPaykuApiToken] = useState("");
-  const [paykuSecretKey, setPaykuSecretKey] = useState("");
+  const [paykuEnabled, setPayKuEnabled] = useState(true);
+  const [paykuSource, setPayKuSource] = useState<ConfigSource>("ENV");
+  const [paykuEnvironment, setPayKuEnvironment] = useState<EnvMode>("SANDBOX");
+  const [paykuApiToken, setPayKuApiToken] = useState("");
+  const [paykuSecretKey, setPayKuSecretKey] = useState("");
+  const [paykuApiUrl, setPayKuApiUrl] = useState("");
 
+  const [tebexEnabled, setTebexEnabled] = useState(true);
   const [tebexEnvironment, setTebexEnvironment] = useState<EnvMode>("PRODUCTION");
   const [tebexStoreId, setTebexStoreId] = useState("");
   const [tebexSecretKey, setTebexSecretKey] = useState("");
 
+  const [paypalEnabled, setPaypalEnabled] = useState(true);
+  const [paypalSource, setPaypalSource] = useState<ConfigSource>("ENV");
   const [paypalEnvironment, setPaypalEnvironment] = useState<EnvMode>("SANDBOX");
   const [paypalClientId, setPaypalClientId] = useState("");
   const [paypalClientSecret, setPaypalClientSecret] = useState("");
   const [paypalWebhookId, setPaypalWebhookId] = useState("");
+  const [paypalApiUrl, setPaypalApiUrl] = useState("");
 
   const applySettings = useCallback((data: PaymentSettingsResponse) => {
-    setPaykuSource(data.payku.source);
-    setPaykuEnvironment(data.payku.environment);
-    setPaykuApiToken(data.payku.apiToken || "");
-    setPaykuSecretKey(data.payku.secretKey || "");
+    setPayKuEnabled(data.payku.enabled);
+    setPayKuSource(data.payku.source);
+    setPayKuEnvironment(data.payku.environment);
+    setPayKuApiToken(data.payku.apiToken || "");
+    setPayKuSecretKey(data.payku.secretKey || "");
+    setPayKuApiUrl(data.payku.apiUrl || "");
+    setTebexEnabled(data.tebex.enabled);
     setTebexEnvironment(data.tebex.environment);
     setTebexStoreId(data.tebex.storeId || "");
     setTebexSecretKey(data.tebex.secretKey || "");
+    setPaypalEnabled(data.paypal.enabled);
+    setPaypalSource(data.paypal.source);
     setPaypalEnvironment(data.paypal.environment);
     setPaypalClientId(data.paypal.clientId || "");
     setPaypalClientSecret(data.paypal.clientSecret || "");
     setPaypalWebhookId(data.paypal.webhookId || "");
+    setPaypalApiUrl(data.paypal.apiUrl || "");
     setInitialValues({
       paykuApiToken: data.payku.apiToken || "",
       paykuSecretKey: data.payku.secretKey || "",
+      paykuApiUrl: data.payku.apiUrl || "",
       tebexStoreId: data.tebex.storeId || "",
       tebexSecretKey: data.tebex.secretKey || "",
       paypalClientId: data.paypal.clientId || "",
       paypalClientSecret: data.paypal.clientSecret || "",
       paypalWebhookId: data.paypal.webhookId || "",
+      paypalApiUrl: data.paypal.apiUrl || "",
     });
   }, []);
 
@@ -145,21 +169,27 @@ export default function AdminPaymentsSettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           payku: {
+            enabled: paykuEnabled,
             source: paykuSource,
             apiToken: prepareValueForSave(paykuApiToken, initialValues.paykuApiToken),
             secretKey: prepareValueForSave(paykuSecretKey, initialValues.paykuSecretKey),
             environment: paykuEnvironment,
+            apiUrl: prepareValueForSave(paykuApiUrl, initialValues.paykuApiUrl),
           },
           tebex: {
+            enabled: tebexEnabled,
             storeId: prepareValueForSave(tebexStoreId, initialValues.tebexStoreId),
             secretKey: prepareValueForSave(tebexSecretKey, initialValues.tebexSecretKey),
             environment: tebexEnvironment,
           },
           paypal: {
+            enabled: paypalEnabled,
+            source: paypalSource,
             clientId: prepareValueForSave(paypalClientId, initialValues.paypalClientId),
             clientSecret: prepareValueForSave(paypalClientSecret, initialValues.paypalClientSecret),
             webhookId: prepareValueForSave(paypalWebhookId, initialValues.paypalWebhookId),
             environment: paypalEnvironment,
+            apiUrl: prepareValueForSave(paypalApiUrl, initialValues.paypalApiUrl),
           },
         }),
       });
@@ -194,14 +224,25 @@ export default function AdminPaymentsSettingsPage() {
       {success && <AlertBox type="success" onDismiss={() => setSuccess(null)}>{success}</AlertBox>}
 
       <Card>
-        <h2 className="text-xl font-semibold text-white mb-4">{t("admin.payku")}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">{t("admin.payku")}</h2>
+          <label className="flex items-center gap-2 text-sm text-gray-300">
+            <input
+              type="checkbox"
+              checked={paykuEnabled}
+              onChange={(e) => setPayKuEnabled(e.target.checked)}
+              className="w-4 h-4 accent-[#f59e0b]"
+            />
+            {t("admin.enabled")}
+          </label>
+        </div>
         <div className="space-y-4">
           <div className="grid gap-3 md:grid-cols-2">
             <label className="text-sm text-gray-300">
               {t("admin.configSource")}
               <select
                 value={paykuSource}
-                onChange={(e) => setPaykuSource(e.target.value as ConfigSource)}
+                onChange={(e) => setPayKuSource(e.target.value as ConfigSource)}
                 className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
               >
                 <option value="ENV">{t("admin.useEnvConfig")}</option>
@@ -212,7 +253,7 @@ export default function AdminPaymentsSettingsPage() {
               {t("admin.mode")}
               <select
                 value={paykuEnvironment}
-                onChange={(e) => setPaykuEnvironment(e.target.value as EnvMode)}
+                onChange={(e) => setPayKuEnvironment(e.target.value as EnvMode)}
                 disabled={paykuSource === "ENV"}
                 className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
               >
@@ -229,7 +270,7 @@ export default function AdminPaymentsSettingsPage() {
             <input
               type="password"
               value={paykuApiToken}
-              onChange={(e) => setPaykuApiToken(e.target.value)}
+              onChange={(e) => setPayKuApiToken(e.target.value)}
               disabled={paykuSource === "ENV"}
               placeholder="pk_live_xxx / pk_test_xxx"
               className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
@@ -240,9 +281,20 @@ export default function AdminPaymentsSettingsPage() {
             <input
               type="password"
               value={paykuSecretKey}
-              onChange={(e) => setPaykuSecretKey(e.target.value)}
+              onChange={(e) => setPayKuSecretKey(e.target.value)}
               disabled={paykuSource === "ENV"}
               placeholder={t("admin.secretKeyPlaceholder")}
+              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
+            />
+          </label>
+          <label className="block text-sm text-gray-300">
+            {t("admin.apiUrl")}
+            <input
+              type="text"
+              value={paykuApiUrl}
+              onChange={(e) => setPayKuApiUrl(e.target.value)}
+              disabled={paykuSource === "ENV"}
+              placeholder="https://api.payku.cl"
               className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
             />
           </label>
@@ -251,7 +303,100 @@ export default function AdminPaymentsSettingsPage() {
       </Card>
 
       <Card>
-        <h2 className="text-xl font-semibold text-white mb-4">{t("admin.paypal")}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">{t("admin.paypal")}</h2>
+          <label className="flex items-center gap-2 text-sm text-gray-300">
+            <input
+              type="checkbox"
+              checked={paypalEnabled}
+              onChange={(e) => setPaypalEnabled(e.target.checked)}
+              className="w-4 h-4 accent-[#f59e0b]"
+            />
+            {t("admin.enabled")}
+          </label>
+        </div>
+        <div className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="text-sm text-gray-300">
+              {t("admin.configSource")}
+              <select
+                value={paypalSource}
+                onChange={(e) => setPaypalSource(e.target.value as ConfigSource)}
+                className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
+              >
+                <option value="ENV">{t("admin.useEnvConfig")}</option>
+                <option value="PANEL">{t("admin.usePanelConfig")}</option>
+              </select>
+            </label>
+            <label className="text-sm text-gray-300">
+              {t("admin.mode")}
+              <select
+                value={paypalEnvironment}
+                onChange={(e) => setPaypalEnvironment(e.target.value as EnvMode)}
+                className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
+              >
+                <option value="SANDBOX">{t("admin.sandbox")}</option>
+                <option value="PRODUCTION">{t("admin.production")}</option>
+              </select>
+            </label>
+          </div>
+          <label className="block text-sm text-gray-300">
+            {t("admin.clientId")}
+            <input
+              type="text"
+              value={paypalClientId}
+              onChange={(e) => setPaypalClientId(e.target.value)}
+              disabled={paypalSource === "ENV"}
+              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
+            />
+          </label>
+          <label className="block text-sm text-gray-300">
+            {t("admin.clientSecret")}
+            <input
+              type="password"
+              value={paypalClientSecret}
+              onChange={(e) => setPaypalClientSecret(e.target.value)}
+              disabled={paypalSource === "ENV"}
+              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
+            />
+          </label>
+          <label className="block text-sm text-gray-300">
+            {t("admin.webhookId")}
+            <input
+              type="text"
+              value={paypalWebhookId}
+              onChange={(e) => setPaypalWebhookId(e.target.value)}
+              disabled={paypalSource === "ENV"}
+              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#f59e0b]/60"
+            />
+          </label>
+          <label className="block text-sm text-gray-300">
+            {t("admin.apiUrl")}
+            <input
+              type="text"
+              value={paypalApiUrl}
+              onChange={(e) => setPaypalApiUrl(e.target.value)}
+              disabled={paypalSource === "ENV"}
+              placeholder="https://api-m.sandbox.paypal.com"
+              className="w-full mt-1 bg-[#0a0a0a] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f59e0b]/60"
+            />
+          </label>
+        </div>
+      </Card>
+
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">{t("admin.tebex")}</h2>
+          <label className="flex items-center gap-2 text-sm text-gray-300">
+            <input
+              type="checkbox"
+              checked={tebexEnabled}
+              onChange={(e) => setTebexEnabled(e.target.checked)}
+              className="w-4 h-4 accent-[#f59e0b]"
+            />
+            {t("admin.enabled")}
+          </label>
+        </div>
         <div className="space-y-4">
           <label className="block text-sm text-gray-300">
             {t("admin.mode")}

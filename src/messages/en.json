@@ -237,6 +237,8 @@
     "viewDetails": "View Details",
     "paymentSuccess": "Payment successful!",
     "paymentPending": "Payment pending",
+    "enabled": "Enabled",
+    "apiUrl": "API URL",
     "copyLicense": "Copy License",
     "renew": "Renew",
     "expired": "Expired",

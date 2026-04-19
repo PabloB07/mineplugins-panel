@@ -12,6 +12,7 @@ import {
   formatCurrencyAmount,
   getMinPurchaseUSD,
 } from "@/lib/discount-pricing";
+import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 
 interface PaymentCreateRequest {
   productSlug: string;
@@ -45,6 +46,29 @@ export async function POST(request: NextRequest) {
           : "PAYKU";
 
     const paymentMethod: PaymentMethod = paymentMethodId as unknown as PaymentMethod;
+
+    const settings = await getGatewaySettings();
+
+    if (paymentMethodId === "PAYKU" && !settings.payku.enabled) {
+      return NextResponse.json(
+        { error: "PAYMENT_METHOD_DISABLED", message: "Payku payment is currently disabled" },
+        { status: 400 }
+      );
+    }
+
+    if (paymentMethodId === "PAYPAL" && !settings.paypal.enabled) {
+      return NextResponse.json(
+        { error: "PAYMENT_METHOD_DISABLED", message: "PayPal payment is currently disabled" },
+        { status: 400 }
+      );
+    }
+
+    if (paymentMethodId === "TEBEX" && !settings.tebex.enabled) {
+      return NextResponse.json(
+        { error: "PAYMENT_METHOD_DISABLED", message: "Tebex payment is currently disabled" },
+        { status: 400 }
+      );
+    }
 
     if (!productSlug) {
       return NextResponse.json(

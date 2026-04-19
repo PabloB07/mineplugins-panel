@@ -353,19 +353,25 @@ enum GatewayConfigSource {
 
 model PaymentGatewayConfig {
   id                 String              @id
-  paykuApiToken      String?
-  paykuSecretKey     String?
-  paykuConfigSource  GatewayConfigSource @default(ENV)
-  paykuEnvironment   GatewayEnvironment  @default(SANDBOX)
-  tebexStoreId       String?
-  tebexSecretKey     String?
-  tebexEnvironment   GatewayEnvironment  @default(PRODUCTION)
-  paypalClientId     String?
+  paykuEnabled      Boolean            @default(true)
+  paykuApiToken     String?
+  paykuSecretKey    String?
+  paykuConfigSource GatewayConfigSource @default(ENV)
+  paykuEnvironment  GatewayEnvironment  @default(SANDBOX)
+  paykuApiUrl      String?
+  tebexEnabled     Boolean            @default(true)
+  tebexStoreId     String?
+  tebexSecretKey   String?
+  tebexEnvironment GatewayEnvironment  @default(PRODUCTION)
+  paypalEnabled    Boolean            @default(true)
+  paypalClientId   String?
   paypalClientSecret String?
-  paypalWebhookId    String?
-  paypalEnvironment  GatewayEnvironment  @default(SANDBOX)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  paypalConfigSource GatewayConfigSource @default(ENV)
+  paypalEnvironment GatewayEnvironment  @default(SANDBOX)
+  paypalApiUrl    String?
+  paypalWebhookId  String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 }
 
 model ServerStatus {

@@ -36,25 +36,31 @@ export async function GET() {
 
     return NextResponse.json({
       payku: {
+        enabled: settings.payku.enabled,
         source: settings.payku.source,
         apiToken: maskSecret(settings.payku.apiToken),
         secretKey: maskSecret(settings.payku.secretKey),
         hasApiToken: !!settings.payku.apiToken,
         hasSecretKey: !!settings.payku.secretKey,
         environment: settings.payku.environment,
+        apiUrl: settings.payku.apiUrl || "",
       },
       tebex: {
+        enabled: settings.tebex.enabled,
         storeId: settings.tebex.storeId || "",
         secretKey: maskSecret(settings.tebex.secretKey),
         hasSecretKey: !!settings.tebex.secretKey,
         environment: settings.tebex.environment,
       },
       paypal: {
+        enabled: settings.paypal.enabled,
+        source: settings.paypal.source,
         clientId: settings.paypal.clientId || "",
         clientSecret: maskSecret(settings.paypal.clientSecret),
         webhookId: settings.paypal.webhookId || "",
         hasClientSecret: !!settings.paypal.clientSecret,
         environment: settings.paypal.environment,
+        apiUrl: settings.paypal.apiUrl || "",
       },
     });
   } catch (error) {
@@ -76,6 +82,7 @@ export async function PUT(request: NextRequest) {
     const paypal = (body.paypal || {}) as Record<string, unknown>;
 
     await upsertGatewaySettings({
+      paykuEnabled: typeof payku.enabled === "boolean" ? payku.enabled : undefined,
       paykuConfigSource: parseGatewayConfigSource(
         typeof payku.source === "string" ? payku.source : undefined,
         "ENV"
@@ -86,11 +93,18 @@ export async function PUT(request: NextRequest) {
         typeof payku.environment === "string" ? payku.environment : undefined,
         "SANDBOX"
       ),
+      paykuApiUrl: parseOptionalTextUpdate(payku.apiUrl, 500),
+      tebexEnabled: typeof tebex.enabled === "boolean" ? tebex.enabled : undefined,
       tebexStoreId: parseOptionalTextUpdate(tebex.storeId, 255),
       tebexSecretKey: parseOptionalTextUpdate(tebex.secretKey, 1000),
       tebexEnvironment: parseGatewayEnvironment(
         typeof tebex.environment === "string" ? tebex.environment : undefined,
         "PRODUCTION"
+      ),
+      paypalEnabled: typeof paypal.enabled === "boolean" ? paypal.enabled : undefined,
+      paypalConfigSource: parseGatewayConfigSource(
+        typeof paypal.source === "string" ? paypal.source : undefined,
+        "ENV"
       ),
       paypalClientId: parseOptionalTextUpdate(paypal.clientId, 1000),
       paypalClientSecret: parseOptionalTextUpdate(paypal.clientSecret, 1000),
@@ -99,6 +113,7 @@ export async function PUT(request: NextRequest) {
         typeof paypal.environment === "string" ? paypal.environment : undefined,
         "SANDBOX"
       ),
+      paypalApiUrl: parseOptionalTextUpdate(paypal.apiUrl, 500),
     });
 
     return NextResponse.json({ success: true });

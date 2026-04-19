@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -52,7 +52,15 @@ interface AppliedDiscount {
 
 export function CheckoutContent({ product }: CheckoutClientProps) {
   const { t, formatPrice, formatPriceValue, currency } = useTranslation();
-  const availableMethods = getAvailablePaymentMethods();
+  const [enabledMethods, setEnabledMethods] = useState<Array<{id: PaymentMethodId; enabled: boolean}>>([
+    { id: "PAYKU", enabled: true },
+    { id: "TEBEX", enabled: true },
+    { id: "PAYPAL", enabled: true },
+  ]);
+
+  const availableMethods = getAvailablePaymentMethods().filter(m => 
+    enabledMethods.some(em => em.id === m.id && em.enabled)
+  );
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(
     availableMethods.length > 0 ? availableMethods[0].id : "PAYKU"
   );
@@ -69,6 +77,29 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
   const appliedDiscountUSD = appliedDiscount?.discountUSD || 0;
   const totalCLPWithDiscount = Math.max(0, displayPriceCLP - appliedDiscountCLP);
   const totalUSDWithDiscount = Math.max(0, displayPriceUSD - appliedDiscountUSD);
+
+  useEffect(() => {
+    fetch("/api/payment/methods")
+      .then(res => res.json())
+      .then(data => {
+        if (data.methods) {
+          setEnabledMethods(data.methods.map((m: {id: PaymentMethodId; enabled: boolean}) => ({
+            id: m.id,
+            enabled: m.enabled,
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (selectedMethod && !enabledMethods.some(em => em.id === selectedMethod && em.enabled)) {
+      const firstEnabled = enabledMethods.find(em => em.enabled);
+      if (firstEnabled) {
+        setSelectedMethod(firstEnabled.id as PaymentMethodId);
+      }
+    }
+  }, [enabledMethods, selectedMethod]);
 
   const applyDiscount = async () => {
     const normalizedCode = discountCodeInput.trim().toUpperCase();

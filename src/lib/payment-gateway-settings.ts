@@ -32,18 +32,24 @@ function toOptional(value: string | null | undefined): string | undefined {
 
 export interface GatewaySettingsResolved {
   payku: {
+    enabled: boolean;
     source: GatewayConfigSource;
     apiToken?: string;
     secretKey?: string;
     environment: GatewayEnvironment;
+    apiUrl?: string;
   };
   paypal: {
+    enabled: boolean;
+    source: GatewayConfigSource;
     clientId?: string;
     clientSecret?: string;
     webhookId?: string;
     environment: GatewayEnvironment;
+    apiUrl?: string;
   };
   tebex: {
+    enabled: boolean;
     storeId?: string;
     secretKey?: string;
     environment: GatewayEnvironment;
@@ -51,17 +57,23 @@ export interface GatewaySettingsResolved {
 }
 
 interface PaymentGatewayConfigRecord {
+  paykuEnabled: boolean;
   paykuApiToken: string | null;
   paykuSecretKey: string | null;
   paykuConfigSource: GatewayConfigSource;
   paykuEnvironment: GatewayEnvironment;
+  paykuApiUrl: string | null;
+  tebexEnabled: boolean;
   tebexStoreId: string | null;
   tebexSecretKey: string | null;
   tebexEnvironment: GatewayEnvironment;
+  paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalClientSecret: string | null;
-  paypalWebhookId: string | null;
+  paypalConfigSource: GatewayConfigSource;
   paypalEnvironment: GatewayEnvironment;
+  paypalApiUrl: string | null;
+  paypalWebhookId: string | null;
 }
 
 async function getPaymentGatewayConfigRecord(): Promise<PaymentGatewayConfigRecord | null> {
@@ -85,8 +97,15 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
     process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX"
   );
 
+  const paypalSource = parseGatewayConfigSource(dbSettings?.paypalConfigSource, "ENV");
+  const paypalEnvFromProcess = parseGatewayEnvironment(
+    process.env.PAYPAL_ENV,
+    process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX"
+  );
+
   return {
     payku: {
+      enabled: dbSettings?.paykuEnabled ?? true,
       source: paykuSource,
       apiToken:
         paykuSource === "PANEL"
@@ -97,20 +116,25 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
           ? toOptional(dbSettings?.paykuSecretKey)
           : toOptional(process.env.PAYKU_SECRET_KEY),
       environment: paykuSource === "PANEL" ? dbSettings?.paykuEnvironment || "SANDBOX" : paykuEnvFromProcess,
+      apiUrl: dbSettings?.paykuApiUrl || toOptional(process.env.PAYKU_API_URL),
     },
     paypal: {
-      clientId: toOptional(dbSettings?.paypalClientId) || toOptional(process.env.PAYPAL_CLIENT_ID),
+      enabled: dbSettings?.paypalEnabled ?? true,
+      source: paypalSource,
+      clientId:
+        paypalSource === "PANEL"
+          ? toOptional(dbSettings?.paypalClientId)
+          : toOptional(process.env.PAYPAL_CLIENT_ID),
       clientSecret:
-        toOptional(dbSettings?.paypalClientSecret) || toOptional(process.env.PAYPAL_CLIENT_SECRET),
+        paypalSource === "PANEL"
+          ? toOptional(dbSettings?.paypalClientSecret)
+          : toOptional(process.env.PAYPAL_CLIENT_SECRET),
       webhookId: toOptional(dbSettings?.paypalWebhookId) || toOptional(process.env.PAYPAL_WEBHOOK_ID),
-      environment:
-        dbSettings?.paypalEnvironment ||
-        parseGatewayEnvironment(
-          process.env.PAYPAL_ENV,
-          process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX"
-        ),
+      environment: paypalSource === "PANEL" ? dbSettings?.paypalEnvironment || "SANDBOX" : paypalEnvFromProcess,
+      apiUrl: dbSettings?.paypalApiUrl || toOptional(process.env.PAYPAL_API_URL),
     },
     tebex: {
+      enabled: dbSettings?.tebexEnabled ?? true,
       storeId: toOptional(dbSettings?.tebexStoreId) || toOptional(process.env.TEBEX_STORE_ID),
       secretKey: toOptional(dbSettings?.tebexSecretKey) || toOptional(process.env.TEBEX_SECRET_KEY),
       environment:
@@ -121,17 +145,23 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
 }
 
 export async function upsertGatewaySettings(input: {
-  paykuConfigSource: GatewayConfigSource;
+  paykuEnabled?: boolean;
+  paykuConfigSource?: GatewayConfigSource;
   paykuApiToken?: string | null;
   paykuSecretKey?: string | null;
-  paykuEnvironment: GatewayEnvironment;
+  paykuEnvironment?: GatewayEnvironment;
+  paykuApiUrl?: string | null;
+  tebexEnabled?: boolean;
   tebexStoreId?: string | null;
   tebexSecretKey?: string | null;
-  tebexEnvironment: GatewayEnvironment;
+  tebexEnvironment?: GatewayEnvironment;
+  paypalEnabled?: boolean;
+  paypalConfigSource?: GatewayConfigSource;
   paypalClientId?: string | null;
   paypalClientSecret?: string | null;
+  paypalEnvironment?: GatewayEnvironment;
+  paypalApiUrl?: string | null;
   paypalWebhookId?: string | null;
-  paypalEnvironment: GatewayEnvironment;
 }) {
   const existing = await getPaymentGatewayConfigRecord();
 
@@ -147,17 +177,23 @@ export async function upsertGatewaySettings(input: {
   }
 
   const gatewayPayload = {
-    paykuConfigSource: input.paykuConfigSource,
+    paykuEnabled: input.paykuEnabled ?? existing?.paykuEnabled ?? true,
+    paykuConfigSource: input.paykuConfigSource ?? existing?.paykuConfigSource ?? "ENV",
     paykuApiToken: resolveOptionalField(input.paykuApiToken, existing?.paykuApiToken),
     paykuSecretKey: resolveOptionalField(input.paykuSecretKey, existing?.paykuSecretKey),
-    paykuEnvironment: input.paykuEnvironment,
+    paykuEnvironment: input.paykuEnvironment ?? existing?.paykuEnvironment ?? "SANDBOX",
+    paykuApiUrl: resolveOptionalField(input.paykuApiUrl, existing?.paykuApiUrl),
+    tebexEnabled: input.tebexEnabled ?? existing?.tebexEnabled ?? true,
     tebexStoreId: resolveOptionalField(input.tebexStoreId, existing?.tebexStoreId),
     tebexSecretKey: resolveOptionalField(input.tebexSecretKey, existing?.tebexSecretKey),
-    tebexEnvironment: input.tebexEnvironment,
+    tebexEnvironment: input.tebexEnvironment ?? existing?.tebexEnvironment ?? "PRODUCTION",
+    paypalEnabled: input.paypalEnabled ?? existing?.paypalEnabled ?? true,
+    paypalConfigSource: input.paypalConfigSource ?? existing?.paypalConfigSource ?? "ENV",
     paypalClientId: resolveOptionalField(input.paypalClientId, existing?.paypalClientId),
     paypalClientSecret: resolveOptionalField(input.paypalClientSecret, existing?.paypalClientSecret),
+    paypalEnvironment: input.paypalEnvironment ?? existing?.paypalEnvironment ?? "SANDBOX",
+    paypalApiUrl: resolveOptionalField(input.paypalApiUrl, existing?.paypalApiUrl),
     paypalWebhookId: resolveOptionalField(input.paypalWebhookId, existing?.paypalWebhookId),
-    paypalEnvironment: input.paypalEnvironment,
   };
 
   return (prisma as unknown as { paymentGatewayConfig: { upsert: (args: unknown) => Promise<unknown> } }).paymentGatewayConfig.upsert({
