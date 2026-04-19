@@ -8,6 +8,7 @@ import {
   parseGatewayEnvironment,
   upsertGatewaySettings,
 } from "@/lib/payment-gateway-settings";
+import { syncPaymentEnvironment } from "@/lib/vercel-env";
 import { toOptionalTrimmedString } from "@/lib/security";
 
 function parseOptionalTextUpdate(value: unknown, maxLength: number): string | null | undefined {
@@ -81,6 +82,19 @@ export async function PUT(request: NextRequest) {
     const tebex = (body.tebex || {}) as Record<string, unknown>;
     const paypal = (body.paypal || {}) as Record<string, unknown>;
 
+    const paykuEnv = parseGatewayEnvironment(
+      typeof payku.environment === "string" ? payku.environment : undefined,
+      "SANDBOX"
+    );
+    const tebexEnv = parseGatewayEnvironment(
+      typeof tebex.environment === "string" ? tebex.environment : undefined,
+      "PRODUCTION"
+    );
+    const paypalEnv = parseGatewayEnvironment(
+      typeof paypal.environment === "string" ? paypal.environment : undefined,
+      "SANDBOX"
+    );
+
     await upsertGatewaySettings({
       paykuEnabled: typeof payku.enabled === "boolean" ? payku.enabled : undefined,
       paykuConfigSource: parseGatewayConfigSource(
@@ -89,18 +103,12 @@ export async function PUT(request: NextRequest) {
       ),
       paykuApiToken: parseOptionalTextUpdate(payku.apiToken, 1000),
       paykuSecretKey: parseOptionalTextUpdate(payku.secretKey, 1000),
-      paykuEnvironment: parseGatewayEnvironment(
-        typeof payku.environment === "string" ? payku.environment : undefined,
-        "SANDBOX"
-      ),
+      paykuEnvironment: paykuEnv,
       paykuApiUrl: parseOptionalTextUpdate(payku.apiUrl, 500),
       tebexEnabled: typeof tebex.enabled === "boolean" ? tebex.enabled : undefined,
       tebexStoreId: parseOptionalTextUpdate(tebex.storeId, 255),
       tebexSecretKey: parseOptionalTextUpdate(tebex.secretKey, 1000),
-      tebexEnvironment: parseGatewayEnvironment(
-        typeof tebex.environment === "string" ? tebex.environment : undefined,
-        "PRODUCTION"
-      ),
+      tebexEnvironment: tebexEnv,
       paypalConfigSource: parseGatewayConfigSource(
         typeof paypal.source === "string" ? paypal.source : undefined,
         "ENV"
@@ -109,12 +117,13 @@ export async function PUT(request: NextRequest) {
       paypalClientId: parseOptionalTextUpdate(paypal.clientId, 1000),
       paypalClientSecret: parseOptionalTextUpdate(paypal.clientSecret, 1000),
       paypalWebhookId: parseOptionalTextUpdate(paypal.webhookId, 1000),
-      paypalEnvironment: parseGatewayEnvironment(
-        typeof paypal.environment === "string" ? paypal.environment : undefined,
-        "SANDBOX"
-      ),
+      paypalEnvironment: paypalEnv,
       paypalApiUrl: parseOptionalTextUpdate(paypal.apiUrl, 500),
     });
+
+    await syncPaymentEnvironment("payku", paykuEnv);
+    await syncPaymentEnvironment("tebex", tebexEnv);
+    await syncPaymentEnvironment("paypal", paypalEnv);
 
     return NextResponse.json({ success: true });
   } catch (error) {
