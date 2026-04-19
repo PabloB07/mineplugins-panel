@@ -63,14 +63,14 @@ async function createPaykuPaymentFlow(
     subject: params.productName,
     amount: params.amountCLP,
     email: params.email,
-    webhook: params.webhookUrl,
-    payment_url: params.redirectUrl,
+    returnUrl: params.redirectUrl,
+    notifyUrl: params.webhookUrl,
   });
 
   return {
     provider: "payku",
-    transactionId: result.payment_key || result.transaction_key || result.order || params.order,
-    checkoutUrl: result.payment_url || result.url_pago || "",
+    transactionId: result.id || result.order || params.order,
+    checkoutUrl: result.paymentUrl || result.url || "",
     status: result.status || "pending",
   };
 }
@@ -104,7 +104,7 @@ async function getPaykuPaymentStatusFlow(
   return {
     provider: "payku",
     status: mapPaykuStatus(result.status),
-    transactionId: result.transaction_id || transactionId,
+    transactionId: result.id || transactionId,
     amount: result.amount || 0,
     currency: result.currency || "CLP",
   };

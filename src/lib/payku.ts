@@ -89,7 +89,7 @@ export async function createPaykuPayment(
 
   return {
     id: responseData.id,
-    order: responseData.orden || data.order,
+    order: responseData.order || data.order,
     paymentUrl: paymentUrl,
     url: paymentUrl,
     status: responseData.estado || "pending",
@@ -119,7 +119,7 @@ export async function getPaykuPaymentStatus(
 
   return {
     id: responseData.id,
-    order: responseData.orden || order,
+    order: responseData.order || order,
     status: responseData.estado || responseData.status || "pending",
     amount: responseData.monto,
     currency: responseData.moneda || "CLP",

@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
-  const orderNumber = paymentData.orden || paymentData.order;
+  const orderNumber = paymentData.order || paymentData.order;
   if (!orderNumber) {
     return;
   }
@@ -135,7 +135,7 @@ async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
 }
 
 async function handlePaykuFailed(paymentData: PaykuPaymentStatus) {
-  const orderNumber = paymentData.orden || paymentData.order;
+  const orderNumber = paymentData.order || paymentData.order;
   if (!orderNumber) {
     return;
   }
