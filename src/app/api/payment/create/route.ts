@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
         subject: paykuSubject,
         amount: paykuAmount,
         email: user.email,
-        returnUrl: `${baseUrl}/payment/success?orderNumber=${orderNumber}&status=success`,
+        returnUrl: `${baseUrl}/payment/success?orderNumber=${orderNumber}`,
         notifyUrl: `${baseUrl}/api/payment/payku/webhook`,
       });
 

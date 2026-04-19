@@ -40,7 +40,7 @@ function PaymentSuccessContent() {
 
       setPaymentVerified(true);
 
-      if (data.order.status === "COMPLETED" || paymentStatus === "success") {
+      if (data.order.status === "COMPLETED") {
         if (session?.user) {
           router.replace(`/dashboard?payment=success&order=${data.order.orderNumber}`);
         } else {
@@ -76,12 +76,8 @@ function PaymentSuccessContent() {
       return;
     }
 
-    if (paymentStatus === "success" || paymentStatus === "pending" || paymentStatus === "checking") {
-      checkStatus();
-    } else {
-      router.replace("/");
-    }
-  }, [status, orderNumber, orderId, paymentStatus, router, checkStatus]);
+    checkStatus();
+  }, [status, orderNumber, orderId, router, checkStatus]);
 
   if (checking || !paymentVerified) {
     return (
