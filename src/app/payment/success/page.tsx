@@ -9,18 +9,19 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const orderNumber = searchParams.get("orderNumber");
   const orderId = searchParams.get("orderId");
-  const status = searchParams.get("status");
+  const paymentStatus = searchParams.get("status");
 
   const [checking, setChecking] = useState(true);
   const [count, setCount] = useState(0);
+  const [paymentVerified, setPaymentVerified] = useState(false);
 
   const checkStatus = useCallback(async () => {
     if (!orderNumber && !orderId) {
-      router.replace("/dashboard");
+      router.replace("/");
       return;
     }
 
@@ -33,44 +34,56 @@ function PaymentSuccessContent() {
       const data = await res.json();
 
       if (!data.order) {
-        router.replace("/dashboard");
+        router.replace("/");
         return;
       }
 
-      if (data.order.status === "COMPLETED" || status === "success") {
-        router.replace(`/dashboard?payment=success&order=${data.order.orderNumber}`);
+      setPaymentVerified(true);
+
+      if (data.order.status === "COMPLETED" || paymentStatus === "success") {
+        if (session?.user) {
+          router.replace(`/dashboard?payment=success&order=${data.order.orderNumber}`);
+        } else {
+          router.replace(`/?payment=success&order=${data.order.orderNumber}`);
+        }
       } else if (data.order.status === "PROCESSING") {
         if (count < 5) {
           setCount(c => c + 1);
           setTimeout(checkStatus, 3000);
         } else {
-          router.replace(`/dashboard?payment=pending&order=${data.order.orderNumber}`);
+          router.replace(session?.user ? `/dashboard?payment=pending&order=${data.order.orderNumber}` : `/?payment=pending&order=${data.order.orderNumber}`);
         }
       } else if (data.order.status === "PENDING") {
         if (count < 5) {
           setCount(c => c + 1);
           setTimeout(checkStatus, 3000);
         } else {
-          router.replace(`/dashboard?payment=checking&order=${data.order.orderNumber}`);
+          router.replace(session?.user ? `/dashboard?payment=checking&order=${data.order.orderNumber}` : `/?payment=checking&order=${data.order.orderNumber}`);
         }
       } else {
-        router.replace(`/dashboard`);
+        router.replace("/");
       }
     } catch {
-      router.replace("/dashboard");
+      router.replace("/");
     }
-  }, [orderNumber, orderId, status, count, router]);
+  }, [orderNumber, orderId, paymentStatus, count, router, session]);
 
   useEffect(() => {
-    if (!session?.user) {
-      router.replace("/login?callbackUrl=/payment/success");
+    if (status === "loading") return;
+
+    if (!orderNumber && !orderId) {
+      router.replace("/");
       return;
     }
 
-    checkStatus();
-  }, [session]);
+    if (paymentStatus === "success" || paymentStatus === "pending" || paymentStatus === "checking") {
+      checkStatus();
+    } else {
+      router.replace("/");
+    }
+  }, [status, orderNumber, orderId, paymentStatus, router, checkStatus]);
 
-  if (checking) {
+  if (checking || !paymentVerified) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 text-center">
