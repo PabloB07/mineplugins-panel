@@ -103,8 +103,7 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
     process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX"
   );
 
-  return {
-    payku: {
+  const paykuConfig = {
       enabled: dbSettings?.paykuEnabled ?? true,
       source: paykuSource,
       apiToken:
@@ -117,7 +116,14 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
           : toOptional(process.env.PAYKU_SECRET_KEY),
       environment: paykuSource === "PANEL" ? dbSettings?.paykuEnvironment || "SANDBOX" : paykuEnvFromProcess,
       apiUrl: dbSettings?.paykuApiUrl || toOptional(process.env.PAYKU_API_URL),
-    },
+    };
+
+    console.log("[GatewaySettings] Payku config source:", paykuSource);
+    console.log("[GatewaySettings] Payku environment:", paykuConfig.environment);
+    console.log("[GatewaySettings] Payku apiUrl:", paykuConfig.apiUrl);
+
+  return {
+    payku: paykuConfig,
     paypal: {
       enabled: dbSettings?.paypalEnabled ?? true,
       source: paypalSource,

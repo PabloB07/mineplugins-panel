@@ -107,6 +107,14 @@ export async function createPaykuPayment(
       throw new Error(`Amount must be at least CLP 1,000, received: ${amount}`);
     }
 
+    console.log("[Payku] Creating payment with:", {
+      apiUrl,
+      apiTokenPrefix: apiToken ? apiToken.substring(0, 8) + "..." : "empty",
+      order: data.order,
+      amount,
+      email: data.email,
+    });
+
     // Build base payload with required fields.
     const requestPayload: Record<string, unknown> = {
       order: data.order.trim(),
