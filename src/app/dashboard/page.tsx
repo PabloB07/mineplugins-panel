@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useI18n } from "@/i18n/I18nProvider";
 import { Icon, IconHeader } from "@/components/ui/Icon";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { MinecraftIcon } from "@/components/ui/MinecraftIcon";
 
 interface License {
   id: string;
@@ -32,10 +34,14 @@ export default function DashboardPage() {
   const { t } = useTranslation();
   const { formatPrice } = useI18n();
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
 
   const [licenses, setLicenses] = useState<License[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const paymentStatus = searchParams.get("payment");
+  const orderNumber = searchParams.get("order");
 
   useEffect(() => {
     if (session?.user?.id) {
@@ -49,6 +55,15 @@ export default function DashboardPage() {
         .catch(() => setLoading(false));
     }
   }, [session]);
+
+  useEffect(() => {
+    if (paymentStatus && typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      url.searchParams.delete("order");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [paymentStatus]);
 
   if (!session?.user?.id) {
     return null;
@@ -73,6 +88,28 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
+      {paymentStatus === "success" && (
+        <div className="pixel-frame bg-green-500/10 border border-green-500/30 rounded-xl p-4 flex items-center gap-3">
+          <MinecraftIcon sprite="emerald-block" scale={2} />
+          <div>
+            <p className="text-green-400 font-medium">{t("dashboard.paymentSuccess") || "Payment successful!"}</p>
+            <p className="text-green-300/70 text-sm">
+              {orderNumber ? `Order #${orderNumber}` : "Your license has been activated."}
+            </p>
+          </div>
+        </div>
+      )}
+      {paymentStatus === "pending" && (
+        <div className="pixel-frame bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-center gap-3">
+          <MinecraftIcon sprite="hopper" scale={2} />
+          <div>
+            <p className="text-yellow-400 font-medium">{t("dashboard.paymentPending") || "Payment pending"}</p>
+            <p className="text-yellow-300/70 text-sm">
+              {orderNumber ? `Order #${orderNumber}` : "Your payment is being processed."}
+            </p>
+          </div>
+        </div>
+      )}
       <div className="pixel-frame relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#111] to-[#0a0a0a] border border-[#222]">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full -ml-32 -mb-32 blur-2xl"></div>
