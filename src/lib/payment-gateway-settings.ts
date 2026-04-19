@@ -50,28 +50,34 @@ export interface GatewaySettingsResolved {
   };
 }
 
-export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
-  const dbSettings = await (
+interface PaymentGatewayConfigRecord {
+  paykuApiToken: string | null;
+  paykuSecretKey: string | null;
+  paykuConfigSource: GatewayConfigSource;
+  paykuEnvironment: GatewayEnvironment;
+  tebexStoreId: string | null;
+  tebexSecretKey: string | null;
+  tebexEnvironment: GatewayEnvironment;
+  paypalClientId: string | null;
+  paypalClientSecret: string | null;
+  paypalWebhookId: string | null;
+  paypalEnvironment: GatewayEnvironment;
+}
+
+async function getPaymentGatewayConfigRecord(): Promise<PaymentGatewayConfigRecord | null> {
+  return (
     prisma as unknown as {
       paymentGatewayConfig: {
-        findUnique: (args: { where: { id: string } }) => Promise<{
-          paykuApiToken: string | null;
-          paykuSecretKey: string | null;
-          paykuConfigSource: GatewayConfigSource;
-          paykuEnvironment: GatewayEnvironment;
-          tebexStoreId: string | null;
-          tebexSecretKey: string | null;
-          tebexEnvironment: GatewayEnvironment;
-          paypalClientId: string | null;
-          paypalClientSecret: string | null;
-          paypalWebhookId: string | null;
-          paypalEnvironment: GatewayEnvironment;
-        } | null>;
+        findUnique: (args: { where: { id: string } }) => Promise<PaymentGatewayConfigRecord | null>;
       };
     }
   ).paymentGatewayConfig.findUnique({
     where: { id: SETTINGS_ID },
   });
+}
+
+export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
+  const dbSettings = await getPaymentGatewayConfigRecord();
 
   const paykuSource = parseGatewayConfigSource(dbSettings?.paykuConfigSource, "ENV");
   const paykuEnvFromProcess = parseGatewayEnvironment(
@@ -116,28 +122,41 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
 
 export async function upsertGatewaySettings(input: {
   paykuConfigSource: GatewayConfigSource;
-  paykuApiToken?: string;
-  paykuSecretKey?: string;
+  paykuApiToken?: string | null;
+  paykuSecretKey?: string | null;
   paykuEnvironment: GatewayEnvironment;
-  tebexStoreId?: string;
-  tebexSecretKey?: string;
+  tebexStoreId?: string | null;
+  tebexSecretKey?: string | null;
   tebexEnvironment: GatewayEnvironment;
-  paypalClientId?: string;
-  paypalClientSecret?: string;
-  paypalWebhookId?: string;
+  paypalClientId?: string | null;
+  paypalClientSecret?: string | null;
+  paypalWebhookId?: string | null;
   paypalEnvironment: GatewayEnvironment;
 }) {
+  const existing = await getPaymentGatewayConfigRecord();
+
+  function resolveOptionalField(
+    nextValue: string | null | undefined,
+    currentValue: string | null | undefined
+  ): string | null {
+    if (nextValue === undefined) {
+      return currentValue ?? null;
+    }
+
+    return nextValue;
+  }
+
   const gatewayPayload = {
     paykuConfigSource: input.paykuConfigSource,
-    paykuApiToken: input.paykuApiToken || null,
-    paykuSecretKey: input.paykuSecretKey || null,
+    paykuApiToken: resolveOptionalField(input.paykuApiToken, existing?.paykuApiToken),
+    paykuSecretKey: resolveOptionalField(input.paykuSecretKey, existing?.paykuSecretKey),
     paykuEnvironment: input.paykuEnvironment,
-    tebexStoreId: input.tebexStoreId || null,
-    tebexSecretKey: input.tebexSecretKey || null,
+    tebexStoreId: resolveOptionalField(input.tebexStoreId, existing?.tebexStoreId),
+    tebexSecretKey: resolveOptionalField(input.tebexSecretKey, existing?.tebexSecretKey),
     tebexEnvironment: input.tebexEnvironment,
-    paypalClientId: input.paypalClientId || null,
-    paypalClientSecret: input.paypalClientSecret || null,
-    paypalWebhookId: input.paypalWebhookId || null,
+    paypalClientId: resolveOptionalField(input.paypalClientId, existing?.paypalClientId),
+    paypalClientSecret: resolveOptionalField(input.paypalClientSecret, existing?.paypalClientSecret),
+    paypalWebhookId: resolveOptionalField(input.paypalWebhookId, existing?.paypalWebhookId),
     paypalEnvironment: input.paypalEnvironment,
   };
 

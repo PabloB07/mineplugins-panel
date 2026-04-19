@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Card } from "@/components/ui/Card";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -12,22 +12,46 @@ type ConfigSource = "ENV" | "PANEL";
 interface PaymentSettingsResponse {
   payku: {
     source: ConfigSource;
+    apiToken: string;
+    secretKey: string;
     environment: EnvMode;
     hasApiToken: boolean;
     hasSecretKey: boolean;
   };
   tebex: {
     storeId: string;
+    secretKey: string;
     environment: EnvMode;
     hasSecretKey: boolean;
   };
   paypal: {
     clientId: string;
+    clientSecret: string;
     webhookId: string;
     environment: EnvMode;
     hasClientSecret: boolean;
   };
 }
+
+interface PaymentSettingsSnapshot {
+  paykuApiToken: string;
+  paykuSecretKey: string;
+  tebexStoreId: string;
+  tebexSecretKey: string;
+  paypalClientId: string;
+  paypalClientSecret: string;
+  paypalWebhookId: string;
+}
+
+const EMPTY_SNAPSHOT: PaymentSettingsSnapshot = {
+  paykuApiToken: "",
+  paykuSecretKey: "",
+  tebexStoreId: "",
+  tebexSecretKey: "",
+  paypalClientId: "",
+  paypalClientSecret: "",
+  paypalWebhookId: "",
+};
 
 export default function AdminPaymentsSettingsPage() {
   const { t } = useTranslation();
@@ -35,6 +59,7 @@ export default function AdminPaymentsSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [initialValues, setInitialValues] = useState<PaymentSettingsSnapshot>(EMPTY_SNAPSHOT);
 
   const [paykuSource, setPaykuSource] = useState<ConfigSource>("ENV");
   const [paykuEnvironment, setPaykuEnvironment] = useState<EnvMode>("SANDBOX");
@@ -50,23 +75,45 @@ export default function AdminPaymentsSettingsPage() {
   const [paypalClientSecret, setPaypalClientSecret] = useState("");
   const [paypalWebhookId, setPaypalWebhookId] = useState("");
 
+  const applySettings = useCallback((data: PaymentSettingsResponse) => {
+    setPaykuSource(data.payku.source);
+    setPaykuEnvironment(data.payku.environment);
+    setPaykuApiToken(data.payku.apiToken || "");
+    setPaykuSecretKey(data.payku.secretKey || "");
+    setTebexEnvironment(data.tebex.environment);
+    setTebexStoreId(data.tebex.storeId || "");
+    setTebexSecretKey(data.tebex.secretKey || "");
+    setPaypalEnvironment(data.paypal.environment);
+    setPaypalClientId(data.paypal.clientId || "");
+    setPaypalClientSecret(data.paypal.clientSecret || "");
+    setPaypalWebhookId(data.paypal.webhookId || "");
+    setInitialValues({
+      paykuApiToken: data.payku.apiToken || "",
+      paykuSecretKey: data.payku.secretKey || "",
+      tebexStoreId: data.tebex.storeId || "",
+      tebexSecretKey: data.tebex.secretKey || "",
+      paypalClientId: data.paypal.clientId || "",
+      paypalClientSecret: data.paypal.clientSecret || "",
+      paypalWebhookId: data.paypal.webhookId || "",
+    });
+  }, []);
+
+  const loadSettings = useCallback(async () => {
+    const response = await fetch("/api/admin/payment-settings");
+    if (!response.ok) {
+      throw new Error(t("admin.loadConfigError"));
+    }
+
+    const data = (await response.json()) as PaymentSettingsResponse;
+    applySettings(data);
+  }, [applySettings, t]);
+
   useEffect(() => {
     const fetchSettings = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch("/api/admin/payment-settings");
-        if (!response.ok) {
-          throw new Error(t("admin.loadConfigError"));
-        }
-        const data = (await response.json()) as PaymentSettingsResponse;
-        setPaykuSource(data.payku.source);
-        setPaykuEnvironment(data.payku.environment);
-        setTebexEnvironment(data.tebex.environment);
-        setPaypalEnvironment(data.paypal.environment);
-        setTebexStoreId(data.tebex.storeId || "");
-        setPaypalClientId(data.paypal.clientId || "");
-        setPaypalWebhookId(data.paypal.webhookId || "");
+        await loadSettings();
       } catch (err) {
         setError(err instanceof Error ? err.message : t("admin.loadConfigError"));
       } finally {
@@ -74,7 +121,19 @@ export default function AdminPaymentsSettingsPage() {
       }
     };
     fetchSettings();
-  }, [t]);
+  }, [loadSettings, t]);
+
+  const prepareValueForSave = (value: string, initialValue: string): string | null | undefined => {
+    if (value === initialValue) {
+      return undefined;
+    }
+
+    if (value.trim().length === 0) {
+      return initialValue.trim().length > 0 ? null : undefined;
+    }
+
+    return value;
+  };
 
   const saveSettings = async () => {
     setSaving(true);
@@ -87,19 +146,19 @@ export default function AdminPaymentsSettingsPage() {
         body: JSON.stringify({
           payku: {
             source: paykuSource,
-            apiToken: paykuApiToken,
-            secretKey: paykuSecretKey,
+            apiToken: prepareValueForSave(paykuApiToken, initialValues.paykuApiToken),
+            secretKey: prepareValueForSave(paykuSecretKey, initialValues.paykuSecretKey),
             environment: paykuEnvironment,
           },
           tebex: {
-            storeId: tebexStoreId,
-            secretKey: tebexSecretKey,
+            storeId: prepareValueForSave(tebexStoreId, initialValues.tebexStoreId),
+            secretKey: prepareValueForSave(tebexSecretKey, initialValues.tebexSecretKey),
             environment: tebexEnvironment,
           },
           paypal: {
-            clientId: paypalClientId,
-            clientSecret: paypalClientSecret,
-            webhookId: paypalWebhookId,
+            clientId: prepareValueForSave(paypalClientId, initialValues.paypalClientId),
+            clientSecret: prepareValueForSave(paypalClientSecret, initialValues.paypalClientSecret),
+            webhookId: prepareValueForSave(paypalWebhookId, initialValues.paypalWebhookId),
             environment: paypalEnvironment,
           },
         }),
@@ -107,10 +166,7 @@ export default function AdminPaymentsSettingsPage() {
       if (!response.ok) {
         throw new Error(t("admin.saveConfigError"));
       }
-      setPaykuApiToken("");
-      setPaykuSecretKey("");
-      setTebexSecretKey("");
-      setPaypalClientSecret("");
+      await loadSettings();
       setSuccess(t("admin.configSaved"));
     } catch (err) {
       setError(err instanceof Error ? err.message : t("admin.saveConfigError"));

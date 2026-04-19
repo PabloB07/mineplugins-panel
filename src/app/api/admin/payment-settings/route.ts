@@ -10,6 +10,13 @@ import {
 } from "@/lib/payment-gateway-settings";
 import { toOptionalTrimmedString } from "@/lib/security";
 
+function parseOptionalTextUpdate(value: unknown, maxLength: number): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+
+  return toOptionalTrimmedString(value, maxLength) ?? null;
+}
+
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user?.id) return null;
@@ -73,21 +80,21 @@ export async function PUT(request: NextRequest) {
         typeof payku.source === "string" ? payku.source : undefined,
         "ENV"
       ),
-      paykuApiToken: toOptionalTrimmedString(payku.apiToken, 1000),
-      paykuSecretKey: toOptionalTrimmedString(payku.secretKey, 1000),
+      paykuApiToken: parseOptionalTextUpdate(payku.apiToken, 1000),
+      paykuSecretKey: parseOptionalTextUpdate(payku.secretKey, 1000),
       paykuEnvironment: parseGatewayEnvironment(
         typeof payku.environment === "string" ? payku.environment : undefined,
         "SANDBOX"
       ),
-      tebexStoreId: toOptionalTrimmedString(tebex.storeId, 255),
-      tebexSecretKey: toOptionalTrimmedString(tebex.secretKey, 1000),
+      tebexStoreId: parseOptionalTextUpdate(tebex.storeId, 255),
+      tebexSecretKey: parseOptionalTextUpdate(tebex.secretKey, 1000),
       tebexEnvironment: parseGatewayEnvironment(
         typeof tebex.environment === "string" ? tebex.environment : undefined,
         "PRODUCTION"
       ),
-      paypalClientId: toOptionalTrimmedString(paypal.clientId, 1000),
-      paypalClientSecret: toOptionalTrimmedString(paypal.clientSecret, 1000),
-      paypalWebhookId: toOptionalTrimmedString(paypal.webhookId, 1000),
+      paypalClientId: parseOptionalTextUpdate(paypal.clientId, 1000),
+      paypalClientSecret: parseOptionalTextUpdate(paypal.clientSecret, 1000),
+      paypalWebhookId: parseOptionalTextUpdate(paypal.webhookId, 1000),
       paypalEnvironment: parseGatewayEnvironment(
         typeof paypal.environment === "string" ? paypal.environment : undefined,
         "SANDBOX"
