@@ -287,7 +287,7 @@ export async function POST(request: NextRequest) {
         throw new Error("User email is empty");
       }
 
-      console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amount: paykuAmount, subject: paykuSubject });
+console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amount: paykuAmount, subject: paykuSubject });
 
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
@@ -298,6 +298,10 @@ export async function POST(request: NextRequest) {
         notifyUrl: `${baseUrl}/api/payment/payku/webhook`,
       });
 
+      console.log("[CreatePayment] Payku response:", paykuResponse);
+      console.log("[CreatePayment] Payku transaction ID:", paykuResponse.id);
+      console.log("[CreatePayment] Order ID:", order.id);
+
       // Save the gateway transaction ID for better status tracking
       if (paykuResponse.id) {
         try {
@@ -305,10 +309,12 @@ export async function POST(request: NextRequest) {
             where: { id: order.id },
             data: { flowOrderNumber: paykuResponse.id }
           });
+          console.log("[CreatePayment] Saved flowOrderNumber:", paykuResponse.id);
         } catch (dbError) {
           console.error("[CreateOrder] Failed to update flowOrderNumber:", dbError);
           // We don't throw here to avoid preventing the user from paying
         }
+      }
       }
 
       return NextResponse.json({
