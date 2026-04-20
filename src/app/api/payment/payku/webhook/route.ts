@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   verifyPaykuWebhookSignature,
   processPaykuWebhook,
-  PaykuPaymentStatus,
+  PaykuStatusData,
 } from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
+async function handlePaykuSuccess(paymentData: PaykuStatusData) {
   const orderNumber = paymentData.order || paymentData.order;
   if (!orderNumber) {
     return;
@@ -134,7 +134,7 @@ async function handlePaykuSuccess(paymentData: PaykuPaymentStatus) {
   });
 }
 
-async function handlePaykuFailed(paymentData: PaykuPaymentStatus) {
+async function handlePaykuFailed(paymentData: PaykuStatusData) {
   const orderNumber = paymentData.order || paymentData.order;
   if (!orderNumber) {
     return;
