@@ -55,12 +55,10 @@ export function CombinedCheckoutButton({
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to create payment");
-      }
-
-      if (!data.paymentUrl) {
-        throw new Error("No payment URL received");
+      if (!response.ok || !data.paymentUrl) {
+        alert("Payment failed. Please try again.");
+        setIsLoading(false);
+        return;
       }
       
       window.location.href = data.paymentUrl;

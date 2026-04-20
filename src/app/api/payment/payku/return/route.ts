@@ -92,8 +92,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/payment/failed?orderNumber=${orderNumber}&reason=${status}`);
     }
 
-    // Pending - show pending UI (user must complete manually in Payku dashboard)
-    return NextResponse.redirect(`${baseUrl}/payment/success?orderNumber=${orderNumber}&status=pending`);
+    // For sandbox: just redirect to dashboard after user completes payment
+    return NextResponse.redirect(`${baseUrl}/dashboard?payment=pending&order=${orderNumber}`);
     
   } catch (error) {
     console.error("Payku return error:", error);
