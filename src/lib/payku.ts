@@ -144,10 +144,18 @@ export async function createPaykuPayment(
     throw new Error(`Invalid payment URL format from Payku: "${paymentUrl}"`);
   }
 
-  // Debug: Log if we got back our own returnUrl as paymentUrl (common sandbox issue)
-  if (paymentUrl.includes(data.returnUrl || '')) {
-    console.warn("[Payku Create] WARNING: Got same URL as returnUrl. This may indicate sandbox/keys issue.");
+  // CRITICAL: Verify this is NOT our own URL
+  const isOwnUrl = paymentUrl.includes("mineplugins") || paymentUrl.includes("localhost") || paymentUrl.includes("/payment/");
+  if (isOwnUrl) {
+    console.error("[Payku Create] CRITICAL ERROR: Got own URL as paymentUrl!", {
+      paymentUrl,
+      returnUrl: data.returnUrl,
+      fullResponse: JSON.stringify(responseData)
+    });
+    throw new Error(`PAYKU ERROR: Got payment URL "${paymentUrl}" which is our own URL. This should be Webpay URL. Check API keys.`);
   }
+
+  console.log("[Payku Create] SUCCESS - Redirecting to Webpay:", paymentUrl);
 
   console.log(`[Payku Create] Success. ID: ${transactionId}, Redirect URL: ${paymentUrl}`);
 

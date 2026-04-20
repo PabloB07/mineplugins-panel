@@ -299,8 +299,14 @@ export async function POST(request: NextRequest) {
       });
 
       console.log("[CreatePayment] Payku response:", paykuResponse);
+      console.log("[CreatePayment] paymentUrl:", paykuResponse.paymentUrl);
       console.log("[CreatePayment] Payku transaction ID:", paykuResponse.id);
       console.log("[CreatePayment] Order ID:", order.id);
+
+      // Verify paymentUrl is a real Webpay URL
+      if (!paykuResponse.paymentUrl || !paykuResponse.paymentUrl.includes("webpay") && !paykuResponse.paymentUrl.includes("des.payku.cl")) {
+        console.error("[CreatePayment] ERROR: Invalid paymentUrl:", paykuResponse.paymentUrl);
+      }
 
       // Save the gateway transaction ID for better status tracking
       if (paykuResponse.id) {

@@ -63,10 +63,14 @@ export function CombinedCheckoutButton({
 
       console.log("[CombinedCheckout] paymentUrl:", data.paymentUrl);
       
-      // Use setTimeout to avoid React hydration issue
-      setTimeout(() => {
-        window.location.href = data.paymentUrl;
-      }, 100);
+      // Verify we have a valid payment URL
+      if (!data.paymentUrl) {
+        throw new Error("No payment URL received");
+      }
+      
+      // Redirect to Payku/Webpay
+      console.log("[CombinedCheckout] Redirecting to:", data.paymentUrl);
+      window.location.href = data.paymentUrl;
 
       onSuccess?.(data);
     } catch (err) {
