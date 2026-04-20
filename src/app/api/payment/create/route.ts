@@ -287,7 +287,7 @@ export async function POST(request: NextRequest) {
         throw new Error("User email is empty");
       }
 
-console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amount: paykuAmount, subject: paykuSubject });
+      console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amount: paykuAmount, subject: paykuSubject });
 
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
@@ -314,7 +314,6 @@ console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amo
           console.error("[CreateOrder] Failed to update flowOrderNumber:", dbError);
           // We don't throw here to avoid preventing the user from paying
         }
-      }
       }
 
       return NextResponse.json({
