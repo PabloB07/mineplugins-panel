@@ -36,12 +36,6 @@ function PaymentSuccessContent() {
       const data = await res.json();
 
       if (!data.order) {
-        // Retry a few times if order not immediately found (race condition)
-        if (retryCount < 3) {
-          setRetryCount(prev => prev + 1);
-          setTimeout(checkStatus, 2000);
-          return;
-        }
         router.replace("/dashboard?error=order_not_found");
         return;
       }
