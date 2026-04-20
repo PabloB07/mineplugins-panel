@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { MinecraftIcon } from "@/components/ui/MinecraftIcon";
@@ -21,7 +21,7 @@ function PaymentSuccessContent() {
   const [orderData, setOrderData] = useState<any>(null);
   const [paymentVerified, setPaymentVerified] = useState(false);
 
-  const checkStatus = useCallback(async () => {
+  const checkStatus = async () => {
     if (!orderNumber && !orderId) {
       router.replace("/");
       return;
@@ -60,9 +60,8 @@ function PaymentSuccessContent() {
   }, [orderNumber, orderId, router]);
 
   useEffect(() => {
-    if (sessionStatus === "loading") return;
     checkStatus();
-  }, [sessionStatus]);
+  }, []);
 
   if (checking) {
     return (
