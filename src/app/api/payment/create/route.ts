@@ -287,6 +287,8 @@ export async function POST(request: NextRequest) {
         throw new Error("User email is empty");
       }
 
+      console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amount: paykuAmount, subject: paykuSubject });
+
       const paykuResponse = await createPaykuPayment({
         order: orderNumber,
         subject: paykuSubject,

@@ -58,6 +58,8 @@ export function PaykuStandaloneButton({
         throw new Error(data.message || data.error || "Failed to create payment");
       }
 
+      console.log("[PaykuStandalone] paymentUrl:", data.paymentUrl);
+
       // Redirect to Payku payment URL
       window.location.href = data.paymentUrl;
 
