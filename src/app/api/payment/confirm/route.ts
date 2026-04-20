@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, PaymentMethod } from "@prisma/client";
 import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
+import { getPaykuPaymentStatus, mapPaykuStatus } from "@/lib/payku";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,22 +14,14 @@ export async function GET(request: NextRequest) {
     let order = null;
 
     if (orderNumber) {
-      order = await prisma.order.findFirst({
+      order = await prisma.order.findUnique({
         where: { orderNumber },
-        select: {
-          id: true,
-          orderNumber: true,
-          status: true,
-        },
+        include: { items: { include: { product: true } } }
       });
     } else if (orderId) {
       order = await prisma.order.findUnique({
         where: { id: orderId },
-        select: {
-          id: true,
-          orderNumber: true,
-          status: true,
-        },
+        include: { items: { include: { product: true } } }
       });
     }
 
@@ -39,7 +32,43 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ order });
+    // Proactive check: If order is still pending, check with the gateway
+    if (order.status === OrderStatus.PENDING || order.status === OrderStatus.PROCESSING) {
+      if (order.paymentMethod === PaymentMethod.PAYKU) {
+        try {
+          const queryId = order.flowOrderNumber || order.orderNumber;
+          const paykuStatus = await getPaykuPaymentStatus(queryId);
+          const status = mapPaykuStatus(paykuStatus.status);
+
+          if (status === "success") {
+            await completeOrder(order.id);
+            // Refresh order data after completion
+            const updatedOrder = await prisma.order.findUnique({
+              where: { id: order.id },
+              select: { id: true, orderNumber: true, status: true }
+            });
+            return NextResponse.json({ order: updatedOrder });
+          } else if (status === "failed" || status === "cancelled") {
+            await prisma.order.update({
+              where: { id: order.id },
+              data: { status: OrderStatus.FAILED }
+            });
+            return NextResponse.json({ order: { ...order, status: OrderStatus.FAILED } });
+          }
+        } catch (gateError) {
+          console.error("[ConfirmCheck] Payku check failed:", gateError);
+        }
+      }
+      // Add other gateways here if needed (PayPal, Tebex, etc.)
+    }
+
+    return NextResponse.json({ 
+      order: {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        status: order.status
+      } 
+    });
   } catch (error) {
     console.error("Payment confirm error:", error);
     return NextResponse.json(
