@@ -39,6 +39,18 @@ export async function GET(request: NextRequest) {
     const paykuStatus = await getPaykuPaymentStatus(queryId);
     console.log("[Payku Return] paykuStatus raw:", JSON.stringify(paykuStatus));
     console.log("[Payku Return] Raw API response - checking...");
+    
+    // If pending in sandbox, wait 2s and retry once
+    if (paykuStatus.status === "pending") {
+      console.log("[Payku Return] First check was pending, waiting and retrying...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const retryStatus = await getPaykuPaymentStatus(queryId);
+      console.log("[Payku Return] Retry status:", JSON.stringify(retryStatus));
+      if (retryStatus.status !== "pending") {
+        console.log("[Payku Return] Retry succeeded, using new status");
+        paykuStatus.status = retryStatus.status;
+      }
+    }
     console.log("[Payku Return] paykuStatus.status:", paykuStatus.status);
     console.log("[Payku Return] paykuStatus.amount:", paykuStatus.amount);
     console.log("[Payku Return] paykuStatus.currency:", paykuStatus.currency);
