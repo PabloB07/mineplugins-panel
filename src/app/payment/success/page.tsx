@@ -80,7 +80,7 @@ function PaymentSuccessContent() {
   useEffect(() => {
     if (sessionStatus === "loading") return;
     checkStatus();
-  }, [sessionStatus, checkStatus]);
+  }, [sessionStatus]);
 
   if (checking) {
     return (
@@ -115,6 +115,11 @@ function PaymentSuccessContent() {
   }
 
   // If not completed but we stopped checking
+  const handleRetry = () => {
+    // Force refresh by going to same URL
+    window.location.href = `/payment/success?orderNumber=${orderNumber}&t=${Date.now()}`;
+  };
+
   if (!paymentVerified && orderData?.status !== "COMPLETED") {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 relative overflow-hidden">
@@ -126,12 +131,19 @@ function PaymentSuccessContent() {
           <p className="text-gray-400">
             {t("payment.processingDesc")}
           </p>
-          <div className="pt-6">
+          <button
+            onClick={handleRetry}
+            className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-amber-500 text-black font-bold rounded-2xl hover:bg-amber-400 transition-all shadow-xl"
+          >
+            <MinecraftIcon sprite="emerald" scale={0.6} isSmall />
+            Verificar Pago Again
+          </button>
+          <div className="pt-2">
             <button
                onClick={() => router.push("/dashboard/orders")}
-               className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all shadow-xl"
+               className="text-gray-500 hover:text-white text-sm font-medium"
             >
-              {t("payment.goToOrders")} <MinecraftIcon sprite="iron-sword" scale={0.6} isSmall className="rotate-90" />
+              Go to Orders
             </button>
           </div>
         </div>
