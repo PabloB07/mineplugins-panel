@@ -48,6 +48,7 @@ export function mapPaykuStatus(status: any): "success" | "pending" | "failed" | 
   if (status === undefined || status === null) return "pending";
   
   const s = String(status).toLowerCase().trim();
+  console.log(`[Payku Mapping] Original: "${status}", Cleaned: "${s}"`);
   
   // Payku status codes (estado):
   // 1: Exitoso / Approved / Success
@@ -56,25 +57,19 @@ export function mapPaykuStatus(status: any): "success" | "pending" | "failed" | 
   // 4: Anulado / Cancelled
   
   // String variations often seen in Chilean gateways/Payku:
-  // v = Validado (Valid)
+  // v = Validado (Valid/Success)
   // p = Pendiente (Pending)
   // r = Rechazado (Rejected)
   
-  if (s === "1" || s === "success" || s === "aprobado" || s === "v" || s === "approved") {
-    return "success";
-  }
-  
-  if (s === "3" || s === "failed" || s === "rechazado" || s === "rejected" || s === "r" || s === "error") {
-    return "failed";
-  }
-  
-  if (s === "4" || s === "cancelled" || s === "cancelado" || s === "anulado" || s === "c") {
-    return "cancelled";
-  }
-  
-  if (s === "2" || s === "pending" || s === "pendiente" || s === "register" || s === "p") {
-    return "pending";
-  }
+  const successStates = ["1", "success", "aprobado", "aprobada", "v", "approved", "validada", "validado"];
+  const failedStates = ["3", "failed", "rechazado", "rechazada", "rejected", "r", "error"];
+  const cancelledStates = ["4", "cancelled", "cancelado", "cancelada", "anulado", "anulada", "c"];
+  const pendingStates = ["2", "pending", "pendiente", "register", "p", "not_paid"];
+
+  if (successStates.includes(s)) return "success";
+  if (failedStates.includes(s)) return "failed";
+  if (cancelledStates.includes(s)) return "cancelled";
+  if (pendingStates.includes(s)) return "pending";
   
   return "pending";
 }
@@ -156,18 +151,29 @@ export async function getPaykuPaymentStatus(
       },
     });
 
-    const responseData = await response.json();
-    console.log("[Payku] Status Response:", JSON.stringify(responseData));
+    const responseText = await response.text();
+    console.log(`[Payku Status Check] Raw Response (${response.status}):`, responseText);
+
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (e) {
+      console.error("[Payku] Failed to parse status JSON:", responseText.slice(0, 500));
+      return { status: "pending", id };
+    }
 
     if (!response.ok) {
       console.warn(`[Payku] Status check failed with ${response.status}:`, responseData.message);
       return { status: "pending", id };
     }
 
+    const rawEstado = responseData.estado || responseData.status;
+    const mappedStatus = mapPaykuStatus(rawEstado);
+
     return {
-      id: responseData.id,
+      id: responseData.id || id,
       order: responseData.order,
-      status: mapPaykuStatus(responseData.estado || responseData.status),
+      status: mappedStatus,
       amount: responseData.monto,
       currency: responseData.moneda || "CLP",
       email: responseData.email,
@@ -191,8 +197,11 @@ export async function verifyPaykuWebhookSignature(
       .update(payload)
       .digest("hex");
 
+    console.log(`[Payku Webhook] Signature Check - Received: ${receivedSignature}, Expected: ${expected}`);
+
     return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(receivedSignature));
-  } catch {
+  } catch (error) {
+    console.error("[Payku Webhook] Signature validation error:", error);
     return false;
   }
 }

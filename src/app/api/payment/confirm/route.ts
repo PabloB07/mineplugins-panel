@@ -34,13 +34,18 @@ export async function GET(request: NextRequest) {
 
     // Proactive check: If order is still pending, check with the gateway
     if (order.status === OrderStatus.PENDING || order.status === OrderStatus.PROCESSING) {
+      console.log(`[ConfirmCheck] Proactive check for order ${order.orderNumber} (current DB status: ${order.status})`);
+      
       if (order.paymentMethod === PaymentMethod.PAYKU) {
         try {
           const queryId = order.flowOrderNumber || order.orderNumber;
           const paykuStatus = await getPaykuPaymentStatus(queryId);
-          const status = mapPaykuStatus(paykuStatus.status);
+          const status = paykuStatus.status; // Already mapped in getPaykuPaymentStatus
+
+          console.log(`[ConfirmCheck] Payku status for ${queryId}: ${status}`);
 
           if (status === "success") {
+            console.log(`[ConfirmCheck] Payku reports SUCCESS. Completing order...`);
             await completeOrder(order.id);
             // Refresh order data after completion
             const updatedOrder = await prisma.order.findUnique({
@@ -49,6 +54,7 @@ export async function GET(request: NextRequest) {
             });
             return NextResponse.json({ order: updatedOrder });
           } else if (status === "failed" || status === "cancelled") {
+            console.log(`[ConfirmCheck] Payku reports ${status.toUpperCase()}. Marking as FAILED.`);
             await prisma.order.update({
               where: { id: order.id },
               data: { status: OrderStatus.FAILED }
