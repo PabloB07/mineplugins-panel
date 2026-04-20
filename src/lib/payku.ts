@@ -97,11 +97,13 @@ export async function createPaykuPayment(
     ...(data.returnUrl && { urlreturn: data.returnUrl }),
     ...(data.notifyUrl && { urlnotify: data.notifyUrl }),
   };
+  const baseUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
+  const finalUrl = `${baseUrl}transaction`;
 
-  console.log("[Payku] POST", `${apiUrl}/transaction`);
+  console.log("[Payku] POST", finalUrl);
   console.log("[Payku] Payload:", JSON.stringify(payload));
 
-  const response = await fetch(`${apiUrl}/transaction`, {
+  const response = await fetch(finalUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -111,18 +113,18 @@ export async function createPaykuPayment(
   });
 
   const responseText = await response.text();
-  console.log("[Payku] Response Text:", responseText);
+  console.log(`[Payku] Response (${response.status}):`, responseText);
 
   let responseData;
   try {
     responseData = JSON.parse(responseText);
   } catch (e) {
-    throw new Error(`Payku returned invalid JSON: ${responseText.slice(0, 100)}`);
+    throw new Error(`Payku returned invalid JSON (Status: ${response.status}): ${responseText.slice(0, 100)}`);
   }
 
   if (!response.ok) {
     const msg = responseData.message || responseData.message_error || "Unknown error";
-    throw new Error(`Payku error: ${msg}`);
+    throw new Error(`Payku error (${response.status}): ${msg}`);
   }
 
   const paymentUrl = responseData.url || responseData.url_pago || responseData.paymentUrl;
