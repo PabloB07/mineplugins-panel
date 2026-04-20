@@ -63,8 +63,10 @@ export function CombinedCheckoutButton({
 
       console.log("[CombinedCheckout] paymentUrl:", data.paymentUrl);
       
-      // Redirect to payment URL
-      window.location.href = data.paymentUrl;
+      // Use setTimeout to avoid React hydration issue
+      setTimeout(() => {
+        window.location.href = data.paymentUrl;
+      }, 100);
 
       onSuccess?.(data);
     } catch (err) {

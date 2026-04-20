@@ -53,8 +53,10 @@ export function PaykuButton({
       console.log("[PaykuButton] paymentUrl:", data.paymentUrl);
       console.log("[PaykuButton] full response:", data);
 
-      // Redirect to Payku payment page
-      window.location.href = data.paymentUrl;
+      // Use setTimeout to avoid React hydration issue
+      setTimeout(() => {
+        window.location.href = data.paymentUrl;
+      }, 100);
 
       onSuccess?.(data);
     } catch (err) {

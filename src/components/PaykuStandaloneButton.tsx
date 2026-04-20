@@ -60,8 +60,10 @@ export function PaykuStandaloneButton({
 
       console.log("[PaykuStandalone] paymentUrl:", data.paymentUrl);
 
-      // Redirect to Payku payment URL
-      window.location.href = data.paymentUrl;
+      // Use setTimeout to avoid React hydration issue
+      setTimeout(() => {
+        window.location.href = data.paymentUrl;
+      }, 100);
 
       onSuccess?.(data);
     } catch (err) {
