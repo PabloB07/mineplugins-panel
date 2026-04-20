@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPaykuPaymentStatus, mapPaykuStatus } from "@/lib/payku";
+import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { generateSimpleLicenseKey } from "@/lib/license";
@@ -55,10 +56,22 @@ export async function GET(request: NextRequest) {
     console.log("[Payku Return] paykuStatus.amount:", paykuStatus.amount);
     console.log("[Payku Return] paykuStatus.currency:", paykuStatus.currency);
     
+    // Check if sandbox mode
+    const settings = await getGatewaySettings();
+    const isSandbox = settings.payku.environment === "SANDBOX";
+    console.log("[Payku Return] Sandbox mode:", isSandbox);
+    
     const baseUrl = new URL("/", request.url).origin;
-    const status = mapPaykuStatus(paykuStatus.status);
+    let status = mapPaykuStatus(paykuStatus.status);
 
     console.log("[Payku Return] Mapped status:", status);
+
+    // In sandbox: if user returned from Payku (passed through checkout), assume success
+    // This avoids needing manual approval in Payku dashboard
+    if (isSandbox && status !== "success" && order.status === OrderStatus.PENDING) {
+      console.log("[Payku Return] Sandbox: Auto-completing order since user returned from payment");
+      status = "success";
+    }
 
     if (status === "success") {
       // Complete order with license
