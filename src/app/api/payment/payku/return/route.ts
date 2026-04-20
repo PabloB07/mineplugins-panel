@@ -33,10 +33,12 @@ export async function GET(request: NextRequest) {
     }
 
     const queryId = order.flowOrderNumber || orderNumber;
-    console.log("[Payku Return] queryId:", queryId);
+    console.log("[Payku Return] queryId being used:", queryId);
+    console.log("[Payku Return] order.flowOrderNumber from DB:", order.flowOrderNumber);
     
     const paykuStatus = await getPaykuPaymentStatus(queryId);
     console.log("[Payku Return] paykuStatus raw:", JSON.stringify(paykuStatus));
+    console.log("[Payku Return] Raw API response - checking...");
     console.log("[Payku Return] paykuStatus.status:", paykuStatus.status);
     console.log("[Payku Return] paykuStatus.amount:", paykuStatus.amount);
     console.log("[Payku Return] paykuStatus.currency:", paykuStatus.currency);

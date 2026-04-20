@@ -192,7 +192,9 @@ export async function getPaykuPaymentStatus(
     }
 
     const rawEstado = responseData.estado || responseData.status;
+    console.log(`[Payku Status] rawEstado: "${rawEstado}"`);
     const mappedStatus = mapPaykuStatus(rawEstado);
+    console.log(`[Payku Status] mappedStatus: "${mappedStatus}"`);
 
     return {
       id: responseData.id || id,
