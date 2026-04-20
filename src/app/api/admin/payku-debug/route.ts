@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getGatewaySettings } from "@/lib/payment-gateway-settings";
-import { createPaykuPayment } from "@/lib/payku";
+import { createPaykuPayment, getPaykuPaymentStatus } from "@/lib/payku";
 
 export async function GET() {
   const settings = await getGatewaySettings();
@@ -22,6 +22,11 @@ export async function GET() {
       id: testPayment.id,
       status: testPayment.status
     };
+
+    // Wait 2 seconds then check status
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    const statusCheck = await getPaykuPaymentStatus(testPayment.id);
+    testResult.statusCheck = statusCheck;
   } catch (err) {
     testResult = {
       success: false,
