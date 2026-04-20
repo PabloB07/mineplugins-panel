@@ -12,7 +12,8 @@ async function getPaykuClientConfig() {
 
   return {
     apiToken: settings.payku.apiToken || "",
-    apiUrl: getPaykuApiUrl(settings.payku.environment),
+    // Prioritize the custom apiUrl if set in the panel
+    apiUrl: settings.payku.apiUrl || getPaykuApiUrl(settings.payku.environment),
     secretKey: (settings.payku.secretKey || process.env.PAYKU_SECRET_KEY || "").trim(),
   };
 }
@@ -34,13 +35,48 @@ export interface PaykuPaymentResponse {
   status?: string;
 }
 
-export interface PaykuPaymentStatus {
+export interface PaykuStatusData {
   id?: string;
   order?: string;
   status: "success" | "pending" | "failed" | "cancelled";
   amount?: number;
   currency?: string;
   email?: string;
+}
+
+export function mapPaykuStatus(status: any): "success" | "pending" | "failed" | "cancelled" {
+  if (status === undefined || status === null) return "pending";
+  
+  const s = String(status).toLowerCase().trim();
+  
+  // Payku status codes (estado):
+  // 1: Exitoso / Approved / Success
+  // 2: Pendiente / Pending
+  // 3: Rechazado / Rejected / Failed
+  // 4: Anulado / Cancelled
+  
+  // String variations often seen in Chilean gateways/Payku:
+  // v = Validado (Valid)
+  // p = Pendiente (Pending)
+  // r = Rechazado (Rejected)
+  
+  if (s === "1" || s === "success" || s === "aprobado" || s === "v" || s === "approved") {
+    return "success";
+  }
+  
+  if (s === "3" || s === "failed" || s === "rechazado" || s === "rejected" || s === "r" || s === "error") {
+    return "failed";
+  }
+  
+  if (s === "4" || s === "cancelled" || s === "cancelado" || s === "anulado" || s === "c") {
+    return "cancelled";
+  }
+  
+  if (s === "2" || s === "pending" || s === "pendiente" || s === "register" || s === "p") {
+    return "pending";
+  }
+  
+  return "pending";
 }
 
 export async function createPaykuPayment(
@@ -92,39 +128,45 @@ export async function createPaykuPayment(
     order: responseData.order || data.order,
     paymentUrl: paymentUrl,
     url: paymentUrl,
-    status: responseData.estado || "pending",
+    status: mapPaykuStatus(responseData.estado || responseData.status),
   };
 }
 
 export async function getPaykuPaymentStatus(
-  order: string
-): Promise<PaykuPaymentStatus> {
+  id: string
+): Promise<PaykuStatusData> {
   const { apiToken, apiUrl } = await getPaykuClientConfig();
 
-  console.log("[Payku] GET", `${apiUrl}/transaction/${order}`);
+  console.log(`[Payku] Checking status for ${id} at ${apiUrl}/transaction/${id}`);
 
-  const response = await fetch(`${apiUrl}/transaction/${order}`, {
-    method: "GET",
-    headers: {
-      "Authorization": `Bearer ${apiToken}`,
-    },
-  });
+  try {
+    const response = await fetch(`${apiUrl}/transaction/${id}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${apiToken}`,
+      },
+    });
 
-  const responseData = await response.json();
-  console.log("[Payku] Status Response:", JSON.stringify(responseData));
+    const responseData = await response.json();
+    console.log("[Payku] Status Response:", JSON.stringify(responseData));
 
-  if (!response.ok) {
-    throw new Error(responseData.message || "Failed to get payment status");
+    if (!response.ok) {
+      console.warn(`[Payku] Status check failed with ${response.status}:`, responseData.message);
+      return { status: "pending", id };
+    }
+
+    return {
+      id: responseData.id,
+      order: responseData.order,
+      status: mapPaykuStatus(responseData.estado || responseData.status),
+      amount: responseData.monto,
+      currency: responseData.moneda || "CLP",
+      email: responseData.email,
+    };
+  } catch (err) {
+    console.error("[Payku] Status check error:", err);
+    return { status: "pending", id };
   }
-
-  return {
-    id: responseData.id,
-    order: responseData.order || order,
-    status: responseData.estado || responseData.status || "pending",
-    amount: responseData.monto,
-    currency: responseData.moneda || "CLP",
-    email: responseData.email,
-  };
 }
 
 export async function verifyPaykuWebhookSignature(
@@ -165,12 +207,12 @@ export function getPaykuStatusLabel(status: string): string {
 
 export async function processPaykuWebhook(
   payload: Record<string, unknown>,
-  onPaymentSuccess: (payment: PaykuPaymentStatus) => Promise<void>,
-  onPaymentFailed?: (payment: PaykuPaymentStatus) => Promise<void>
+  onPaymentSuccess: (payment: PaykuStatusData) => Promise<void>,
+  onPaymentFailed?: (payment: PaykuStatusData) => Promise<void>
 ): Promise<{ success: boolean; message: string }> {
   try {
     const evento = typeof payload.evento === "string" ? payload.evento : "";
-    const data = payload.data as PaykuPaymentStatus;
+    const data = payload.data as PaykuStatusData;
 
     switch (evento) {
       case "pago.aprobado":

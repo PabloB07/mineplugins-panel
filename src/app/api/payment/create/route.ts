@@ -296,6 +296,14 @@ export async function POST(request: NextRequest) {
         notifyUrl: `${baseUrl}/api/payment/payku/webhook`,
       });
 
+      // Save the gateway transaction ID for better status tracking
+      if (paykuResponse.id) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { flowOrderNumber: paykuResponse.id }
+        });
+      }
+
       return NextResponse.json({
         success: true,
         orderId: order.id,
