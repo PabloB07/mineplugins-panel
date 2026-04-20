@@ -50,6 +50,9 @@ export function PaykuButton({
         throw new Error(data.message || "Failed to create payment");
       }
 
+      console.log("[PaykuButton] paymentUrl:", data.paymentUrl);
+      console.log("[PaykuButton] full response:", data);
+
       // Redirect to Payku payment page
       window.location.href = data.paymentUrl;
 
