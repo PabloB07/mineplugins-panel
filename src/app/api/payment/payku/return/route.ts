@@ -16,12 +16,20 @@ export async function GET(request: NextRequest) {
       where: { orderNumber }
     });
 
+    console.log("[Payku Return] orderNumber:", orderNumber);
+    console.log("[Payku Return] order found:", order?.id);
+    console.log("[Payku Return] flowOrderNumber:", order?.flowOrderNumber);
+    console.log("[Payku Return] order status:", order?.status);
+
     // Use the stored transaction ID (flowOrderNumber) if available, 
     // otherwise fallback to the orderNumber
     const queryId = order?.flowOrderNumber || orderNumber;
     
+    console.log("[Payku Return] queryId:", queryId);
+    
     // Check status with Payku
     const paykuStatus = await getPaykuPaymentStatus(queryId);
+    console.log("[Payku Return] paykuStatus raw:", paykuStatus);
     
     const baseUrl = new URL("/", request.url).origin;
 
