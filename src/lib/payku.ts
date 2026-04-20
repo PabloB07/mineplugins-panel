@@ -103,6 +103,7 @@ export async function createPaykuPayment(
   console.log("[Payku] POST", finalUrl);
   console.log("[Payku] Payload:", JSON.stringify(payload));
   console.log("[Payku] Using apiToken:", apiToken ? `${apiToken.substring(0, 8)}...` : "MISSING");
+  console.log("[Payku] apiUrl:", apiUrl);
 
   const response = await fetch(finalUrl, {
     method: "POST",
@@ -133,6 +134,9 @@ export async function createPaykuPayment(
   const transactionId = responseData.id || responseData.token;
 
   console.log("[Payku Create] Full response object:", JSON.stringify(responseData, null, 2));
+  console.log("[Payku Create] responseData.url:", responseData.url);
+  console.log("[Payku Create] responseData.url_pago:", responseData.url_pago);
+  console.log("[Payku Create] responseData.paymentUrl:", responseData.paymentUrl);
 
   if (!paymentUrl || paymentUrl.trim() === "") {
     console.error("[Payku Create] ERROR: No payment URL in response. Full response:", responseData);
