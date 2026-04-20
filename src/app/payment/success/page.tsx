@@ -83,14 +83,9 @@ function PaymentSuccessContent() {
                 {t("payment.confirmingDesc")}
               </p>
            </div>
-           <div className="flex items-center justify-center gap-2">
-              <div className="flex gap-1">
-                {[0, 1, 2].map(i => (
-                  <div key={i} className={`w-1.5 h-1.5 rounded-full bg-amber-500 transition-all duration-300 ${retryCount % 3 === i ? 'scale-150 opacity-100' : 'scale-100 opacity-30'}`}></div>
-                ))}
-              </div>
+<div className="flex items-center justify-center gap-2">
               <span className="text-[10px] font-bold text-gray-700 uppercase tracking-[0.2em] ml-2">{t("payment.secureLink")}</span>
-           </div>
+            </div>
         </div>
       </div>
     );
