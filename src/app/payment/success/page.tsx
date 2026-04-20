@@ -107,8 +107,25 @@ function PaymentSuccessContent() {
 
   const handleManualComplete = async () => {
     setManuallyCompleting(true);
-    // Just refresh - backend will check status again
-    window.location.href = `/payment/success?orderNumber=${orderNumber}&t=${Date.now()}`;
+    try {
+      const res = await fetch("/api/payment/manual-confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        window.location.href = `/payment/success?orderNumber=${orderNumber}`;
+      } else {
+        alert(data.error || "Error completing payment");
+        setManuallyCompleting(false);
+      }
+    } catch (err) {
+      console.error("Manual complete error:", err);
+      alert("Error");
+      setManuallyCompleting(false);
+    }
   };
 
   if (!paymentVerified && orderData?.status !== "COMPLETED") {
