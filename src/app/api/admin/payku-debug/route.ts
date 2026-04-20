@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getGatewaySettings } from "@/lib/payment-gateway-settings";
-import { createPaykuPayment, getPaykuPaymentStatus } from "@/lib/payku";
+import { createPaykuPayment } from "@/lib/payku";
 
 export async function GET() {
   const settings = await getGatewaySettings();
