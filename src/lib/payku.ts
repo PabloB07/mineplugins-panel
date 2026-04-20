@@ -110,8 +110,15 @@ export async function createPaykuPayment(
     body: JSON.stringify(payload),
   });
 
-  const responseData = await response.json();
-  console.log("[Payku] Response:", JSON.stringify(responseData));
+  const responseText = await response.text();
+  console.log("[Payku] Response Text:", responseText);
+
+  let responseData;
+  try {
+    responseData = JSON.parse(responseText);
+  } catch (e) {
+    throw new Error(`Payku returned invalid JSON: ${responseText.slice(0, 100)}`);
+  }
 
   if (!response.ok) {
     const msg = responseData.message || responseData.message_error || "Unknown error";

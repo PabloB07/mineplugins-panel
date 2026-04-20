@@ -344,9 +344,10 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   } catch (error) {
-    console.error("Payment creation error:", error);
+    console.error("[CreatePayment] Unhandled error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Payment failed";
     return NextResponse.json(
-      { error: "PAYMENT_ERROR", message: error instanceof Error ? error.message : "Payment failed" },
+      { error: "PAYMENT_ERROR", message: errorMessage },
       { status: 500 }
     );
   }

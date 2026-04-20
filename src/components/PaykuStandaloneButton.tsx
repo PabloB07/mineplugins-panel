@@ -46,10 +46,16 @@ export function PaykuStandaloneButton({
         }),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`Server error: ${response.status}`);
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to create payment");
+        throw new Error(data.message || data.error || "Failed to create payment");
       }
 
       // Redirect to Payku payment URL
