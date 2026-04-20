@@ -7,34 +7,24 @@ export async function GET() {
 
   let testResult = null;
   
-  try {
-    const testPayment = await createPaykuPayment({
-      order: "TEST-" + Date.now(),
-      subject: "Test sandbox payment",
-      amount: 1000,
-      email: "test@test.com",
-      returnUrl: "https://mineplugins.vercel.app/payment/success",
-      notifyUrl: "https://mineplugins.vercel.app/api/payment/payku/webhook"
-    });
-    testResult = {
-      success: true,
-      paymentUrl: testPayment.paymentUrl,
-      id: testPayment.id,
-      status: testPayment.status
-    };
+  // First create a test transaction
+  const testPayment = await createPaykuPayment({
+    order: "TEST-" + Date.now(),
+    subject: "Test sandbox payment",
+    amount: 1000,
+    email: "test@test.com",
+    returnUrl: "https://mineplugins.vercel.app/payment/success",
+    notifyUrl: "https://mineplugins.vercel.app/api/payment/payku/webhook"
+  });
+  testResult = {
+    success: true,
+    paymentUrl: testPayment.paymentUrl,
+    id: testPayment.id,
+    status: testPayment.status
+  };
 
-    // Wait 2 seconds then check status
-    if (testPayment.id) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const statusCheck = await getPaykuPaymentStatus(testPayment.id);
-      testResult.statusCheck = statusCheck;
-    }
-  } catch (err) {
-    testResult = {
-      success: false,
-      error: err instanceof Error ? err.message : "Unknown error"
-    };
-  }
+  // Give user time to pay manually in Payku dashboard, then check again
+  // In sandbox, you need to approve payment in Payku dashboard
 
   return NextResponse.json({
     config: {
