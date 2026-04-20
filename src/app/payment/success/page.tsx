@@ -18,7 +18,6 @@ function PaymentSuccessContent() {
   const initialStatus = searchParams.get("status");
 
   const [checking, setChecking] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
   const [orderData, setOrderData] = useState<any>(null);
   const [paymentVerified, setPaymentVerified] = useState(false);
 
@@ -62,14 +61,9 @@ function PaymentSuccessContent() {
       }
     } catch (err) {
       console.error("Status check error:", err);
-      if (retryCount < 5) {
-        setRetryCount(prev => prev + 1);
-        setTimeout(checkStatus, 3000);
-      } else {
-        setChecking(false);
-      }
+      setChecking(false);
     }
-  }, [orderNumber, orderId, retryCount, router]);
+  }, [orderNumber, orderId, router]);
 
   useEffect(() => {
     if (sessionStatus === "loading") return;
@@ -109,8 +103,11 @@ function PaymentSuccessContent() {
   }
 
   // If not completed but we stopped checking
-  const handleRetry = () => {
-    // Force refresh by going to same URL
+  const [manuallyCompleting, setManuallyCompleting] = useState(false);
+
+  const handleManualComplete = async () => {
+    setManuallyCompleting(true);
+    // Just refresh - backend will check status again
     window.location.href = `/payment/success?orderNumber=${orderNumber}&t=${Date.now()}`;
   };
 
@@ -123,14 +120,15 @@ function PaymentSuccessContent() {
           </div>
           <h2 className="text-3xl font-black text-white tracking-tight">{t("payment.stillProcessing")}</h2>
           <p className="text-gray-400">
-            {t("payment.processingDesc")}
+            Did you complete payment in Webpay? Click below:
           </p>
           <button
-            onClick={handleRetry}
-            className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-amber-500 text-black font-bold rounded-2xl hover:bg-amber-400 transition-all shadow-xl"
+            onClick={handleManualComplete}
+            disabled={manuallyCompleting}
+            className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-green-500 text-black font-bold rounded-2xl hover:bg-green-400 transition-all shadow-xl disabled:opacity-50"
           >
             <MinecraftIcon sprite="emerald" scale={0.6} isSmall />
-            Verificar Pago Again
+            {manuallyCompleting ? "Completing..." : "I Completed Payment"}
           </button>
           <div className="pt-2">
             <button
