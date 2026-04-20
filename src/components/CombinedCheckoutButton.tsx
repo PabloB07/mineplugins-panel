@@ -55,10 +55,14 @@ export function CombinedCheckoutButton({
 
       const data = await response.json();
 
+      console.log("[CombinedCheckout] response:", data);
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to create payment");
       }
 
+      console.log("[CombinedCheckout] paymentUrl:", data.paymentUrl);
+      
       // Redirect to payment URL
       window.location.href = data.paymentUrl;
 
