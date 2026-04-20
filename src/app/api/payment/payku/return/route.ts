@@ -36,7 +36,10 @@ export async function GET(request: NextRequest) {
     console.log("[Payku Return] queryId:", queryId);
     
     const paykuStatus = await getPaykuPaymentStatus(queryId);
-    console.log("[Payku Return] paykuStatus raw:", paykuStatus);
+    console.log("[Payku Return] paykuStatus raw:", JSON.stringify(paykuStatus));
+    console.log("[Payku Return] paykuStatus.status:", paykuStatus.status);
+    console.log("[Payku Return] paykuStatus.amount:", paykuStatus.amount);
+    console.log("[Payku Return] paykuStatus.currency:", paykuStatus.currency);
     
     const baseUrl = new URL("/", request.url).origin;
     const status = mapPaykuStatus(paykuStatus.status);
