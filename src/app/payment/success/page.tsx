@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { MinecraftIcon } from "@/components/ui/MinecraftIcon";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -11,11 +10,9 @@ function PaymentSuccessContent() {
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status: sessionStatus } = useSession();
 
   const orderNumber = searchParams.get("orderNumber");
   const orderId = searchParams.get("orderId");
-  const initialStatus = searchParams.get("status");
 
   const [checking, setChecking] = useState(true);
   const [orderData, setOrderData] = useState<any>(null);
