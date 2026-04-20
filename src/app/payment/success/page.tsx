@@ -171,7 +171,7 @@ function PaymentSuccessContent() {
               {t("payment.successTitle")}
             </h1>
             <p className="text-gray-400 text-xl font-medium max-w-md mx-auto leading-relaxed">
-              {t("payment.orderConfirmed", { orderNumber: orderNumber || orderData?.orderNumber })}
+              {t("payment.orderConfirmed").replace("{orderNumber}", (orderNumber || orderData?.orderNumber || "").toString())}
             </p>
           </div>
 
