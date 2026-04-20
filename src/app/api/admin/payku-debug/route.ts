@@ -24,9 +24,11 @@ export async function GET() {
     };
 
     // Wait 2 seconds then check status
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const statusCheck = await getPaykuPaymentStatus(testPayment.id);
-    testResult.statusCheck = statusCheck;
+    if (testPayment.id) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const statusCheck = await getPaykuPaymentStatus(testPayment.id);
+      testResult.statusCheck = statusCheck;
+    }
   } catch (err) {
     testResult = {
       success: false,
