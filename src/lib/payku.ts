@@ -88,7 +88,7 @@ export async function createPaykuPayment(
     subject: data.subject,
     amount: data.amount,
     email: data.email,
-    currency: "CLP",
+    payment: 1, // Force Webpay (v1)
     ...(data.returnUrl && { urlreturn: data.returnUrl }),
     ...(data.notifyUrl && { urlnotify: data.notifyUrl }),
   };
@@ -108,7 +108,7 @@ export async function createPaykuPayment(
   });
 
   const responseText = await response.text();
-  console.log(`[Payku] Response (${response.status}):`, responseText);
+  console.log(`[Payku Create] Status (${response.status}):`, responseText);
 
   let responseData;
   try {
@@ -122,13 +122,19 @@ export async function createPaykuPayment(
     throw new Error(`Payku error (${response.status}): ${msg}`);
   }
 
+  // v1 docs say the redirect URL is in 'url'
   const paymentUrl = responseData.url || responseData.url_pago || responseData.paymentUrl;
+  const transactionId = responseData.id || responseData.token;
+
   if (!paymentUrl) {
+    console.error("[Payku Create] Response missing URL:", responseData);
     throw new Error("No payment URL in response");
   }
 
+  console.log(`[Payku Create] Success. ID: ${transactionId}, Redirect URL: ${paymentUrl}`);
+
   return {
-    id: responseData.id,
+    id: transactionId,
     order: responseData.order || data.order,
     paymentUrl: paymentUrl,
     url: paymentUrl,
