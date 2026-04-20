@@ -11,11 +11,6 @@ async function getPaykuClientConfig() {
   const settings = await getGatewaySettings();
   const apiUrl = settings.payku.apiUrl || getPaykuApiUrl(settings.payku.environment);
 
-  console.log("[Payku Config] Environment:", settings.payku.environment);
-  console.log("[Payku Config] API URL:", apiUrl);
-  console.log("[Payku Config] Has Token:", !!settings.payku.apiToken);
-  console.log("[Payku Config] Token:", settings.payku.apiToken?.substring(0, 8) + "...");
-
   return {
     apiToken: settings.payku.apiToken || "",
     apiUrl,
@@ -53,18 +48,6 @@ export function mapPaykuStatus(status: any): "success" | "pending" | "failed" | 
   if (status === undefined || status === null) return "pending";
   
   const s = String(status).toLowerCase().trim();
-  console.log(`[Payku Mapping] Original: "${status}", Cleaned: "${s}"`);
-  
-  // Payku status codes (estado):
-  // 1: Exitoso / Approved / Success
-  // 2: Pendiente / Pending
-  // 3: Rechazado / Rejected / Failed
-  // 4: Anulado / Cancelled
-  
-  // String variations often seen in Chilean gateways/Payku:
-  // v = Validado (Valid/Success)
-  // p = Pendiente (Pending)
-  // r = Rechazado (Rejected)
   
   const successStates = ["1", "success", "aprobado", "aprobada", "v", "approved", "validada", "validado"];
   const failedStates = ["3", "failed", "rechazado", "rechazada", "rejected", "r", "error"];
@@ -93,17 +76,13 @@ export async function createPaykuPayment(
     subject: data.subject,
     amount: data.amount,
     email: data.email,
-    medioPago: "1", // 1 = Webpay
+    medioPago: "1",
     ...(data.returnUrl && { urlreturn: data.returnUrl }),
     ...(data.notifyUrl && { urlnotify: data.notifyUrl }),
   };
+  
   const baseUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
   const finalUrl = `${baseUrl}transaction`;
-
-  console.log("[Payku] POST", finalUrl);
-  console.log("[Payku] Payload:", JSON.stringify(payload));
-  console.log("[Payku] Using apiToken:", apiToken ? `${apiToken.substring(0, 8)}...` : "MISSING");
-  console.log("[Payku] apiUrl:", apiUrl);
 
   const response = await fetch(finalUrl, {
     method: "POST",
@@ -115,7 +94,6 @@ export async function createPaykuPayment(
   });
 
   const responseText = await response.text();
-  console.log(`[Payku Create] Status (${response.status}):`, responseText);
 
   let responseData;
   try {
@@ -129,28 +107,16 @@ export async function createPaykuPayment(
     throw new Error(`Payku error (${response.status}): ${msg}`);
   }
 
-  // v1 docs say the redirect URL is in 'url'
-  const paymentUrl = responseData.url || responseData.url_pago || responseData.paymentUrl || responseData.url_pago || "";
+  const paymentUrl = responseData.url || responseData.url_pago || responseData.paymentUrl || "";
   const transactionId = responseData.id || responseData.token;
 
-  console.log("[Payku Create] Full response object:", JSON.stringify(responseData, null, 2));
-  console.log("[Payku Create] responseData.url:", responseData.url);
-  console.log("[Payku Create] responseData.url_pago:", responseData.url_pago);
-  console.log("[Payku Create] responseData.paymentUrl:", responseData.paymentUrl);
-
   if (!paymentUrl || paymentUrl.trim() === "") {
-    console.error("[Payku Create] ERROR: No payment URL in response. Full response:", responseData);
-    throw new Error(`Payku returned empty payment URL. Response: ${JSON.stringify(responseData)}`);
+    throw new Error(`Payku returned empty payment URL`);
   }
 
   if (!paymentUrl.startsWith("http")) {
-    console.error("[Payku Create] ERROR: Invalid payment URL format:", paymentUrl);
-    throw new Error(`Invalid payment URL format from Payku: "${paymentUrl}"`);
+    throw new Error(`Invalid payment URL from Payku: "${paymentUrl}"`);
   }
-
-  console.log("[Payku Create] SUCCESS - Payment URL:", paymentUrl);
-
-  console.log(`[Payku Create] Success. ID: ${transactionId}, Redirect URL: ${paymentUrl}`);
 
   return {
     id: transactionId,
@@ -166,8 +132,6 @@ export async function getPaykuPaymentStatus(
 ): Promise<PaykuStatusData> {
   const { apiToken, apiUrl } = await getPaykuClientConfig();
 
-  console.log(`[Payku] Checking status for ${id} at ${apiUrl}/transaction/${id}`);
-
   try {
     const response = await fetch(`${apiUrl}/transaction/${id}`, {
       method: "GET",
@@ -177,30 +141,20 @@ export async function getPaykuPaymentStatus(
     });
 
     const responseText = await response.text();
-    console.log(`[Payku Status Check] Raw Response (${response.status}):`, responseText);
 
     let responseData;
     try {
       responseData = JSON.parse(responseText);
     } catch (e) {
-      console.error("[Payku] Failed to parse status JSON:", responseText.slice(0, 500));
       return { status: "pending", id };
     }
 
     if (!response.ok) {
-      console.warn(`[Payku] Status check failed with ${response.status}:`, responseData.message);
       return { status: "pending", id };
     }
 
     const rawEstado = responseData.estado || responseData.status;
-    console.log(`[Payku Status] rawEstado: "${rawEstado}"`);
-    
-    // Log all response fields for debugging
-    console.log(`[Payku Status] Full response fields:`, Object.keys(responseData));
-    console.log(`[Payku Status] All fields:`, JSON.stringify(responseData));
-    
     const mappedStatus = mapPaykuStatus(rawEstado);
-    console.log(`[Payku Status] mappedStatus: "${mappedStatus}"`);
 
     return {
       id: responseData.id || id,
@@ -211,7 +165,6 @@ export async function getPaykuPaymentStatus(
       email: responseData.email,
     };
   } catch (err) {
-    console.error("[Payku] Status check error:", err);
     return { status: "pending", id };
   }
 }
@@ -229,11 +182,8 @@ export async function verifyPaykuWebhookSignature(
       .update(payload)
       .digest("hex");
 
-    console.log(`[Payku Webhook] Signature Check - Received: ${receivedSignature}, Expected: ${expected}`);
-
     return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(receivedSignature));
   } catch (error) {
-    console.error("[Payku Webhook] Signature validation error:", error);
     return false;
   }
 }

@@ -55,24 +55,14 @@ export function CombinedCheckoutButton({
 
       const data = await response.json();
 
-      console.log("[CombinedCheckout] response:", data);
-
       if (!response.ok) {
         throw new Error(data.message || "Failed to create payment");
       }
 
-      console.log("[CombinedCheckout] paymentUrl:", data.paymentUrl);
-      
-      // Verify we have a valid payment URL
       if (!data.paymentUrl) {
-        console.error("[CombinedCheckout] ERROR: No paymentUrl!");
         throw new Error("No payment URL received");
       }
       
-      console.log("[CombinedCheckout] Will redirect to:", data.paymentUrl);
-      alert("Redirecting to: " + data.paymentUrl);
-      
-      // Redirect to Payku/Webpay
       window.location.href = data.paymentUrl;
 
       onSuccess?.(data);
