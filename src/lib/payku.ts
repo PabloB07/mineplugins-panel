@@ -193,6 +193,11 @@ export async function getPaykuPaymentStatus(
 
     const rawEstado = responseData.estado || responseData.status;
     console.log(`[Payku Status] rawEstado: "${rawEstado}"`);
+    
+    // Log all response fields for debugging
+    console.log(`[Payku Status] Full response fields:`, Object.keys(responseData));
+    console.log(`[Payku Status] All fields:`, JSON.stringify(responseData));
+    
     const mappedStatus = mapPaykuStatus(rawEstado);
     console.log(`[Payku Status] mappedStatus: "${mappedStatus}"`);
 
