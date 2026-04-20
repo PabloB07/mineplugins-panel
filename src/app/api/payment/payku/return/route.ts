@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPaykuPaymentStatus, mapPaykuStatus } from "@/lib/payku";
+import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { generateSimpleLicenseKey } from "@/lib/license";
@@ -44,9 +45,15 @@ export async function GET(request: NextRequest) {
     // Use the robust status mapper
     const status = mapPaykuStatus(paykuStatus.status);
 
+    // Check if we're in sandbox mode
+    const settings = await getGatewaySettings();
+    const isSandbox = settings.payku.environment === "SANDBOX";
+
+    console.log("[Payku Return] Environment:", settings.payku.environment, "isSandbox:", isSandbox);
+
     // For sandbox/testing: treat "pending" as success if order is still pending
     // This allows testing without manually approving in Payku dashboard
-    if (status === "pending" && order?.status === OrderStatus.PENDING) {
+    if (isSandbox && status === "pending" && order?.status === OrderStatus.PENDING) {
       console.log("[Payku Return] Sandbox: auto-completing pending order");
       
       // Create license and complete order
