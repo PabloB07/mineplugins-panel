@@ -88,7 +88,6 @@ export async function createPaykuPayment(
     subject: data.subject,
     amount: data.amount,
     email: data.email,
-    payment: 1, // Force Webpay (v1)
     ...(data.returnUrl && { urlreturn: data.returnUrl }),
     ...(data.notifyUrl && { urlnotify: data.notifyUrl }),
   };
