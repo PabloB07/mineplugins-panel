@@ -42,7 +42,8 @@ export async function GET(request: NextRequest) {
           const paykuStatus = await getPaykuPaymentStatus(queryId);
           const status = paykuStatus.status; // Already mapped in getPaykuPaymentStatus
 
-          console.log(`[ConfirmCheck] Payku status for ${queryId}: ${status}`);
+          console.log(`[ConfirmCheck] Payku status raw:`, JSON.stringify(paykuStatus));
+          console.log(`[ConfirmCheck] Payku status for ${queryId}:`, status);
 
           if (status === "success") {
             console.log(`[ConfirmCheck] Payku reports SUCCESS. Completing order...`);
