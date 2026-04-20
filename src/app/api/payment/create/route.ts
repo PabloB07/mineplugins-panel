@@ -17,7 +17,7 @@ import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
-  paymentMethod?: "FLOW_CL" | "PAYKU" | "TEBEX" | "PAYPAL";
+  paymentMethod?: "PAYKU" | "TEBEX" | "PAYPAL";
   discountCode?: string;
   currency?: "CLP" | "USD" | "EUR" | "CAD";
 }

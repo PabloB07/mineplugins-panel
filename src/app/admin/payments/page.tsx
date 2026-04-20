@@ -153,6 +153,18 @@ export default function AdminPaymentsSettingsPage() {
     fetchSettings();
   }, [loadSettings, t]);
 
+  // Debug: fetch actual config from server
+  const testPaykuConfig = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/payku-debug");
+      const data = await res.json();
+      console.log("[Debug] Payku config:", data);
+      alert(`Environment: ${data.payku.environment}\nAPI URL: ${data.payku.apiUrl}\nToken: ${data.payku.apiTokenPrefix}`);
+    } catch (err) {
+      console.error("[Debug] Error:", err);
+    }
+  }, []);
+
   const prepareValueForSave = (value: string, initialValue: string): string | null | undefined => {
     if (value === initialValue) return undefined;
     if (value.trim().length === 0) return initialValue.trim().length > 0 ? null : undefined;
@@ -485,17 +497,24 @@ export default function AdminPaymentsSettingsPage() {
                     </div>
                   </div>
 
-                  <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10">
+<div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10">
                     <div className="flex items-center gap-4 text-gray-400">
                       <div className="flex-1">
                         <h4 className="font-bold text-white mb-1">{t("admin.devDocTitle")}</h4>
                         <p className="text-xs">{t("admin.devDocDesc")}</p>
                       </div>
                       <a href="https://payku.cl/dashboard" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-all">
-                         <MinecraftIcon sprite="paper" scale={0.8} />
+                           <MinecraftIcon sprite="paper" scale={0.8} />
                       </a>
                     </div>
                   </div>
+
+                  <button
+                    onClick={testPaykuConfig}
+                    className="mt-4 w-full py-2 px-4 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 rounded-xl text-amber-400 text-sm font-bold"
+                  >
+                    Test Config (debug)
+                  </button>
                 </div>
               )}
 

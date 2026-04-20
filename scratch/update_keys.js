@@ -7,8 +7,8 @@ async function main() {
   let settings = await prisma.paymentGatewayConfig.findFirst();
   
   const data = {
-    paykuApiToken: "tkpu9d1ed6dd1c54bf739c474c4e2d2f",
-    paykuSecretKey: "tkpiaffe06b6a3534f9e09c672671f6e",
+    paykuApiToken: "tkpu0ca029109c71eee0ff6e0971e6bd",
+    paykuSecretKey: "tkpic2c69ad1af833a15da39dbaa0ef2",
     paykuEnabled: true,
     paykuEnvironment: "SANDBOX",
     paykuConfigSource: "PANEL" // Correct enum value

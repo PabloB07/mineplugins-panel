@@ -9,11 +9,16 @@ function getPaykuApiUrl(environment: GatewayEnvironment): string {
 
 async function getPaykuClientConfig() {
   const settings = await getGatewaySettings();
+  const apiUrl = settings.payku.apiUrl || getPaykuApiUrl(settings.payku.environment);
+
+  console.log("[Payku Config] Environment:", settings.payku.environment);
+  console.log("[Payku Config] API URL:", apiUrl);
+  console.log("[Payku Config] Has Token:", !!settings.payku.apiToken);
+  console.log("[Payku Config] Token:", settings.payku.apiToken?.substring(0, 8) + "...");
 
   return {
     apiToken: settings.payku.apiToken || "",
-    // Prioritize the custom apiUrl if set in the panel
-    apiUrl: settings.payku.apiUrl || getPaykuApiUrl(settings.payku.environment),
+    apiUrl,
     secretKey: (settings.payku.secretKey || process.env.PAYKU_SECRET_KEY || "").trim(),
   };
 }
@@ -88,6 +93,7 @@ export async function createPaykuPayment(
     subject: data.subject,
     amount: data.amount,
     email: data.email,
+    medioPago: "1", // 1 = Webpay
     ...(data.returnUrl && { urlreturn: data.returnUrl }),
     ...(data.notifyUrl && { urlnotify: data.notifyUrl }),
   };
@@ -96,6 +102,7 @@ export async function createPaykuPayment(
 
   console.log("[Payku] POST", finalUrl);
   console.log("[Payku] Payload:", JSON.stringify(payload));
+  console.log("[Payku] Using apiToken:", apiToken ? `${apiToken.substring(0, 8)}...` : "MISSING");
 
   const response = await fetch(finalUrl, {
     method: "POST",
@@ -122,12 +129,24 @@ export async function createPaykuPayment(
   }
 
   // v1 docs say the redirect URL is in 'url'
-  const paymentUrl = responseData.url || responseData.url_pago || responseData.paymentUrl;
+  const paymentUrl = responseData.url || responseData.url_pago || responseData.paymentUrl || responseData.url_pago || "";
   const transactionId = responseData.id || responseData.token;
 
-  if (!paymentUrl) {
-    console.error("[Payku Create] Response missing URL:", responseData);
-    throw new Error("No payment URL in response");
+  console.log("[Payku Create] Full response object:", JSON.stringify(responseData, null, 2));
+
+  if (!paymentUrl || paymentUrl.trim() === "") {
+    console.error("[Payku Create] ERROR: No payment URL in response. Full response:", responseData);
+    throw new Error(`Payku returned empty payment URL. Response: ${JSON.stringify(responseData)}`);
+  }
+
+  if (!paymentUrl.startsWith("http")) {
+    console.error("[Payku Create] ERROR: Invalid payment URL format:", paymentUrl);
+    throw new Error(`Invalid payment URL format from Payku: "${paymentUrl}"`);
+  }
+
+  // Debug: Log if we got back our own returnUrl as paymentUrl (common sandbox issue)
+  if (paymentUrl.includes(data.returnUrl || '')) {
+    console.warn("[Payku Create] WARNING: Got same URL as returnUrl. This may indicate sandbox/keys issue.");
   }
 
   console.log(`[Payku Create] Success. ID: ${transactionId}, Redirect URL: ${paymentUrl}`);
