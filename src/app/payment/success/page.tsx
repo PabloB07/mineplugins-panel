@@ -57,7 +57,7 @@ function PaymentSuccessContent() {
       console.error("Status check error:", err);
       setChecking(false);
     }
-  }, [orderNumber, orderId, router]);
+  };
 
   useEffect(() => {
     checkStatus();
