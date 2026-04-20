@@ -302,6 +302,7 @@ model AdminActivityLog {
 
 model PaymentGatewayConfig {
   id                 String              @id
+  paykuPrivateToken  String? 
   paykuApiToken      String?
   paykuSecretKey     String?
   paykuEnvironment   GatewayEnvironment  @default(SANDBOX)
