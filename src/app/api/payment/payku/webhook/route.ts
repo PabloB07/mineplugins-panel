@@ -18,6 +18,9 @@ export async function POST(request: NextRequest) {
     const rawBody = await request.text();
     const signature = request.headers.get("x-payku-signature");
 
+    console.log("[Payku Webhook] Received webhook, signature:", signature ? "yes" : "no");
+    console.log("[Payku Webhook] Body:", rawBody);
+
     if (!signature) {
       return NextResponse.json({ error: "Missing signature" }, { status: 400 });
     }
