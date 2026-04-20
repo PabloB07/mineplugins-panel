@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPaykuPaymentStatus, mapPaykuStatus } from "@/lib/payku";
-import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { generateSimpleLicenseKey } from "@/lib/license";
@@ -40,38 +39,17 @@ export async function GET(request: NextRequest) {
     const paykuStatus = await getPaykuPaymentStatus(queryId);
     console.log("[Payku Return] paykuStatus raw:", JSON.stringify(paykuStatus));
     console.log("[Payku Return] Raw API response - checking...");
-    
-    // If pending in sandbox, wait 2s and retry once
-    if (paykuStatus.status === "pending") {
-      console.log("[Payku Return] First check was pending, waiting and retrying...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const retryStatus = await getPaykuPaymentStatus(queryId);
-      console.log("[Payku Return] Retry status:", JSON.stringify(retryStatus));
-      if (retryStatus.status !== "pending") {
-        console.log("[Payku Return] Retry succeeded, using new status");
-        paykuStatus.status = retryStatus.status;
-      }
-    }
     console.log("[Payku Return] paykuStatus.status:", paykuStatus.status);
     console.log("[Payku Return] paykuStatus.amount:", paykuStatus.amount);
     console.log("[Payku Return] paykuStatus.currency:", paykuStatus.currency);
     
-    // Check if sandbox mode
-    const settings = await getGatewaySettings();
-    const isSandbox = settings.payku.environment === "SANDBOX";
-    console.log("[Payku Return] Sandbox mode:", isSandbox);
-    
     const baseUrl = new URL("/", request.url).origin;
-    let status = mapPaykuStatus(paykuStatus.status);
+    const status = mapPaykuStatus(paykuStatus.status);
 
     console.log("[Payku Return] Mapped status:", status);
 
-    // In sandbox: if user returned from Payku (passed through checkout), assume success
-    // This avoids needing manual approval in Payku dashboard
-    if (isSandbox && status !== "success" && order.status === OrderStatus.PENDING) {
-      console.log("[Payku Return] Sandbox: Auto-completing order since user returned from payment");
-      status = "success";
-    }
+    // Don't auto-complete - wait for real status from Payku
+    // User must complete payment in Payku dashboard or webhook
 
     if (status === "success") {
       // Complete order with license
