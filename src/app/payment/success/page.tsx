@@ -53,14 +53,8 @@ function PaymentSuccessContent() {
         setPaymentVerified(true);
         setChecking(false);
       } else if (data.order.status === "PROCESSING" || data.order.status === "PENDING") {
-        // Wait and poll
-        if (retryCount < 15) { // Poll for up to ~45 seconds
-          setRetryCount(prev => prev + 1);
-          setTimeout(checkStatus, 3000);
-        } else {
-          setChecking(false);
-          // We leave it as "pending" in the UI
-        }
+        // Don't auto-poll - user must complete manually in Payku dashboard
+        setChecking(false);
       } else if (data.order.status === "FAILED") {
         router.replace(`/payment/failed?orderNumber=${orderNumber || data.order.orderNumber}&reason=rejected`);
       } else {
