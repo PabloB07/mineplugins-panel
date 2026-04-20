@@ -298,10 +298,15 @@ export async function POST(request: NextRequest) {
 
       // Save the gateway transaction ID for better status tracking
       if (paykuResponse.id) {
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { flowOrderNumber: paykuResponse.id }
-        });
+        try {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { flowOrderNumber: paykuResponse.id }
+          });
+        } catch (dbError) {
+          console.error("[CreateOrder] Failed to update flowOrderNumber:", dbError);
+          // We don't throw here to avoid preventing the user from paying
+        }
       }
 
       return NextResponse.json({

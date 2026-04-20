@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import * as crypto from "crypto";
 import { getGatewaySettings, type GatewayEnvironment } from "@/lib/payment-gateway-settings";
 
 function getPaykuApiUrl(environment: GatewayEnvironment): string {
