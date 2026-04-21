@@ -93,19 +93,31 @@ const minecraftIconMap: Record<IconName, string> = {
   Wallet: "icon-minecraft-diamond-block",
 };
 
-export function useIcon(name: IconName): React.ComponentType<{ className?: string }> {
-  const IconComponent = ({ className = "w-4 h-4" }: { className?: string }) => {
-    const useLargeSprite = /\b(?:w|h)-(6|7|8|9|10|11|12)\b/.test(className);
-    const spriteBaseClass = useLargeSprite ? "icon-minecraft" : "icon-minecraft-sm";
-    const minecraftClass = minecraftIconMap[name];
-    const cleanedClassName = className.replace(/\b(?:w|h)-\d+\b/g, "").trim();
+type IconComponentProps = { className?: string };
 
-    return (
-      <span
-        aria-hidden="true"
-        className={`${spriteBaseClass} ${minecraftClass} inline-block shrink-0 ${cleanedClassName}`.trim()}
-      />
-    );
-  };
-  return IconComponent;
+const iconComponents: Record<IconName, React.FC<IconComponentProps>> = (() => {
+  const icons: Partial<Record<IconName, React.FC<IconComponentProps>>> = {};
+  
+  for (const [name, minecraftClass] of Object.entries(minecraftIconMap)) {
+    const iconName = name as IconName;
+    const IconComp: React.FC<IconComponentProps> = ({ className = "w-4 h-4" }) => {
+      const useLargeSprite = /\b(?:w|h)-(6|7|8|9|10|11|12)\b/.test(className);
+      const spriteBaseClass = useLargeSprite ? "icon-minecraft" : "icon-minecraft-sm";
+      const cleanedClassName = className.replace(/\b(?:w|h)-\d+\b/g, "").trim();
+      
+      return (
+        <span
+          aria-hidden="true"
+          className={`${spriteBaseClass} ${minecraftClass} inline-block shrink-0 ${cleanedClassName}`.trim()}
+        />
+      );
+    };
+    icons[iconName] = IconComp;
+  }
+  
+  return icons as Record<IconName, React.FC<IconComponentProps>>;
+})();
+
+export function useIcon(name: IconName): React.FC<IconComponentProps> {
+  return iconComponents[name] || iconComponents.Package;
 }

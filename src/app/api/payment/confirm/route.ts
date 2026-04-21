@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus, PaymentMethod } from "@prisma/client";
 import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
-import { getPaykuPaymentStatus, mapPaykuStatus } from "@/lib/payku";
+import { getPaykuPaymentStatus } from "@/lib/payku";
 
 export async function GET(request: NextRequest) {
   try {

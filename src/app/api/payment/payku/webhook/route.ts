@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  verifyPaykuWebhookSignature,
   processPaykuWebhook,
   PaykuStatusData,
 } from "@/lib/payku";
@@ -16,18 +15,9 @@ import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
-    const signature = request.headers.get("x-payku-signature");
 
-    console.log("[Payku Webhook] Received webhook, signature:", signature ? "yes" : "no");
+    console.log("[Payku Webhook] Received webhook");
     console.log("[Payku Webhook] Body:", rawBody);
-
-    if (!signature) {
-      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
-    }
-
-    if (!(await verifyPaykuWebhookSignature(rawBody, signature))) {
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-    }
 
     let body: Record<string, unknown>;
     try {

@@ -57,6 +57,7 @@ export default function AdminProductsPage() {
   const Edit = useIcon("Edit");
   const Loader2 = useIcon("Loader2");
   const ShoppingCart = useIcon("ShoppingCart");
+  const Loader = () => <Loader2 className="w-4 h-4 animate-spin" />;
   
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);

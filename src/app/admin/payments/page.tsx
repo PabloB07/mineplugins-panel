@@ -159,7 +159,7 @@ export default function AdminPaymentsSettingsPage() {
       const res = await fetch("/api/admin/payku-debug");
       const data = await res.json();
       console.log("[Debug] Payku config:", data);
-      alert(`Environment: ${data.payku.environment}\nAPI URL: ${data.payku.apiUrl}\nToken: ${data.payku.apiTokenPrefix}`);
+      alert(`Environment: ${data.config.environment}\nAPI URL: ${data.config.apiUrl}\nToken: ${data.config.apiTokenPrefix}`);
     } catch (err) {
       console.error("[Debug] Error:", err);
     }

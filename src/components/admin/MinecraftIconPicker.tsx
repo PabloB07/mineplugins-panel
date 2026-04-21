@@ -124,7 +124,7 @@ export default function MinecraftIconPicker({
               </div>
               {icons.length === 0 && (
                 <p className="text-center text-gray-500 py-8">
-                  No icons found matching "{search}"
+                  No icons found matching &quot;{search}&quot;
                 </p>
               )}
             </div>

@@ -492,7 +492,7 @@ export default function AdminLicensesPage() {
                 </div>
               </div>
               <div className="text-sm text-red-100/80">
-                Type "REVOKE" to confirm:
+                Type &quot;REVOKE&quot; to confirm:
               </div>
               <input
                 value={revokeConfirmText}

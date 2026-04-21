@@ -3,25 +3,41 @@ import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 import { createPaykuPayment } from "@/lib/payku";
 
 export async function GET() {
-  const settings = await getGatewaySettings();
+  let settings;
+  try {
+    settings = await getGatewaySettings();
+  } catch (err) {
+    console.error("[payku-debug] Failed to get gateway settings:", err);
+    return NextResponse.json(
+      { error: "Failed to load gateway settings", details: String(err) },
+      { status: 500 }
+    );
+  }
 
   let testResult = null;
   
-  // First create a test transaction
-  const testPayment = await createPaykuPayment({
-    order: "TEST-" + Date.now(),
-    subject: "Test sandbox payment",
-    amount: 1000,
-    email: "test@test.com",
-    returnUrl: "https://mineplugins.vercel.app/payment/success",
-    notifyUrl: "https://mineplugins.vercel.app/api/payment/payku/webhook"
-  });
-  testResult = {
-    success: true,
-    paymentUrl: testPayment.paymentUrl,
-    id: testPayment.id,
-    status: testPayment.status
-  };
+  try {
+    const testPayment = await createPaykuPayment({
+      order: "TEST-" + Date.now(),
+      subject: "Test sandbox payment",
+      amount: 1000,
+      email: "test@test.com",
+      returnUrl: "https://mineplugins.vercel.app/payment/success",
+      notifyUrl: "https://mineplugins.vercel.app/api/payment/payku/webhook"
+    });
+    testResult = {
+      success: true,
+      paymentUrl: testPayment.paymentUrl,
+      id: testPayment.id,
+      status: testPayment.status
+    };
+  } catch (err) {
+    console.error("[payku-debug] Failed to create test payment:", err);
+    testResult = {
+      success: false,
+      error: String(err)
+    };
+  }
 
   // Give user time to pay manually in Payku dashboard, then check again
   // In sandbox, you need to approve payment in Payku dashboard
