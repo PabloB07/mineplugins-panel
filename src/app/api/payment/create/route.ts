@@ -248,7 +248,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const baseUrl = process.env.NEXTAUTH_URL || "https://mineplugins.vercel.app";
+    const host = request.headers.get("host");
+    const protocol = host?.includes("localhost") ? "http" : "https";
+    const baseUrl = process.env.NEXTAUTH_URL || `${protocol}://${host}`;
 
     if (paymentMethodId === "TEBEX") {
       const tebexResponse = await createTebexPayment({
