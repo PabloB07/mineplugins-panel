@@ -178,7 +178,7 @@ export async function createPaykuPayment(
     throw new Error(`Payku error (${response.status}): ${msg}`);
   }
 
-  const paymentUrl = extractPaykuPaymentUrl(responseData);
+  const paymentUrl = extractPaykuPaymentUrl(responseData, data);
   const redirectMethod = inferPaykuRedirectMethod(responseData);
   const formFields = extractPaykuFormFields(responseData);
   const transactionId =
@@ -208,23 +208,72 @@ export async function createPaykuPayment(
   };
 }
 
-function extractPaykuPaymentUrl(responseData: Record<string, unknown>): string | undefined {
+function extractPaykuPaymentUrl(
+  responseData: Record<string, unknown>,
+  requestData?: PaykuPaymentCreate
+): string | undefined {
   const candidates = [
-    responseData.url,
-    responseData.url_pago,
     responseData.paymentUrl,
     responseData.payment_url,
     responseData.redirect_url,
     responseData.redirectUrl,
+    responseData.url_pago,
+    responseData.url,
   ];
 
-  for (const candidate of candidates) {
-    if (typeof candidate === "string" && candidate.trim().length > 0) {
-      return candidate.trim();
+  const callbackUrls = new Set(
+    [requestData?.returnUrl, requestData?.notifyUrl]
+      .filter((value): value is string => typeof value === "string")
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+
+  const normalizedCandidates = candidates
+    .filter((candidate): candidate is string => typeof candidate === "string")
+    .map((candidate) => candidate.trim())
+    .filter(Boolean);
+
+  const externalCandidate = normalizedCandidates.find((candidate) =>
+    isLikelyPaykuCheckoutUrl(candidate, callbackUrls)
+  );
+
+  if (externalCandidate) {
+    return externalCandidate;
+  }
+
+  for (const candidate of normalizedCandidates) {
+    if (!callbackUrls.has(candidate)) {
+      return candidate;
     }
   }
 
   return undefined;
+}
+
+function isLikelyPaykuCheckoutUrl(
+  candidate: string,
+  callbackUrls: Set<string>
+): boolean {
+  if (callbackUrls.has(candidate)) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(candidate);
+    const host = parsed.hostname.toLowerCase();
+
+    if (host.includes("payku")) {
+      return true;
+    }
+
+    if (host.includes("transbank") || host.includes("webpay")) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 function inferPaykuRedirectMethod(
