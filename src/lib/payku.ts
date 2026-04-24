@@ -289,26 +289,36 @@ export async function parsePaykuCallbackRequest(
   request: Request
 ): Promise<PaykuCallbackPayload> {
   const contentType = request.headers.get("content-type") || "";
+  const url = new URL(request.url);
+  const searchParams = Object.fromEntries(url.searchParams.entries());
 
-  let raw: Record<string, unknown> = {};
+  let raw: Record<string, unknown> = { ...searchParams };
 
-  if (contentType.includes("application/json")) {
-    raw = (await request.json()) as Record<string, unknown>;
-  } else if (
-    contentType.includes("application/x-www-form-urlencoded") ||
-    contentType.includes("multipart/form-data")
-  ) {
-    const formData = await request.formData();
-    raw = Object.fromEntries(formData.entries());
-  } else {
-    const text = await request.text();
-    if (text.trim()) {
-      try {
-        raw = JSON.parse(text) as Record<string, unknown>;
-      } catch {
-        raw = Object.fromEntries(new URLSearchParams(text).entries());
+  try {
+    if (contentType.includes("application/json")) {
+      const json = (await request.json()) as Record<string, unknown>;
+      raw = { ...raw, ...json };
+    } else if (
+      contentType.includes("application/x-www-form-urlencoded") ||
+      contentType.includes("multipart/form-data")
+    ) {
+      const formData = await request.formData();
+      const formEntries = Object.fromEntries(formData.entries());
+      raw = { ...raw, ...formEntries };
+    } else {
+      const text = await request.text();
+      if (text.trim()) {
+        try {
+          const json = JSON.parse(text) as Record<string, unknown>;
+          raw = { ...raw, ...json };
+        } catch {
+          const textParams = Object.fromEntries(new URLSearchParams(text).entries());
+          raw = { ...raw, ...textParams };
+        }
       }
     }
+  } catch (e) {
+    console.error("[Payku Parse] Error parsing body:", e);
   }
 
   return normalizePaykuCallbackPayload(raw);

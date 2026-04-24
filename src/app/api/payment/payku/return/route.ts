@@ -15,21 +15,29 @@ export async function POST(request: NextRequest) {
 async function handlePaykuReturn(request: NextRequest) {
   try {
     const payload = await parsePaykuCallbackRequest(request);
-    const orderNumber =
-      payload.orderId ||
-      request.nextUrl.searchParams.get("order") ||
-      request.nextUrl.searchParams.get("order_id");
+    let orderNumber = payload.orderId;
 
-    if (!orderNumber) {
-      return NextResponse.redirect(new URL("/dashboard?error=missing_order", request.url));
+    let order = null;
+    if (orderNumber) {
+      order = await prisma.order.findUnique({
+        where: { orderNumber },
+        include: { items: { include: { product: true } } },
+      });
     }
 
-    const order = await prisma.order.findUnique({
-      where: { orderNumber },
-      include: { items: { include: { product: true } } },
-    });
+    // Fallback: Try finding by transaction ID if orderNumber is missing or not found
+    if (!order && payload.transactionId) {
+      order = await prisma.order.findFirst({
+        where: { flowOrderNumber: payload.transactionId },
+        include: { items: { include: { product: true } } },
+      });
+      if (order) {
+        orderNumber = order.orderNumber;
+      }
+    }
 
     if (!order) {
+      console.error("[Payku Return] Order not found for payload:", payload);
       return NextResponse.redirect(new URL("/dashboard?error=order_not_found", request.url));
     }
 
