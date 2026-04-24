@@ -53,7 +53,6 @@ interface AppliedDiscount {
 export function CheckoutContent({ product }: CheckoutClientProps) {
   const { t, formatPrice, formatPriceValue, currency } = useTranslation();
   const [enabledMethods, setEnabledMethods] = useState<Array<{id: PaymentMethodId; enabled: boolean}>>([
-    { id: "PAYKU", enabled: true },
     { id: "TEBEX", enabled: true },
     { id: "PAYPAL", enabled: true },
   ]);
@@ -62,7 +61,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
     enabledMethods.some(em => em.id === m.id && em.enabled)
   );
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(
-    availableMethods.length > 0 ? availableMethods[0].id : "PAYKU"
+    availableMethods.length > 0 ? availableMethods[0].id : "PAYPAL"
   );
   const [discountCodeInput, setDiscountCodeInput] = useState("");
   const [discountError, setDiscountError] = useState<string | null>(null);
@@ -254,7 +253,7 @@ export function CheckoutContent({ product }: CheckoutClientProps) {
                 <div className="text-xs text-gray-500">{t("checkout.fastDiscordSupport")}</div>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#1a1a1a] border border-[#222] hover:border-orange-500/30 hover:bg-[#1f1f1f] transition-all duration-300">
+            <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#1a1a1a] border border-[#222] hover:orange-500/30 hover:bg-[#1f1f1f] transition-all duration-300">
               <div className="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
                 <span className="icon-minecraft-sm icon-minecraft-paper"></span>
               </div>
