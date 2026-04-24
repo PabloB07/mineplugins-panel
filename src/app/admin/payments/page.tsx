@@ -15,11 +15,8 @@ interface PaymentSettingsResponse {
     enabled: boolean;
     source: ConfigSource;
     apiToken: string;
-    secretKey: string;
     environment: EnvMode;
-    apiUrl: string;
     hasApiToken: boolean;
-    hasSecretKey: boolean;
   };
   tebex: {
     enabled: boolean;
@@ -42,8 +39,6 @@ interface PaymentSettingsResponse {
 
 interface PaymentSettingsSnapshot {
   paykuApiToken: string;
-  paykuSecretKey: string;
-  paykuApiUrl: string;
   tebexStoreId: string;
   tebexSecretKey: string;
   paypalClientId: string;
@@ -54,8 +49,6 @@ interface PaymentSettingsSnapshot {
 
 const EMPTY_SNAPSHOT: PaymentSettingsSnapshot = {
   paykuApiToken: "",
-  paykuSecretKey: "",
-  paykuApiUrl: "",
   tebexStoreId: "",
   tebexSecretKey: "",
   paypalClientId: "",
@@ -78,8 +71,6 @@ export default function AdminPaymentsSettingsPage() {
   const [paykuSource, setPayKuSource] = useState<ConfigSource>("ENV");
   const [paykuEnvironment, setPayKuEnvironment] = useState<EnvMode>("SANDBOX");
   const [paykuApiToken, setPayKuApiToken] = useState("");
-  const [paykuSecretKey, setPayKuSecretKey] = useState("");
-  const [paykuApiUrl, setPayKuApiUrl] = useState("");
 
   const [tebexEnabled, setTebexEnabled] = useState(true);
   const [tebexEnvironment, setTebexEnvironment] = useState<EnvMode>("PRODUCTION");
@@ -99,8 +90,6 @@ export default function AdminPaymentsSettingsPage() {
     setPayKuSource(data.payku.source);
     setPayKuEnvironment(data.payku.environment);
     setPayKuApiToken(data.payku.apiToken || "");
-    setPayKuSecretKey(data.payku.secretKey || "");
-    setPayKuApiUrl(data.payku.apiUrl || "");
     
     setTebexEnabled(data.tebex.enabled);
     setTebexEnvironment(data.tebex.environment);
@@ -117,8 +106,6 @@ export default function AdminPaymentsSettingsPage() {
     
     setInitialValues({
       paykuApiToken: data.payku.apiToken || "",
-      paykuSecretKey: data.payku.secretKey || "",
-      paykuApiUrl: data.payku.apiUrl || "",
       tebexStoreId: data.tebex.storeId || "",
       tebexSecretKey: data.tebex.secretKey || "",
       paypalClientId: data.paypal.clientId || "",
@@ -153,18 +140,6 @@ export default function AdminPaymentsSettingsPage() {
     fetchSettings();
   }, [loadSettings, t]);
 
-  // Debug: fetch actual config from server
-  const testPaykuConfig = useCallback(async () => {
-    try {
-      const res = await fetch("/api/admin/payku-debug");
-      const data = await res.json();
-      console.log("[Debug] Payku config:", data);
-      alert(`Environment: ${data.config.environment}\nAPI URL: ${data.config.apiUrl}\nToken: ${data.config.apiTokenPrefix}`);
-    } catch (err) {
-      console.error("[Debug] Error:", err);
-    }
-  }, []);
-
   const prepareValueForSave = (value: string, initialValue: string): string | null | undefined => {
     if (value === initialValue) return undefined;
     if (value.trim().length === 0) return initialValue.trim().length > 0 ? null : undefined;
@@ -184,9 +159,7 @@ export default function AdminPaymentsSettingsPage() {
             enabled: paykuEnabled,
             source: paykuSource,
             apiToken: prepareValueForSave(paykuApiToken, initialValues.paykuApiToken),
-            secretKey: prepareValueForSave(paykuSecretKey, initialValues.paykuSecretKey),
             environment: paykuEnvironment,
-            apiUrl: prepareValueForSave(paykuApiUrl, initialValues.paykuApiUrl),
           },
           tebex: {
             enabled: tebexEnabled,
@@ -448,50 +421,17 @@ export default function AdminPaymentsSettingsPage() {
               {/* Payku Content */}
               {activeTab === "payku" && (
                 <div className={`space-y-6 transition-all duration-500 ${paykuSource === 'ENV' ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-300 px-1">{t("admin.apiToken")}</label>
-                      <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                           <MinecraftIcon sprite="writable-book" scale={0.6} isSmall className="opacity-50 group-focus-within:opacity-100 transition-opacity" />
-                        </div>
-                        <input
-                          type="password"
-                          value={paykuApiToken}
-                          onChange={(e) => setPayKuApiToken(e.target.value)}
-                          placeholder="pk_live_..."
-                          className="w-full bg-black/50 border border-white/5 rounded-2xl pl-11 pr-4 py-3.5 text-white focus:outline-none focus:border-amber-500/50 transition-all placeholder:text-gray-700"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-300 px-1">{t("admin.secretKey")}</label>
-                      <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                           <MinecraftIcon sprite="shield" scale={0.6} isSmall className="opacity-50 group-focus-within:opacity-100 transition-opacity" />
-                        </div>
-                        <input
-                          type="password"
-                          value={paykuSecretKey}
-                          onChange={(e) => setPayKuSecretKey(e.target.value)}
-                          placeholder="••••••••••••••••"
-                          className="w-full bg-black/50 border border-white/5 rounded-2xl pl-11 pr-4 py-3.5 text-white focus:outline-none focus:border-amber-500/50 transition-all placeholder:text-gray-700"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-300 px-1">{t("admin.apiUrl")}</label>
+                    <label className="text-sm font-bold text-gray-300 px-1">{t("admin.apiToken")}</label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <MinecraftIcon sprite="filled-map" scale={0.6} isSmall className="opacity-50 group-focus-within:opacity-100 transition-opacity" />
+                        <MinecraftIcon sprite="writable-book" scale={0.6} isSmall className="opacity-50 group-focus-within:opacity-100 transition-opacity" />
                       </div>
                       <input
-                        type="text"
-                        value={paykuApiUrl}
-                        onChange={(e) => setPayKuApiUrl(e.target.value)}
-                        placeholder="https://api.payku.cl"
+                        type="password"
+                        value={paykuApiToken}
+                        onChange={(e) => setPayKuApiToken(e.target.value)}
+                        placeholder="pk_live_..."
                         className="w-full bg-black/50 border border-white/5 rounded-2xl pl-11 pr-4 py-3.5 text-white focus:outline-none focus:border-amber-500/50 transition-all placeholder:text-gray-700"
                       />
                     </div>
@@ -509,12 +449,6 @@ export default function AdminPaymentsSettingsPage() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={testPaykuConfig}
-                    className="mt-4 w-full py-2 px-4 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 rounded-xl text-amber-400 text-sm font-bold"
-                  >
-                    Test Config (debug)
-                  </button>
                 </div>
               )}
 

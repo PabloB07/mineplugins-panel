@@ -34,11 +34,8 @@ export interface GatewaySettingsResolved {
   payku: {
     enabled: boolean;
     source: GatewayConfigSource;
-    apiToken?: string;      // public token  → create transactions
-    privateToken?: string;  // private token → query/verify transactions
-    secretKey?: string;
+    apiToken?: string;
     environment: GatewayEnvironment;
-    apiUrl?: string;
   };
   paypal: {
     enabled: boolean;
@@ -60,7 +57,7 @@ export interface GatewaySettingsResolved {
 interface PaymentGatewayConfigRecord {
   paykuEnabled: boolean;
   paykuApiToken: string | null;
-  paykuPrivateToken: string | null; // ← new column (add to Prisma schema + migration)
+  paykuPrivateToken: string | null;
   paykuSecretKey: string | null;
   paykuConfigSource: GatewayConfigSource;
   paykuEnvironment: GatewayEnvironment;
@@ -108,32 +105,19 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
   const paykuConfig = {
     enabled: dbSettings?.paykuEnabled ?? true,
     source: paykuSource,
-    // Public token — used to CREATE transactions
     apiToken:
       paykuSource === "PANEL"
         ? toOptional(dbSettings?.paykuApiToken)
         : toOptional(process.env.PAYKU_PUBLIC_TOKEN ?? process.env.PAYKU_API_TOKEN),
-    // Private token — used to QUERY / VERIFY transactions
-    privateToken:
-      paykuSource === "PANEL"
-        ? toOptional(dbSettings?.paykuPrivateToken)
-        : toOptional(process.env.PAYKU_PRIVATE_TOKEN),
-    secretKey:
-      paykuSource === "PANEL"
-        ? toOptional(dbSettings?.paykuSecretKey)
-        : toOptional(process.env.PAYKU_SECRET_KEY),
     environment:
       paykuSource === "PANEL"
         ? dbSettings?.paykuEnvironment ?? "SANDBOX"
         : paykuEnvFromProcess,
-    apiUrl: dbSettings?.paykuApiUrl || toOptional(process.env.PAYKU_API_URL),
   };
 
   console.log("[GatewaySettings] Payku config source:", paykuSource);
   console.log("[GatewaySettings] Payku environment:", paykuConfig.environment);
-  console.log("[GatewaySettings] Payku apiUrl:", paykuConfig.apiUrl);
   console.log("[GatewaySettings] Payku publicToken set:", !!paykuConfig.apiToken);
-  console.log("[GatewaySettings] Payku privateToken set:", !!paykuConfig.privateToken);
 
   return {
     payku: paykuConfig,
@@ -176,10 +160,7 @@ export async function upsertGatewaySettings(input: {
   paykuEnabled?: boolean;
   paykuConfigSource?: GatewayConfigSource;
   paykuApiToken?: string | null;
-  paykuPrivateToken?: string | null; // ← new field
-  paykuSecretKey?: string | null;
   paykuEnvironment?: GatewayEnvironment;
-  paykuApiUrl?: string | null;
   tebexEnabled?: boolean;
   tebexStoreId?: string | null;
   tebexSecretKey?: string | null;
@@ -206,10 +187,10 @@ export async function upsertGatewaySettings(input: {
     paykuEnabled: input.paykuEnabled ?? existing?.paykuEnabled ?? true,
     paykuConfigSource: input.paykuConfigSource ?? existing?.paykuConfigSource ?? "ENV",
     paykuApiToken: resolveOptionalField(input.paykuApiToken, existing?.paykuApiToken),
-    paykuPrivateToken: resolveOptionalField(input.paykuPrivateToken, existing?.paykuPrivateToken), // ← new
-    paykuSecretKey: resolveOptionalField(input.paykuSecretKey, existing?.paykuSecretKey),
     paykuEnvironment: input.paykuEnvironment ?? existing?.paykuEnvironment ?? "SANDBOX",
-    paykuApiUrl: resolveOptionalField(input.paykuApiUrl, existing?.paykuApiUrl),
+    paykuPrivateToken: existing?.paykuPrivateToken ?? null,
+    paykuSecretKey: existing?.paykuSecretKey ?? null,
+    paykuApiUrl: existing?.paykuApiUrl ?? null,
     tebexEnabled: input.tebexEnabled ?? existing?.tebexEnabled ?? true,
     tebexStoreId: resolveOptionalField(input.tebexStoreId, existing?.tebexStoreId),
     tebexSecretKey: resolveOptionalField(input.tebexSecretKey, existing?.tebexSecretKey),

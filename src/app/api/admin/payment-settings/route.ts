@@ -39,11 +39,8 @@ export async function GET() {
         enabled: settings.payku.enabled,
         source: settings.payku.source,
         apiToken: maskSecret(settings.payku.apiToken),
-        secretKey: maskSecret(settings.payku.secretKey),
         hasApiToken: !!settings.payku.apiToken,
-        hasSecretKey: !!settings.payku.secretKey,
         environment: settings.payku.environment,
-        apiUrl: settings.payku.apiUrl || "",
       },
       tebex: {
         enabled: settings.tebex.enabled,
@@ -101,9 +98,7 @@ export async function PUT(request: NextRequest) {
         "ENV"
       ),
       paykuApiToken: parseOptionalTextUpdate(payku.apiToken, 1000),
-      paykuSecretKey: parseOptionalTextUpdate(payku.secretKey, 1000),
       paykuEnvironment: paykuEnv,
-      paykuApiUrl: parseOptionalTextUpdate(payku.apiUrl, 500),
       tebexEnabled: typeof tebex.enabled === "boolean" ? tebex.enabled : undefined,
       tebexStoreId: parseOptionalTextUpdate(tebex.storeId, 255),
       tebexSecretKey: parseOptionalTextUpdate(tebex.secretKey, 1000),
