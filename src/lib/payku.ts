@@ -52,6 +52,8 @@ export interface PaykuPaymentResponse {
   order?: string;
   paymentUrl?: string;
   url?: string;
+  redirectMethod?: "GET" | "POST";
+  formFields?: Record<string, string>;
   status?: string;
 }
 
@@ -176,14 +178,15 @@ export async function createPaykuPayment(
     throw new Error(`Payku error (${response.status}): ${msg}`);
   }
 
-  // Payku v1 API returns the redirect URL in the `url` field
-  const paymentUrl =
-    (responseData.url as string) ||
-    (responseData.url_pago as string) ||
-    (responseData.paymentUrl as string);
-
+  const paymentUrl = extractPaykuPaymentUrl(responseData);
+  const redirectMethod = inferPaykuRedirectMethod(responseData);
+  const formFields = extractPaykuFormFields(responseData);
   const transactionId =
-    (responseData.id as string) || (responseData.token as string);
+    (responseData.id as string) ||
+    (responseData.transaction_id as string) ||
+    (responseData.identifier as string) ||
+    (responseData.token as string) ||
+    (responseData.token_ws as string);
 
   if (!paymentUrl) {
     console.error("[Payku Create] Response missing URL:", responseData);
@@ -199,8 +202,99 @@ export async function createPaykuPayment(
     order: (responseData.order as string) || data.order,
     paymentUrl,
     url: paymentUrl,
+    redirectMethod,
+    formFields,
     status: mapPaykuStatus(responseData.estado ?? responseData.status),
   };
+}
+
+function extractPaykuPaymentUrl(responseData: Record<string, unknown>): string | undefined {
+  const candidates = [
+    responseData.url,
+    responseData.url_pago,
+    responseData.paymentUrl,
+    responseData.payment_url,
+    responseData.redirect_url,
+    responseData.redirectUrl,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+
+  return undefined;
+}
+
+function inferPaykuRedirectMethod(
+  responseData: Record<string, unknown>
+): "GET" | "POST" {
+  if (extractPaykuPostTokenFields(responseData)) {
+    return "POST";
+  }
+
+  const methodCandidate =
+    responseData.method ??
+    responseData.redirect_method ??
+    responseData.redirectMethod;
+
+  if (typeof methodCandidate === "string" && methodCandidate.trim().toUpperCase() === "POST") {
+    return "POST";
+  }
+
+  return "GET";
+}
+
+function extractPaykuFormFields(
+  responseData: Record<string, unknown>
+): Record<string, string> | undefined {
+  const tokenFields = extractPaykuPostTokenFields(responseData);
+  if (tokenFields) {
+    return tokenFields;
+  }
+
+  const rawFields =
+    responseData.formFields ??
+    responseData.form_fields ??
+    responseData.fields;
+
+  if (!rawFields || typeof rawFields !== "object" || Array.isArray(rawFields)) {
+    return undefined;
+  }
+
+  const parsedEntries = Object.entries(rawFields).flatMap(([key, value]) => {
+    if (typeof value !== "string") return [];
+    const trimmed = value.trim();
+    return trimmed ? [[key, trimmed] as const] : [];
+  });
+
+  return parsedEntries.length > 0 ? Object.fromEntries(parsedEntries) : undefined;
+}
+
+function extractPaykuPostTokenFields(
+  responseData: Record<string, unknown>
+): Record<string, string> | undefined {
+  const tokenWs = toNonEmptyString(responseData.token_ws);
+  if (tokenWs) {
+    return { token_ws: tokenWs };
+  }
+
+  const token = toNonEmptyString(responseData.token);
+  if (token) {
+    return { token };
+  }
+
+  return undefined;
+}
+
+function toNonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 // ---------------------------------------------------------------------------

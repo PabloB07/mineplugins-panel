@@ -322,6 +322,8 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
         orderNumber,
         paymentUrl: paykuResponse.paymentUrl,
+        redirectMethod: paykuResponse.redirectMethod,
+        formFields: paykuResponse.formFields,
       });
     }
 

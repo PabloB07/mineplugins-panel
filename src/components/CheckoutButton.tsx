@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { redirectToPaymentGateway } from "@/lib/payment-redirect";
 
 interface CheckoutButtonProps {
   productSlug: string;
@@ -35,12 +36,7 @@ export function CheckoutButton({ productSlug, durationDays }: CheckoutButtonProp
         throw new Error(data.message || "Failed to create payment");
       }
 
-      // Redirect to Flow.cl payment page
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
-      } else {
-        throw new Error("No payment URL received");
-      }
+      redirectToPaymentGateway(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsLoading(false);

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/ui/Icon";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { redirectToPaymentGateway } from "@/lib/payment-redirect";
 
 interface PaykuStandaloneButtonProps {
   productSlug: string;
@@ -50,7 +50,7 @@ export function PaykuStandaloneButton({
       let data;
       try {
         data = JSON.parse(responseText);
-      } catch (e) {
+      } catch {
         throw new Error(`Server error: ${response.status}`);
       }
 
@@ -60,9 +60,8 @@ export function PaykuStandaloneButton({
 
       console.log("[PaykuStandalone] paymentUrl:", data.paymentUrl);
 
-      // Use setTimeout to avoid React hydration issue
       setTimeout(() => {
-        window.location.href = data.paymentUrl;
+        redirectToPaymentGateway(data);
       }, 100);
 
       onSuccess?.(data);

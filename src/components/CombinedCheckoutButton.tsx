@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { type PaymentMethodId } from "@/lib/payment-methods";
 import { useTranslation } from "@/i18n/useTranslation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { redirectToPaymentGateway } from "@/lib/payment-redirect";
 
 interface CombinedCheckoutButtonProps {
   productSlug: string;
@@ -61,7 +62,7 @@ export function CombinedCheckoutButton({
         return;
       }
       
-      window.location.href = data.paymentUrl;
+      redirectToPaymentGateway(data);
 
       onSuccess?.(data);
     } catch (err) {
