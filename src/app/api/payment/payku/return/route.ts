@@ -15,29 +15,41 @@ export async function POST(request: NextRequest) {
 async function handlePaykuReturn(request: NextRequest) {
   try {
     const payload = await parsePaykuCallbackRequest(request);
-    let orderNumber = payload.orderId;
+    console.log("[Payku Return] Received payload:", JSON.stringify(payload, null, 2));
 
+    let orderNumber = payload.orderId;
     let order = null;
+
     if (orderNumber) {
+      console.log("[Payku Return] Searching by orderNumber:", orderNumber);
       order = await prisma.order.findUnique({
         where: { orderNumber },
         include: { items: { include: { product: true } } },
       });
     }
 
-    // Fallback: Try finding by transaction ID if orderNumber is missing or not found
     if (!order && payload.transactionId) {
+      console.log("[Payku Return] Order not found by orderNumber. Searching by transactionId:", payload.transactionId);
       order = await prisma.order.findFirst({
-        where: { flowOrderNumber: payload.transactionId },
+        where: {
+          OR: [
+            { flowOrderNumber: payload.transactionId },
+            { flowToken: payload.transactionId }
+          ]
+        },
         include: { items: { include: { product: true } } },
       });
       if (order) {
+        console.log("[Payku Return] Order found by transactionId. orderNumber is:", order.orderNumber);
         orderNumber = order.orderNumber;
       }
     }
 
     if (!order) {
-      console.error("[Payku Return] Order not found for payload:", payload);
+      console.error("[Payku Return] Order not found for payload:", JSON.stringify(payload));
+      // Log search parameters specifically as well
+      const url = new URL(request.url);
+      console.log("[Payku Return] URL search params:", url.search);
       return NextResponse.redirect(new URL("/dashboard?error=order_not_found", request.url));
     }
 
