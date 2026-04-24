@@ -35,13 +35,6 @@ export async function GET() {
     const settings = await getGatewaySettings();
 
     return NextResponse.json({
-      payku: {
-        enabled: settings.payku.enabled,
-        source: settings.payku.source,
-        apiToken: maskSecret(settings.payku.apiToken),
-        hasApiToken: !!settings.payku.apiToken,
-        environment: settings.payku.environment,
-      },
       tebex: {
         enabled: settings.tebex.enabled,
         storeId: settings.tebex.storeId || "",
@@ -74,14 +67,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = (await request.json()) as Record<string, unknown>;
-    const payku = (body.payku || {}) as Record<string, unknown>;
     const tebex = (body.tebex || {}) as Record<string, unknown>;
     const paypal = (body.paypal || {}) as Record<string, unknown>;
 
-    const paykuEnv = parseGatewayEnvironment(
-      typeof payku.environment === "string" ? payku.environment : undefined,
-      "SANDBOX"
-    );
     const tebexEnv = parseGatewayEnvironment(
       typeof tebex.environment === "string" ? tebex.environment : undefined,
       "PRODUCTION"
@@ -92,13 +80,6 @@ export async function PUT(request: NextRequest) {
     );
 
     await upsertGatewaySettings({
-      paykuEnabled: typeof payku.enabled === "boolean" ? payku.enabled : undefined,
-      paykuConfigSource: parseGatewayConfigSource(
-        typeof payku.source === "string" ? payku.source : undefined,
-        "ENV"
-      ),
-      paykuApiToken: parseOptionalTextUpdate(payku.apiToken, 1000),
-      paykuEnvironment: paykuEnv,
       tebexEnabled: typeof tebex.enabled === "boolean" ? tebex.enabled : undefined,
       tebexStoreId: parseOptionalTextUpdate(tebex.storeId, 255),
       tebexSecretKey: parseOptionalTextUpdate(tebex.secretKey, 1000),

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createPaykuPayment, generatePaykuOrderNumber } from "@/lib/payku";
 import { createTebexPayment, generateTebexOrderNumber } from "@/lib/tebex";
 import { createPaypalPayment, generatePaypalOrderNumber } from "@/lib/paypal";
 import { toOptionalTrimmedString, toSafeInt } from "@/lib/security";
@@ -17,7 +16,7 @@ import { getGatewaySettings } from "@/lib/payment-gateway-settings";
 interface PaymentCreateRequest {
   productSlug: string;
   durationDays?: number;
-  paymentMethod?: "PAYKU" | "TEBEX" | "PAYPAL";
+  paymentMethod?: "TEBEX" | "PAYPAL";
   discountCode?: string;
   currency?: "CLP" | "USD" | "EUR" | "CAD";
 }
@@ -38,23 +37,16 @@ export async function POST(request: NextRequest) {
     const durationDays = body?.durationDays === undefined
       ? undefined
       : toSafeInt(body?.durationDays, { defaultValue: 365, min: 1, max: 730 });
-    const paymentMethodId: "PAYKU" | "TEBEX" | "PAYPAL" =
-      body?.paymentMethod === "TEBEX"
-        ? "TEBEX"
-        : body?.paymentMethod === "PAYPAL"
-          ? "PAYPAL"
-          : "PAYKU";
+    
+    // Default to TEBEX if not specified or not supported
+    const paymentMethodId: "TEBEX" | "PAYPAL" =
+      body?.paymentMethod === "PAYPAL"
+        ? "PAYPAL"
+        : "TEBEX";
 
     const paymentMethod: PaymentMethod = paymentMethodId as unknown as PaymentMethod;
 
     const settings = await getGatewaySettings();
-
-    if (paymentMethodId === "PAYKU" && !settings.payku.enabled) {
-      return NextResponse.json(
-        { error: "PAYMENT_METHOD_DISABLED", message: "Payku payment is currently disabled" },
-        { status: 400 }
-      );
-    }
 
     if (paymentMethodId === "PAYPAL" && !settings.paypal.enabled) {
       return NextResponse.json(
@@ -203,17 +195,15 @@ export async function POST(request: NextRequest) {
 
     const totalCLP = Math.max(0, subtotalCLP - discountCLP);
     const totalUSD = Number(Math.max(0, subtotalUSD - discountUSD).toFixed(2));
-    const orderCurrency = paymentMethodId === "PAYKU" ? "CLP" : "USD";
-    const subtotalLegacy = orderCurrency === "CLP" ? Math.round(subtotalCLP) : Math.round(subtotalUSD);
-    const discountLegacy = orderCurrency === "CLP" ? Math.round(discountCLP) : Math.round(discountUSD);
-    const totalLegacy = orderCurrency === "CLP" ? Math.round(totalCLP) : Math.round(totalUSD);
+    const orderCurrency = "USD"; // Always USD for Tebex/PayPal
+    const subtotalLegacy = Math.round(subtotalUSD);
+    const discountLegacy = Math.round(discountUSD);
+    const totalLegacy = Math.round(totalUSD);
 
     const orderNumber =
       paymentMethodId === "TEBEX"
         ? generateTebexOrderNumber()
-        : paymentMethodId === "PAYKU"
-          ? generatePaykuOrderNumber()
-          : generatePaypalOrderNumber();
+        : generatePaypalOrderNumber();
 
     const order = await prisma.order.create({
       data: {
@@ -238,7 +228,7 @@ export async function POST(request: NextRequest) {
           create: {
             productId: product.id,
             currency: orderCurrency,
-            unitPrice: orderCurrency === "CLP" ? Math.round(subtotalCLP) : Math.round(subtotalUSD),
+            unitPrice: Math.round(subtotalUSD),
             unitPriceCLP: Number(subtotalCLP.toFixed(2)),
             unitPriceUSD: subtotalUSD,
             quantity: 1,
@@ -269,47 +259,6 @@ export async function POST(request: NextRequest) {
         orderNumber,
         paymentUrl: tebexResponse.checkoutUrl,
         transactionId: tebexResponse.ident || tebexResponse.id,
-      });
-    }
-
-    if (paymentMethodId === "PAYKU") {
-      const paykuAmount = Math.round(totalCLP);
-      const paykuSubject = `MinePlugins License - ${days} days`;
-
-      if (!orderNumber || orderNumber.trim().length === 0) {
-        throw new Error("Order number is empty");
-      }
-      if (!paykuSubject || paykuSubject.trim().length === 0) {
-        throw new Error("Subject is empty");
-      }
-      if (!paykuAmount || paykuAmount <= 0) {
-        throw new Error(`Invalid amount: ${paykuAmount}`);
-      }
-      if (!user.email || user.email.trim().length === 0) {
-        throw new Error("User email is empty");
-      }
-
-      console.log("[CreatePayment] Creating Payku payment:", { order: orderNumber, amount: paykuAmount, subject: paykuSubject });
-
-      const paykuResponse = await createPaykuPayment({
-        order: orderNumber,
-        subject: paykuSubject,
-        amount: paykuAmount,
-        email: user.email,
-        returnUrl: `${baseUrl}/api/payment/payku/return`,
-        notifyUrl: `${baseUrl}/api/payment/payku/webhook`,
-      });
-
-      console.log("[CreatePayment] Payku response:", paykuResponse);
-      console.log("[CreatePayment] paymentUrl:", paykuResponse.paymentUrl);
-      console.log("[CreatePayment] Payku transaction ID:", paykuResponse.id);
-      console.log("[CreatePayment] Order ID:", order.id);
-
-      return NextResponse.json({
-        success: true,
-        orderId: order.id,
-        orderNumber,
-        paymentUrl: paykuResponse.paymentUrl,
       });
     }
 

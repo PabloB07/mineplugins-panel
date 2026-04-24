@@ -1,4 +1,4 @@
-export type PaymentMethodId = "PAYKU" | "TEBEX" | "PAYPAL";
+export type PaymentMethodId = "TEBEX" | "PAYPAL";
 
 export interface PaymentMethodConfig {
   id: PaymentMethodId;
@@ -11,15 +11,6 @@ export interface PaymentMethodConfig {
 }
 
 export const PAYMENT_METHODS: PaymentMethodConfig[] = [
-  {
-    id: "PAYKU",
-    name: "Payku",
-    checkoutLabel: "Payku",
-    description: "Chile's favorite payment processor - Pay with debit, credit or crypto",
-    logo: "/payku-logo.png",
-    accentClass: "text-blue-400",
-    available: true,
-  },
   {
     id: "TEBEX",
     name: "Tebex",
@@ -40,7 +31,7 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
   },
 ];
 
-export const DEFAULT_PAYMENT_METHOD: PaymentMethodId = "PAYKU";
+export const DEFAULT_PAYMENT_METHOD: PaymentMethodId = "PAYPAL";
 
 export function getAvailablePaymentMethods(): PaymentMethodConfig[] {
   return PAYMENT_METHODS.filter(method => method.available !== false);

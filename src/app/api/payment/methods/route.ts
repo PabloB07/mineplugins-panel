@@ -7,12 +7,6 @@ export async function GET() {
 
     const methods = [
       {
-        id: "PAYKU",
-        name: "Payku",
-        enabled: settings.payku.enabled,
-        environment: settings.payku.environment,
-      },
-      {
         id: "TEBEX",
         name: "Tebex",
         enabled: settings.tebex.enabled,

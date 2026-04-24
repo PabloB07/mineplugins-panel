@@ -31,14 +31,6 @@ function toOptional(value: string | null | undefined): string | undefined {
 }
 
 export interface GatewaySettingsResolved {
-  payku: {
-    enabled: boolean;
-    source: GatewayConfigSource;
-    apiToken?: string;      // public token  → create transactions
-    privateToken?: string;  // private token → query/verify transactions
-    environment: GatewayEnvironment;
-    apiUrl?: string;
-  };
   paypal: {
     enabled: boolean;
     source: GatewayConfigSource;
@@ -57,13 +49,6 @@ export interface GatewaySettingsResolved {
 }
 
 interface PaymentGatewayConfigRecord {
-  paykuEnabled: boolean;
-  paykuApiToken: string | null;
-  paykuPrivateToken: string | null;
-  paykuSecretKey: string | null;
-  paykuConfigSource: GatewayConfigSource;
-  paykuEnvironment: GatewayEnvironment;
-  paykuApiUrl: string | null;
   tebexEnabled: boolean;
   tebexStoreId: string | null;
   tebexSecretKey: string | null;
@@ -92,44 +77,13 @@ async function getPaymentGatewayConfigRecord(): Promise<PaymentGatewayConfigReco
 export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
   const dbSettings = await getPaymentGatewayConfigRecord();
 
-  const paykuSource = parseGatewayConfigSource(dbSettings?.paykuConfigSource, "ENV");
-  const paykuEnvFromProcess = parseGatewayEnvironment(
-    process.env.PAYKU_ENV,
-    process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX"
-  );
-
   const paypalSource = parseGatewayConfigSource(dbSettings?.paypalConfigSource, "ENV");
   const paypalEnvFromProcess = parseGatewayEnvironment(
     process.env.PAYPAL_ENV,
     process.env.NODE_ENV === "production" ? "PRODUCTION" : "SANDBOX"
   );
 
-  const paykuConfig = {
-    enabled: dbSettings?.paykuEnabled ?? true,
-    source: paykuSource,
-    apiToken:
-      paykuSource === "PANEL"
-        ? toOptional(dbSettings?.paykuApiToken)
-        : toOptional(process.env.PAYKU_PUBLIC_TOKEN ?? process.env.PAYKU_API_TOKEN),
-    privateToken:
-      paykuSource === "PANEL"
-        ? toOptional(dbSettings?.paykuPrivateToken)
-        : toOptional(process.env.PAYKU_PRIVATE_TOKEN),
-    environment:
-      paykuSource === "PANEL"
-        ? dbSettings?.paykuEnvironment ?? "SANDBOX"
-        : paykuEnvFromProcess,
-    apiUrl: dbSettings?.paykuApiUrl || toOptional(process.env.PAYKU_API_URL),
-  };
-
-  console.log("[GatewaySettings] Payku config source:", paykuSource);
-  console.log("[GatewaySettings] Payku environment:", paykuConfig.environment);
-  console.log("[GatewaySettings] Payku apiUrl:", paykuConfig.apiUrl);
-  console.log("[GatewaySettings] Payku publicToken set:", !!paykuConfig.apiToken);
-  console.log("[GatewaySettings] Payku privateToken set:", !!paykuConfig.privateToken);
-
   return {
-    payku: paykuConfig,
     paypal: {
       enabled: dbSettings?.paypalEnabled ?? true,
       source: paypalSource,
@@ -166,10 +120,6 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
 }
 
 export async function upsertGatewaySettings(input: {
-  paykuEnabled?: boolean;
-  paykuConfigSource?: GatewayConfigSource;
-  paykuApiToken?: string | null;
-  paykuEnvironment?: GatewayEnvironment;
   tebexEnabled?: boolean;
   tebexStoreId?: string | null;
   tebexSecretKey?: string | null;
@@ -193,13 +143,6 @@ export async function upsertGatewaySettings(input: {
   }
 
   const gatewayPayload = {
-    paykuEnabled: input.paykuEnabled ?? existing?.paykuEnabled ?? true,
-    paykuConfigSource: input.paykuConfigSource ?? existing?.paykuConfigSource ?? "ENV",
-    paykuApiToken: resolveOptionalField(input.paykuApiToken, existing?.paykuApiToken),
-    paykuEnvironment: input.paykuEnvironment ?? existing?.paykuEnvironment ?? "SANDBOX",
-    paykuPrivateToken: existing?.paykuPrivateToken ?? null,
-    paykuSecretKey: existing?.paykuSecretKey ?? null,
-    paykuApiUrl: existing?.paykuApiUrl ?? null,
     tebexEnabled: input.tebexEnabled ?? existing?.tebexEnabled ?? true,
     tebexStoreId: resolveOptionalField(input.tebexStoreId, existing?.tebexStoreId),
     tebexSecretKey: resolveOptionalField(input.tebexSecretKey, existing?.tebexSecretKey),

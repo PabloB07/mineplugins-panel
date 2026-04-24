@@ -11,13 +11,6 @@ type EnvMode = "SANDBOX" | "PRODUCTION";
 type ConfigSource = "ENV" | "PANEL";
 
 interface PaymentSettingsResponse {
-  payku: {
-    enabled: boolean;
-    source: ConfigSource;
-    apiToken: string;
-    environment: EnvMode;
-    hasApiToken: boolean;
-  };
   tebex: {
     enabled: boolean;
     storeId: string;
@@ -38,7 +31,6 @@ interface PaymentSettingsResponse {
 }
 
 interface PaymentSettingsSnapshot {
-  paykuApiToken: string;
   tebexStoreId: string;
   tebexSecretKey: string;
   paypalClientId: string;
@@ -48,7 +40,6 @@ interface PaymentSettingsSnapshot {
 }
 
 const EMPTY_SNAPSHOT: PaymentSettingsSnapshot = {
-  paykuApiToken: "",
   tebexStoreId: "",
   tebexSecretKey: "",
   paypalClientId: "",
@@ -63,14 +54,9 @@ export default function AdminPaymentsSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"payku" | "paypal" | "tebex">("payku");
+  const [activeTab, setActiveTab] = useState<"paypal" | "tebex">("paypal");
   
   const [initialValues, setInitialValues] = useState<PaymentSettingsSnapshot>(EMPTY_SNAPSHOT);
-
-  const [paykuEnabled, setPayKuEnabled] = useState(true);
-  const [paykuSource, setPayKuSource] = useState<ConfigSource>("ENV");
-  const [paykuEnvironment, setPayKuEnvironment] = useState<EnvMode>("SANDBOX");
-  const [paykuApiToken, setPayKuApiToken] = useState("");
 
   const [tebexEnabled, setTebexEnabled] = useState(true);
   const [tebexEnvironment, setTebexEnvironment] = useState<EnvMode>("PRODUCTION");
@@ -86,11 +72,6 @@ export default function AdminPaymentsSettingsPage() {
   const [paypalApiUrl, setPaypalApiUrl] = useState("");
 
   const applySettings = useCallback((data: PaymentSettingsResponse) => {
-    setPayKuEnabled(data.payku.enabled);
-    setPayKuSource(data.payku.source);
-    setPayKuEnvironment(data.payku.environment);
-    setPayKuApiToken(data.payku.apiToken || "");
-    
     setTebexEnabled(data.tebex.enabled);
     setTebexEnvironment(data.tebex.environment);
     setTebexStoreId(data.tebex.storeId || "");
@@ -105,7 +86,6 @@ export default function AdminPaymentsSettingsPage() {
     setPaypalApiUrl(data.paypal.apiUrl || "");
     
     setInitialValues({
-      paykuApiToken: data.payku.apiToken || "",
       tebexStoreId: data.tebex.storeId || "",
       tebexSecretKey: data.tebex.secretKey || "",
       paypalClientId: data.paypal.clientId || "",
@@ -155,12 +135,6 @@ export default function AdminPaymentsSettingsPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          payku: {
-            enabled: paykuEnabled,
-            source: paykuSource,
-            apiToken: prepareValueForSave(paykuApiToken, initialValues.paykuApiToken),
-            environment: paykuEnvironment,
-          },
           tebex: {
             enabled: tebexEnabled,
             storeId: prepareValueForSave(tebexStoreId, initialValues.tebexStoreId),
@@ -249,7 +223,7 @@ export default function AdminPaymentsSettingsPage() {
 
       {/* Tabs Navigation */}
       <div className="flex flex-wrap gap-2 p-1.5 bg-[#0a0a0a] border border-white/5 rounded-2xl shadow-inner">
-        {(["payku", "paypal", "tebex"] as const).map((tab) => (
+        {(["paypal", "tebex"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -259,7 +233,6 @@ export default function AdminPaymentsSettingsPage() {
                 : "text-gray-500 hover:text-gray-300 hover:bg-white/5"
             }`}
           >
-            {tab === "payku" && <MinecraftIcon sprite="gold-ingot" scale={0.7} isSmall />}
             {tab === "paypal" && <MinecraftIcon sprite="filled-map" scale={0.7} isSmall />}
             {tab === "tebex" && <MinecraftIcon sprite="shield" scale={0.7} isSmall />}
             <span className="capitalize">{tab}</span>
@@ -280,13 +253,11 @@ export default function AdminPaymentsSettingsPage() {
             
             <div className="space-y-4">
               <label className={`group relative flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                activeTab === 'payku' ? (paykuEnabled ? 'border-amber-500 bg-amber-500/5' : 'border-gray-800 bg-black') : 
                 activeTab === 'paypal' ? (paypalEnabled ? 'border-blue-500 bg-blue-500/5' : 'border-gray-800 bg-black') :
                 (tebexEnabled ? 'border-green-500 bg-green-500/5' : 'border-gray-800 bg-black')
               }`}>
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${
-                    activeTab === 'payku' ? (paykuEnabled ? 'bg-amber-500' : 'bg-gray-600') : 
                     activeTab === 'paypal' ? (paypalEnabled ? 'bg-blue-500' : 'bg-gray-600') :
                     (tebexEnabled ? 'bg-green-500' : 'bg-gray-600')
                   } shadow-[0_0_10px_currentColor]`}></div>
@@ -294,20 +265,19 @@ export default function AdminPaymentsSettingsPage() {
                 </div>
                 <input
                   type="checkbox"
-                  checked={activeTab === 'payku' ? paykuEnabled : activeTab === 'paypal' ? paypalEnabled : tebexEnabled}
+                  checked={activeTab === 'paypal' ? paypalEnabled : tebexEnabled}
                   onChange={(e) => {
-                    if (activeTab === 'payku') setPayKuEnabled(e.target.checked);
-                    else if (activeTab === 'paypal') setPaypalEnabled(e.target.checked);
+                    if (activeTab === 'paypal') setPaypalEnabled(e.target.checked);
                     else setTebexEnabled(e.target.checked);
                   }}
                   className="sr-only"
                 />
                 <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${
-                  (activeTab === 'payku' && paykuEnabled) || (activeTab === 'paypal' && paypalEnabled) || (activeTab === 'tebex' && tebexEnabled)
+                   (activeTab === 'paypal' && paypalEnabled) || (activeTab === 'tebex' && tebexEnabled)
                     ? 'bg-amber-500' : 'bg-gray-800'
                 }`}>
                   <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 transform ${
-                    (activeTab === 'payku' && paykuEnabled) || (activeTab === 'paypal' && paypalEnabled) || (activeTab === 'tebex' && tebexEnabled)
+                     (activeTab === 'paypal' && paypalEnabled) || (activeTab === 'tebex' && tebexEnabled)
                       ? 'translate-x-6' : ''
                   }`}></div>
                 </div>
@@ -321,14 +291,14 @@ export default function AdminPaymentsSettingsPage() {
           </Card>
 
           {/* Config Source Indicator */}
-          {activeTab !== "tebex" && (
+          {activeTab === "paypal" && (
             <Card className="p-6 border-white/5 bg-[#0a0a0a]/50">
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">{t("admin.configSource")}</h3>
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={() => activeTab === 'payku' ? setPayKuSource("ENV") : setPaypalSource("ENV")}
+                  onClick={() => setPaypalSource("ENV")}
                   className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                    (activeTab === 'payku' ? paykuSource : paypalSource) === "ENV"
+                    paypalSource === "ENV"
                       ? "bg-blue-500/10 border-blue-500/30 text-blue-400"
                       : "bg-[#050505] border-white/5 text-gray-500 hover:border-white/10"
                   }`}
@@ -340,9 +310,9 @@ export default function AdminPaymentsSettingsPage() {
                   </div>
                 </button>
                 <button
-                  onClick={() => activeTab === 'payku' ? setPayKuSource("PANEL") : setPaypalSource("PANEL")}
+                  onClick={() => setPaypalSource("PANEL")}
                   className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                    (activeTab === 'payku' ? paykuSource : paypalSource) === "PANEL"
+                    paypalSource === "PANEL"
                       ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
                       : "bg-[#050505] border-white/5 text-gray-500 hover:border-white/10"
                   }`}
@@ -362,14 +332,13 @@ export default function AdminPaymentsSettingsPage() {
             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">{t("admin.gatewayEnvironment")}</h3>
             <div className="grid grid-cols-2 gap-2">
               <button
-                disabled={(activeTab === 'payku' && paykuSource === 'ENV') || (activeTab === 'paypal' && paypalSource === 'ENV')}
+                disabled={activeTab === 'paypal' && paypalSource === 'ENV'}
                 onClick={() => {
-                  if (activeTab === 'payku') setPayKuEnvironment("SANDBOX");
-                  else if (activeTab === 'paypal') setPaypalEnvironment("SANDBOX");
+                  if (activeTab === 'paypal') setPaypalEnvironment("SANDBOX");
                   else setTebexEnvironment("SANDBOX");
                 }}
                 className={`p-3 rounded-xl border transition-all font-bold text-sm ${
-                  (activeTab === 'payku' ? paykuEnvironment : activeTab === 'paypal' ? paypalEnvironment : tebexEnvironment) === "SANDBOX"
+                  (activeTab === 'paypal' ? paypalEnvironment : tebexEnvironment) === "SANDBOX"
                     ? "bg-purple-500/10 border-purple-500/30 text-purple-400"
                     : "bg-[#050505] border-white/5 text-gray-500 hover:border-white/10"
                 } disabled:opacity-30`}
@@ -377,14 +346,13 @@ export default function AdminPaymentsSettingsPage() {
                 {t("admin.sandbox")}
               </button>
               <button
-                disabled={(activeTab === 'payku' && paykuSource === 'ENV') || (activeTab === 'paypal' && paypalSource === 'ENV')}
+                disabled={activeTab === 'paypal' && paypalSource === 'ENV'}
                 onClick={() => {
-                  if (activeTab === 'payku') setPayKuEnvironment("PRODUCTION");
-                  else if (activeTab === 'paypal') setPaypalEnvironment("PRODUCTION");
+                  if (activeTab === 'paypal') setPaypalEnvironment("PRODUCTION");
                   else setTebexEnvironment("PRODUCTION");
                 }}
                 className={`p-3 rounded-xl border transition-all font-bold text-sm ${
-                  (activeTab === 'payku' ? paykuEnvironment : activeTab === 'paypal' ? paypalEnvironment : tebexEnvironment) === "PRODUCTION"
+                  (activeTab === 'paypal' ? paypalEnvironment : tebexEnvironment) === "PRODUCTION"
                     ? "bg-red-500/10 border-red-500/30 text-red-400"
                     : "bg-[#050505] border-white/5 text-gray-500 hover:border-white/10"
                 } disabled:opacity-30`}
@@ -407,7 +375,7 @@ export default function AdminPaymentsSettingsPage() {
                   <h2 className="text-2xl font-black text-white capitalize">{activeTab} {t("admin.integration")}</h2>
                   <p className="text-gray-500 mt-1">{t("admin.integrationDesc")}</p>
                 </div>
-                {(activeTab === 'payku' ? paykuEnabled : activeTab === 'paypal' ? paypalEnabled : tebexEnabled) ? (
+                {(activeTab === 'paypal' ? paypalEnabled : tebexEnabled) ? (
                   <span className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-500 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-500/20">
                     <MinecraftIcon sprite="emerald" scale={0.3} isSmall /> {t("admin.live")}
                   </span>
@@ -417,40 +385,6 @@ export default function AdminPaymentsSettingsPage() {
                   </span>
                 )}
               </div>
-
-              {/* Payku Content */}
-              {activeTab === "payku" && (
-                <div className={`space-y-6 transition-all duration-500 ${paykuSource === 'ENV' ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-300 px-1">{t("admin.apiToken")}</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <MinecraftIcon sprite="writable-book" scale={0.6} isSmall className="opacity-50 group-focus-within:opacity-100 transition-opacity" />
-                      </div>
-                      <input
-                        type="password"
-                        value={paykuApiToken}
-                        onChange={(e) => setPayKuApiToken(e.target.value)}
-                        placeholder="pk_live_..."
-                        className="w-full bg-black/50 border border-white/5 rounded-2xl pl-11 pr-4 py-3.5 text-white focus:outline-none focus:border-amber-500/50 transition-all placeholder:text-gray-700"
-                      />
-                    </div>
-                  </div>
-
-<div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10">
-                    <div className="flex items-center gap-4 text-gray-400">
-                      <div className="flex-1">
-                        <h4 className="font-bold text-white mb-1">{t("admin.devDocTitle")}</h4>
-                        <p className="text-xs">{t("admin.devDocDesc")}</p>
-                      </div>
-                      <a href="https://payku.cl/dashboard" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-all">
-                           <MinecraftIcon sprite="paper" scale={0.8} />
-                      </a>
-                    </div>
-                  </div>
-
-                </div>
-              )}
 
               {/* PayPal Content */}
               {activeTab === "paypal" && (
@@ -525,7 +459,7 @@ export default function AdminPaymentsSettingsPage() {
               )}
 
               {/* Source Warning Badge */}
-              {activeTab !== "tebex" && (activeTab === 'payku' ? paykuSource : paypalSource) === "ENV" && (
+              {activeTab === "paypal" && paypalSource === "ENV" && (
                 <div className="flex items-center gap-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl text-blue-400">
                   <MinecraftIcon sprite="redstone-dust" scale={0.8} />
                   <p className="text-xs font-semibold leading-relaxed">

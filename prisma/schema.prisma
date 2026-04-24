@@ -174,7 +174,7 @@ model Order {
   orderNumber     String         @unique
   userId          String
   status          OrderStatus    @default(PENDING)
-  paymentMethod   PaymentMethod  @default(FLOW_CL)
+  paymentMethod   PaymentMethod  @default(PAYPAL)
   subtotal        Int
   discount        Int            @default(0)
   total           Int
@@ -302,10 +302,6 @@ model AdminActivityLog {
 
 model PaymentGatewayConfig {
   id                 String              @id
-  paykuPrivateToken  String? 
-  paykuApiToken      String?
-  paykuSecretKey     String?
-  paykuEnvironment   GatewayEnvironment  @default(SANDBOX)
   tebexStoreId       String?
   tebexSecretKey     String?
   tebexEnvironment   GatewayEnvironment  @default(PRODUCTION)
@@ -315,9 +311,6 @@ model PaymentGatewayConfig {
   paypalEnvironment  GatewayEnvironment  @default(SANDBOX)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  paykuConfigSource  GatewayConfigSource @default(ENV)
-  paykuApiUrl        String?
-  paykuEnabled       Boolean             @default(true)
   paypalApiUrl       String?
   paypalConfigSource GatewayConfigSource @default(ENV)
   paypalEnabled      Boolean             @default(true)
@@ -437,8 +430,6 @@ enum OrderStatus {
 }
 
 enum PaymentMethod {
-  FLOW_CL
-  PAYKU
   TEBEX
   PAYPAL
   FREE_LICENSE
