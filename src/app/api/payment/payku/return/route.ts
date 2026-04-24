@@ -1,59 +1,77 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPaykuPaymentStatus, mapPaykuStatus } from "@/lib/payku";
+import { verifyPaykuPayment, parsePaykuCallbackRequest, mapPaykuStatus } from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { generateSimpleLicenseKey } from "@/lib/license";
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const orderNumber = searchParams.get("order");
+  return handlePaykuReturn(request);
+}
 
-  if (!orderNumber) {
-    return NextResponse.redirect(new URL("/dashboard?error=missing_order", request.url));
-  }
+export async function POST(request: NextRequest) {
+  return handlePaykuReturn(request);
+}
 
+async function handlePaykuReturn(request: NextRequest) {
   try {
+    const payload = await parsePaykuCallbackRequest(request);
+    const orderNumber =
+      payload.orderId ||
+      request.nextUrl.searchParams.get("order") ||
+      request.nextUrl.searchParams.get("order_id");
+
+    if (!orderNumber) {
+      return NextResponse.redirect(new URL("/dashboard?error=missing_order", request.url));
+    }
+
     const order = await prisma.order.findUnique({
       where: { orderNumber },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
-
-    console.log("[Payku Return] orderNumber:", orderNumber);
-    console.log("[Payku Return] order found:", order?.id);
-    console.log("[Payku Return] flowOrderNumber:", order?.flowOrderNumber);
-    console.log("[Payku Return] order status:", order?.status);
 
     if (!order) {
       return NextResponse.redirect(new URL("/dashboard?error=order_not_found", request.url));
     }
 
-    // If order is already completed, go to success
+    const baseUrl = new URL("/", request.url).origin;
+
     if (order.status === OrderStatus.COMPLETED) {
-      return NextResponse.redirect(`${new URL("/", request.url).origin}/payment/success?orderNumber=${orderNumber}`);
+      return NextResponse.redirect(`${baseUrl}/payment/success?orderNumber=${orderNumber}`);
     }
 
-    const queryId = order.flowOrderNumber || orderNumber;
-    console.log("[Payku Return] queryId:", queryId);
-    
-    const paykuStatus = await getPaykuPaymentStatus(queryId);
-    console.log("[Payku Return] paykuStatus:", JSON.stringify(paykuStatus));
-    
-    const baseUrl = new URL("/", request.url).origin;
-    const status = mapPaykuStatus(paykuStatus.status);
+    const status = mapPaykuStatus(payload.status);
 
-    console.log("[Payku Return] Status from Payku:", status);
-
-    // Manual: wait for actual status from Payku (pending, success, failed)
     if (status === "success") {
+      const verification = await verifyPaykuPayment(payload, {
+        orderId: order.orderNumber,
+        amount: Math.round(order.totalCLP),
+        email: order.customerEmail,
+        currency: order.currency,
+      });
+
+      if (verification !== "VALID") {
+        return NextResponse.redirect(`${baseUrl}/dashboard?error=payment_error&order=${orderNumber}`);
+      }
+
       await prisma.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
-          data: { status: OrderStatus.PROCESSING }
+        const claimed = await tx.order.updateMany({
+          where: {
+            id: order.id,
+            status: { in: [OrderStatus.PENDING, OrderStatus.PROCESSING] },
+          },
+          data: {
+            status: OrderStatus.PROCESSING,
+            flowOrderNumber: payload.transactionId ?? order.flowOrderNumber,
+          },
         });
+
+        if (claimed.count === 0) {
+          return;
+        }
 
         for (const item of order.items) {
           if (item.licenseId) continue;
-          
+
           const licenseKey = generateSimpleLicenseKey();
           const expiresAt = new Date();
           expiresAt.setDate(expiresAt.getDate() + item.durationDays);
@@ -77,26 +95,32 @@ export async function GET(request: NextRequest) {
 
         await tx.order.update({
           where: { id: order.id },
-          data: { status: OrderStatus.COMPLETED, paidAt: new Date() },
+          data: {
+            status: OrderStatus.COMPLETED,
+            paidAt: new Date(),
+            flowOrderNumber: payload.transactionId ?? order.flowOrderNumber,
+          },
         });
       });
 
       return NextResponse.redirect(`${baseUrl}/payment/success?orderNumber=${orderNumber}`);
-    } 
-    
+    }
+
     if (status === "failed" || status === "cancelled") {
       await prisma.order.update({
         where: { id: order.id },
-        data: { status: OrderStatus.FAILED }
+        data: {
+          status: OrderStatus.FAILED,
+          flowOrderNumber: payload.transactionId ?? order.flowOrderNumber,
+        },
       });
+
       return NextResponse.redirect(`${baseUrl}/payment/failed?orderNumber=${orderNumber}&reason=${status}`);
     }
 
-    // For sandbox: just redirect to dashboard after user completes payment
     return NextResponse.redirect(`${baseUrl}/dashboard?payment=pending&order=${orderNumber}`);
-    
   } catch (error) {
-    console.error("Payku return error:", error);
-    return NextResponse.redirect(new URL(`/payment/success?orderNumber=${orderNumber}`, request.url));
+    console.error("[Payku Return] Error:", error);
+    return NextResponse.redirect(new URL("/dashboard?error=payment_error", request.url));
   }
 }

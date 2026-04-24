@@ -10,6 +10,12 @@ function getPaykuApiUrl(environment: GatewayEnvironment): string {
     : "https://des.payku.cl/api";
 }
 
+function getPaykuGatewayUrl(environment: GatewayEnvironment): string {
+  return environment === "PRODUCTION"
+    ? "https://app.payku.cl/gateway"
+    : "https://des.payku.cl/gateway";
+}
+
 /**
  * Returns both public and private tokens.
  *
@@ -22,13 +28,15 @@ function getPaykuApiUrl(environment: GatewayEnvironment): string {
 async function getPaykuClientConfig() {
   const settings = await getGatewaySettings();
 
-  const apiUrl =
-    settings.payku.apiUrl || getPaykuApiUrl(settings.payku.environment);
+  const apiUrl = getPaykuApiUrl(settings.payku.environment);
+  const gatewayBaseUrl = getPaykuGatewayUrl(settings.payku.environment);
+  const configuredApiUrl = settings.payku.apiUrl?.trim();
 
   return {
     publicToken: (settings.payku.apiToken || process.env.PAYKU_PUBLIC_TOKEN || "").trim(),
     privateToken: (settings.payku.privateToken || process.env.PAYKU_PRIVATE_TOKEN || "").trim(),
-    apiUrl: apiUrl.endsWith("/") ? apiUrl.slice(0, -1) : apiUrl,
+    apiUrl: (configuredApiUrl || apiUrl).replace(/\/+$/, ""),
+    gatewayBaseUrl,
     // secretKey is kept for possible future use but Payku does not use HMAC
     secretKey: (settings.payku.secretKey || process.env.PAYKU_SECRET_KEY || "").trim(),
   };
@@ -55,6 +63,17 @@ export interface PaykuPaymentResponse {
   redirectMethod?: "GET" | "POST";
   formFields?: Record<string, string>;
   status?: string;
+}
+
+export interface PaykuCallbackPayload {
+  orderId?: string;
+  transactionId?: string;
+  status?: string;
+  verificationKey?: string;
+  email?: string;
+  amount?: number;
+  currency?: string;
+  detail?: string;
 }
 
 export interface PaykuStatusData {
@@ -126,7 +145,7 @@ export function mapPaykuStatus(
 export async function createPaykuPayment(
   data: PaykuPaymentCreate
 ): Promise<PaykuPaymentResponse> {
-  const { publicToken, apiUrl } = await getPaykuClientConfig();
+  const { publicToken, gatewayBaseUrl } = await getPaykuClientConfig();
 
   if (!publicToken) {
     throw new Error(
@@ -135,215 +154,34 @@ export async function createPaykuPayment(
     );
   }
 
-  const payload = {
-    order: data.order,
-    subject: data.subject,
-    amount: data.amount,
-    email: data.email,
-    ...(data.returnUrl && { urlreturn: data.returnUrl }),
-    ...(data.notifyUrl && { urlnotify: data.notifyUrl }),
+  const paymentUrl = `${gatewayBaseUrl}/pago`;
+  const formFields: Record<string, string> = {
+    order_id: data.order,
+    amount: String(data.amount),
+    amount_order: String(data.amount),
+    currency: "CLP",
+    email_from: data.email,
+    token: publicToken,
+    detail: data.subject,
+    ...(data.notifyUrl ? { notify_url: data.notifyUrl } : {}),
+    ...(data.returnUrl ? { return_url: data.returnUrl } : {}),
   };
 
-  const finalUrl = `${apiUrl}/transaction`;
-
-  console.log("[Payku] POST", finalUrl);
-  console.log("[Payku] Payload:", JSON.stringify(payload));
-
-  const response = await fetch(finalUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${publicToken}`,
-    },
-    body: JSON.stringify(payload),
+  console.log("[Payku Create] Using gateway form redirect:", {
+    paymentUrl,
+    order: data.order,
+    amount: data.amount,
   });
-
-  const responseText = await response.text();
-  console.log(`[Payku Create] Status (${response.status}):`, responseText);
-
-  let responseData: Record<string, unknown>;
-  try {
-    responseData = JSON.parse(responseText);
-  } catch {
-    throw new Error(
-      `Payku returned invalid JSON (Status: ${response.status}): ${responseText.slice(0, 200)}`
-    );
-  }
-
-  if (!response.ok) {
-    const msg =
-      (responseData.message as string) ||
-      (responseData.message_error as string) ||
-      "Unknown error";
-    throw new Error(`Payku error (${response.status}): ${msg}`);
-  }
-
-  const paymentUrl = extractPaykuPaymentUrl(responseData, data);
-  const redirectMethod = inferPaykuRedirectMethod(responseData);
-  const formFields = extractPaykuFormFields(responseData);
-  const transactionId =
-    (responseData.id as string) ||
-    (responseData.transaction_id as string) ||
-    (responseData.identifier as string) ||
-    (responseData.token as string) ||
-    (responseData.token_ws as string);
-
-  if (!paymentUrl) {
-    console.error("[Payku Create] Response missing URL:", responseData);
-    throw new Error("Payku did not return a payment URL in the response.");
-  }
-
-  console.log(
-    `[Payku Create] Success. ID: ${transactionId}, Redirect URL: ${paymentUrl}`
-  );
 
   return {
-    id: transactionId,
-    order: (responseData.order as string) || data.order,
+    id: undefined,
+    order: data.order,
     paymentUrl,
     url: paymentUrl,
-    redirectMethod,
+    redirectMethod: "POST",
     formFields,
-    status: mapPaykuStatus(responseData.estado ?? responseData.status),
+    status: "pending",
   };
-}
-
-function extractPaykuPaymentUrl(
-  responseData: Record<string, unknown>,
-  requestData?: PaykuPaymentCreate
-): string | undefined {
-  const candidates = [
-    responseData.paymentUrl,
-    responseData.payment_url,
-    responseData.redirect_url,
-    responseData.redirectUrl,
-    responseData.url_pago,
-    responseData.url,
-  ];
-
-  const callbackUrls = new Set(
-    [requestData?.returnUrl, requestData?.notifyUrl]
-      .filter((value): value is string => typeof value === "string")
-      .map((value) => value.trim())
-      .filter(Boolean)
-  );
-
-  const normalizedCandidates = candidates
-    .filter((candidate): candidate is string => typeof candidate === "string")
-    .map((candidate) => candidate.trim())
-    .filter(Boolean);
-
-  const externalCandidate = normalizedCandidates.find((candidate) =>
-    isLikelyPaykuCheckoutUrl(candidate, callbackUrls)
-  );
-
-  if (externalCandidate) {
-    return externalCandidate;
-  }
-
-  for (const candidate of normalizedCandidates) {
-    if (!callbackUrls.has(candidate)) {
-      return candidate;
-    }
-  }
-
-  return undefined;
-}
-
-function isLikelyPaykuCheckoutUrl(
-  candidate: string,
-  callbackUrls: Set<string>
-): boolean {
-  if (callbackUrls.has(candidate)) {
-    return false;
-  }
-
-  try {
-    const parsed = new URL(candidate);
-    const host = parsed.hostname.toLowerCase();
-
-    if (host.includes("payku")) {
-      return true;
-    }
-
-    if (host.includes("transbank") || host.includes("webpay")) {
-      return true;
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-function inferPaykuRedirectMethod(
-  responseData: Record<string, unknown>
-): "GET" | "POST" {
-  if (extractPaykuPostTokenFields(responseData)) {
-    return "POST";
-  }
-
-  const methodCandidate =
-    responseData.method ??
-    responseData.redirect_method ??
-    responseData.redirectMethod;
-
-  if (typeof methodCandidate === "string" && methodCandidate.trim().toUpperCase() === "POST") {
-    return "POST";
-  }
-
-  return "GET";
-}
-
-function extractPaykuFormFields(
-  responseData: Record<string, unknown>
-): Record<string, string> | undefined {
-  const tokenFields = extractPaykuPostTokenFields(responseData);
-  if (tokenFields) {
-    return tokenFields;
-  }
-
-  const rawFields =
-    responseData.formFields ??
-    responseData.form_fields ??
-    responseData.fields;
-
-  if (!rawFields || typeof rawFields !== "object" || Array.isArray(rawFields)) {
-    return undefined;
-  }
-
-  const parsedEntries = Object.entries(rawFields).flatMap(([key, value]) => {
-    if (typeof value !== "string") return [];
-    const trimmed = value.trim();
-    return trimmed ? [[key, trimmed] as const] : [];
-  });
-
-  return parsedEntries.length > 0 ? Object.fromEntries(parsedEntries) : undefined;
-}
-
-function extractPaykuPostTokenFields(
-  responseData: Record<string, unknown>
-): Record<string, string> | undefined {
-  const tokenWs = toNonEmptyString(responseData.token_ws);
-  if (tokenWs) {
-    return { token_ws: tokenWs };
-  }
-
-  const token = toNonEmptyString(responseData.token);
-  if (token) {
-    return { token };
-  }
-
-  return undefined;
-}
-
-function toNonEmptyString(value: unknown): string | undefined {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -419,6 +257,113 @@ export async function getPaykuPaymentStatus(
     console.error("[Payku] Status check error:", err);
     return { status: "pending", id };
   }
+}
+
+export async function verifyPaykuPayment(
+  payload: PaykuCallbackPayload,
+  expected: {
+    orderId: string;
+    amount: number;
+    email: string;
+    currency?: string;
+    detail?: string;
+  }
+): Promise<"VALID" | "INVALID"> {
+  const { publicToken, gatewayBaseUrl } = await getPaykuClientConfig();
+
+  if (!publicToken) {
+    throw new Error("Payku public token not configured");
+  }
+
+  if (!payload.transactionId || !payload.verificationKey) {
+    return "INVALID";
+  }
+
+  const verificationUrl = new URL(`${gatewayBaseUrl}/verificar`);
+  verificationUrl.searchParams.set("transaction_id", payload.transactionId);
+  verificationUrl.searchParams.set("verification_key", payload.verificationKey);
+  verificationUrl.searchParams.set("token", publicToken);
+  verificationUrl.searchParams.set("email", expected.email);
+  verificationUrl.searchParams.set("amount", String(expected.amount));
+  verificationUrl.searchParams.set("currency_code", expected.currency || "CLP");
+  verificationUrl.searchParams.set("order_id", expected.orderId);
+
+  if (expected.detail) {
+    verificationUrl.searchParams.set("detail", expected.detail);
+  }
+
+  const response = await fetch(verificationUrl.toString(), {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const text = (await response.text()).trim().toUpperCase();
+  return response.ok && text === "VALID" ? "VALID" : "INVALID";
+}
+
+export async function parsePaykuCallbackRequest(
+  request: Request
+): Promise<PaykuCallbackPayload> {
+  const contentType = request.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    const body = (await request.json()) as Record<string, unknown>;
+    return normalizePaykuCallbackPayload(body);
+  }
+
+  if (contentType.includes("application/x-www-form-urlencoded") || contentType.includes("multipart/form-data")) {
+    const formData = await request.formData();
+    return normalizePaykuCallbackPayload(Object.fromEntries(formData.entries()));
+  }
+
+  const rawBody = await request.text();
+  if (!rawBody.trim()) {
+    return normalizePaykuCallbackPayload({});
+  }
+
+  try {
+    return normalizePaykuCallbackPayload(JSON.parse(rawBody) as Record<string, unknown>);
+  } catch {
+    return normalizePaykuCallbackPayload(Object.fromEntries(new URLSearchParams(rawBody).entries()));
+  }
+}
+
+function normalizePaykuCallbackPayload(
+  payload: Record<string, unknown>
+): PaykuCallbackPayload {
+  return {
+    orderId: readString(payload.order_id ?? payload.orderId ?? payload.order),
+    transactionId: readString(payload.transaction_id ?? payload.transactionId ?? payload.id),
+    status: readString(payload.status ?? payload.estado),
+    verificationKey: readString(payload.verification_key ?? payload.verificationKey),
+    email: readString(payload.email ?? payload.email_from),
+    amount: readNumber(payload.amount ?? payload.amount_order ?? payload.monto),
+    currency: readString(payload.currency ?? payload.currency_code ?? payload.moneda),
+    detail: readString(payload.detail),
+  };
+}
+
+function readString(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function readNumber(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().replace(",", ".");
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+
+  return undefined;
 }
 
 // ---------------------------------------------------------------------------

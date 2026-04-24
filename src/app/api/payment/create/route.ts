@@ -294,7 +294,7 @@ export async function POST(request: NextRequest) {
         subject: paykuSubject,
         amount: paykuAmount,
         email: user.email,
-        returnUrl: `${baseUrl}/api/payment/payku/return?order=${orderNumber}`,
+        returnUrl: `${baseUrl}/api/payment/payku/return`,
         notifyUrl: `${baseUrl}/api/payment/payku/webhook`,
       });
 
@@ -302,20 +302,6 @@ export async function POST(request: NextRequest) {
       console.log("[CreatePayment] paymentUrl:", paykuResponse.paymentUrl);
       console.log("[CreatePayment] Payku transaction ID:", paykuResponse.id);
       console.log("[CreatePayment] Order ID:", order.id);
-
-      // Save the gateway transaction ID for better status tracking
-      if (paykuResponse.id) {
-        try {
-          await prisma.order.update({
-            where: { id: order.id },
-            data: { flowOrderNumber: paykuResponse.id }
-          });
-          console.log("[CreatePayment] Saved flowOrderNumber:", paykuResponse.id);
-        } catch (dbError) {
-          console.error("[CreateOrder] Failed to update flowOrderNumber:", dbError);
-          // We don't throw here to avoid preventing the user from paying
-        }
-      }
 
       return NextResponse.json({
         success: true,

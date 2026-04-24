@@ -1,60 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  processPaykuWebhook,
-  PaykuStatusData,
-} from "@/lib/payku";
+import { parsePaykuCallbackRequest, verifyPaykuPayment, mapPaykuStatus, type PaykuCallbackPayload } from "@/lib/payku";
 import { prisma } from "@/lib/prisma";
 import { generateSimpleLicenseKey } from "@/lib/license";
 import { OrderStatus } from "@prisma/client";
 import { registerDiscountUsageOnCompletedOrder } from "@/lib/discounts";
 
-/**
- * Webhook endpoint for Payku payment notifications
- * POST /api/payment/payku/webhook
- */
 export async function POST(request: NextRequest) {
   try {
-    const rawBody = await request.text();
+    const payload = await parsePaykuCallbackRequest(request);
+    const orderNumber = payload.orderId;
 
-    console.log("[Payku Webhook] Received webhook");
-    console.log("[Payku Webhook] Body:", rawBody);
-
-    let body: Record<string, unknown>;
-    try {
-      body = JSON.parse(rawBody) as Record<string, unknown>;
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    if (!orderNumber) {
+      return NextResponse.json({ error: "MISSING_ORDER_ID" }, { status: 400 });
     }
 
-    const result = await processPaykuWebhook(
-      body,
-      async (paymentData) => {
-        await handlePaykuSuccess(paymentData);
-      },
-      async (paymentData) => {
-        await handlePaykuFailed(paymentData);
-      }
-    );
-
-    if (!result.success) {
-      return NextResponse.json({ error: result.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Payku webhook error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-async function handlePaykuSuccess(paymentData: PaykuStatusData) {
-  const orderNumber = paymentData.order || paymentData.order;
-  if (!orderNumber) {
-    return;
-  }
-
-  await prisma.$transaction(async (tx) => {
-    const orderRecord = await tx.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: {
         items: {
@@ -65,11 +25,54 @@ async function handlePaykuSuccess(paymentData: PaykuStatusData) {
       },
     });
 
-    if (!orderRecord) {
-      return;
+    if (!order) {
+      return NextResponse.json({ error: "ORDER_NOT_FOUND" }, { status: 404 });
     }
 
-    if (orderRecord.status === OrderStatus.COMPLETED) {
+    const status = mapPaykuStatus(payload.status);
+
+    if (status === "success") {
+      const verification = await verifyPaykuPayment(payload, {
+        orderId: order.orderNumber,
+        amount: Math.round(order.totalCLP),
+        email: order.customerEmail,
+        currency: order.currency,
+      });
+
+      if (verification !== "VALID") {
+        return NextResponse.json({ error: "INVALID_VERIFICATION" }, { status: 400 });
+      }
+
+      await handlePaykuSuccess(order.id, payload);
+      return NextResponse.json({ success: true });
+    }
+
+    if (status === "failed" || status === "cancelled") {
+      await handlePaykuFailed(order.id, payload);
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ success: true, status: "pending" });
+  } catch (error) {
+    console.error("[Payku Webhook] Error:", error);
+    return NextResponse.json({ error: "INTERNAL_SERVER_ERROR" }, { status: 500 });
+  }
+}
+
+async function handlePaykuSuccess(orderId: string, payload: PaykuCallbackPayload) {
+  await prisma.$transaction(async (tx) => {
+    const orderRecord = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!orderRecord || orderRecord.status === OrderStatus.COMPLETED) {
       return;
     }
 
@@ -82,6 +85,7 @@ async function handlePaykuSuccess(paymentData: PaykuStatusData) {
       },
       data: {
         status: OrderStatus.PROCESSING,
+        flowOrderNumber: payload.transactionId ?? orderRecord.flowOrderNumber,
       },
     });
 
@@ -90,9 +94,7 @@ async function handlePaykuSuccess(paymentData: PaykuStatusData) {
     }
 
     for (const item of orderRecord.items) {
-      if (item.licenseId) {
-        continue;
-      }
+      if (item.licenseId) continue;
 
       const licenseKey = generateSimpleLicenseKey();
       const expiresAt = new Date();
@@ -120,6 +122,7 @@ async function handlePaykuSuccess(paymentData: PaykuStatusData) {
       data: {
         status: OrderStatus.COMPLETED,
         paidAt: orderRecord.paidAt || new Date(),
+        flowOrderNumber: payload.transactionId ?? orderRecord.flowOrderNumber,
       },
     });
 
@@ -127,21 +130,17 @@ async function handlePaykuSuccess(paymentData: PaykuStatusData) {
   });
 }
 
-async function handlePaykuFailed(paymentData: PaykuStatusData) {
-  const orderNumber = paymentData.order || paymentData.order;
-  if (!orderNumber) {
-    return;
-  }
-
+async function handlePaykuFailed(orderId: string, payload: PaykuCallbackPayload) {
   await prisma.order.updateMany({
     where: {
-      orderNumber,
+      id: orderId,
       status: {
         in: [OrderStatus.PENDING, OrderStatus.PROCESSING],
       },
     },
     data: {
       status: OrderStatus.FAILED,
+      flowOrderNumber: payload.transactionId,
     },
   });
 }
