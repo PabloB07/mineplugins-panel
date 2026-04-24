@@ -34,8 +34,10 @@ export interface GatewaySettingsResolved {
   payku: {
     enabled: boolean;
     source: GatewayConfigSource;
-    apiToken?: string;
+    apiToken?: string;      // public token  → create transactions
+    privateToken?: string;  // private token → query/verify transactions
     environment: GatewayEnvironment;
+    apiUrl?: string;
   };
   paypal: {
     enabled: boolean;
@@ -109,15 +111,22 @@ export async function getGatewaySettings(): Promise<GatewaySettingsResolved> {
       paykuSource === "PANEL"
         ? toOptional(dbSettings?.paykuApiToken)
         : toOptional(process.env.PAYKU_PUBLIC_TOKEN ?? process.env.PAYKU_API_TOKEN),
+    privateToken:
+      paykuSource === "PANEL"
+        ? toOptional(dbSettings?.paykuPrivateToken)
+        : toOptional(process.env.PAYKU_PRIVATE_TOKEN),
     environment:
       paykuSource === "PANEL"
         ? dbSettings?.paykuEnvironment ?? "SANDBOX"
         : paykuEnvFromProcess,
+    apiUrl: dbSettings?.paykuApiUrl || toOptional(process.env.PAYKU_API_URL),
   };
 
   console.log("[GatewaySettings] Payku config source:", paykuSource);
   console.log("[GatewaySettings] Payku environment:", paykuConfig.environment);
+  console.log("[GatewaySettings] Payku apiUrl:", paykuConfig.apiUrl);
   console.log("[GatewaySettings] Payku publicToken set:", !!paykuConfig.apiToken);
+  console.log("[GatewaySettings] Payku privateToken set:", !!paykuConfig.privateToken);
 
   return {
     payku: paykuConfig,
