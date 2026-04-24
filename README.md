@@ -6,7 +6,7 @@ Minecraft Paper 1.21+ plugin store and licensing system with hardware-based lice
 
 - 📦 **Product Management** - Upload and manage plugin versions
 - 🔐 **License System** - Hardware-bound licenses per server
-- 💳 **Payment Gateways** - Payku, Tebex, PayPal integration
+- 💳 **Payment Gateways** - Tebex and PayPal integration
 - 📊 **Analytics** - Track licenses, revenue, and validations
 - 🌐 **Public Server Status** - Display live server status on your store
 - 🔄 **Heartbeat** - Real-time server monitoring
@@ -15,7 +15,7 @@ Minecraft Paper 1.21+ plugin store and licensing system with hardware-based lice
 
 - Node.js 20+
 - PostgreSQL database ([Neon](https://neon.tech) recommended)
-- Nextjs
+- Next.js 14/15
 - TypeScript
 
 ## Environment Variables
@@ -31,10 +31,11 @@ Copy `.env.example` to `.env` and fill in your values.
 | `DISCORD_CLIENT_ID` | Discord OAuth App ID | ✅ |
 | `DISCORD_CLIENT_SECRET` | Discord OAuth App Secret | ✅ |
 | `PAPER_LICENSE_SECRET` | HMAC secret for license keys | ✅ |
-| `PAYKU_API_TOKEN` | Payku payment (Chile) | ❌ |
-| `PAYKU_ENV` | Payku environment: `sandbox` or `production` | ❌ |
-| `TEBEX_STORE_ID` / `TEBEX_SECRET_KEY` | Tebex payment gateway | ❌ |
-| `PAYPAL_CLIENT_ID` / `PAYPAL_SECRET` | PayPal payment gateway | ✅ |
+| `TEBEX_STORE_ID` | Tebex store identifier | ❌ |
+| `TEBEX_SECRET_KEY` | Tebex secret key for validation | ❌ |
+| `PAYPAL_CLIENT_ID` | PayPal client ID | ✅ |
+| `PAYPAL_CLIENT_SECRET` | PayPal client secret | ✅ |
+| `PAYPAL_WEBHOOK_ID` | PayPal webhook ID for payment confirmation | ✅ |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token | ✅ |
 
 ## Quick Start
@@ -52,7 +53,7 @@ cp .env.example .env
 npx prisma generate
 
 # 4. Run database migrations
-npx prisma db push
+npx prisma migrate dev
 
 # 5. Start development
 npm run dev
@@ -64,12 +65,12 @@ Use `DATABASE_URL` with the Neon pooler for the app runtime, and `DIRECT_URL` fo
 
 ## Payment Gateway Configuration
 
-Payku supports two configuration sources:
+The panel supports multiple payment gateways that can be configured in `Admin -> Payment Settings`:
 
-- Environment variables via `PAYKU_API_TOKEN` and `PAYKU_ENV`
-- Admin panel settings in `Admin -> Payment Settings`
+- **Tebex**: Global payment processor with support for hundreds of local methods.
+- **PayPal**: Direct integration for secure checkouts.
 
-When Payku is set to `Use environment variables`, the app reads the values from Vercel or your local `.env`. When it is set to `Use panel configuration`, the saved token and sandbox/production mode from the admin panel are used instead.
+Settings can be managed via the administration dashboard, allowing you to toggle gateways and switch between Sandbox and Production modes.
 
 ### Deployment (Vercel)
 
